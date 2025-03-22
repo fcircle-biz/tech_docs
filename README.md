@@ -39,3 +39,24 @@
 
 ### フレームワークとライブラリ
 - [MyBatis初心者向けのチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet2/mybatis-infographic.html) - Java向けのO/RマッピングフレームワークであるMyBatisの基本を解説したチートシートです。設定、マッピングファイル、動的SQL、アノテーション、基本的なCRUD操作などをカバーしています。
+
+## AIアシスタント用プロンプト集
+
+以下は、様々な技術領域でのAIアシスタントを活用するためのプロンプトコレクションです。
+
+### プログラミング言語サポート
+- [Javaコーディング支援AIエージェント](https://fcircle-biz.github.io/tech_docs/prompt/java-ai-assistant-prompt.html) - Java言語とそのエコシステムに精通したAIアシスタント用プロンプトです。Java SE/EE、Spring Framework、ビルドツール、テスト手法などの専門知識を持ち、効率的なJavaコード開発を支援します。
+- [JavaScript AIアシスタント](https://fcircle-biz.github.io/tech_docs/prompt/js-assistant-prompt.html) - JavaScript開発のエキスパートとして機能するAIアシスタント用プロンプトです。モダンなJavaScript、非同期プログラミング、フレームワーク連携など幅広い支援を提供します。
+- [PHPコーディング支援AIアシスタント](https://fcircle-biz.github.io/tech_docs/prompt/php-coding-assistant-prompt.html) - PHP言語に特化したAIアシスタント用プロンプトです。最新のPHP機能、フレームワーク、データベース連携、セキュリティ対策などを支援します。
+- [VBA支援AIエージェント](https://fcircle-biz.github.io/tech_docs/prompt/vba-assistant-prompt.html) - Microsoft Office向けVBAプログラミングの専門家として機能するAIアシスタント用プロンプトです。マクロ開発、コード最適化、デバッグ支援など幅広くサポートします。
+
+### データベース・データ処理支援
+- [JDBCプログラム支援AIエージェント](https://fcircle-biz.github.io/tech_docs/prompt/jdbc-agent-prompt.html) - Java Database Connectivity (JDBC)の専門家として機能するAIアシスタント用プロンプトです。様々なデータベース向けのJDBC実装、接続管理、SQL操作などを支援します。
+- [SQLコーディング支援AIエージェント](https://fcircle-biz.github.io/tech_docs/prompt/sql-assistant-prompt.html) - SQLに特化したエキスパートとして機能するAIアシスタント用プロンプトです。効率的なクエリ設計、パフォーマンス最適化、データベーススキーマ設計などをサポートします。
+- [SASコーディング支援AIエージェント](https://fcircle-biz.github.io/tech_docs/prompt/sas-ai-agent-prompt.html) - SAS(Statistical Analysis System)プログラミングの専門家として機能するAIアシスタント用プロンプトです。データ処理、統計分析、SASマクロ言語など幅広く支援します。
+
+### Web開発フレームワーク支援
+- [JSP開発支援AIエージェント](https://fcircle-biz.github.io/tech_docs/prompt/jsp-ai-agent-prompt.html) - JavaServer Pages (JSP)の専門家として機能するAIアシスタント用プロンプトです。サーブレットとの連携、JSTL活用、MVCアーキテクチャなどを支援します。
+- [React開発支援AIエージェント](https://fcircle-biz.github.io/tech_docs/prompt/react-ai-agent-prompt.html) - React専門のエキスパートとして機能するAIアシスタント用プロンプトです。コンポーネント設計、状態管理、パフォーマンス最適化などReactエコシステム全般をサポートします。
+- [Spring Boot AI開発アシスタント](https://fcircle-biz.github.io/tech_docs/prompt/spring-boot-assistant-prompt.html) - Spring Bootアプリケーション開発の専門家として機能するAIアシスタント用プロンプトです。Spring Framework全般、RESTful API設計、データベース統合などを支援します。
+- [Streamlitアプリ開発支援AIエージェント](https://fcircle-biz.github.io/tech_docs/prompt/streamlit-ai-agent-prompt.html) - PythonベースのデータアプリケーションフレームワークであるStreamlitの専門家として機能するAIアシスタント用プロンプトです。データ可視化、機械学習アプリ開発などをサポートします。
