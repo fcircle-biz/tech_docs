@@ -2,12 +2,36 @@
 
 このリポジトリには、ソフトウェア開発およびIT関連トピックに関する様々な技術チートシートやガイドをHTML形式で提供しています。
 
+<style>
+  table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+  }
+  table td:first-child {
+    width: 40%;
+  }
+  table td:last-child {
+    width: 60%;
+  }
+  table td {
+    vertical-align: top;
+    padding: 8px;
+    border: 1px solid #ddd;
+  }
+  table th {
+    background-color: #f2f2f2;
+    padding: 8px;
+    border: 1px solid #ddd;
+  }
+</style>
+
 ## 利用可能なドキュメント
 
 ### IT資格
 
 | 名前 | 説明 |
-|------|------|
+|:-----|:-----|
 | [ITパスポート試験カリキュラム詳細ガイド](https://fcircle-biz.github.io/tech_docs/1_it-pass-.html) | ITパスポート試験のカリキュラムを包括的に解説するガイドです。ストラテジ系、マネジメント系、テクノロジ系の各分野の詳細なトピック解説と学習のコツを提供しています。 |
 
 ### 開発ツール
