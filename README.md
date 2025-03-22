@@ -11,7 +11,8 @@
 - [フローチャートのチートシート](https://fcircle-biz.github.io/tech_docs/2_flowchart-cheatsheet.html) - フローチャート作成の完全ガイドです。基本記号、フローチャートの種類、作成のコツ、おすすめツールなどを解説しています。
 
 ### プログラミング言語
-- [Java初心者向けのチートシート](https://fcircle-biz.github.io/tech_docs/3_java-cheatsheet.html) - Java入門者向けガイドです。基本構文、データ型、演算子、制御構文、配列、クラス、例外処理、開発のヒントなどをカバーしています。
+- [Java初心者向けのチートシート](https://fcircle-biz.github.io/tech_docs/3_java-cheatsheet.html) - Java入門者向けガイドです。基本構文、データ型、演算子、制御構文、配列、クラス、例外処理、開発のヒントなどをカバーしています。特徴的なカード型レイアウトで、基本から応用までJava開発に必要な情報を凝縮しています。オブジェクト指向や重要な構文要素をわかりやすく解説し、コードサンプル付きで学習をサポートします。
+- [JavaScript初心者向けチートシート](https://fcircle-biz.github.io/tech_docs/9_js-cheatsheet.html) - JavaScriptの基礎をわかりやすく解説したチートシート。基本構文、データ型、演算子、条件分岐、ループ、関数、DOM操作、イベント処理などをカバーしています。
 
 ### データベース技術
 - [SQL初心者向けチートシート](https://fcircle-biz.github.io/tech_docs/4_sql-cheatsheet.html) - SQL初心者向けリファレンスガイドです。基本構文、WHERE句、JOIN句、集計関数、データ操作、テーブル操作などを解説しています。
