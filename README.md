@@ -26,18 +26,23 @@
 
 以下は、各プログラミング言語やフレームワーク向けのAIアシスタント用プロンプトです。これらのプロンプトを使用して、専門的な知識を持つAIアシスタントとして機能させることができます。
 
+### Java/JVM言語とフレームワーク
 - [Javaコーディング支援AIエージェントプロンプト](https://fcircle-biz.github.io/tech_docs/prompt/java-ai-assistant-prompt.html) - Java言語とエコシステムの専門家として、コーディング支援、デザインパターン実装、Spring Frameworkの活用など、様々なJava開発タスクをサポートします。
-  
 - [JDBCプログラム支援AIエージェントプロンプト](https://fcircle-biz.github.io/tech_docs/prompt/jdbc-agent-prompt.html) - JDBCを使用したデータベース接続、SQL操作、結果セット処理、パフォーマンス最適化など、Java Database Connectivityに関する専門的な支援を提供します。
-
 - [JSP開発支援AIエージェントプロンプト](https://fcircle-biz.github.io/tech_docs/prompt/jsp-ai-agent-prompt.html) - JavaServer Pages（JSP）の専門家として、JSPの構文、サーブレット連携、MVCアーキテクチャ設計、セキュリティ対策などをサポートします。
-
-- [SASコーディング支援AIエージェントプロンプト](https://fcircle-biz.github.io/tech_docs/prompt/sas-ai-agent-prompt.html) - SAS言語に精通した専門家として、統計分析、データマイニング、SASマクロ言語の活用、コードの最適化などをサポートします。
-
 - [Spring Boot AI開発アシスタントプロンプト](https://fcircle-biz.github.io/tech_docs/prompt/spring-boot-assistant-prompt.html) - Spring Bootアプリケーション開発の専門家として、アーキテクチャ設計、RESTful API実装、データベース統合、セキュリティ対策などを支援します。
 
-- [SQLコーディング支援AIエージェントプロンプト](https://fcircle-biz.github.io/tech_docs/prompt/sql-assistant-prompt.html) - SQL言語のエキスパートとして、クエリの最適化、データベース設計、複雑なジョインやサブクエリの実装などをサポートします。
+### フロントエンド開発
+- [JavaScript AIアシスタントプロンプト](https://fcircle-biz.github.io/tech_docs/prompt/js-assistant-prompt.html) - JavaScriptのエキスパートとして、モダンなES6+機能、非同期プログラミング、フレームワーク（React、Vue、Angular）の活用、パフォーマンス最適化、セキュリティ実装などを支援します。
+- [React開発支援AIエージェントプロンプト](https://fcircle-biz.github.io/tech_docs/prompt/react-ai-agent-prompt.html) - React専門のエキスパートとして、コンポーネント設計、状態管理、パフォーマンス最適化、アクセシビリティ対応などの支援を提供します。
 
+### データ処理/分析
+- [SASコーディング支援AIエージェントプロンプト](https://fcircle-biz.github.io/tech_docs/prompt/sas-ai-agent-prompt.html) - SAS言語に精通した専門家として、統計分析、データマイニング、SASマクロ言語の活用、コードの最適化などをサポートします。
+- [SQLコーディング支援AIエージェントプロンプト](https://fcircle-biz.github.io/tech_docs/prompt/sql-assistant-prompt.html) - SQL言語のエキスパートとして、クエリの最適化、データベース設計、複雑なジョインやサブクエリの実装などをサポートします。
+- [Streamlitアプリ開発支援AIエージェントプロンプト](https://fcircle-biz.github.io/tech_docs/prompt/streamlit-ai-agent-prompt.html) - Streamlitを使用したデータ分析、可視化、機械学習アプリケーションの開発を支援します。
+
+### その他のプログラミング言語
+- [PHPコーディング支援AIエージェントプロンプト](https://fcircle-biz.github.io/tech_docs/prompt/php-coding-assistant-prompt.html) - PHPプログラミングの専門家として、コード開発、フレームワーク（Laravel、Symfony等）の活用、セキュリティ対策などを支援します。
 - [VBA支援AIエージェント用プロンプト](https://fcircle-biz.github.io/tech_docs/prompt/vba-assistant-prompt.html) - Visual Basic for Applications（VBA）の専門家として、マイクロソフトOfficeアプリケーション向けのVBAプログラミング、コード最適化、デバッグ支援などを提供します。
 
 ## 使用方法
