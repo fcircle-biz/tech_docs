@@ -9,6 +9,10 @@
 ### IT資格
 - [ITパスポート試験カリキュラム詳細ガイド](https://fcircle-biz.github.io/tech_docs/cheatsheet1/it-pass-.html) - ITパスポート試験のカリキュラムを包括的に解説するガイドです。ストラテジ系、マネジメント系、テクノロジ系の各分野の詳細なトピック解説と学習のコツを提供しています。
 
+### 開発モデル
+- [アジャイル開発モデルチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/agile-infographic.html) - アジャイル開発の基本概念、特徴、主要フレームワーク（スクラム、カンバン、XP）、実践ツール、導入の失敗パターンと成功のポイント、スケーリングフレームワークなどを解説しています。
+- [ウォーターフォール開発モデルチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/graphic-recording-infographic.html) - ウォーターフォールモデルの概念、各フェーズ（要件定義、設計、実装、テスト、導入、保守）の詳細、アジャイルとの比較、推奨ツールなどを包括的に解説しています。
+
 ### 開発ツール
 - [フローチャートのチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/flowchart-cheatsheet.html) - フローチャート作成の完全ガイドです。基本記号、フローチャートの種類、作成のコツ、おすすめツールなどを解説しています。
 
