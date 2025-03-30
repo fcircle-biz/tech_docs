@@ -29,6 +29,15 @@
 - [JSP入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/jsp-cheatsheet.html) - JavaServer Pages（JSP）のガイドです。コア概念、スクリプティング要素、ディレクティブ、暗黙オブジェクト、アクション、式言語（EL）、JSTLとベストプラクティスを解説しています。
 - [SpringBoot重要コンポーネントチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/springboot-cheatsheet.html) - Spring Bootコンポーネントのリファレンスです。Spring Core、Spring MVC、Spring Data JDBC、Thymeleaf連携、バリデーション、Gradle設定などを解説しています。
 
+### OS・ツール
+- [Windows入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet_tools/windows-cheatsheet.html) - Windowsの基本インターフェース、キーボードショートカット、ファイル管理、設定方法、トラブルシューティング、セキュリティ対策などを初心者向けに解説しています。
+- [Slack入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet_tools/slack-infographic.html) - Slackの基本機能、メッセージの送信方法、検索と履歴の活用、ショートカットキー、活用テクニックなど、ビジネスコミュニケーションを効率化するポイントを解説しています。
+- [Zoom入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet_tools/zoom-cheatsheet.html) - Zoomの基本操作、会議参加方法、画面共有、ホスト機能、便利な機能、トラブルシューティング、ミーティングマナーなどをわかりやすく解説しています。
+- [Notion入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet_tools/notion-cheatsheet.html) - Notionの基本操作、ブロックの種類、データベース活用法、共同作業機能、テンプレート活用など、生産性向上のためのテクニックを解説しています。
+- [VSCode入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet_tools/vscode-cheatsheet.html) - VSCodeの概要、インターフェース、必須ショートカット、おすすめ拡張機能、初期設定のカスタマイズ、Git連携機能など、開発効率を高めるテクニックを解説しています。
+- [A5SQL入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet_tools/a5sql-cheatsheet.html) - A5SQLの基本操作、画面構成、基本SQL構文、テーブル結合、便利な関数、SQL実行計画の確認方法などを解説したチートシートです。
+- [Eclipse入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet_tools/eclipse-cheatsheet.html) - Eclipseの基本操作、インターフェース、コーディング支援機能、デバッグ機能、便利なショートカットキー、プラグイン拡張など開発効率を高める機能を解説しています。
+
 ---
 
 ## サブカリキュラム
