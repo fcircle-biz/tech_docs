@@ -12,7 +12,13 @@
 ### 開発モデル・設計手法
 - [アジャイル開発モデルチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/agile-infographic.html) - アジャイル開発の基本概念、特徴、主要フレームワーク（スクラム、カンバン、XP）、実践ツール、導入の失敗パターンと成功のポイント、スケーリングフレームワークなどを解説しています。
 - [ウォーターフォール開発モデルチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/graphic-recording-infographic.html) - ウォーターフォールモデルの概念、各フェーズ（要件定義、設計、実装、テスト、導入、保守）の詳細、アジャイルとの比較、推奨ツールなどを包括的に解説しています。
+- [要件定義入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet_design/graphic-recording-infographic_1.html) - 要件定義の基本概念、要件収集の技法、要件文書の作成方法、よくある失敗パターンと対策、実践的なツールと技法など、要件定義プロセスを最適化するためのガイドを提供しています。
+- [基本設計（外部設計）入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet_design/graphic-recording-infographic_2.html) - 基本設計の目的、構成要素、画面設計のポイント、テーブル設計のコツ、処理フロー設計、レビューのチェックポイントなど、基本設計の実践的なガイドを提供しています。
+- [詳細設計（内部設計）入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet_design/detailed-design-infographic_3.html) - 詳細設計の位置づけ、主な構成要素、表現手法、品質基準、実装者とのコミュニケーション、よくある問題と対策、ベストプラクティスなどを解説しています。
+- [プログラム設計入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet_design/graphic-recording-infographic_4.html) - プログラム設計の基本原則、設計パターン、設計ドキュメント、よくある設計の問題点、ベストプラクティス、設計ツールなど、保守性と拡張性の高いプログラム設計のガイドを提供しています。
+- [ソフトウェアテスト入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet_design/software-testing-infographic_5.html) - テストの基本概念、テスト技法、テストレベル、テストドキュメント、バグ管理、テスト自動化など、ソフトウェアテストの基礎知識を包括的に解説しています。
 - [フローチャートのチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/flowchart-cheatsheet.html) - フローチャート作成の完全ガイドです。基本記号、フローチャートの種類、作成のコツ、おすすめツールなどを解説しています。
+- [UML入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet_design/uml-graphic-recording.html) - UMLの基礎知識、図の種類、主要な表記法、関連性と関係、実践的活用法など、効率的なモデリングのための必須要素を解説しています。
 
 ### プログラミング言語
 - [Java入門向けのチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/java-cheatsheet.html) - Java入門者向けガイドです。基本構文、データ型、演算子、制御構文、配列、クラス、例外処理、開発のヒントなどをカバーしています。特徴的なカード型レイアウトで、基本から応用までJava開発に必要な情報を凝縮しています。
