@@ -10,8 +10,8 @@
 - [ITパスポート試験カリキュラム詳細ガイド](https://fcircle-biz.github.io/tech_docs/cheatsheet1/it-pass-.html) - ITパスポート試験のカリキュラムを包括的に解説するガイドです。ストラテジ系、マネジメント系、テクノロジ系の各分野の詳細なトピック解説と学習のコツを提供しています。
 
 ### 開発モデル・設計手法
-- [アジャイル開発モデルチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/agile-infographic.html) - アジャイル開発の基本概念、特徴、主要フレームワーク（スクラム、カンバン、XP）、実践ツール、導入の失敗パターンと成功のポイント、スケーリングフレームワークなどを解説しています。
-- [ウォーターフォール開発モデルチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/graphic-recording-infographic.html) - ウォーターフォールモデルの概念、各フェーズ（要件定義、設計、実装、テスト、導入、保守）の詳細、アジャイルとの比較、推奨ツールなどを包括的に解説しています。
+- [アジャイル開発モデルチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet_design/agile-infographic.html) - アジャイル開発の基本概念、特徴、主要フレームワーク（スクラム、カンバン、XP）、実践ツール、導入の失敗パターンと成功のポイント、スケーリングフレームワークなどを解説しています。
+- [ウォーターフォール開発モデルチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet_design/graphic-recording-infographic.html) - ウォーターフォールモデルの概念、各フェーズ（要件定義、設計、実装、テスト、導入、保守）の詳細、アジャイルとの比較、推奨ツールなどを包括的に解説しています。
 - [要件定義入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet_design/graphic-recording-infographic_1.html) - 要件定義の基本概念、要件収集の技法、要件文書の作成方法、よくある失敗パターンと対策、実践的なツールと技法など、要件定義プロセスを最適化するためのガイドを提供しています。
 - [基本設計（外部設計）入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet_design/graphic-recording-infographic_2.html) - 基本設計の目的、構成要素、画面設計のポイント、テーブル設計のコツ、処理フロー設計、レビューのチェックポイントなど、基本設計の実践的なガイドを提供しています。
 - [詳細設計（内部設計）入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet_design/detailed-design-infographic_3.html) - 詳細設計の位置づけ、主な構成要素、表現手法、品質基準、実装者とのコミュニケーション、よくある問題と対策、ベストプラクティスなどを解説しています。
