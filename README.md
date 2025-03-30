@@ -52,6 +52,15 @@
 ### フレームワークとライブラリ
 - [MyBatis入門向けのチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet2/mybatis-infographic.html) - Java向けのO/RマッピングフレームワークであるMyBatisの基本を解説したチートシートです。設定、マッピングファイル、動的SQL、アノテーション、基本的なCRUD操作などをカバーしています。
 
+### AI・機械学習
+- [生成AI初心者向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet3/ai-cheatsheet-infographic.html) - 生成AIの基礎知識、代表的なツール、プロンプト入力のコツなどをわかりやすく解説したチートシートです。初心者がAIツールを活用するための実践的なガイドを提供しています。
+- [AIエージェント入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet3/ai-agent-graphic-recording.html) - AIエージェントの基本概念、主要コンポーネント、動作サイクル、種類、応用分野などを視覚的に解説したチートシートです。
+- [ディープラーニング初心者向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet3/deep-learning-infographic.html) - ディープラーニングの基本概念、ニューラルネットワークの構造、活性化関数、学習プロセス、主要アーキテクチャなどを解説したチートシートです。
+- [LLM入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet3/llm-cheatsheet.html) - 大規模言語モデル（LLM）の基本、主要モデル、プロンプトエンジニアリング、応用例、注意点などを解説したチートシートです。
+- [機械学習初心者向けのチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet3/ml-beginner-infographic.html) - 機械学習の基礎知識、データ前処理、主要アルゴリズム、モデル評価、実践ツール、プロジェクトの進め方などを網羅的に解説したチートシートです。
+- [RAG入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet3/rag-infographic.html) - Retrieval-Augmented Generation（RAG）技術の基本概念、仕組み、コンポーネント、実装のベストプラクティス、応用例を解説したチートシートです。
+- [統計学入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet3/stats-infographic.html) - 統計学の基礎、記述統計、確率の基礎、確率分布、統計的推測、相関と回帰などの重要概念を視覚的に解説したチートシートです。
+
 ---
 
 ## 学習ガイドライン
