@@ -31,7 +31,7 @@
 ### Web開発
 - [HTML/CSS入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/html-css-cheatsheet.html) - HTMLとCSSの基本を包括的に解説するリファレンスです。基本的なタグ、CSSプロパティ、レイアウト技術、レスポンシブデザインなどをカバーしています。
 - [JSP入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/jsp-cheatsheet.html) - JavaServer Pages（JSP）のガイドです。コア概念、スクリプティング要素、ディレクティブ、暗黙オブジェクト、アクション、式言語（EL）、JSTLとベストプラクティスを解説しています。
-- [SpringBoot重要コンポーネントチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/springboot-cheatsheet.html) - Spring Bootコンポーネントのリファレンスです。Spring Core、Spring MVC、Spring Data JDBC、Thymeleaf連携、バリデーション、Gradle設定などを解説しています。
+- [SpringBoot入門チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/springboot-cheatsheet.html) - Spring Bootコンポーネントのリファレンスです。Spring Core、Spring MVC、Spring Data JDBC、Thymeleaf連携、バリデーション、Gradle設定などを解説しています。
 
 ### OS・ツール
 - [Windows入門向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet_tools/windows-cheatsheet.html) - Windowsの基本インターフェース、キーボードショートカット、ファイル管理、設定方法、トラブルシューティング、セキュリティ対策などを初心者向けに解説しています。
