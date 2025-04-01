@@ -42,6 +42,7 @@
 - [VSCode](https://fcircle-biz.github.io/tech_docs/cheatsheet_tools/vscode-cheatsheet.html) - VSCodeの概要、インターフェース、必須ショートカット、おすすめ拡張機能、初期設定のカスタマイズ、Git連携機能など、開発効率を高めるテクニックを解説しています。
 - [A5SQL](https://fcircle-biz.github.io/tech_docs/cheatsheet_tools/a5sql-cheatsheet.html) - A5SQLの基本操作、画面構成、基本SQL構文、テーブル結合、便利な関数、SQL実行計画の確認方法などを解説したチートシートです。
 - [Eclipse](https://fcircle-biz.github.io/tech_docs/cheatsheet_tools/eclipse-cheatsheet.html) - Eclipseの基本操作、インターフェース、コーディング支援機能、デバッグ機能、便利なショートカットキー、プラグイン拡張など開発効率を高める機能を解説しています。
+- [Excel](https://fcircle-biz.github.io/tech_docs/cheatsheet_tools/excel-cheatsheet.html) - Excelの基本操作、ショートカットキー、必須関数一覧、データビジュアル化、検索とフィルター、作業効率化テクニック、トラブルシューティング、データ分析機能などを解説しています。
 
 ---
 
