@@ -8,7 +8,7 @@
 
 ### IT資格
 - [ITパスポート試験カリキュラム詳細ガイド](https://fcircle-biz.github.io/tech_docs/cheatsheet1/it-pass-.html) - ITパスポート試験のカリキュラムを包括的に解説するガイドです。ストラテジ系、マネジメント系、テクノロジ系の各分野の詳細なトピック解説と学習のコツを提供しています。
-
+- [ITパスポート試験学習教材](docs/cheatsheet1/itpass/README.md) - 各分野別の詳細な学習コンテンツを提供。コンピュータの基本、データベース、ネットワーク、セキュリティ、システムの導入、システム開発などの主要トピックをカバーしています。
 ### 開発モデル・設計手法
 - [アジャイル開発モデル](https://fcircle-biz.github.io/tech_docs/cheatsheet_design/agile-infographic.html) - アジャイル開発の基本概念、特徴、主要フレームワーク（スクラム、カンバン、XP）、実践ツール、導入の失敗パターンと成功のポイント、スケーリングフレームワークなどを解説しています。
 - [ウォーターフォール開発モデル](https://fcircle-biz.github.io/tech_docs/cheatsheet_design/graphic-recording-infographic.html) - ウォーターフォールモデルの概念、各フェーズ（要件定義、設計、実装、テスト、導入、保守）の詳細、アジャイルとの比較、推奨ツールなどを包括的に解説しています。
