@@ -22,7 +22,7 @@
 
 8. [企業活動](https://fcircle-biz.github.io/tech_docs/cheatsheet1/itpass/it-pass_8.html) - 企業形態、経営組織、業務プロセス、会計・財務、マーケティング、調達・物流など企業活動の基本を解説します。
 
-9. [経営戦略](https://fcircle-biz.github.io/tech_docs/cheatsheet1/itpass/it-pass_9.html) - 経営戦略の基本、SWOT分析、バリューチェーン、競争戦略、ビジネスモデル、マーケティング戦略について学びます。
+9. [ITの活用](https://fcircle-biz.github.io/tech_docs/cheatsheet1/itpass/it-pass_9.html) - ITを活用した業務改善、DX（デジタルトランスフォーメーション）、AI・IoT・ビッグデータの活用事例、ITによる生産性向上手法について学びます。
 
 10. [法務と財務](https://fcircle-biz.github.io/tech_docs/cheatsheet1/itpass/it-pass_10.html) - 知的財産権、契約、個人情報保護法、不正アクセス禁止法などIT関連法規と財務管理の基本を解説します。
 
