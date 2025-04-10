@@ -20,11 +20,11 @@
 
 7. [プロジェクトマネジメント](https://fcircle-biz.github.io/tech_docs/cheatsheet1/itpass/it-pass_7.html) - プロジェクト計画、WBS、ガントチャート、進捗管理、コスト管理、リスク管理などプロジェクトマネジメントの基本を学びます。
 
-8. [サービスマネジメント](https://fcircle-biz.github.io/tech_docs/cheatsheet1/itpass/it-pass_8.html) - SLA、インシデント管理、問題管理、変更管理、構成管理、ITILフレームワークなどサービスマネジメントの基本を解説します。
+8. [企業活動](https://fcircle-biz.github.io/tech_docs/cheatsheet1/itpass/it-pass_8.html) - 企業形態、経営組織、業務プロセス、会計・財務、マーケティング、調達・物流など企業活動の基本を解説します。
 
 9. [経営戦略](https://fcircle-biz.github.io/tech_docs/cheatsheet1/itpass/it-pass_9.html) - 経営戦略の基本、SWOT分析、バリューチェーン、競争戦略、ビジネスモデル、マーケティング戦略について学びます。
 
-10. [企業活動と法務](https://fcircle-biz.github.io/tech_docs/cheatsheet1/itpass/it-pass_10.html) - 企業形態、知的財産権、契約、個人情報保護法、不正アクセス禁止法などIT関連法規を解説します。
+10. [法務と財務](https://fcircle-biz.github.io/tech_docs/cheatsheet1/itpass/it-pass_10.html) - 知的財産権、契約、個人情報保護法、不正アクセス禁止法などIT関連法規と財務管理の基本を解説します。
 
 ## 使い方
 
