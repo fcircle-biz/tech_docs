@@ -94,8 +94,7 @@ Java言語を段階的に学習するためのガイドラインです。入門�
 ## AIアシスタント用プロンプト集
 
 ### プレゼンテーション・ドキュメント作成
-- [企業技術戦略スライド生成プロンプト](https://fcircle-biz.github.io/tech_docs/prompt/doc/consultant-prompt-fixed.html) - トップコンサルティングファームレベルの企業技術戦略分析スライドを生成するためのAIプロンプトです。企業概要、技術開発の重点分野、研究開発体制、技術的成果、今後の開発戦略などを1枚のスライドに凝縮します。
-- [決算書要約スライド生成プロンプト](https://fcircle-biz.github.io/tech_docs/prompt/doc/financial-report-prompt.html) - 企業の決算書データを分析し、業績ハイライト、財務状況、セグメント分析、収益性分析などを含む高品質な決算概要スライドを生成するためのAIプロンプトです。経営幹部向けの財務分析を簡潔に視覚化します。トップコンサルティングファームレベルの財務分析と視覚的表現で、C-levelエグゼクティブへのプレゼンテーションに適した品質を実現します。
+- [資料生成AIアシスタント](docs/prompt/doc/README.md) - 様々なAIプロンプトテンプレートを提供するコレクションです。ビジネスやプレゼンテーションの質を向上させるための高品質なプロンプトテンプレートを利用できます。
 
 ### プログラミング言語サポート
 - [Javaコーディング支援AIエージェント](https://fcircle-biz.github.io/tech_docs/prompt/java-ai-assistant-prompt.html) - Java言語とそのエコシステムに精通したAIアシスタント用プロンプトです。Java SE/EE、Spring Framework、ビルドツール、テスト手法などの専門知識を持ち、効率的なJavaコード開発を支援します。
@@ -108,9 +107,3 @@ Java言語を段階的に学習するためのガイドラインです。入門�
 - [SQLコーディング支援AIエージェント](https://fcircle-biz.github.io/tech_docs/prompt/sql-assistant-prompt.html) - SQLに特化したエキスパートとして機能するAIアシスタント用プロンプトです。効率的なクエリ設計、パフォーマンス最適化、データベーススキーマ設計などをサポートします。
 - [SASコーディング支援AIエージェント](https://fcircle-biz.github.io/tech_docs/prompt/sas-ai-agent-prompt.html) - SAS(Statistical Analysis System)プログラミングの専門家として機能するAIアシスタント用プロンプトです。データ処理、統計分析、SASマクロ言語など幅広く支援します。
 - [SASデータエンジニアリング支援プロンプト](https://fcircle-biz.github.io/tech_docs/prompt/sas-data-engineering-prompt.html) - SASを使用したデータエンジニアリングに特化したAIアシスタント用プロンプトです。データ統合、変換、品質管理、ビッグデータ処理などの業務を支援します。
-
-### Web開発フレームワーク支援
-- [JSP開発支援AIエージェント](https://fcircle-biz.github.io/tech_docs/prompt/jsp-ai-agent-prompt.html) - JavaServer Pages (JSP)の専門家として機能するAIアシスタント用プロンプトです。サーブレットとの連携、JSTL活用、MVCアーキテクチャなどを支援します。
-- [React開発支援AIエージェント](https://fcircle-biz.github.io/tech_docs/prompt/react-ai-agent-prompt.html) - React専門のエキスパートとして機能するAIアシスタント用プロンプトです。コンポーネント設計、状態管理、パフォーマンス最適化などReactエコシステム全般をサポートします。
-- [Spring Boot AI開発アシスタント](https://fcircle-biz.github.io/tech_docs/prompt/spring-boot-assistant-prompt.html) - Spring Bootアプリケーション開発の専門家として機能するAIアシスタント用プロンプトです。Spring Framework全般、RESTful API設計、データベース統合などを支援します。
-- [Streamlitアプリ開発支援AIエージェント](https://fcircle-biz.github.io/tech_docs/prompt/streamlit-ai-agent-prompt.html) - PythonベースのデータアプリケーションフレームワークであるStreamlitの専門家として機能するAIアシスタント用プロンプトです。データ可視化、機械学習アプリ開発などをサポートします。
