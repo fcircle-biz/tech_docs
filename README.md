@@ -96,6 +96,9 @@ Java言語を段階的に学習するためのガイドラインです。入門�
 ### プレゼンテーション・ドキュメント作成
 - [資料生成AIアシスタント](docs/prompt/doc/README.md) - 様々なAIプロンプトテンプレートを提供するコレクションです。ビジネスやプレゼンテーションの質を向上させるための高品質なプロンプトテンプレートを利用できます。
 
+### デザイン・図表作成支援
+- [デザイン向けプロンプト集](https://fcircle-biz.github.io/tech_docs/prompt/design/README.md) - 図表作成やビジュアルデザインの質を向上させるための高品質なプロンプトテンプレートを提供するコレクションです。Draw.io作図AIアシスタントなど、プロフェッショナル品質のデザインを効率的に作成するためのツールを収録しています。
+
 ### プログラミング言語サポート
 - [Javaコーディング支援AIエージェント](https://fcircle-biz.github.io/tech_docs/prompt/java-ai-assistant-prompt.html) - Java言語とそのエコシステムに精通したAIアシスタント用プロンプトです。Java SE/EE、Spring Framework、ビルドツール、テスト手法などの専門知識を持ち、効率的なJavaコード開発を支援します。
 - [JavaScript AIアシスタント](https://fcircle-biz.github.io/tech_docs/prompt/js-assistant-prompt.html) - JavaScript開発のエキスパートとして機能するAIアシスタント用プロンプトです。モダンなJavaScript、非同期プログラミング、フレームワーク連携など幅広い支援を提供します。
