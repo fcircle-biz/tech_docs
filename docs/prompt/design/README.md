@@ -6,7 +6,7 @@
 
 ### デザイン・図表作成プロンプト
 
-- [Draw.io作図AIアシスタント](https://fcircle-biz.github.io/tech_docs/prompt/doc/drawio-assistant-html.html) - AIに指示するだけでdraw.io（diagrams.net）用の図表を自動生成するためのプロンプトです。フローチャート、ER図、UML図、ネットワーク図、マインドマップなど様々な種類の図表を作成できます。AIが完全に機能するdrawioファイルのXMLコードを生成するため、簡単に編集可能な高品質な図表を短時間で作成できます。
+- [Draw.io作図AIアシスタント](https://fcircle-biz.github.io/tech_docs/prompt/design/drawio-assistant-html.html) - AIに指示するだけでdraw.io（diagrams.net）用の図表を自動生成するためのプロンプトです。フローチャート、ER図、UML図、ネットワーク図、マインドマップなど様々な種類の図表を作成できます。AIが完全に機能するdrawioファイルのXMLコードを生成するため、簡単に編集可能な高品質な図表を短時間で作成できます。
 
 ## 使用方法
 
