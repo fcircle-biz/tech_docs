@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JDBC初心者向け学習教材 - JDBCの基礎</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+        .navbar {
+            background-color: #1565c0;
+        }
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+        .chapter-title {
+            color: #1565c0;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #1565c0;
+            padding-bottom: 0.5rem;
+        }
+        .section-title {
+            color: #1976d2;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+        code {
+            display: block;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .quiz-container {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        .quiz-question {
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        .diagram {
+            max-width: 100%;
+            height: auto;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        .exercise {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        .note {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        #table-of-contents .list-group-item {
+            border: none;
+            padding: 0.5rem 1rem;
+        }
+        #table-of-contents .list-group-item-action {
+            color: #1976d2;
+        }
+        /* 選択された目次項目のスタイル */
+        #table-of-contents .list-group-item-action.active,
+        .list-group-item.active {
+            color: white !important; /* テキストを白色にして青い背景に対してコントラストをつける */
+            background-color: #1976d2;
+            border-color: #1976d2;
+        }
+        .section-nav {
+            padding-left: 1rem;
+        }
+        .inline-code {
+            background-color: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            display: inline;
+        }
+        footer {
+            background-color: #1565c0;
+            color: white;
+            padding: 1rem 0;
+            margin-top: 3rem;
+        }
+        .table-example {
+            width: 100%;
+            margin-bottom: 1rem;
+            border-collapse: collapse;
+        }
+        .table-example th {
+            background-color: #e3f2fd;
+            border: 1px solid #b3e5fc;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .table-example td {
+            border: 1px solid #b3e5fc;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .example-result {
+            background-color: #f1f8e9;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .warning {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+    </style>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#tableOfContents">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">JDBC初心者向け学習教材</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#introduction">はじめに</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#chapter1">第1章: JDBCの基礎</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <div class="row">
+            <!-- Sidebar - Table of Contents -->
+            <div class="col-lg-3">
+                <div class="sidebar">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">目次</h5>
+                        </div>
+                        <div id="table-of-contents" class="list-group list-group-flush">
+                            <a href="#introduction" class="list-group-item list-group-item-action">はじめに</a>
+                            <a href="#chapter1" class="list-group-item list-group-item-action">第1章: JDBCの基礎</a>
+                            <div class="section-nav">
+                                <a href="#what-is-jdbc" class="list-group-item list-group-item-action">1.1 JDBCとは何か、その役割と重要性</a>
+                                <a href="#jdbc-architecture" class="list-group-item list-group-item-action">1.2 JDBCアーキテクチャの概要</a>
+                                <a href="#jdbc-drivers" class="list-group-item list-group-item-action">1.3 JDBCドライバーの種類と特徴</a>
+                                <a href="#environment-setup" class="list-group-item list-group-item-action">1.4 開発環境のセットアップ（実習）</a>
+                                <a href="#chapter1-quiz" class="list-group-item list-group-item-action">1.5 理解度確認テスト</a>
+                            </div>
+                            <a href="#next-steps" class="list-group-item list-group-item-action">次のステップ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <section id="introduction">
+                    <h1 class="display-5 mb-4">JDBC初心者向け学習教材</h1>
+                    <p class="lead">この第1章では、Java Database Connectivity (JDBC)の基礎を学習します。JDBCとは何か、その役割、アーキテクチャ、ドライバの種類などを理解し、実際の開発環境のセットアップも行います。</p>
+
+                    <div class="note">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>JDBCの基本概念と役割</li>
+                            <li>JDBCアーキテクチャの仕組み</li>
+                            <li>JDBCドライバーの種類と特徴</li>
+                            <li>PostgreSQLを使ったJDBC開発環境のセットアップ方法</li>
+                            <li>基本的なJDBCプログラムの作成と実行</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="chapter1">
+                    <h2 class="chapter-title">第1章：JDBCの基礎</h2>
+                    <p>データベースはあらゆる現代的なアプリケーションの中心的な役割を果たしています。JavaプログラムからデータベースにアクセスするためのAPIとして、JDBCは非常に重要な位置を占めています。この章では、JDBCの基本的な概念と使い方について学んでいきます。</p>
+
+                    <section id="what-is-jdbc">
+                        <h3 class="section-title">1.1 JDBCとは何か、その役割と重要性</h3>
+                        <p>JDBC（Java Database Connectivity）は、JavaプログラムからリレーショナルデータベースにアクセスするためのJava API（Application Programming Interface）です。JDBCを使用することで、開発者はJavaアプリケーションから様々なデータベース管理システム（DBMS）に接続し、SQLクエリを実行してデータの操作を行うことができます。</p>
+
+                        <h4>JDBCの役割</h4>
+                        <p>JDBCの主な役割は以下のとおりです：</p>
+                        <ul>
+                            <li><strong>データベース接続の確立</strong>：様々なDBMSへの接続を統一的なインターフェースで提供</li>
+                            <li><strong>SQLステートメントの実行</strong>：データの取得（SELECT）や更新（INSERT、UPDATE、DELETE）などのSQL操作を実行</li>
+                            <li><strong>結果セットの処理</strong>：クエリ結果をJavaプログラムで扱いやすい形式で取得・操作</li>
+                            <li><strong>トランザクション管理</strong>：複数のSQL操作をまとめて実行し、全体の一貫性を保証</li>
+                            <li><strong>例外処理</strong>：データベース操作中に発生する様々なエラーを適切に処理</li>
+                        </ul>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200" width="600" height="200">
+                                <rect x="50" y="20" width="150" height="80" fill="#bbdefb" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="125" y="65" text-anchor="middle" font-size="16">Javaアプリケーション</text>
+                                
+                                <rect x="225" y="20" width="150" height="80" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5" />
+                                <text x="300" y="65" text-anchor="middle" font-size="16">JDBC API</text>
+                                
+                                <rect x="400" y="20" width="150" height="80" fill="#ffecb3" stroke="#ffa000" stroke-width="2" rx="5" />
+                                <text x="475" y="65" text-anchor="middle" font-size="16">データベース</text>
+                                
+                                <line x1="200" y1="60" x2="225" y2="60" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="375" y1="60" x2="400" y2="60" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                
+                                <defs>
+                                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                        <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+                                    </marker>
+                                </defs>
+                                
+                                <text x="125" y="130" text-anchor="middle" font-size="14">アプリケーションロジック</text>
+                                <text x="300" y="130" text-anchor="middle" font-size="14">データアクセス層</text>
+                                <text x="475" y="130" text-anchor="middle" font-size="14">データストレージ</text>
+                                
+                                <text x="212" y="40" text-anchor="middle" font-size="12">リクエスト</text>
+                                <text x="212" y="80" text-anchor="middle" font-size="12">Java Objects</text>
+                                
+                                <text x="387" y="40" text-anchor="middle" font-size="12">SQLクエリ</text>
+                                <text x="387" y="80" text-anchor="middle" font-size="12">結果セット</text>
+                            </svg>
+                            <p class="text-center">図1.1: JDBCの基本的な役割</p>
+                        </div>
+
+                        <h4>JDBCの重要性</h4>
+                        <p>JDBCが重要である理由はいくつかあります：</p>
+                        <ul>
+                            <li><strong>データベース独立性</strong>：JDBCを使うことで、アプリケーションコードを変更せずに異なるデータベースシステムを利用できる</li>
+                            <li><strong>標準化されたAPI</strong>：統一された方法でデータベース操作を行うことができる</li>
+                            <li><strong>豊富な機能</strong>：基本的なCRUD操作から高度なデータ型、ストアドプロシージャの実行まで幅広く対応</li>
+                            <li><strong>エンタープライズアプリケーションの基盤</strong>：多くのJava EEアプリケーションやフレームワーク（Spring、Hibernateなど）の基盤技術として利用されている</li>
+                        </ul>
+
+                        <div class="note">
+                            <h5>JDBCとORマッピング</h5>
+                            <p>近年ではHibernateやJPA（Java Persistence API）などのORマッピングフレームワークが広く使われていますが、これらのフレームワークの内部でもJDBCが使用されています。JDBCの基本を理解することは、これらの高レベルなフレームワークを効果的に使用するためにも重要です。</p>
+                        </div>
+                    </section>
+
+                    <section id="jdbc-architecture">
+                        <h3 class="section-title">1.2 JDBCアーキテクチャの概要</h3>
+                        <p>JDBCアーキテクチャは、Javaアプリケーションがデータベースと効率的に通信できるように設計されています。このアーキテクチャは主に以下の要素から構成されています。</p>
+
+                        <h4>JDBCアーキテクチャの主要コンポーネント</h4>
+                        <ol>
+                            <li><strong>JDBCアプリケーション</strong>：Javaで書かれたクライアントアプリケーション</li>
+                            <li><strong>JDBC API</strong>：java.sqlおよびjavax.sqlパッケージで提供されるインターフェースとクラス</li>
+                            <li><strong>JDBCドライバマネージャ</strong>：適切なJDBCドライバを選択して接続を確立</li>
+                            <li><strong>JDBCドライバ</strong>：特定のデータベース製品との通信を担当</li>
+                            <li><strong>データベース</strong>：データを保存・管理するリレーショナルデータベース管理システム</li>
+                        </ol>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 350" width="600" height="350">
+                                <!-- Javaアプリケーション -->
+                                <rect x="50" y="20" width="500" height="60" fill="#bbdefb" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="300" y="55" text-anchor="middle" font-size="16">Javaアプリケーション</text>
+                                
+                                <!-- JDBC API -->
+                                <rect x="50" y="100" width="500" height="60" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5" />
+                                <text x="300" y="135" text-anchor="middle" font-size="16">JDBC API (java.sql, javax.sql)</text>
+                                
+                                <!-- JDBCドライバマネージャ -->
+                                <rect x="50" y="180" width="500" height="60" fill="#ffecb3" stroke="#ffa000" stroke-width="2" rx="5" />
+                                <text x="300" y="215" text-anchor="middle" font-size="16">JDBCドライバマネージャ</text>
+                                
+                                <!-- JDBCドライバ -->
+                                <rect x="50" y="260" width="115" height="60" fill="#ffcdd2" stroke="#d32f2f" stroke-width="2" rx="5" />
+                                <text x="107" y="295" text-anchor="middle" font-size="14">PostgreSQL用ドライバ</text>
+                                
+                                <rect x="178" y="260" width="115" height="60" fill="#ffcdd2" stroke="#d32f2f" stroke-width="2" rx="5" />
+                                <text x="235" y="295" text-anchor="middle" font-size="14">MySQL用ドライバ</text>
+                                
+                                <rect x="306" y="260" width="115" height="60" fill="#ffcdd2" stroke="#d32f2f" stroke-width="2" rx="5" />
+                                <text x="363" y="295" text-anchor="middle" font-size="14">Oracle用ドライバ</text>
+                                
+                                <rect x="434" y="260" width="115" height="60" fill="#ffcdd2" stroke="#d32f2f" stroke-width="2" rx="5" />
+                                <text x="491" y="295" text-anchor="middle" font-size="14">SQL Server用ドライバ</text>
+                                
+                                <!-- 矢印 -->
+                                <line x1="300" y1="80" x2="300" y2="100" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="300" y1="160" x2="300" y2="180" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="107" y1="240" x2="107" y2="260" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="235" y1="240" x2="235" y2="260" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="363" y1="240" x2="363" y2="260" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="491" y1="240" x2="491" y2="260" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                
+                                <defs>
+                                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                        <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+                                    </marker>
+                                </defs>
+                            </svg>
+                            <p class="text-center">図1.2: JDBCアーキテクチャの全体像</p>
+                        </div>
+
+                        <h4>主要なJDBC API要素</h4>
+                        <p>JDBC APIには以下のような重要なインターフェースとクラスが含まれています：</p>
+
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>インターフェース/クラス</th>
+                                    <th>説明</th>
+                                    <th>主な役割</th>
+                                </tr>
+                                <tr>
+                                    <td>DriverManager</td>
+                                    <td>ドライバの管理とデータベース接続の確立</td>
+                                    <td>getConnection()メソッドでデータベース接続を取得</td>
+                                </tr>
+                                <tr>
+                                    <td>Connection</td>
+                                    <td>データベースとの接続を表す</td>
+                                    <td>SQLステートメントの作成、トランザクション管理</td>
+                                </tr>
+                                <tr>
+                                    <td>Statement</td>
+                                    <td>SQLステートメントの実行</td>
+                                    <td>executeQuery()、executeUpdate()などのメソッドでSQL実行</td>
+                                </tr>
+                                <tr>
+                                    <td>PreparedStatement</td>
+                                    <td>パラメータ化されたSQLの実行</td>
+                                    <td>プリコンパイルされたSQLでパフォーマンスとセキュリティ向上</td>
+                                </tr>
+                                <tr>
+                                    <td>CallableStatement</td>
+                                    <td>ストアドプロシージャの呼び出し</td>
+                                    <td>データベースに保存された手続きを実行</td>
+                                </tr>
+                                <tr>
+                                    <td>ResultSet</td>
+                                    <td>クエリ結果の取得と操作</td>
+                                    <td>クエリ結果を行単位で取得・処理するためのメソッド提供</td>
+                                </tr>
+                                <tr>
+                                    <td>SQLException</td>
+                                    <td>データベース操作時の例外処理</td>
+                                    <td>エラーコードとメッセージの取得</td>
+                                </tr>
+                                <tr>
+                                    <td>DataSource</td>
+                                    <td>接続プールを管理</td>
+                                    <td>効率的な接続管理とリソースの最適化</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h4>JDBC APIの主な操作フロー</h4>
+                        <p>一般的なJDBCプログラムの操作フローは以下のようになります：</p>
+                        <ol>
+                            <li>JDBCドライバの登録</li>
+                            <li>データベースへの接続確立</li>
+                            <li>SQLステートメントの作成</li>
+                            <li>SQLステートメントの実行</li>
+                            <li>結果セットの処理（必要な場合）</li>
+                            <li>リソースのクローズ（接続、ステートメント、結果セット）</li>
+                        </ol>
+
+                        <code>// 基本的なJDBC操作フローの例
+import java.sql.*;
+
+public class JdbcExample {
+    public static void main(String[] args) {
+        // データベース接続情報
+        String url = "jdbc:postgresql://localhost:5432/testdb";
+        String user = "postgres";
+        String password = "password";
+        
+        // 各リソースの宣言
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            // 1. JDBCドライバの登録
+            Class.forName("org.postgresql.Driver");
+            
+            // 2. データベース接続の確立
+            conn = DriverManager.getConnection(url, user, password);
+            
+            // 3. SQLステートメントの作成
+            stmt = conn.createStatement();
+            
+            // 4. SQLステートメントの実行
+            rs = stmt.executeQuery("SELECT id, name, email FROM users");
+            
+            // 5. 結果セットの処理
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String email = rs.getString("email");
+                System.out.println(id + ": " + name + " (" + email + ")");
+            }
+        } catch (ClassNotFoundException e) {
+            System.err.println("JDBCドライバが見つかりません: " + e.getMessage());
+        } catch (SQLException e) {
+            System.err.println("データベースエラー: " + e.getMessage());
+        } finally {
+            // 6. リソースのクローズ
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.err.println("クローズ処理でエラー: " + e.getMessage());
+            }
+        }
+    }
+}</code>
+
+                        <div class="note">
+                            <h5>try-with-resourcesを使用したリソース管理</h5>
+                            <p>Java 7以降では、try-with-resourcesステートメントを使用してJDBCリソースを自動的にクローズすることができます：</p>
+                            <code>// try-with-resourcesを使用した例
+try (
+    Connection conn = DriverManager.getConnection(url, user, password);
+    Statement stmt = conn.createStatement();
+    ResultSet rs = stmt.executeQuery("SELECT id, name FROM users")
+) {
+    while (rs.next()) {
+        // 結果セットの処理
+    }
+} catch (SQLException e) {
+    // 例外処理
+}</code>
+                        </div>
+                    </section>
+
+                    <section id="jdbc-drivers">
+                        <h3 class="section-title">1.3 JDBCドライバーの種類と特徴</h3>
+                        <p>JDBCドライバは、JavaアプリケーションとデータベースとのDNA/TDSなどのプロトコル変換を担う重要なコンポーネントです。それぞれのデータベースシステムには専用のJDBCドライバが提供されています。</p>
+
+                        <h4>JDBCドライバの4つのタイプ</h4>
+                        <p>JDBCドライバには伝統的に4つのタイプがあります：</p>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 500" width="600" height="500">
+                                <!-- タイプ1: JDBC-ODBCブリッジドライバ -->
+                                <rect x="50" y="20" width="500" height="100" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2" rx="5" />
+                                <text x="300" y="40" text-anchor="middle" font-size="16" font-weight="bold">タイプ1: JDBC-ODBCブリッジドライバ</text>
+                                
+                                <rect x="70" y="60" width="120" height="40" fill="#bbdefb" stroke="#1976d2" stroke-width="1" rx="3" />
+                                <text x="130" y="85" text-anchor="middle" font-size="14">Javaアプリ</text>
+                                
+                                <rect x="220" y="60" width="120" height="40" fill="#c8e6c9" stroke="#388e3c" stroke-width="1" rx="3" />
+                                <text x="280" y="85" text-anchor="middle" font-size="14">JDBCブリッジ</text>
+                                
+                                <rect x="370" y="60" width="120" height="40" fill="#ffecb3" stroke="#ffa000" stroke-width="1" rx="3" />
+                                <text x="430" y="85" text-anchor="middle" font-size="14">ODBCドライバ</text>
+                                
+                                <line x1="190" y1="80" x2="220" y2="80" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <line x1="340" y1="80" x2="370" y2="80" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" />
+                                
+                                <!-- タイプ2: ネイティブAPIドライバ -->
+                                <rect x="50" y="140" width="500" height="100" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2" rx="5" />
+                                <text x="300" y="160" text-anchor="middle" font-size="16" font-weight="bold">タイプ2: ネイティブAPIドライバ</text>
+                                
+                                <rect x="70" y="180" width="120" height="40" fill="#bbdefb" stroke="#1976d2" stroke-width="1" rx="3" />
+                                <text x="130" y="205" text-anchor="middle" font-size="14">Javaアプリ</text>
+                                
+                                <rect x="220" y="180" width="120" height="40" fill="#c8e6c9" stroke="#388e3c" stroke-width="1" rx="3" />
+                                <text x="280" y="205" text-anchor="middle" font-size="14">JDBCドライバ</text>
+                                
+                                <rect x="370" y="180" width="120" height="40" fill="#ffecb3" stroke="#ffa000" stroke-width="1" rx="3" />
+                                <text x="430" y="205" text-anchor="middle" font-size="14">ネイティブAPI</text>
+                                
+                                <line x1="190" y1="200" x2="220" y2="200" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <line x1="340" y1="200" x2="370" y2="200" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" />
+                                
+                                <!-- タイプ3: ネットワークプロトコルドライバ -->
+                                <rect x="50" y="260" width="500" height="100" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2" rx="5" />
+                                <text x="300" y="280" text-anchor="middle" font-size="16" font-weight="bold">タイプ3: ネットワークプロトコルドライバ</text>
+                                
+                                <rect x="70" y="300" width="120" height="40" fill="#bbdefb" stroke="#1976d2" stroke-width="1" rx="3" />
+                                <text x="130" y="325" text-anchor="middle" font-size="14">Javaアプリ</text>
+                                
+                                <rect x="220" y="300" width="120" height="40" fill="#c8e6c9" stroke="#388e3c" stroke-width="1" rx="3" />
+                                <text x="280" y="325" text-anchor="middle" font-size="14">JDBCドライバ</text>
+                                
+                                <rect x="370" y="300" width="120" height="40" fill="#ffecb3" stroke="#ffa000" stroke-width="1" rx="3" />
+                                <text x="430" y="325" text-anchor="middle" font-size="14">ミドルウェア</text>
+                                
+                                <line x1="190" y1="320" x2="220" y2="320" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <line x1="340" y1="320" x2="370" y2="320" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" />
+                                
+                                <!-- タイプ4: ピュアJavaドライバ -->
+                                <rect x="50" y="380" width="500" height="100" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2" rx="5" />
+                                <text x="300" y="400" text-anchor="middle" font-size="16" font-weight="bold">タイプ4: ピュアJavaドライバ</text>
+                                
+                                <rect x="70" y="420" width="120" height="40" fill="#bbdefb" stroke="#1976d2" stroke-width="1" rx="3" />
+                                <text x="130" y="445" text-anchor="middle" font-size="14">Javaアプリ</text>
+                                
+                                <rect x="220" y="420" width="240" height="40" fill="#c8e6c9" stroke="#388e3c" stroke-width="1" rx="3" />
+                                <text x="340" y="445" text-anchor="middle" font-size="14">JDBCピュアJavaドライバ</text>
+                                
+                                <line x1="190" y1="440" x2="220" y2="440" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <line x1="460" y1="440" x2="490" y2="440" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" />
+                                
+                                <defs>
+                                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                        <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+                                    </marker>
+                                </defs>
+                            </svg>
+                            <p class="text-center">図1.3: JDBCドライバの4つのタイプ</p>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>ドライバタイプ</th>
+                                    <th>説明</th>
+                                    <th>特徴</th>
+                                    <th>用途と制限</th>
+                                </tr>
+                                <tr>
+                                    <td>タイプ1: JDBC-ODBCブリッジ</td>
+                                    <td>JDBCコールをODBCコールに変換する</td>
+                                    <td>
+                                        <ul>
+                                            <li>Javaとネイティブコード間のブリッジ</li>
+                                            <li>ODBCドライバとODBCクライアントが必要</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul>
+                                            <li>単純なテストや接続に使用</li>
+                                            <li>パフォーマンスが低い</li>
+                                            <li>Java 8で非推奨、Java 9で削除</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>タイプ2: ネイティブAPIドライバ</td>
+                                    <td>JavaコードとデータベースのCライブラリを併用</td>
+                                    <td>
+                                        <ul>
+                                            <li>部分的にJavaで実装</li>
+                                            <li>一部はデータベースのネイティブコード使用</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul>
+                                            <li>タイプ1より優れたパフォーマンス</li>
+                                            <li>クライアント側にネイティブライブラリのインストールが必要</li>
+                                            <li>複数プラットフォーム対応が難しい</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>タイプ3: ネットワークプロトコルドライバ</td>
+                                    <td>ミドルウェアサーバーを経由してデータベースと通信</td>
+                                    <td>
+                                        <ul>
+                                            <li>純粋なJavaクライアント</li>
+                                            <li>ミドルウェアサーバーがデータベース接続を管理</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul>
+                                            <li>異なるデータベースにアクセス可能</li>
+                                            <li>クライアント側に特定のソフトウェア不要</li>
+                                            <li>ミドルウェア層の追加によるオーバーヘッド</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>タイプ4: ピュアJavaドライバ</td>
+                                    <td>完全にJavaで実装されたドライバ</td>
+                                    <td>
+                                        <ul>
+                                            <li>データベースプロトコルを直接実装</li>
+                                            <li>ネイティブライブラリや追加ソフトウェア不要</li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul>
+                                            <li>最も高いパフォーマンス</li>
+                                            <li>ポータビリティが高い</li>
+                                            <li>現代的なアプリケーションで最も一般的</li>
+                                            <li>データベースごとに異なるドライバ必要</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="note">
+                            <h5>現代のJDBCドライバ利用</h5>
+                            <p>現在の実務では、ほとんどのケースでタイプ4（ピュアJava）ドライバが使用されています。これは以下の理由からです：</p>
+                            <ul>
+                                <li>高いパフォーマンス</li>
+                                <li>クライアント側にネイティブライブラリのインストールが不要</li>
+                                <li>プラットフォームに依存しない（Java VMが動作する環境ならどこでも動作）</li>
+                                <li>主要なデータベースベンダーがタイプ4ドライバを提供している</li>
+                            </ul>
+                        </div>
+
+                        <h4>主要データベース用JDBCドライバ</h4>
+                        <p>主要なデータベース管理システム用のJDBCドライバ情報は以下のとおりです：</p>
+
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>データベース</th>
+                                    <th>JDBCドライバ名</th>
+                                    <th>JDBCドライバクラス</th>
+                                    <th>接続URL形式</th>
+                                </tr>
+                                <tr>
+                                    <td>PostgreSQL</td>
+                                    <td>PostgreSQL JDBC Driver</td>
+                                    <td>org.postgresql.Driver</td>
+                                    <td>jdbc:postgresql://ホスト:ポート/データベース名</td>
+                                </tr>
+                                <tr>
+                                    <td>MySQL</td>
+                                    <td>MySQL Connector/J</td>
+                                    <td>com.mysql.cj.jdbc.Driver</td>
+                                    <td>jdbc:mysql://ホスト:ポート/データベース名</td>
+                                </tr>
+                                <tr>
+                                    <td>Oracle</td>
+                                    <td>Oracle JDBC Driver</td>
+                                    <td>oracle.jdbc.OracleDriver</td>
+                                    <td>jdbc:oracle:thin:@ホスト:ポート:SID</td>
+                                </tr>
+                                <tr>
+                                    <td>Microsoft SQL Server</td>
+                                    <td>Microsoft JDBC Driver for SQL Server</td>
+                                    <td>com.microsoft.sqlserver.jdbc.SQLServerDriver</td>
+                                    <td>jdbc:sqlserver://ホスト:ポート;databaseName=データベース名</td>
+                                </tr>
+                                <tr>
+                                    <td>SQLite</td>
+                                    <td>SQLite JDBC Driver</td>
+                                    <td>org.sqlite.JDBC</td>
+                                    <td>jdbc:sqlite:データベースファイルパス</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>練習問題 1.3.1: JDBCドライバの特徴</h5>
+                            <p>以下の質問に答えてください：</p>
+                            <ol>
+                                <li>タイプ1ドライバとタイプ4ドライバの主な違いは何ですか？</li>
+                                <li>現代のJavaエンタープライズアプリケーションで最も一般的に使用されるJDBCドライバのタイプはどれですか？その理由も説明してください。</li>
+                                <li>PostgreSQLデータベースに接続するためのJDBC URLの正しい形式を書いてください。localhost上のポート5432で動作する「testdb」という名前のデータベースに接続する例を示してください。</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="environment-setup">
+                        <h3 class="section-title">1.4 開発環境のセットアップ（実習）</h3>
+                        <p>この節では、PostgreSQLとJDBCを使った開発環境のセットアップ方法を学びます。以下の手順に従って、実際に開発環境を構築してみましょう。</p>
+
+                        <h4>必要なもの</h4>
+                        <ul>
+                            <li>Java Development Kit (JDK) 8以上</li>
+                            <li>PostgreSQL 12以上</li>
+                            <li>PostgreSQL JDBC Driver</li>
+                            <li>統合開発環境（IDE）：Eclipse、IntelliJ IDEA、またはVisual Studio Codeなど</li>
+                        </ul>
+
+                        <h4>1. PostgreSQLのインストール</h4>
+                        <p>まずPostgreSQLをインストールします。公式サイトからOSに合ったインストーラをダウンロードしてください。</p>
+
+                        <ol>
+                            <li><a href="https://www.postgresql.org/download/" target="_blank">PostgreSQLダウンロードページ</a>にアクセス</li>
+                            <li>使用しているOSに合ったインストーラを選択してダウンロード</li>
+                            <li>インストーラを実行し、指示に従ってインストール
+                                <ul>
+                                    <li>ポート番号: 5432（デフォルト）</li>
+                                    <li>パスワード: 覚えやすいものを設定</li>
+                                    <li>ロケール: 「C」または「Japanese, Japan」</li>
+                                </ul>
+                            </li>
+                        </ol>
+
+                        <div class="note">
+                            <h5>PostgreSQLのインストール状態確認</h5>
+                            <p>インストール後、以下のコマンドでPostgreSQLが正常に動作していることを確認できます：</p>
+                            <code>// Windowsの場合（コマンドプロンプトで）
+psql -U postgres -c "SELECT version();"
+
+// macOSまたはLinuxの場合（ターミナルで）
+sudo -u postgres psql -c "SELECT version();"</code>
+                            <p>パスワードを求められたら、インストール時に設定したパスワードを入力します。</p>
+                        </div>
+
+                        <h4>2. サンプルデータベースの作成</h4>
+                        <p>JDBCの学習用に簡単なデータベースを作成しましょう。</p>
+
+                        <code>-- PostgreSQLのpsqlコマンドラインで実行
+
+-- データベース作成
+CREATE DATABASE jdbctest;
+
+-- 作成したデータベースに接続
+\c jdbctest
+
+-- usersテーブルの作成
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    age INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- サンプルデータの挿入
+INSERT INTO users (name, email, age) VALUES
+    ('山田太郎', 'yamada@example.com', 30),
+    ('佐藤花子', 'sato@example.com', 25),
+    ('鈴木一郎', 'suzuki@example.com', 42),
+    ('田中実', 'tanaka@example.com', 19);
+
+-- データを確認
+SELECT * FROM users;</code>
+
+                        <h4>3. PostgreSQL JDBC Driverの準備</h4>
+                        <p>PostgreSQL JDBC Driverを入手します。Maven/Gradleを使用している場合は依存関係を追加し、そうでない場合はJARファイルをダウンロードします。</p>
+
+                        <h5>Mavenの場合（pom.xmlに追加）</h5>
+                        <code>&lt;dependency&gt;
+    &lt;groupId&gt;org.postgresql&lt;/groupId&gt;
+    &lt;artifactId&gt;postgresql&lt;/artifactId&gt;
+    &lt;version&gt;42.7.1&lt;/version&gt;
+&lt;/dependency&gt;</code>
+
+                        <h5>Gradleの場合（build.gradleに追加）</h5>
+                        <code>implementation 'org.postgresql:postgresql:42.7.1'</code>
+
+                        <h5>直接JARファイルをダウンロードする場合</h5>
+                        <ol>
+                            <li><a href="https://jdbc.postgresql.org/download.html" target="_blank">PostgreSQL JDBC Driverダウンロードページ</a>にアクセス</li>
+                            <li>最新バージョンのJARファイル（例：postgresql-42.7.1.jar）をダウンロード</li>
+                            <li>ダウンロードしたJARファイルをプロジェクトのクラスパスに追加</li>
+                        </ol>
+
+                        <h4>4. 簡単なJDBCサンプルプロジェクトの作成</h4>
+                        <p>以下のステップでJDBCサンプルプロジェクトを作成します：</p>
+
+                        <ol>
+                            <li>IDEで新しいJavaプロジェクトを作成</li>
+                            <li>PostgreSQL JDBC Driverをプロジェクトに追加</li>
+                            <li>以下のようなサンプルコードを作成</li>
+                        </ol>
+
+                        <code>import java.sql.*;
+
+public class JdbcSample {
+    // データベース接続情報
+    private static final String URL = "jdbc:postgresql://localhost:5432/jdbctest";
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "yourpassword"; // 実際のパスワードに置き換えてください
+
+    public static void main(String[] args) {
+        try {
+            // JDBCドライバの登録
+            Class.forName("org.postgresql.Driver");
+            
+            // 接続の確立
+            System.out.println("PostgreSQLデータベースに接続しています...");
+            try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+                System.out.println("接続成功!");
+                
+                // usersテーブルからデータを取得
+                try (Statement stmt = conn.createStatement();
+                     ResultSet rs = stmt.executeQuery("SELECT * FROM users")) {
+                    
+                    // 結果セットのメタデータを取得
+                    ResultSetMetaData metaData = rs.getMetaData();
+                    int columnCount = metaData.getColumnCount();
+                    
+                    // カラム名を表示
+                    for (int i = 1; i <= columnCount; i++) {
+                        System.out.printf("%-15s", metaData.getColumnName(i));
+                    }
+                    System.out.println();
+                    
+                    // 区切り線
+                    for (int i = 1; i <= columnCount; i++) {
+                        System.out.print("---------------");
+                    }
+                    System.out.println();
+                    
+                    // データ行を表示
+                    while (rs.next()) {
+                        for (int i = 1; i <= columnCount; i++) {
+                            System.out.printf("%-15s", rs.getString(i));
+                        }
+                        System.out.println();
+                    }
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            System.err.println("PostgreSQLドライバが見つかりません: " + e.getMessage());
+        } catch (SQLException e) {
+            System.err.println("データベースアクセスエラー: " + e.getMessage());
+        }
+    }
+}</code>
+
+                        <h4>5. サンプルプログラムの実行と動作確認</h4>
+                        <p>作成したプログラムを実行します。以下のような出力が表示されれば成功です：</p>
+
+                        <div class="example-result">
+                            <pre>PostgreSQLデータベースに接続しています...
+接続成功!
+id            name          email         age           created_at    
+-------------------------------------------------------------------------------
+1             山田太郎        yamada@example.com 30            2025-04-20 10:15:23
+2             佐藤花子        sato@example.com 25            2025-04-20 10:15:23
+3             鈴木一郎        suzuki@example.com 42            2025-04-20 10:15:23
+4             田中実         tanaka@example.com 19            2025-04-20 10:15:23</pre>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>実習課題 1.4.1: JDBCサンプルプログラムの作成と拡張</h5>
+                            <p>上記のサンプルコードを作成して実行した後、以下の拡張を試してみましょう：</p>
+                            <ol>
+                                <li>プログラムを修正して、年齢が30歳以上のユーザーだけを表示するようにしてください。</li>
+                                <li>新しいユーザー「高橋健太」（メール：takahashi@example.com、年齢：35）をデータベースに追加するコードを実装してください。追加後にデータベースの内容を表示して確認します。</li>
+                                <li>PreparedStatementを使用して、特定のIDを持つユーザーの名前を更新するメソッドを実装してください。</li>
+                                <li>※オプション課題：すべてのユーザー情報を取得し、CSVファイルに出力する機能を追加してください。</li>
+                            </ol>
+                        </div>
+
+                        <div class="warning">
+                            <h5>接続情報の取り扱いに関する注意</h5>
+                            <p>実際のアプリケーション開発では、以下の点に注意してください：</p>
+                            <ul>
+                                <li>接続情報（URL、ユーザー名、パスワード）をソースコードに直接記述するのは避け、設定ファイルやシステムプロパティ、環境変数などから取得するようにします。</li>
+                                <li>本番環境でのパスワードなどの機密情報は適切に暗号化・保護します。</li>
+                                <li>必要に応じてコネクションプール（HikariCP、Apache DBCPなど）を使用して、接続のパフォーマンスと管理を向上させます。</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <section id="chapter1-quiz">
+                        <h3 class="section-title">1.5 理解度確認テスト</h3>
+                        <div class="quiz-container">
+                            <h4>第1章の理解度チェック</h4>
+                            <p>以下の問題に答えて、第1章の内容の理解度を確認しましょう。</p>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題1:</strong> JDBCの主な役割として正しくないものはどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1a" value="a">
+                                    <label class="form-check-label" for="q1a">
+                                        データベースとの接続を確立する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1b" value="b">
+                                    <label class="form-check-label" for="q1b">
+                                        SQLステートメントを実行する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1c" value="c">
+                                        <label class="form-check-label" for="q1c">
+                                        データベーススキーマを自動生成する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1d" value="d">
+                                        <label class="form-check-label" for="q1d">
+                                        結果セットを処理する
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題2:</strong> 次のうち、JDBC APIの正しいインターフェース/クラスの組み合わせはどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2a" value="a">
+                                    <label class="form-check-label" for="q2a">
+                                        DatabaseManager, Link, Query, ResultTable
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2b" value="b">
+                                    <label class="form-check-label" for="q2b">
+                                        DriverManager, Connection, Statement, ResultSet
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2c" value="c">
+                                        <label class="form-check-label" for="q2c">
+                                        DBConnector, Session, Command, DataTable
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2d" value="d">
+                                        <label class="form-check-label" for="q2d">
+                                        ConnectionManager, DBLink, SQLStatement, RecordSet
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題3:</strong> 一般的なJDBCアプリケーションの正しい操作順序はどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3a" value="a">
+                                    <label class="form-check-label" for="q3a">
+                                        ドライバ登録 → ステートメント作成 → データベース接続 → SQL実行 → 接続クローズ
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3b" value="b">
+                                    <label class="form-check-label" for="q3b">
+                                        ドライバ登録 → データベース接続 → ステートメント作成 → SQL実行 → 接続クローズ
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3c" value="c">
+                                        <label class="form-check-label" for="q3c">
+                                        データベース接続 → ドライバ登録 → ステートメント作成 → SQL実行 → 接続クローズ
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3d" value="d">
+                                        <label class="form-check-label" for="q3d">
+                                        SQL実行 → ステートメント作成 → データベース接続 → 結果処理 → 接続クローズ
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題4:</strong> 現代のJavaアプリケーションで最も一般的に使用されるJDBCドライバのタイプはどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4a" value="a">
+                                    <label class="form-check-label" for="q4a">
+                                        タイプ1（JDBC-ODBCブリッジ）
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4b" value="b">
+                                    <label class="form-check-label" for="q4b">
+                                        タイプ2（ネイティブAPIドライバ）
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4c" value="c">
+                                        <label class="form-check-label" for="q4c">
+                                        タイプ3（ネットワークプロトコルドライバ）
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4d" value="d">
+                                        <label class="form-check-label" for="q4d">
+                                        タイプ4（ピュアJavaドライバ）
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題5:</strong> PostgreSQLデータベースに接続するために使用するJDBCドライバクラスとして正しいものはどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5a" value="a">
+                                    <label class="form-check-label" for="q5a">
+                                        com.postgresql.Driver
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5b" value="b">
+                                    <label class="form-check-label" for="q5b">
+                                        org.postgresql.Driver
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5c" value="c">
+                                        <label class="form-check-label" for="q5c">
+                                        postgresql.jdbc.Driver
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5d" value="d">
+                                        <label class="form-check-label" for="q5d">
+                                        net.postgresql.jdbc.Driver
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary mt-3" id="checkAnswers">回答を確認</button>
+                            <div id="quizResults" class="mt-3 d-none">
+                                <div class="alert alert-success">
+                                    <h5>正解:</h5>
+                                    <ol>
+                                        <li>c（データベーススキーマを自動生成する）</li>
+                                        <li>b（DriverManager, Connection, Statement, ResultSet）</li>
+                                        <li>b（ドライバ登録 → データベース接続 → ステートメント作成 → SQL実行 → 接続クローズ）</li>
+                                        <li>d（タイプ4（ピュアJavaドライバ））</li>
+                                        <li>b（org.postgresql.Driver）</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="next-steps">
+                        <h3 class="section-title">次のステップ</h3>
+                        <p>この章では、JDBCの基本概念、アーキテクチャ、ドライバの種類、および開発環境のセットアップ方法について学びました。次の章では、JDBCを使った基本的なデータ操作（CRUD操作）について詳しく学んでいきます。</p>
+                        <p>実際の開発環境を設定し、サンプルプログラムを作成・実行することで、この章の内容をしっかりと身につけましょう。</p>
+                        <div class="note">
+                            <h5>推奨される追加学習</h5>
+                            <ul>
+                                <li><strong>JDBCのAPIドキュメント</strong>：<a href="https://docs.oracle.com/javase/8/docs/technotes/guides/jdbc/" target="_blank">Oracle JDBC Documentation</a></li>
+                                <li><strong>PostgreSQLドライバのドキュメント</strong>：<a href="https://jdbc.postgresql.org/documentation/head/" target="_blank">PostgreSQL JDBC Driver Documentation</a></li>
+                                <li><strong>接続プール</strong>：HikariCP、Apache DBCPなどのコネクションプールライブラリについて調べてみましょう</li>
+                            </ul>
+                        </div>
+                    </section>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4">
+        <div class="container">
+            <p class="mb-0">Copyright © 2025 F-Circle All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 理解度テストの回答確認ボタンの処理
+        document.getElementById('checkAnswers').addEventListener('click', function() {
+            document.getElementById('quizResults').classList.remove('d-none');
+        });
+    </script>
+</body>
+</html>
