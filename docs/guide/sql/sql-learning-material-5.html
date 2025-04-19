@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL初心者向け学習教材 - データの並び替えと重複除去</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+        .navbar {
+            background-color: #1565c0;
+        }
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+        .chapter-title {
+            color: #1565c0;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #1565c0;
+            padding-bottom: 0.5rem;
+        }
+        .section-title {
+            color: #1976d2;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+        code {
+            display: block;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .quiz-container {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        .quiz-question {
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        .diagram {
+            max-width: 100%;
+            height: auto;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        .exercise {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        .note {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        .example {
+            background-color: #f3e5f5;
+            border-left: 4px solid #9c27b0;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        #table-of-contents .list-group-item {
+            border: none;
+            padding: 0.5rem 1rem;
+        }
+        #table-of-contents .list-group-item-action {
+            color: #1976d2;
+        }
+        #table-of-contents .list-group-item-action.active,
+        .list-group-item.active {
+            color: white !important;
+            background-color: #1976d2;
+            border-color: #1976d2;
+        }
+        .section-nav {
+            padding-left: 1rem;
+        }
+        .inline-code {
+            background-color: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            display: inline;
+        }
+        .table-result {
+            width: 100%;
+            margin: 1rem 0;
+            border-collapse: collapse;
+        }
+        .table-result th {
+            background-color: #e3f2fd;
+            padding: 0.5rem;
+            border: 1px solid #dee2e6;
+            text-align: left;
+        }
+        .table-result td {
+            padding: 0.5rem;
+            border: 1px solid #dee2e6;
+        }
+        footer {
+            background-color: #f5f5f5;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#tableOfContents">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">SQL初心者向け学習教材</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#introduction">はじめに</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#chapter5">第5章: データの並び替えと重複除去</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <div class="row">
+            <!-- Sidebar - Table of Contents -->
+            <div class="col-lg-3">
+                <div class="sidebar">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">目次</h5>
+                        </div>
+                        <div id="table-of-contents" class="list-group list-group-flush">
+                            <a href="#introduction" class="list-group-item list-group-item-action">はじめに</a>
+                            <a href="#chapter5" class="list-group-item list-group-item-action">第5章: データの並び替えと重複除去</a>
+                            <div class="section-nav">
+                                <a href="#orderby" class="list-group-item list-group-item-action">5.1 並び替え（ORDER BY）</a>
+                                <a href="#asc-desc" class="list-group-item list-group-item-action">5.2 昇順・降順（ASC / DESC）</a>
+                                <a href="#multiple-columns" class="list-group-item list-group-item-action">5.3 複数列での並び替え</a>
+                                <a href="#distinct" class="list-group-item list-group-item-action">5.4 重複の除去（DISTINCT）</a>
+                                <a href="#distinct-on" class="list-group-item list-group-item-action">5.5 PostgreSQLのDISTINCT ON</a>
+                                <a href="#exercise" class="list-group-item list-group-item-action">5.6 演習問題</a>
+                                <a href="#chapter5-quiz" class="list-group-item list-group-item-action">5.7 理解度確認テスト</a>
+                            </div>
+                            <a href="#next-steps" class="list-group-item list-group-item-action">次のステップ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <section id="introduction">
+                    <h1 class="display-5 mb-4">SQL初心者向け学習教材</h1>
+                    <p class="lead">この第5章では、データの並び替えと重複除去の方法を学習します。クエリ結果を特定の順序で表示する方法と、結果から重複行を除去する方法について解説します。</p>
+                    <img src="img/sql_05.png" class="img-fluid mt-3 mb-4" style="max-width: 50%; height: auto;" alt="PostgreSQL Logo">
+                    <div class="note">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>ORDER BY句を使用した結果セットの並び替え方法</li>
+                            <li>昇順（ASC）と降順（DESC）による並び替えの制御</li>
+                            <li>複数の列に基づく並び替え方法</li>
+                            <li>DISTINCT句を使用した重複行の除去方法</li>
+                            <li>PostgreSQLにおけるDISTINCT ON機能の活用方法</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="chapter5">
+                    <h2 class="chapter-title">第5章：データの並び替えと重複除去</h2>
+                    <p>データベースからデータを検索する際、特定の順序で結果を表示したり、重複するデータを除去したりすることがよくあります。SQLではORDER BY句とDISTINCT句を使用することで、これらの操作を簡単に実行できます。この章では、これらの機能の使用方法について詳しく学びます。</p>
+
+                    <section id="orderby">
+                        <h3 class="section-title">5.1 並び替え（ORDER BY）</h3>
+                        <p>ORDER BY句は、クエリの結果セットを特定の列または式に基づいて並び替える（ソートする）ために使用します。ORDER BY句は常にSELECT文の最後に配置されます。</p>
+
+                        <h4>ORDER BY句の基本構文</h4>
+                        <code>SELECT column1, column2, ...
+FROM table_name
+ORDER BY column1;</code>
+
+                        <p>例として、「products」テーブルから全ての商品を商品名でソートして取得する場合：</p>
+                        <code>SELECT product_id, product_name, price
+FROM products
+ORDER BY product_name;</code>
+
+                        <div class="example">
+                            <h5>例: 商品テーブルの並び替え</h5>
+                            <p>以下の「products」テーブルがあるとします：</p>
+                            <table class="table-result">
+                                <tr>
+                                    <th>product_id</th>
+                                    <th>product_name</th>
+                                    <th>category_id</th>
+                                    <th>price</th>
+                                    <th>stock</th>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>ノートパソコン</td>
+                                    <td>1</td>
+                                    <td>89000</td>
+                                    <td>10</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>スマートフォン</td>
+                                    <td>1</td>
+                                    <td>60000</td>
+                                    <td>15</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>ヘッドフォン</td>
+                                    <td>2</td>
+                                    <td>15000</td>
+                                    <td>20</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>タブレット</td>
+                                    <td>1</td>
+                                    <td>45000</td>
+                                    <td>8</td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>スピーカー</td>
+                                    <td>2</td>
+                                    <td>9800</td>
+                                    <td>25</td>
+                                </tr>
+                            </table>
+
+                            <p>商品名でソートする場合のクエリとその結果：</p>
+                            <code>SELECT product_id, product_name, price
+FROM products
+ORDER BY product_name;</code>
+
+                            <p>結果：</p>
+                            <table class="table-result">
+                                <tr>
+                                    <th>product_id</th>
+                                    <th>product_name</th>
+                                    <th>price</th>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>ヘッドフォン</td>
+                                    <td>15000</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>スマートフォン</td>
+                                    <td>60000</td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>スピーカー</td>
+                                    <td>9800</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>タブレット</td>
+                                    <td>45000</td>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>ノートパソコン</td>
+                                    <td>89000</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="note">
+                            <h5>ORDER BYのポイント</h5>
+                            <ul>
+                                <li>ORDER BY句を指定しない場合、結果の順序は保証されません</li>
+                                <li>デフォルトでは昇順（ASC）でソートされます</li>
+                                <li>SELECT文で指定していない列でもソートの対象にできます</li>
+                                <li>ORDER BY句は通常、SQLステートメントの最後に配置します</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <section id="asc-desc">
+                        <h3 class="section-title">5.2 昇順・降順（ASC / DESC）</h3>
+                        <p>ORDER BY句では、並び替えの方向を指定することができます。ASC（昇順）とDESC（降順）の2つのキーワードを使用します。</p>
+
+                        <h4>ASCとDESCの構文</h4>
+                        <code>SELECT column1, column2, ...
+FROM table_name
+ORDER BY column1 ASC|DESC;</code>
+
+                        <ul>
+                            <li><strong>ASC</strong>（Ascending）：昇順（小さい値から大きい値へ）。デフォルトの並び順です。</li>
+                            <li><strong>DESC</strong>（Descending）：降順（大きい値から小さい値へ）。</li>
+                        </ul>
+
+                        <div class="example">
+                            <h5>例: 価格の降順で商品を並び替え</h5>
+                            <code>SELECT product_id, product_name, price
+FROM products
+ORDER BY price DESC;</code>
+
+                            <p>結果：</p>
+                            <table class="table-result">
+                                <tr>
+                                    <th>product_id</th>
+                                    <th>product_name</th>
+                                    <th>price</th>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>ノートパソコン</td>
+                                    <td>89000</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>スマートフォン</td>
+                                    <td>60000</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>タブレット</td>
+                                    <td>45000</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>ヘッドフォン</td>
+                                    <td>15000</td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>スピーカー</td>
+                                    <td>9800</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="note">
+                            <h5>データ型と並び替え順序</h5>
+                            <p>データ型によって並び替えの挙動が異なります：</p>
+                            <ul>
+                                <li><strong>数値</strong>：数値の大小によってソートされます</li>
+                                <li><strong>文字列</strong>：アルファベット順または言語設定に基づいてソートされます</li>
+                                <li><strong>日付/時刻</strong>：古い日付から新しい日付、または早い時刻から遅い時刻の順にソートされます</li>
+                                <li><strong>NULL値</strong>：デフォルトではNULL値は最後（ASCの場合）または最初（DESCの場合）に配置されます</li>
+                            </ul>
+                        </div>
+
+                        <h4>NULL値の扱い</h4>
+                        <p>PostgreSQLでは、NULL値の並び順を制御するためにNULLS FIRST またはNULLS LASTを指定できます。</p>
+                        <code>SELECT column1, column2, ...
+FROM table_name
+ORDER BY column1 ASC NULLS FIRST;
+
+SELECT column1, column2, ...
+FROM table_name
+ORDER BY column1 DESC NULLS LAST;</code>
+
+                        <div class="example">
+                            <h5>例: NULL値の扱いを指定する</h5>
+                            <p>在庫数（stock）にNULL値が含まれる場合のソート：</p>
+                            <code>SELECT product_id, product_name, stock
+FROM products
+ORDER BY stock ASC NULLS LAST;</code>
+                        </div>
+                    </section>
+
+                    <section id="multiple-columns">
+                        <h3 class="section-title">5.3 複数列での並び替え</h3>
+                        <p>ORDER BY句では、複数の列を指定してソートすることができます。これにより、一次ソートと二次ソート（またはそれ以上）を定義できます。</p>
+
+                        <h4>複数列でのソートの構文</h4>
+                        <code>SELECT column1, column2, ...
+FROM table_name
+ORDER BY column1 ASC|DESC, column2 ASC|DESC, ...;</code>
+
+                        <p>最初に指定した列（column1）で一次ソートが行われ、その値が同じレコード間では二次ソートの列（column2）によってさらに並び替えられます。</p>
+
+                        <div class="example">
+                            <h5>例: カテゴリごとに価格の高い順でソート</h5>
+                            <p>まずカテゴリ（category_id）で昇順ソートし、同じカテゴリ内では価格（price）で降順にソートします：</p>
+                            <code>SELECT product_id, product_name, category_id, price
+FROM products
+ORDER BY category_id ASC, price DESC;</code>
+
+                            <p>結果：</p>
+                            <table class="table-result">
+                                <tr>
+                                    <th>product_id</th>
+                                    <th>product_name</th>
+                                    <th>category_id</th>
+                                    <th>price</th>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>ノートパソコン</td>
+                                    <td>1</td>
+                                    <td>89000</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>スマートフォン</td>
+                                    <td>1</td>
+                                    <td>60000</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>タブレット</td>
+                                    <td>1</td>
+                                    <td>45000</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>ヘッドフォン</td>
+                                    <td>2</td>
+                                    <td>15000</td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>スピーカー</td>
+                                    <td>2</td>
+                                    <td>9800</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h4>列番号によるソート</h4>
+                        <p>PostgreSQLでは、SELECT文で指定した列の順序（位置）を使用してソートすることも可能です。</p>
+                        <code>SELECT product_id, product_name, price
+FROM products
+ORDER BY 3 DESC;  -- priceは3番目の列なのでこれは「ORDER BY price DESC」と同じ</code>
+
+                        <div class="note">
+                            <h5>列番号によるソートの注意点</h5>
+                            <ul>
+                                <li>列番号は1から始まります</li>
+                                <li>列番号によるソートはSELECTリストに含まれる列の順序に依存するため、SELECTリストを変更すると結果が変わる可能性があります</li>
+                                <li>コードの保守性のためには、列名でのソートが推奨されます</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <section id="distinct">
+                        <h3 class="section-title">5.4 重複の除去（DISTINCT）</h3>
+                        <p>DISTINCT句は、クエリ結果から重複する行を除去するために使用します。重複とは、SELECT文で指定したすべての列の値が同じである行のことを指します。</p>
+
+                        <h4>DISTINCTの基本構文</h4>
+                        <code>SELECT DISTINCT column1, column2, ...
+FROM table_name;</code>
+
+                        <div class="example">
+                            <h5>例: 各商品カテゴリのIDのリストを取得</h5>
+                            <code>SELECT DISTINCT category_id
+FROM products;</code>
+
+                            <p>結果：</p>
+                            <table class="table-result">
+                                <tr>
+                                    <th>category_id</th>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h4>複数列に対するDISTINCT</h4>
+                        <p>DISTINCTは指定したすべての列の組み合わせが重複する行を除去します。</p>
+                        <code>SELECT DISTINCT column1, column2
+FROM table_name;</code>
+
+                        <div class="example">
+                            <h5>例: カテゴリと在庫状態の組み合わせを取得</h5>
+                            <p>以下のクエリは、カテゴリIDと在庫があるかどうか（stock > 10）の組み合わせのユニークなリストを取得します：</p>
+                            <code>SELECT DISTINCT category_id, stock > 10 AS has_sufficient_stock
+FROM products;</code>
+
+                            <p>結果：</p>
+                            <table class="table-result">
+                                <tr>
+                                    <th>category_id</th>
+                                    <th>has_sufficient_stock</th>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>false</td>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>true</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>true</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h4>DISTINCT と COUNT の組み合わせ</h4>
+                        <p>DISTINCTはCOUNT関数と組み合わせて、ユニークな値の数をカウントすることもできます。</p>
+                        <code>SELECT COUNT(DISTINCT column1) AS unique_count
+FROM table_name;</code>
+
+                        <div class="example">
+                            <h5>例: ユニークなカテゴリの数をカウント</h5>
+                            <code>SELECT COUNT(DISTINCT category_id) AS category_count
+FROM products;</code>
+
+                            <p>結果：</p>
+                            <table class="table-result">
+                                <tr>
+                                    <th>category_count</th>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="note">
+                            <h5>DISTINCTの注意点</h5>
+                            <ul>
+                                <li>DISTINCTはSELECT文の直後に記述します</li>
+                                <li>NULL値は互いに等しいと見なされます（つまり、複数のNULL値は1つに集約されます）</li>
+                                <li>DISTINCTは大量のデータに対しては処理速度が低下する可能性があります</li>
+                                <li>テーブルの主キー（または一意の識別子）を含む場合、DISTINCTは効果がありません</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <section id="distinct-on">
+                        <h3 class="section-title">5.5 PostgreSQLのDISTINCT ON</h3>
+                        <p>PostgreSQLは標準SQLのDISTINCT機能に加えて、DISTINCT ON拡張機能を提供しています。DISTINCT ONを使用すると、特定の列の値ごとに最初の行だけを返すことができます。</p>
+
+                        <h4>DISTINCT ONの構文</h4>
+                        <code>SELECT DISTINCT ON (column1) column1, column2, ...
+FROM table_name
+ORDER BY column1, column2, ...;</code>
+
+                        <p>DISTINCT ON句の中の列（複数可）ごとにグループ化され、各グループからORDER BY句に従ってソートされた最初の行が選択されます。</p>
+
+                        <div class="example">
+                            <h5>例: 各カテゴリで最も高価な商品を取得</h5>
+                            <p>以下のクエリは、各カテゴリで最も高価な商品を1つずつ取得します：</p>
+                            <code>SELECT DISTINCT ON (category_id) category_id, product_name, price
+FROM products
+ORDER BY category_id, price DESC;</code>
+
+                            <p>結果：</p>
+                            <table class="table-result">
+                                <tr>
+                                    <th>category_id</th>
+                                    <th>product_name</th>
+                                    <th>price</th>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>ノートパソコン</td>
+                                    <td>89000</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>ヘッドフォン</td>
+                                    <td>15000</td>
+                                </tr>
+                            </table>
+                            <p>上記のクエリでは、カテゴリID 1の中で最も高価な商品（ノートパソコン）とカテゴリID 2の中で最も高価な商品（ヘッドフォン）が選択されています。</p>
+                        </div>
+
+                        <div class="note">
+                            <h5>DISTINCT ONの重要なポイント</h5>
+                            <ul>
+                                <li>DISTINCT ONはPostgreSQLの拡張機能で、他のデータベースでは動作しない場合があります</li>
+                                <li>DISTINCT ON句で指定した列は、ORDER BY句の最初の列に一致させる必要があります</li>
+                                <li>ORDER BY句が非常に重要です。ソート順によって「最初の行」が決まります</li>
+                                <li>複雑なグループ化とフィルタリングの代替手段として使用できます</li>
+                            </ul>
+                        </div>
+
+                        <h4>複数列でのDISTINCT ON</h4>
+                        <p>DISTINCT ONは複数の列に適用することもできます：</p>
+                        <code>SELECT DISTINCT ON (column1, column2) column1, column2, column3, ...
+FROM table_name
+ORDER BY column1, column2, column3 DESC;</code>
+
+                        <div class="example">
+                            <h5>例: カテゴリと在庫状態ごとに最も安い商品を取得</h5>
+                            <code>SELECT DISTINCT ON (category_id, stock > 10) 
+       category_id, 
+       stock > 10 AS has_sufficient_stock, 
+       product_name, 
+       price
+FROM products
+ORDER BY category_id, stock > 10, price ASC;</code>
+                        </div>
+                    </section>
+
+                    <section id="exercise">
+                        <h3 class="section-title">5.6 演習問題</h3>
+                        <div class="exercise">
+                            <h5>演習5.1: データの並び替え</h5>
+                            <p>以下の「orders」テーブルがあります：</p>
+                            <table class="table-result">
+                                <tr>
+                                    <th>order_id</th>
+                                    <th>customer_id</th>
+                                    <th>order_date</th>
+                                    <th>total_amount</th>
+                                    <th>status</th>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>101</td>
+                                    <td>2024-03-15</td>
+                                    <td>25000</td>
+                                    <td>完了</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>102</td>
+                                    <td>2024-03-16</td>
+                                    <td>15000</td>
+                                    <td>処理中</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>101</td>
+                                    <td>2024-03-18</td>
+                                    <td>35000</td>
+                                    <td>完了</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>103</td>
+                                    <td>2024-03-20</td>
+                                    <td>5000</td>
+                                    <td>完了</td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>102</td>
+                                    <td>2024-03-22</td>
+                                    <td>12000</td>
+                                    <td>処理中</td>
+                                </tr>
+                            </table>
+
+                            <p>以下のクエリを作成してください：</p>
+                            <ol>
+                                <li>注文日（order_date）の新しい順に注文を並べ替えるクエリ</li>
+                                <li>顧客ID（customer_id）ごとに注文金額（total_amount）の高い順に並べ替えるクエリ</li>
+                                <li>ステータス（status）ごとに注文日の古い順に並べ替えるクエリ</li>
+                            </ol>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>演習5.2: 重複除去</h5>
+                            <p>以下のテーブルを使って問題に答えてください：</p>
+                            <table class="table-result">
+                                <tr>
+                                    <th>order_item_id</th>
+                                    <th>order_id</th>
+                                    <th>product_id</th>
+                                    <th>quantity</th>
+                                    <th>unit_price</th>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>89000</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>2</td>
+                                    <td>3</td>
+                                    <td>2</td>
+                                    <td>15000</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>3</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>89000</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>3</td>
+                                    <td>2</td>
+                                    <td>1</td>
+                                    <td>60000</td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>4</td>
+                                    <td>5</td>
+                                    <td>1</td>
+                                    <td>9800</td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>
+                                    <td>5</td>
+                                    <td>4</td>
+                                    <td>1</td>
+                                    <td>45000</td>
+                                </tr>
+                                <tr>
+                                    <td>7</td>
+                                    <td>5</td>
+                                    <td>3</td>
+                                    <td>1</td>
+                                    <td>15000</td>
+                                </tr>
+                            </table>
+
+                            <p>以下のクエリを作成してください：</p>
+                            <ol>
+                                <li>これまでに注文された商品（product_id）の一覧を取得する（重複なし）</li>
+                                <li>商品（product_id）ごとに最も高い単価（unit_price）を取得する</li>
+                                <li>DISTINCT ONを使用して、各注文（order_id）の中で最も高価な商品（unit_price）を1つずつ取得する</li>
+                            </ol>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>演習5.3: 高度な並び替えと重複除去</h5>
+                            <p>「products」テーブルと「order_items」テーブルを使用して：</p>
+                            <ol>
+                                <li>商品（product_id）ごとの注文数を計算し、注文数の多い順に並べ替える</li>
+                                <li>各カテゴリ（category_id）で最も注文数の多い商品を1つずつ取得する</li>
+                                <li>注文テーブルから顧客（customer_id）ごとの最新の注文を1つだけ取得する</li>
+                            </ol>
+                            <p><strong>ヒント</strong>: JOINやGROUP BY、COUNT関数、DISTINCT ONなどを組み合わせて使用する必要があるかもしれません。</p>
+                        </div>
+                    </section>
+
+                    <section id="chapter5-quiz">
+                        <h3 class="section-title">5.7 理解度確認テスト</h3>
+                        <div class="quiz-container">
+                            <h4>第5章の理解度チェック</h4>
+                            <p>以下の問題に答えて、第5章の内容の理解度を確認しましょう。</p>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題1:</strong> ORDER BY句がSELECT文で省略された場合、結果はどのように並び替えられますか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1a" value="a">
+                                    <label class="form-check-label" for="q1a">
+                                        主キーの昇順
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1b" value="b">
+                                    <label class="form-check-label" for="q1b">
+                                        最初の列の昇順
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1c" value="c">
+                                        <label class="form-check-label" for="q1c">
+                                        挿入された順序
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1d" value="d">
+                                    <label class="form-check-label" for="q1d">
+                                        順序は保証されない
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題2:</strong> 次のSQLステートメントはどのような結果を返しますか？</p>
+                                <code>SELECT product_name, price
+FROM products
+ORDER BY 2 DESC;</code>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2a" value="a">
+                                    <label class="form-check-label" for="q2a">
+                                        product_nameが降順に並べられた商品リスト
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2b" value="b">
+                                    <label class="form-check-label" for="q2b">
+                                        priceが昇順に並べられた商品リスト
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2c" value="c">
+                                        <label class="form-check-label" for="q2c">
+                                        priceが降順に並べられた商品リスト
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2d" value="d">
+                                    <label class="form-check-label" for="q2d">
+                                        2番目に高い価格の商品のみ
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題3:</strong> DISTINCT句の正しい使い方は次のうちどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3a" value="a">
+                                    <label class="form-check-label" for="q3a">
+                                        SELECT product_name, DISTINCT category_id FROM products;
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3b" value="b">
+                                    <label class="form-check-label" for="q3b">
+                                        SELECT DISTINCT category_id FROM products;
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3c" value="c">
+                                        <label class="form-check-label" for="q3c">
+                                        SELECT category_id FROM products DISTINCT;
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3d" value="d">
+                                    <label class="form-check-label" for="q3d">
+                                        SELECT FROM products DISTINCT category_id;
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題4:</strong> PostgreSQLのDISTINCT ON機能について正しい説明はどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4a" value="a">
+                                    <label class="form-check-label" for="q4a">
+                                        指定した列の値ごとに最初の行だけを返す
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4b" value="b">
+                                    <label class="form-check-label" for="q4b">
+                                        指定した列のNULL値を除外する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4c" value="c">
+                                        <label class="form-check-label" for="q4c">
+                                        列のデータ型が一致する行だけを返す
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4d" value="d">
+                                    <label class="form-check-label" for="q4d">
+                                        すべてのデータベースで使用できる標準SQL機能
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題5:</strong> 次のSQLステートメントは何を行いますか？</p>
+                                <code>SELECT COUNT(DISTINCT category_id) FROM products;</code>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5a" value="a">
+                                    <label class="form-check-label" for="q5a">
+                                        すべての商品カテゴリIDを取得する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5b" value="b">
+                                    <label class="form-check-label" for="q5b">
+                                        ユニークなカテゴリIDの数を数える
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5c" value="c">
+                                        <label class="form-check-label" for="q5c">
+                                        各カテゴリに属する商品の数を数える
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5d" value="d">
+                                    <label class="form-check-label" for="q5d">
+                                        カテゴリIDがNULLでない商品の数を数える
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary mt-3" id="checkAnswers">回答を確認</button>
+                            <div id="quizResults" class="mt-3 d-none">
+                                <div class="alert alert-success">
+                                    <h5>正解:</h5>
+                                    <ol>
+                                        <li>d（ORDER BY句がない場合、結果の順序は保証されません）</li>
+                                        <li>c（2番目の列であるpriceで降順にソートされます）</li>
+                                        <li>b（DISTINCTはSELECTの直後に指定します）</li>
+                                        <li>a（DISTINCT ONは指定した列の値ごとに最初の行だけを返します）</li>
+                                        <li>b（ユニークなカテゴリIDの数をカウントします）</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="next-steps">
+                        <h3 class="section-title">次のステップ</h3>
+                        <p>この章では、SQLにおけるデータの並び替えと重複除去の方法について学びました。ORDER BY句を使用してクエリ結果を特定の順序で表示する方法と、DISTINCT句を使用して重複する行を除去する方法を理解することができました。</p>
+                        <p>また、PostgreSQLに特有のDISTINCT ON機能を使って、グループごとに代表的な行を取得する方法も学びました。</p>
+                        <div class="note">
+                            <h5>推奨される次の学習項目</h5>
+                            <p>次の章では、以下のトピックについて学習します：</p>
+                            <ol>
+                                <li><strong>データのグループ化と集計</strong>: GROUP BY句を使ったデータのグループ化と集計関数の使用方法</li>
+                                <li><strong>集計結果のフィルタリング</strong>: HAVING句を使ったグループ化されたデータのフィルタリング</li>
+                                <li><strong>Window関数</strong>: 行間の関係を分析するための高度なSQL機能</li>
+                            </ol>
+                        </div>
+                    </section>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>Copyright © 2025 F-Circle All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 理解度テストの回答確認ボタンの処理
+        document.getElementById('checkAnswers').addEventListener('click', function() {
+            document.getElementById('quizResults').classList.remove('d-none');
+        });
+    </script>
+</body>
+</html>

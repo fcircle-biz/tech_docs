@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL初心者向け学習教材 - 集計とグループ化</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+        .navbar {
+            background-color: #1565c0;
+        }
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+        .chapter-title {
+            color: #1565c0;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #1565c0;
+            padding-bottom: 0.5rem;
+        }
+        .section-title {
+            color: #1976d2;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+        code {
+            display: block;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .quiz-container {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        .quiz-question {
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        .diagram {
+            max-width: 100%;
+            height: auto;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        .exercise {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        .note {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        #table-of-contents .list-group-item {
+            border: none;
+            padding: 0.5rem 1rem;
+        }
+        #table-of-contents .list-group-item-action {
+            color: #1976d2;
+        }
+        /* 選択された目次項目のスタイル */
+        #table-of-contents .list-group-item-action.active,
+        .list-group-item.active {
+            color: white !important;
+            background-color: #1976d2;
+            border-color: #1976d2;
+        }
+        .section-nav {
+            padding-left: 1rem;
+        }
+        .inline-code {
+            background-color: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            display: inline;
+        }
+        .table-responsive {
+            margin-bottom: 1.5rem;
+        }
+        .result-table {
+            width: 100%;
+            margin-bottom: 1rem;
+            background-color: #f8f9fa;
+            border-collapse: collapse;
+        }
+        .result-table th, .result-table td {
+            padding: 0.75rem;
+            border: 1px solid #dee2e6;
+        }
+        .result-table thead th {
+            background-color: #e9ecef;
+        }
+        footer {
+            background-color: #1565c0;
+            color: white;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#tableOfContents">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">SQL初心者向け学習教材</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#introduction">はじめに</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#chapter6">第6章: 集計とグループ化</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <div class="row">
+            <!-- Sidebar - Table of Contents -->
+            <div class="col-lg-3">
+                <div class="sidebar">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">目次</h5>
+                        </div>
+                        <div id="table-of-contents" class="list-group list-group-flush">
+                            <a href="#introduction" class="list-group-item list-group-item-action">はじめに</a>
+                            <a href="#chapter6" class="list-group-item list-group-item-action">第6章: 集計とグループ化</a>
+                            <div class="section-nav">
+                                <a href="#aggregate-functions" class="list-group-item list-group-item-action">6.1 集計関数の基本</a>
+                                <a href="#group-by" class="list-group-item list-group-item-action">6.2 GROUP BYによるグループ集計</a>
+                                <a href="#having" class="list-group-item list-group-item-action">6.3 HAVINGによる集計結果の絞り込み</a>
+                                <a href="#order-by-with-aggregates" class="list-group-item list-group-item-action">6.4 集計結果の並べ替え</a>
+                                <a href="#advanced-aggregates" class="list-group-item list-group-item-action">6.5 高度な集計テクニック</a>
+                                <a href="#exercise" class="list-group-item list-group-item-action">6.6 演習: 商品カテゴリごとの平均価格</a>
+                                <a href="#chapter6-quiz" class="list-group-item list-group-item-action">6.7 理解度確認テスト</a>
+                            </div>
+                            <a href="#next-steps" class="list-group-item list-group-item-action">次のステップ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <section id="introduction">
+                    <h1 class="display-5 mb-4">SQL初心者向け学習教材</h1>
+                    <p class="lead">この第6章では、SQLを使ったデータの集計とグループ化について学習します。COUNT、SUM、AVG、MAX、MINといった集計関数の使い方から、GROUP BY句を使ったグループ集計、HAVING句による絞り込みまで、データ分析の基礎となる重要な概念を解説します。</p>
+                    <img src="img/sql_06.png" class="img-fluid mt-3 mb-4" style="max-width: 50%; height: auto;" alt="PostgreSQL Logo">
+                    <div class="note">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>集計関数（COUNT, SUM, AVG, MAX, MIN）の基本的な使い方</li>
+                            <li>GROUP BY句を使ったデータのグループ化と集計</li>
+                            <li>HAVING句を使った集計結果のフィルタリング</li>
+                            <li>集計結果の効果的な並べ替え方法</li>
+                            <li>実践的な集計クエリの作成方法</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="chapter6">
+                    <h2 class="chapter-title">第6章：集計とグループ化</h2>
+                    <p>データベースに格納された大量のデータから意味のある情報を抽出するためには、データを集計して分析することが不可欠です。SQLの集計関数とGROUP BY句を使うことで、データの合計、平均、最大値、最小値などを効率的に計算できます。この章では、PostgreSQLでの集計クエリの書き方を詳しく学んでいきましょう。</p>
+
+                    <section id="aggregate-functions">
+                        <h3 class="section-title">6.1 集計関数の基本</h3>
+                        <p>集計関数は、複数の行から単一の結果値を計算するSQLの関数です。PostgreSQLでは、以下の主要な集計関数が用意されています：</p>
+
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-header bg-primary text-white">COUNT</div>
+                                    <div class="card-body">
+                                        <p class="card-text">指定された条件に一致する行の数をカウントします。</p>
+                                        <p class="card-text"><strong>構文:</strong> <span class="inline-code">COUNT(式)</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-header bg-primary text-white">SUM</div>
+                                    <div class="card-body">
+                                        <p class="card-text">指定された列の値の合計を計算します。</p>
+                                        <p class="card-text"><strong>構文:</strong> <span class="inline-code">SUM(式)</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-header bg-primary text-white">AVG</div>
+                                    <div class="card-body">
+                                        <p class="card-text">指定された列の値の平均を計算します。</p>
+                                        <p class="card-text"><strong>構文:</strong> <span class="inline-code">AVG(式)</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-header bg-primary text-white">MAX</div>
+                                    <div class="card-body">
+                                        <p class="card-text">指定された列の最大値を返します。</p>
+                                        <p class="card-text"><strong>構文:</strong> <span class="inline-code">MAX(式)</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-header bg-primary text-white">MIN</div>
+                                    <div class="card-body">
+                                        <p class="card-text">指定された列の最小値を返します。</p>
+                                        <p class="card-text"><strong>構文:</strong> <span class="inline-code">MIN(式)</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4>集計関数の基本的な使い方</h4>
+                        <p>以下のサンプルテーブル「products」を使って、各集計関数の使い方を見ていきましょう。</p>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>product_id</th>
+                                        <th>product_name</th>
+                                        <th>category_id</th>
+                                        <th>price</th>
+                                        <th>stock</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>ノートパソコン</td>
+                                        <td>1</td>
+                                        <td>85000</td>
+                                        <td>10</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>デスクトップPC</td>
+                                        <td>1</td>
+                                        <td>120000</td>
+                                        <td>5</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>スマートフォン</td>
+                                        <td>2</td>
+                                        <td>75000</td>
+                                        <td>15</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>タブレット</td>
+                                        <td>2</td>
+                                        <td>45000</td>
+                                        <td>8</td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td>ワイヤレスイヤホン</td>
+                                        <td>3</td>
+                                        <td>15000</td>
+                                        <td>20</td>
+                                    </tr>
+                                    <tr>
+                                        <td>6</td>
+                                        <td>Bluetoothスピーカー</td>
+                                        <td>3</td>
+                                        <td>8000</td>
+                                        <td>12</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>category_id</th>
+                                        <th>category_name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>コンピュータ</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>モバイルデバイス</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>オーディオ機器</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4>COUNTの使用例</h4>
+                        <p>テーブル内の商品数をカウントします：</p>
+                        <code>SELECT COUNT(*) AS 商品数
+FROM products;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>商品数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>6</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p>特定のカテゴリの商品数をカウントします：</p>
+                        <code>SELECT COUNT(*) AS モバイルデバイス数
+FROM products
+WHERE category_id = 2;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>モバイルデバイス数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>2</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="note">
+                            <h5>COUNT関数の注意点</h5>
+                            <ul>
+                                <li><strong>COUNT(*)</strong>: テーブル内のすべての行をカウントします（NULLを含む）</li>
+                                <li><strong>COUNT(column_name)</strong>: 指定した列のNULL以外の値をカウントします</li>
+                                <li><strong>COUNT(DISTINCT column_name)</strong>: 指定した列の重複を除いた一意の値の数をカウントします</li>
+                            </ul>
+                        </div>
+
+                        <h4>SUMの使用例</h4>
+                        <p>すべての商品の在庫数の合計を計算します：</p>
+                        <code>SELECT SUM(stock) AS 総在庫数
+FROM products;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>総在庫数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>70</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p>在庫価値（価格 × 在庫数）の合計を計算します：</p>
+                        <code>SELECT SUM(price * stock) AS 総在庫価値
+FROM products;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>総在庫価値</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>2776000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4>AVGの使用例</h4>
+                        <p>商品の平均価格を計算します：</p>
+                        <code>SELECT AVG(price) AS 平均価格
+FROM products;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>平均価格</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>58000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p>小数点以下2桁までの平均価格を表示します：</p>
+                        <code>SELECT ROUND(AVG(price), 2) AS 平均価格
+FROM products;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>平均価格</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>58000.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4>MAXとMINの使用例</h4>
+                        <p>最も高価な商品と最も安価な商品の価格を調べます：</p>
+                        <code>SELECT MAX(price) AS 最高価格, MIN(price) AS 最低価格
+FROM products;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>最高価格</th>
+                                        <th>最低価格</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>120000</td>
+                                        <td>8000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p>在庫が最も多い商品と最も少ない商品の在庫数を調べます：</p>
+                        <code>SELECT MAX(stock) AS 最大在庫数, MIN(stock) AS 最小在庫数
+FROM products;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>最大在庫数</th>
+                                        <th>最小在庫数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>20</td>
+                                        <td>5</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>Exercise 6.1: 基本的な集計関数</h5>
+                            <p>以下の問題に対するSQLクエリを作成してみましょう：</p>
+                            <ol>
+                                <li>価格が50,000円以上の商品の数を求めてください。</li>
+                                <li>在庫数が10以上の商品の平均価格を求めてください。</li>
+                                <li>商品名が最も長い商品と最も短い商品の文字数を求めてください（<span class="inline-code">LENGTH</span>関数を使用）。</li>
+                            </ol>
+                            <p><strong>ヒント</strong>: WHERE句を使って条件を指定してから集計関数を適用します。</p>
+                        </div>
+                    </section>
+
+                    <section id="group-by">
+                        <h3 class="section-title">6.2 GROUP BYによるグループ集計</h3>
+                        <p>GROUP BY句を使うと、指定した列の値でデータをグループ化し、各グループに対して集計関数を適用できます。これにより、カテゴリごとの合計や平均など、より詳細な分析が可能になります。</p>
+
+                        <h4>GROUP BY句の基本構文</h4>
+                        <code>SELECT column1, column2, ..., 集計関数(column)
+FROM table_name
+[WHERE condition]
+GROUP BY column1, column2, ...
+[ORDER BY column];</code>
+
+                        <div class="note">
+                            <h5>GROUP BY句の重要なルール</h5>
+                            <ul>
+                                <li>SELECT句に含まれる列は、集計関数の引数として使われているか、GROUP BY句に含まれている必要があります</li>
+                                <li>GROUP BY句は通常、WHERE句の後ろに配置します</li>
+                                <li>複数の列でグループ化することも可能です</li>
+                                <li>NULLの値もグループとして扱われます</li>
+                            </ul>
+                        </div>
+
+                        <h4>カテゴリごとの商品数</h4>
+                        <p>各カテゴリに含まれる商品の数をカウントします：</p>
+                        <code>SELECT category_id, COUNT(*) AS 商品数
+FROM products
+GROUP BY category_id
+ORDER BY category_id;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>category_id</th>
+                                        <th>商品数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>2</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p>カテゴリ名と商品数を表示するには、JOINを使用します：</p>
+                        <code>SELECT c.category_name, COUNT(*) AS 商品数
+FROM products p
+JOIN categories c ON p.category_id = c.category_id
+GROUP BY c.category_name
+ORDER BY c.category_name;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>category_name</th>
+                                        <th>商品数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>オーディオ機器</td>
+                                        <td>2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>コンピュータ</td>
+                                        <td>2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>モバイルデバイス</td>
+                                        <td>2</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4>カテゴリごとの合計と平均</h4>
+                        <p>各カテゴリの総在庫数と平均価格を計算します：</p>
+                        <code>SELECT c.category_name, 
+       SUM(p.stock) AS 総在庫数,
+       AVG(p.price) AS 平均価格
+FROM products p
+JOIN categories c ON p.category_id = c.category_id
+GROUP BY c.category_name
+ORDER BY c.category_name;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>category_name</th>
+                                        <th>総在庫数</th>
+                                        <th>平均価格</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>オーディオ機器</td>
+                                        <td>32</td>
+                                        <td>11500</td>
+                                    </tr>
+                                    <tr>
+                                        <td>コンピュータ</td>
+                                        <td>15</td>
+                                        <td>102500</td>
+                                    </tr>
+                                    <tr>
+                                        <td>モバイルデバイス</td>
+                                        <td>23</td>
+                                        <td>60000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4>複数の列でのグループ化</h4>
+                        <p>カテゴリと価格帯（5万円以上/未満）でグループ化した商品数：</p>
+                        <code>SELECT c.category_name, 
+       CASE WHEN p.price >= 50000 THEN '高価格' ELSE '低価格' END AS 価格帯,
+       COUNT(*) AS 商品数
+FROM products p
+JOIN categories c ON p.category_id = c.category_id
+GROUP BY c.category_name, 
+         CASE WHEN p.price >= 50000 THEN '高価格' ELSE '低価格' END
+ORDER BY c.category_name, 価格帯;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>category_name</th>
+                                        <th>価格帯</th>
+                                        <th>商品数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>オーディオ機器</td>
+                                        <td>低価格</td>
+                                        <td>2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>コンピュータ</td>
+                                        <td>高価格</td>
+                                        <td>2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>モバイルデバイス</td>
+                                        <td>低価格</td>
+                                        <td>1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>モバイルデバイス</td>
+                                        <td>高価格</td>
+                                        <td>1</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 280">
+                                <!-- GROUP BY Visualization -->
+                                <rect x="50" y="30" width="500" height="50" fill="#bbdefb" stroke="#1976d2" stroke-width="2" />
+                                <text x="300" y="60" text-anchor="middle" font-size="18" font-weight="bold">元のデータ（products テーブル）</text>
+                                
+                                <!-- Arrows -->
+                                <line x1="300" y1="80" x2="300" y2="110" stroke="#333" stroke-width="2" />
+                                <polygon points="300,110 295,95 305,95" fill="#333" />
+                                <text x="320" y="100" font-size="14">GROUP BY category_id</text>
+                                
+                                <!-- Group 1 -->
+                                <rect x="50" y="120" width="150" height="90" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5" />
+                                <text x="125" y="145" text-anchor="middle" font-size="16" font-weight="bold">カテゴリ 1</text>
+                                <text x="125" y="170" text-anchor="middle" font-size="14">ノートパソコン</text>
+                                <text x="125" y="190" text-anchor="middle" font-size="14">デスクトップPC</text>
+                                
+                                <!-- Group 2 -->
+                                <rect x="225" y="120" width="150" height="90" fill="#fff9c4" stroke="#fbc02d" stroke-width="2" rx="5" />
+                                <text x="300" y="145" text-anchor="middle" font-size="16" font-weight="bold">カテゴリ 2</text>
+                                <text x="300" y="170" text-anchor="middle" font-size="14">スマートフォン</text>
+                                <text x="300" y="190" text-anchor="middle" font-size="14">タブレット</text>
+                                
+                                <!-- Group 3 -->
+                                <rect x="400" y="120" width="150" height="90" fill="#ffccbc" stroke="#e64a19" stroke-width="2" rx="5" />
+                                <text x="475" y="145" text-anchor="middle" font-size="16" font-weight="bold">カテゴリ 3</text>
+                                <text x="475" y="170" text-anchor="middle" font-size="14">ワイヤレスイヤホン</text>
+                                <text x="475" y="190" text-anchor="middle" font-size="14">Bluetoothスピーカー</text>
+                                
+                                <!-- Arrows -->
+                                <line x1="125" y1="210" x2="125" y2="240" stroke="#333" stroke-width="2" />
+                                <polygon points="125,240 120,225 130,225" fill="#333" />
+                                <line x1="300" y1="210" x2="300" y2="240" stroke="#333" stroke-width="2" />
+                                <polygon points="300,240 295,225 305,225" fill="#333" />
+                                <line x1="475" y1="210" x2="475" y2="240" stroke="#333" stroke-width="2" />
+                                <polygon points="475,240 470,225 480,225" fill="#333" />
+                                <text x="320" y="230" font-size="14">COUNT(), SUM(), AVG()など</text>
+                                
+                                <!-- Result -->
+                                <rect x="50" y="250" width="500" height="30" fill="#e1bee7" stroke="#8e24aa" stroke-width="2" />
+                                <text x="125" y="270" text-anchor="middle" font-size="14">COUNT: 2</text>
+                                <text x="300" y="270" text-anchor="middle" font-size="14">COUNT: 2</text>
+                                <text x="475" y="270" text-anchor="middle" font-size="14">COUNT: 2</text>
+                            </svg>
+                            <p class="text-center">図6.1: GROUP BYによるデータのグループ化と集計</p>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>Exercise 6.2: GROUP BYの活用</h5>
+                            <p>以下の問題に対するSQLクエリを作成してみましょう：</p>
+                            <ol>
+                                <li>各カテゴリの最高価格と最低価格を求めてください。</li>
+                                <li>各カテゴリの商品の総在庫価値（価格×在庫数の合計）を求めてください。</li>
+                                <li>在庫数が10以上と10未満の商品について、それぞれの平均価格を求めてください。</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="having">
+                        <h3 class="section-title">6.3 HAVINGによる集計結果の絞り込み</h3>
+                        <p>WHERE句はグループ化の前に行を絞り込むのに対し、HAVING句はグループ化と集計が行われた後の結果をフィルタリングするために使用されます。集計関数の結果に基づいて条件を指定する場合は、HAVING句を使う必要があります。</p>
+
+                        <h4>HAVINGの基本構文</h4>
+                        <code>SELECT column1, column2, ..., 集計関数(column)
+FROM table_name
+[WHERE condition]
+GROUP BY column1, column2, ...
+HAVING 集計関数の条件
+[ORDER BY column];</code>
+
+                        <h4>WHEREとHAVINGの違い</h4>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>WHERE</th>
+                                        <th>HAVING</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>グループ化の前に行をフィルタリング</td>
+                                        <td>グループ化の後に結果をフィルタリング</td>
+                                    </tr>
+                                    <tr>
+                                        <td>集計関数を条件に使用できない</td>
+                                        <td>集計関数を条件に使用できる</td>
+                                    </tr>
+                                    <tr>
+                                        <td>元のデータの行に対して条件を適用</td>
+                                        <td>集計結果のグループに対して条件を適用</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4>HAVINGの使用例</h4>
+                        <p>平均価格が50,000円を超えるカテゴリを検索します：</p>
+                        <code>SELECT c.category_name, AVG(p.price) AS 平均価格
+FROM products p
+JOIN categories c ON p.category_id = c.category_id
+GROUP BY c.category_name
+HAVING AVG(p.price) > 50000
+ORDER BY 平均価格 DESC;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>category_name</th>
+                                        <th>平均価格</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>コンピュータ</td>
+                                        <td>102500</td>
+                                    </tr>
+                                    <tr>
+                                        <td>モバイルデバイス</td>
+                                        <td>60000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p>商品数が1つより多いカテゴリのみ表示します：</p>
+                        <code>SELECT c.category_name, COUNT(*) AS 商品数
+FROM products p
+JOIN categories c ON p.category_id = c.category_id
+GROUP BY c.category_name
+HAVING COUNT(*) > 1;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>category_name</th>
+                                        <th>商品数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>オーディオ機器</td>
+                                        <td>2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>コンピュータ</td>
+                                        <td>2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>モバイルデバイス</td>
+                                        <td>2</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p>総在庫価値が300,000円を超え、かつ平均価格が20,000円以上のカテゴリを検索します：</p>
+                        <code>SELECT c.category_name, 
+       SUM(p.price * p.stock) AS 総在庫価値,
+       AVG(p.price) AS 平均価格
+FROM products p
+JOIN categories c ON p.category_id = c.category_id
+GROUP BY c.category_name
+HAVING SUM(p.price * p.stock) > 300000 AND AVG(p.price) >= 20000
+ORDER BY 総在庫価値 DESC;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>category_name</th>
+                                        <th>総在庫価値</th>
+                                        <th>平均価格</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>コンピュータ</td>
+                                        <td>1450000</td>
+                                        <td>102500</td>
+                                    </tr>
+                                    <tr>
+                                        <td>モバイルデバイス</td>
+                                        <td>1125000 + 360000 = 1485000</td>
+                                        <td>60000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="note">
+                            <h5>WHEREとHAVINGを組み合わせる</h5>
+                            <p>同じクエリ内でWHERE句とHAVING句を併用することも可能です。例えば、以下のクエリは50,000円以上の商品のみを対象とし（WHERE句）、その中で合計在庫数が10を超えるカテゴリのみを表示します（HAVING句）：</p>
+                            <code>SELECT c.category_name, SUM(p.stock) AS 総在庫数
+FROM products p
+JOIN categories c ON p.category_id = c.category_id
+WHERE p.price >= 50000
+GROUP BY c.category_name
+HAVING SUM(p.stock) > 10;</code>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>Exercise 6.3: HAVINGの活用</h5>
+                            <p>以下の問題に対するSQLクエリを作成してみましょう：</p>
+                            <ol>
+                                <li>商品の平均価格が30,000円以下のカテゴリを検索し、平均価格の低い順に表示してください。</li>
+                                <li>総在庫数が20を超えるカテゴリのみを表示し、その中で最も高価な商品と最も安価な商品の価格差も計算してください。</li>
+                                <li>価格が10,000円以上の商品に絞り込んだ上で、商品数が1以上のカテゴリの平均価格を求めてください。</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="order-by-with-aggregates">
+                        <h3 class="section-title">6.4 集計結果の並べ替え</h3>
+                        <p>集計結果を意味のある方法で並べ替えることで、データの傾向や重要な情報をより明確に把握できます。ORDER BY句を使用して、集計結果を様々な方法で並べ替えることができます。</p>
+
+                        <h4>集計結果の並べ替え例</h4>
+                        <p>カテゴリ別の平均価格を高い順に並べ替えます：</p>
+                        <code>SELECT c.category_name, AVG(p.price) AS 平均価格
+FROM products p
+JOIN categories c ON p.category_id = c.category_id
+GROUP BY c.category_name
+ORDER BY 平均価格 DESC;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>category_name</th>
+                                        <th>平均価格</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>コンピュータ</td>
+                                        <td>102500</td>
+                                    </tr>
+                                    <tr>
+                                        <td>モバイルデバイス</td>
+                                        <td>60000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>オーディオ機器</td>
+                                        <td>11500</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p>商品数が多い順にカテゴリを並べ替えます：</p>
+                        <code>SELECT c.category_name, COUNT(*) AS 商品数
+FROM products p
+JOIN categories c ON p.category_id = c.category_id
+GROUP BY c.category_name
+ORDER BY 商品数 DESC;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>category_name</th>
+                                        <th>商品数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>オーディオ機器</td>
+                                        <td>2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>コンピュータ</td>
+                                        <td>2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>モバイルデバイス</td>
+                                        <td>2</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p>複数の条件で並べ替えます（まず商品数、次に平均価格）：</p>
+                        <code>SELECT c.category_name, 
+       COUNT(*) AS 商品数, 
+       AVG(p.price) AS 平均価格
+FROM products p
+JOIN categories c ON p.category_id = c.category_id
+GROUP BY c.category_name
+ORDER BY 商品数 DESC, 平均価格 DESC;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>category_name</th>
+                                        <th>商品数</th>
+                                        <th>平均価格</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>コンピュータ</td>
+                                        <td>2</td>
+                                        <td>102500</td>
+                                    </tr>
+                                    <tr>
+                                        <td>モバイルデバイス</td>
+                                        <td>2</td>
+                                        <td>60000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>オーディオ機器</td>
+                                        <td>2</td>
+                                        <td>11500</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4>集計関数を使った並べ替え</h4>
+                        <p>ORDER BY句で直接集計関数を使うこともできます：</p>
+                        <code>SELECT c.category_name
+FROM products p
+JOIN categories c ON p.category_id = c.category_id
+GROUP BY c.category_name
+ORDER BY SUM(p.price * p.stock) DESC;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>category_name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>モバイルデバイス</td>
+                                    </tr>
+                                    <tr>
+                                        <td>コンピュータ</td>
+                                    </tr>
+                                    <tr>
+                                        <td>オーディオ機器</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="note">
+                            <h5>ORDER BYの詳細なオプション</h5>
+                            <ul>
+                                <li><strong>ASC</strong>: 昇順（小さい値から大きい値へ）- デフォルト</li>
+                                <li><strong>DESC</strong>: 降順（大きい値から小さい値へ）</li>
+                                <li><strong>NULLS FIRST</strong>: NULL値を最初に表示</li>
+                                <li><strong>NULLS LAST</strong>: NULL値を最後に表示</li>
+                            </ul>
+                            <p>例: <code>ORDER BY 平均価格 DESC NULLS LAST</code></p>
+                        </div>
+                    </section>
+
+                    <section id="advanced-aggregates">
+                        <h3 class="section-title">6.5 高度な集計テクニック</h3>
+                        <p>PostgreSQLは、基本的な集計関数に加えて、より高度なデータ分析を行うための機能を提供しています。ここでは、よく使用される高度な集計テクニックをいくつか紹介します。</p>
+
+                        <h4>DISTINCT付きの集計関数</h4>
+                        <p>DISTINCTキーワードを使用すると、重複を除いた一意の値のみを集計対象にできます：</p>
+                        <code>SELECT COUNT(DISTINCT category_id) AS 一意のカテゴリ数
+FROM products;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>一意のカテゴリ数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>3</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4>条件付き集計（CASE式の活用）</h4>
+                        <p>CASE式を集計関数と組み合わせると、条件付きの集計が可能になります：</p>
+                        <code>SELECT 
+    SUM(CASE WHEN price < 20000 THEN 1 ELSE 0 END) AS 低価格商品数,
+    SUM(CASE WHEN price >= 20000 AND price < 80000 THEN 1 ELSE 0 END) AS 中価格商品数,
+    SUM(CASE WHEN price >= 80000 THEN 1 ELSE 0 END) AS 高価格商品数
+FROM products;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>低価格商品数</th>
+                                        <th>中価格商品数</th>
+                                        <th>高価格商品数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>2</td>
+                                        <td>2</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4>カテゴリごとの価格帯別商品数</h4>
+                        <code>SELECT c.category_name,
+    SUM(CASE WHEN p.price < 20000 THEN 1 ELSE 0 END) AS 低価格商品数,
+    SUM(CASE WHEN p.price >= 20000 AND p.price < 80000 THEN 1 ELSE 0 END) AS 中価格商品数,
+    SUM(CASE WHEN p.price >= 80000 THEN 1 ELSE 0 END) AS 高価格商品数
+FROM products p
+JOIN categories c ON p.category_id = c.category_id
+GROUP BY c.category_name
+ORDER BY c.category_name;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>category_name</th>
+                                        <th>低価格商品数</th>
+                                        <th>中価格商品数</th>
+                                        <th>高価格商品数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>オーディオ機器</td>
+                                        <td>2</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>コンピュータ</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>モバイルデバイス</td>
+                                        <td>0</td>
+                                        <td>2</td>
+                                        <td>0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4>集計関数の入れ子（集計の集計）</h4>
+                        <p>集計結果をさらに集計したい場合は、サブクエリやCTE（Common Table Expression）を使用します：</p>
+                        <code>WITH カテゴリ別集計 AS (
+    SELECT c.category_id, c.category_name, AVG(p.price) AS 平均価格
+    FROM products p
+    JOIN categories c ON p.category_id = c.category_id
+    GROUP BY c.category_id, c.category_name
+)
+SELECT AVG(平均価格) AS 全カテゴリの平均価格
+FROM カテゴリ別集計;</code>
+
+                        <div class="table-responsive">
+                            <table class="result-table">
+                                <thead>
+                                    <tr>
+                                        <th>全カテゴリの平均価格</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>58000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4>集計関数におけるNULL値の扱い</h4>
+                        <p>集計関数はNULL値を無視します。これが意図しない結果を生むこともあるため、必要に応じてCOALESCE関数などでNULL値を置き換えることができます：</p>
+                        <code>SELECT 
+    AVG(price) AS 通常の平均価格,
+    AVG(COALESCE(price, 0)) AS NULL値を0として計算した平均価格
+FROM products;</code>
+
+                        <div class="note">
+                            <h5>PostgreSQLの特殊な集計関数</h5>
+                            <ul>
+                                <li><strong>ARRAY_AGG</strong>: 値を配列としてグループ化</li>
+                                <li><strong>STRING_AGG</strong>: 値を連結して文字列として返す</li>
+                                <li><strong>PERCENTILE_CONT</strong>: 連続パーセンタイル</li>
+                                <li><strong>PERCENTILE_DISC</strong>: 離散パーセンタイル</li>
+                                <li><strong>MODE</strong>: 最頻値</li>
+                            </ul>
+                            <p>例: <code>SELECT STRING_AGG(product_name, ', ') FROM products;</code></p>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>Exercise 6.4: 高度な集計テクニック</h5>
+                            <p>以下の問題に対するSQLクエリを作成してみましょう：</p>
+                            <ol>
+                                <li>各カテゴリの商品名をカンマで区切って一つの文字列にまとめてください（STRING_AGG関数を使用）。</li>
+                                <li>価格帯を3つ（30,000円未満、30,000円以上80,000円未満、80,000円以上）に分けて、各価格帯に属する商品数と合計在庫数を求めてください。</li>
+                                <li>各カテゴリの商品の平均価格と、その平均価格が全商品の平均価格と比較してどれだけ高いか（または低いか）をパーセンテージで計算してください。</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="exercise">
+                        <h3 class="section-title">6.6 演習: 商品カテゴリごとの平均価格</h3>
+                        <p>ここでは、これまで学んだ知識を活用して、「商品カテゴリごとの平均価格を求める」という課題に取り組みます。</p>
+
+                        <div class="exercise">
+                            <h5>総合演習</h5>
+                            <p>以下のテーブルがあるとします：</p>
+                            <ul>
+                                <li><strong>products</strong>: 商品テーブル（product_id, product_name, category_id, price, stock）</li>
+                                <li><strong>categories</strong>: カテゴリテーブル（category_id, category_name, parent_category_id）</li>
+                                <li><strong>sales</strong>: 販売履歴テーブル（sale_id, product_id, quantity, sale_date, customer_id）</li>
+                            </ul>
+                            <p>以下の問題に対するSQLクエリを作成してください：</p>
+                            <ol>
+                                <li>各カテゴリの平均価格を求め、平均価格が高い順に表示してください。</li>
+                                <li>平均価格が40,000円を超えるカテゴリのみを表示してください。</li>
+                                <li>各カテゴリの商品数、平均価格、最高価格、最低価格を一覧表示してください。</li>
+                                <li>親カテゴリごとに集計し、子カテゴリの平均価格を計算してください。</li>
+                                <li>直近3ヶ月の売上データを基に、各カテゴリの総売上金額（価格×数量）と平均単価を計算してください。</li>
+                            </ol>
+                        </div>
+
+                        <h4>問題1: 各カテゴリの平均価格（解答）</h4>
+                        <code>SELECT c.category_name, AVG(p.price) AS 平均価格
+FROM products p
+JOIN categories c ON p.category_id = c.category_id
+GROUP BY c.category_name
+ORDER BY 平均価格 DESC;</code>
+
+                        <h4>問題2: 平均価格が40,000円を超えるカテゴリ（解答）</h4>
+                        <code>SELECT c.category_name, AVG(p.price) AS 平均価格
+FROM products p
+JOIN categories c ON p.category_id = c.category_id
+GROUP BY c.category_name
+HAVING AVG(p.price) > 40000
+ORDER BY 平均価格 DESC;</code>
+
+                        <h4>問題3: カテゴリごとの詳細統計（解答）</h4>
+                        <code>SELECT 
+    c.category_name, 
+    COUNT(*) AS 商品数,
+    AVG(p.price) AS 平均価格,
+    MAX(p.price) AS 最高価格,
+    MIN(p.price) AS 最低価格
+FROM products p
+JOIN categories c ON p.category_id = c.category_id
+GROUP BY c.category_name
+ORDER BY 平均価格 DESC;</code>
+
+                        <h4>問題4: 親カテゴリごとの子カテゴリ平均価格（解答）</h4>
+                        <code>SELECT 
+    parent.category_name AS 親カテゴリ,
+    child.category_name AS 子カテゴリ,
+    AVG(p.price) AS 平均価格
+FROM products p
+JOIN categories child ON p.category_id = child.category_id
+JOIN categories parent ON child.parent_category_id = parent.category_id
+GROUP BY parent.category_name, child.category_name
+ORDER BY 親カテゴリ, 平均価格 DESC;</code>
+
+                        <h4>問題5: 直近3ヶ月の売上統計（解答）</h4>
+                        <code>SELECT 
+    c.category_name,
+    SUM(p.price * s.quantity) AS 総売上金額,
+    AVG(p.price) AS 平均単価
+FROM sales s
+JOIN products p ON s.product_id = p.product_id
+JOIN categories c ON p.category_id = c.category_id
+WHERE s.sale_date >= CURRENT_DATE - INTERVAL '3 months'
+GROUP BY c.category_name
+ORDER BY 総売上金額 DESC;</code>
+
+                        <div class="note">
+                            <h5>演習のポイント</h5>
+                            <ul>
+                                <li>複数のテーブルを結合して集計を行う場合は、JOINの順序と条件に注意しましょう</li>
+                                <li>日付関連の条件指定では、CURRENT_DATE関数やINTERVAL型を活用すると便利です</li>
+                                <li>複雑な集計クエリは、まず小さな部分に分けて考え、段階的に構築していくとよいでしょう</li>
+                                <li>実際のデータベースでクエリを実行する前に、WHERE句による絞り込みの効果を考慮し、クエリのパフォーマンスを意識しましょう</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <section id="chapter6-quiz">
+                        <h3 class="section-title">6.7 理解度確認テスト</h3>
+                        <div class="quiz-container">
+                            <h4>第6章の理解度チェック</h4>
+                            <p>以下の問題に答えて、第6章の内容の理解度を確認しましょう。</p>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題1:</strong> 次のうち、NULLを含む行をカウントするために使用する正しいSQLは？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1a" value="a">
+                                    <label class="form-check-label" for="q1a">
+                                        COUNT(column_name)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1b" value="b">
+                                    <label class="form-check-label" for="q1b">
+                                        COUNT(*)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1c" value="c">
+                                        <label class="form-check-label" for="q1c">
+                                        COUNT(DISTINCT column_name)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1d" value="d">
+                                    <label class="form-check-label" for="q1d">
+                                        SUM(1)
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題2:</strong> GROUP BY句に含まれていない列名をSELECT句に含めると、どうなりますか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2a" value="a">
+                                    <label class="form-check-label" for="q2a">
+                                        クエリは正常に実行され、ランダムな値が表示される
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2b" value="b">
+                                    <label class="form-check-label" for="q2b">
+                                        構文エラーが発生する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2c" value="c">
+                                        <label class="form-check-label" for="q2c">
+                                        その列の最初の値だけが表示される
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2d" value="d">
+                                    <label class="form-check-label" for="q2d">
+                                        クエリは実行されるが、その列の値はすべてNULLになる
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題3:</strong> 次のうち、集計関数を条件として使用できるSQLの句はどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3a" value="a">
+                                    <label class="form-check-label" for="q3a">
+                                        WHERE
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3b" value="b">
+                                    <label class="form-check-label" for="q3b">
+                                        HAVING
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3c" value="c">
+                                        <label class="form-check-label" for="q3c">
+                                        JOIN
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3d" value="d">
+                                    <label class="form-check-label" for="q3d">
+                                        FROM
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題4:</strong> 集計関数がNULL値を処理する方法について、正しい説明はどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4a" value="a">
+                                    <label class="form-check-label" for="q4a">
+                                        すべての集計関数はNULL値を0または空文字列として扱う
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4b" value="b">
+                                    <label class="form-check-label" for="q4b">
+                                        COUNT(*)を除くすべての集計関数は、NULL値を無視する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4c" value="c">
+                                        <label class="form-check-label" for="q4c">
+                                        NULL値が1つでも含まれていると、集計結果もNULLになる
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4d" value="d">
+                                    <label class="form-check-label" for="q4d">
+                                        集計関数によって異なり、COUNT(column_name)はNULL値を無視するが、SUMやAVGはNULLを0として扱う
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題5:</strong> 次のSQLクエリの結果として正しいものはどれですか？</p>
+                                <pre class="bg-light p-2 rounded">
+SELECT category_id, AVG(price)
+FROM products
+GROUP BY category_id
+HAVING COUNT(*) > 1;</pre>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5a" value="a">
+                                    <label class="form-check-label" for="q5a">
+                                        すべてのカテゴリの平均価格を表示する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5b" value="b">
+                                    <label class="form-check-label" for="q5b">
+                                        カテゴリごとの平均価格を表示し、商品数が1より多いカテゴリのみを含める
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5c" value="c">
+                                    <label class="form-check-label" for="q5c">
+                                        平均価格が1より大きいカテゴリのみを表示する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5d" value="d">
+                                    <label class="form-check-label" for="q5d">
+                                        構文エラーが発生する
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary mt-3" id="checkAnswers">回答を確認</button>
+                            <div id="quizResults" class="mt-3 d-none">
+                                <div class="alert alert-success">
+                                    <h5>正解:</h5>
+                                    <ol>
+                                        <li>b（COUNT(*)はNULLを含むすべての行をカウントします）</li>
+                                        <li>b（GROUP BY句に含まれていない列をSELECT句で使用すると、構文エラーが発生します）</li>
+                                        <li>b（HAVING句でのみ集計関数を条件として使用できます）</li>
+                                        <li>b（COUNT(*)を除く集計関数はNULL値を無視します）</li>
+                                        <li>b（商品数が1より多いカテゴリの平均価格を表示します）</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="next-steps">
+                        <h3 class="section-title">次のステップ</h3>
+                        <p>この章では、SQLの集計関数とグループ化について学びました。これらの技術を使うことで、大量のデータから意味のある情報を抽出し、データ駆動型の意思決定に役立てることができます。</p>
+                        <p>練習問題に取り組むことで、これらの概念をしっかりと身につけましょう。実際のデータベースやデータセットを使った実践的な演習も非常に効果的です。</p>
+                        <div class="note">
+                            <h5>次章の予告</h5>
+                            <p>次の章では以下のトピックを学習します：</p>
+                            <ul>
+                                <li>サブクエリと高度なJOIN</li>
+                                <li>ウィンドウ関数（分析関数）</li>
+                                <li>共通テーブル式（CTEとWith句）</li>
+                                <li>データの挿入・更新・削除</li>
+                            </ul>
+                        </div>
+                    </section>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3">
+        <div class="container text-center">
+            <p class="mb-0">Copyright © 2025 F-Circle All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 理解度テストの回答確認ボタンの処理
+        document.getElementById('checkAnswers').addEventListener('click', function() {
+            document.getElementById('quizResults').classList.remove('d-none');
+        });
+    </script>
+</body>
+</html>
