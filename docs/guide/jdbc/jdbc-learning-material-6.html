@@ -1,0 +1,2917 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JDBC初心者向け学習教材 - JDBCとオブジェクト指向設計</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+        .navbar {
+            background-color: #1565c0;
+        }
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+        .chapter-title {
+            color: #1565c0;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #1565c0;
+            padding-bottom: 0.5rem;
+        }
+        .section-title {
+            color: #1976d2;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+        code {
+            display: block;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .quiz-container {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        .quiz-question {
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        .diagram {
+            max-width: 100%;
+            height: auto;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        .exercise {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        .note {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        #table-of-contents .list-group-item {
+            border: none;
+            padding: 0.5rem 1rem;
+        }
+        #table-of-contents .list-group-item-action {
+            color: #1976d2;
+        }
+        /* 選択された目次項目のスタイル */
+        #table-of-contents .list-group-item-action.active,
+        .list-group-item.active {
+            color: white !important; /* テキストを白色にして青い背景に対してコントラストをつける */
+            background-color: #1976d2;
+            border-color: #1976d2;
+        }
+        .section-nav {
+            padding-left: 1rem;
+        }
+        .inline-code {
+            background-color: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            display: inline;
+        }
+        footer {
+            background-color: #1565c0;
+            color: white;
+            padding: 1rem 0;
+            margin-top: 3rem;
+        }
+        .table-example {
+            width: 100%;
+            margin-bottom: 1rem;
+            border-collapse: collapse;
+        }
+        .table-example th {
+            background-color: #e3f2fd;
+            border: 1px solid #b3e5fc;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .table-example td {
+            border: 1px solid #b3e5fc;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .example-result {
+            background-color: #f1f8e9;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .warning {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+    </style>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#tableOfContents">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">JDBC初心者向け学習教材</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#introduction">はじめに</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#chapter6">第6章: JDBCとオブジェクト指向設計</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <div class="row">
+            <!-- Sidebar - Table of Contents -->
+            <div class="col-lg-3">
+                <div class="sidebar">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">目次</h5>
+                        </div>
+                        <div id="table-of-contents" class="list-group list-group-flush">
+                            <a href="#introduction" class="list-group-item list-group-item-action">はじめに</a>
+                            <a href="#chapter6" class="list-group-item list-group-item-action">第6章: JDBCとオブジェクト指向設計</a>
+                            <div class="section-nav">
+                                <a href="#dao-pattern" class="list-group-item list-group-item-action">6.1 Data Access Objectパターンの実装</a>
+                                <a href="#object-relational-mapping" class="list-group-item list-group-item-action">6.2 オブジェクトリレーショナルマッピングの基本</a>
+                                <a href="#jdbc-collections" class="list-group-item list-group-item-action">6.3 JDBCとJavaコレクションの連携</a>
+                                <a href="#ec-site-implementation" class="list-group-item list-group-item-action">6.4 DAOパターンを使用したECサイトバックエンド実装（実習）</a>
+                                <a href="#chapter6-quiz" class="list-group-item list-group-item-action">6.5 理解度確認テスト</a>
+                            </div>
+                            <a href="#next-steps" class="list-group-item list-group-item-action">次のステップ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <section id="introduction">
+                    <h1 class="display-5 mb-4">JDBC初心者向け学習教材</h1>
+                    <p class="lead">この第6章では、JDBCとオブジェクト指向設計の連携について学習します。Data Access Objectパターンの実装、オブジェクトリレーショナルマッピングの基本概念、JDBCとJavaコレクションの連携方法などを理解し、実際のECサイトバックエンド実装を通じて実践的なスキルを身につけます。</p>
+
+                    <div class="note">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>Data Access Object（DAO）パターンの基本概念と実装方法</li>
+                            <li>オブジェクトリレーショナルマッピング（ORM）の基本原理</li>
+                            <li>JDBCを使ったデータベース操作とJavaコレクションの連携手法</li>
+                            <li>実際のECサイトバックエンドでのDAOパターン適用方法</li>
+                            <li>オブジェクト指向設計の原則をJDBCアプリケーションに適用する方法</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="chapter6">
+                    <h2 class="chapter-title">第6章：JDBCとオブジェクト指向設計</h2>
+                    <p>これまでの章では、JDBCの基本的な使い方や各種操作、トランザクション管理などについて学んできました。この章では、JDBCをより効果的に使うためのオブジェクト指向設計手法について学びます。データベースアクセスをオブジェクト指向的に整理することで、コードの可読性、保守性、拡張性を高めることができます。</p>
+
+                    <section id="dao-pattern">
+                        <h3 class="section-title">6.1 Data Access Objectパターンの実装</h3>
+                        <p>Data Access Object（DAO）パターンは、データベースアクセスロジックをビジネスロジックから分離するためのデザインパターンです。このパターンを使用することで、データソースが変更された場合でもアプリケーションのビジネスロジックへの影響を最小限に抑えることができます。</p>
+
+                        <h4>DAOパターンの概要</h4>
+                        <p>DAOパターンは以下の主要なコンポーネントから構成されています：</p>
+                        <ul>
+                            <li><strong>データアクセスオブジェクト（DAO）</strong>：データベースにアクセスするためのインターフェースを提供</li>
+                            <li><strong>DAOの実装クラス</strong>：特定のデータベース技術（JDBC、JPA、Hibernateなど）を使用して実際のデータベース操作を実行</li>
+                            <li><strong>データ転送オブジェクト（DTO）</strong>：データベースと上位層の間でデータを運ぶためのオブジェクト</li>
+                            <li><strong>ファクトリクラス</strong>：DAOの実装を生成するためのクラス（オプション）</li>
+                        </ul>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" width="600" height="300">
+                                <!-- ビジネスオブジェクト -->
+                                <rect x="50" y="20" width="150" height="60" fill="#bbdefb" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="125" y="55" text-anchor="middle" font-size="16">ビジネスオブジェクト</text>
+                                
+                                <!-- DAOインターフェース -->
+                                <rect x="225" y="20" width="150" height="60" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5" />
+                                <text x="300" y="55" text-anchor="middle" font-size="16">DAOインターフェース</text>
+                                
+                                <!-- DTO -->
+                                <rect x="225" y="100" width="150" height="60" fill="#e1bee7" stroke="#8e24aa" stroke-width="2" rx="5" />
+                                <text x="300" y="135" text-anchor="middle" font-size="16">DTO</text>
+                                
+                                <!-- DAOの実装 -->
+                                <rect x="225" y="180" width="150" height="60" fill="#fff9c4" stroke="#fbc02d" stroke-width="2" rx="5" />
+                                <text x="300" y="215" text-anchor="middle" font-size="16">DAOの実装</text>
+                                
+                                <!-- データソース -->
+                                <rect x="400" y="180" width="150" height="60" fill="#ffccbc" stroke="#e64a19" stroke-width="2" rx="5" />
+                                <text x="475" y="215" text-anchor="middle" font-size="16">データソース</text>
+                                
+                                <!-- 矢印 -->
+                                <line x1="200" y1="50" x2="225" y2="50" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="300" y1="80" x2="300" y2="100" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="300" y1="160" x2="300" y2="180" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="375" y1="210" x2="400" y2="210" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                
+                                <defs>
+                                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                        <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+                                    </marker>
+                                </defs>
+                                
+                                <text x="205" y="30" text-anchor="end" font-size="12">使用</text>
+                                <text x="310" y="90" text-anchor="start" font-size="12">使用</text>
+                                <text x="310" y="170" text-anchor="start" font-size="12">実装</text>
+                                <text x="387" y="190" text-anchor="start" font-size="12">アクセス</text>
+                            </svg>
+                            <p class="text-center">図6.1: DAOパターンの構造</p>
+                        </div>
+
+                        <h4>DAOパターンの利点</h4>
+                        <p>DAOパターンを採用することで得られる主な利点は以下の通りです：</p>
+                        <ul>
+                            <li><strong>関心の分離</strong>：データアクセスロジックとビジネスロジックを分離することで、コードの見通しが良くなる</li>
+                            <li><strong>保守性の向上</strong>：データアクセス方法の変更がビジネスロジックに影響を与えない</li>
+                            <li><strong>テストの容易性</strong>：モックオブジェクトを使用してDATを容易にテストできる</li>
+                            <li><strong>コードの再利用性</strong>：データアクセスコードを様々なアプリケーションで再利用できる</li>
+                            <li><strong>移植性</strong>：異なるデータベース間での移行が容易になる</li>
+                        </ul>
+
+                        <h4>DAOパターンの実装例</h4>
+                        <p>以下に、JDBCを使用したDAOパターンの基本的な実装例を示します。ここでは、ユーザー情報を管理するための<span class="inline-code">UserDAO</span>を実装します。</p>
+
+                        <h5>1. DTOの作成</h5>
+                        <code>/**
+ * ユーザー情報を保持するためのDTO
+ */
+public class User {
+    private int id;
+    private String username;
+    private String email;
+    private Date createdAt;
+    
+    // コンストラクタ
+    public User() {}
+    
+    public User(int id, String username, String email, Date createdAt) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.createdAt = createdAt;
+    }
+    
+    // ゲッターとセッター
+    public int getId() {
+        return id;
+    }
+    
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    public String getUsername() {
+        return username;
+    }
+    
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    
+    public String getEmail() {
+        return email;
+    }
+    
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+    
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+    
+    @Override
+    public String toString() {
+        return "User [id=" + id + ", username=" + username + ", email=" + email + 
+               ", createdAt=" + createdAt + "]";
+    }
+}</code>
+
+                        <h5>2. DAOインターフェースの作成</h5>
+                        <code>/**
+ * ユーザーデータアクセスのためのインターフェース
+ */
+public interface UserDAO {
+    // ユーザーをIDで検索
+    User findById(int id) throws SQLException;
+    
+    // すべてのユーザーを取得
+    List<User> findAll() throws SQLException;
+    
+    // ユーザーを挿入
+    int insert(User user) throws SQLException;
+    
+    // ユーザー情報を更新
+    int update(User user) throws SQLException;
+    
+    // ユーザーを削除
+    int delete(int id) throws SQLException;
+}</code>
+
+                        <h5>3. JDBCを使用したDAO実装</h5>
+                        <code>/**
+ * JDBC技術を使用したUserDAOの実装
+ */
+public class UserDAOImpl implements UserDAO {
+    // データベース接続用の情報
+    private final String url;
+    private final String username;
+    private final String password;
+    
+    // SQL文
+    private static final String SELECT_BY_ID = "SELECT * FROM users WHERE id = ?";
+    private static final String SELECT_ALL = "SELECT * FROM users ORDER BY id";
+    private static final String INSERT = "INSERT INTO users (username, email) VALUES (?, ?)";
+    private static final String UPDATE = "UPDATE users SET username = ?, email = ? WHERE id = ?";
+    private static final String DELETE = "DELETE FROM users WHERE id = ?";
+    
+    // コンストラクタ
+    public UserDAOImpl(String url, String username, String password) {
+        this.url = url;
+        this.username = username;
+        this.password = password;
+    }
+    
+    // 接続の取得
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(url, username, password);
+    }
+    
+    // リソースのクローズ
+    private void closeResources(Connection conn, PreparedStatement ps, ResultSet rs) {
+        try {
+            if (rs != null) rs.close();
+            if (ps != null) ps.close();
+            if (conn != null) conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    // ResultSetからUserオブジェクトへのマッピング
+    private User mapResultSetToUser(ResultSet rs) throws SQLException {
+        User user = new User();
+        user.setId(rs.getInt("id"));
+        user.setUsername(rs.getString("username"));
+        user.setEmail(rs.getString("email"));
+        user.setCreatedAt(rs.getTimestamp("created_at"));
+        return user;
+    }
+    
+    @Override
+    public User findById(int id) throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        User user = null;
+        
+        try {
+            conn = getConnection();
+            ps = conn.prepareStatement(SELECT_BY_ID);
+            ps.setInt(1, id);
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                user = mapResultSetToUser(rs);
+            }
+        } finally {
+            closeResources(conn, ps, rs);
+        }
+        
+        return user;
+    }
+    
+    @Override
+    public List<User> findAll() throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<User> users = new ArrayList<>();
+        
+        try {
+            conn = getConnection();
+            ps = conn.prepareStatement(SELECT_ALL);
+            rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                users.add(mapResultSetToUser(rs));
+            }
+        } finally {
+            closeResources(conn, ps, rs);
+        }
+        
+        return users;
+    }
+    
+    @Override
+    public int insert(User user) throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        int result = 0;
+        
+        try {
+            conn = getConnection();
+            ps = conn.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, user.getUsername());
+            ps.setString(2, user.getEmail());
+            result = ps.executeUpdate();
+            
+            if (result > 0) {
+                try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        user.setId(generatedKeys.getInt(1));
+                    }
+                }
+            }
+        } finally {
+            closeResources(conn, ps, null);
+        }
+        
+        return result;
+    }
+    
+    @Override
+    public int update(User user) throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        int result = 0;
+        
+        try {
+            conn = getConnection();
+            ps = conn.prepareStatement(UPDATE);
+            ps.setString(1, user.getUsername());
+            ps.setString(2, user.getEmail());
+            ps.setInt(3, user.getId());
+            result = ps.executeUpdate();
+        } finally {
+            closeResources(conn, ps, null);
+        }
+        
+        return result;
+    }
+    
+    @Override
+    public int delete(int id) throws SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        int result = 0;
+        
+        try {
+            conn = getConnection();
+            ps = conn.prepareStatement(DELETE);
+            ps.setInt(1, id);
+            result = ps.executeUpdate();
+        } finally {
+            closeResources(conn, ps, null);
+        }
+        
+        return result;
+    }
+}</code>
+
+                        <h5>4. DAOファクトリの作成（オプション）</h5>
+                        <code>/**
+ * DAOインスタンスを生成するためのファクトリクラス
+ */
+public class DAOFactory {
+    // データベース接続情報
+    private static final String URL = "jdbc:postgresql://localhost:5432/testdb";
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "password";
+    
+    // UserDAOインスタンスの取得
+    public static UserDAO getUserDAO() {
+        return new UserDAOImpl(URL, USER, PASSWORD);
+    }
+    
+    // 他のDAOインスタンスの取得メソッドも追加可能
+}</code>
+
+                        <h5>5. DAOの使用例</h5>
+                        <code>/**
+ * DAOパターンの使用例
+ */
+public class DAOExample {
+    public static void main(String[] args) {
+        try {
+            // UserDAOの取得
+            UserDAO userDAO = DAOFactory.getUserDAO();
+            
+            // 新しいユーザーの作成
+            User newUser = new User();
+            newUser.setUsername("yamada");
+            newUser.setEmail("yamada@example.com");
+            
+            // ユーザーの挿入
+            int result = userDAO.insert(newUser);
+            System.out.println(result + "件のユーザーが追加されました。ID: " + newUser.getId());
+            
+            // ユーザーの取得
+            User user = userDAO.findById(newUser.getId());
+            System.out.println("取得したユーザー: " + user);
+            
+            // ユーザー情報の更新
+            user.setEmail("new.yamada@example.com");
+            result = userDAO.update(user);
+            System.out.println(result + "件のユーザー情報が更新されました。");
+            
+            // すべてのユーザーの取得
+            List<User> users = userDAO.findAll();
+            System.out.println("すべてのユーザー:");
+            for (User u : users) {
+                System.out.println(u);
+            }
+            
+            // ユーザーの削除
+            result = userDAO.delete(newUser.getId());
+            System.out.println(result + "件のユーザーが削除されました。");
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}</code>
+
+                        <div class="note">
+                            <h5>DAOパターン実装のベストプラクティス</h5>
+                            <ul>
+                                <li><strong>例外処理</strong>：データベース操作固有の例外をキャッチし、適切なビジネス例外に変換する</li>
+                                <li><strong>トランザクション管理</strong>：複数のDAOメソッドを一つのトランザクションで実行する場合は、上位レイヤー（サービスレイヤーなど）でトランザクション管理を行う</li>
+                                <li><strong>接続プール</strong>：本番環境では、DataSourceやコネクションプールを使用して効率的な接続管理を行う</li>
+                                <li><strong>SQL文の管理</strong>：SQLを定数として定義するか、プロパティファイルなどの外部リソースに分離する</li>
+                                <li><strong>テストの容易性</strong>：モックオブジェクトを使用したユニットテストを容易にするために、依存関係の注入（DI）を検討する</li>
+                            </ul>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>練習問題 6.1.1: DAOパターンの実装</h5>
+                            <p>以下の要件を満たす製品（Product）のDAOパターンを実装してください：</p>
+                            <ol>
+                                <li>製品（Product）クラスには、id、name、price、stockの属性を持たせる</li>
+                                <li>ProductDAOインターフェースには、findById、findAll、insert、update、deleteのメソッドを定義する</li>
+                                <li>ProductDAOImplクラスでJDBCを使用して実装する</li>
+                                <li>DAOFactoryに、ProductDAOを取得するためのgetProductDAO()メソッドを追加する</li>
+                                <li>簡単なテストプログラムを作成して、実装したDAOの動作を確認する</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="object-relational-mapping">
+                        <h3 class="section-title">6.2 オブジェクトリレーショナルマッピングの基本</h3>
+                        <p>オブジェクトリレーショナルマッピング（ORM）は、リレーショナルデータベースのテーブルとオブジェクト指向プログラミング言語のクラスの間のデータマッピングを行う技術です。JDBCを直接使用する代わりに、ORMフレームワークを使用することで、より宣言的かつオブジェクト指向的なアプローチでデータベースを操作できます。</p>
+
+                        <h4>オブジェクトリレーショナルマッピングの概念</h4>
+                        <p>ORMの主な目的は、「インピーダンスミスマッチ」と呼ばれる問題を解決することです。これは、リレーショナルデータベースとオブジェクト指向プログラミングの間に存在する根本的な設計思想の違いから生じる問題です。</p>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" width="600" height="300">
+                                <!-- オブジェクト指向モデル -->
+                                <rect x="50" y="20" width="200" height="260" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2" rx="5" />
+                                <text x="150" y="40" text-anchor="middle" font-size="16" font-weight="bold">オブジェクト指向モデル</text>
+                                
+                                <!-- ユーザークラス -->
+                                <rect x="70" y="60" width="160" height="100" fill="#bbdefb" stroke="#1976d2" stroke-width="1" rx="3" />
+                                <line x1="70" y1="85" x2="230" y2="85" stroke="#1976d2" stroke-width="1" />
+                                <text x="150" y="75" text-anchor="middle" font-size="14" font-weight="bold">User</text>
+                                <text x="75" y="100" font-size="12">- id: Integer</text>
+                                <text x="75" y="115" font-size="12">- name: String</text>
+                                <text x="75" y="130" font-size="12">- email: String</text>
+                                <text x="75" y="145" font-size="12">- orders: List&lt;Order&gt;</text>
+                                
+                                <!-- オーダークラス -->
+                                <rect x="70" y="180" width="160" height="80" fill="#bbdefb" stroke="#1976d2" stroke-width="1" rx="3" />
+                                <line x1="70" y1="205" x2="230" y2="205" stroke="#1976d2" stroke-width="1" />
+                                <text x="150" y="195" text-anchor="middle" font-size="14" font-weight="bold">Order</text>
+                                <text x="75" y="220" font-size="12">- id: Integer</text>
+                                <text x="75" y="235" font-size="12">- date: Date</text>
+                                <text x="75" y="250" font-size="12">- user: User</text>
+                                
+                                <!-- リレーショナルモデル -->
+                                <rect x="350" y="20" width="200" height="260" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2" rx="5" />
+                                <text x="450" y="40" text-anchor="middle" font-size="16" font-weight="bold">リレーショナルモデル</text>
+                                
+                                <!-- USERSテーブル -->
+                                <rect x="370" y="60" width="160" height="100" fill="#ffecb3" stroke="#ffa000" stroke-width="1" rx="3" />
+                                <line x1="370" y1="85" x2="530" y2="85" stroke="#ffa000" stroke-width="1" />
+                                <text x="450" y="75" text-anchor="middle" font-size="14" font-weight="bold">USERS</text>
+                                <text x="380" y="100" font-size="12">ID (PK)</text>
+                                <text x="380" y="115" font-size="12">NAME</text>
+                                <text x="380" y="130" font-size="12">EMAIL</text>
+                                
+                                <!-- ORDERSテーブル -->
+                                <rect x="370" y="180" width="160" height="80" fill="#ffecb3" stroke="#ffa000" stroke-width="1" rx="3" />
+                                <line x1="370" y1="205" x2="530" y2="205" stroke="#ffa000" stroke-width="1" />
+                                <text x="450" y="195" text-anchor="middle" font-size="14" font-weight="bold">ORDERS</text>
+                                <text x="380" y="220" font-size="12">ID (PK)</text>
+                                <text x="380" y="235" font-size="12">DATE</text>
+                                <text x="380" y="250" font-size="12">USER_ID (FK)</text>
+                                
+                                <!-- ORM矢印 -->
+                                <line x1="250" y1="150" x2="350" y2="150" stroke="#4caf50" stroke-width="3" stroke-dasharray="5,5" />
+                                <polygon points="340,145 350,150 340,155" fill="#4caf50" />
+                                <text x="300" y="140" text-anchor="middle" font-size="14" fill="#4caf50" font-weight="bold">ORM</text>
+                                
+                                <!-- 関連線 -->
+                                <line x1="150" y1="160" x2="150" y2="180" stroke="#1976d2" stroke-width="1" />
+                                <polygon points="145,170 150,180 155,170" fill="#1976d2" />
+                                <text x="170" y="170" font-size="12">1:n</text>
+                                
+                                <line x1="450" y1="160" x2="450" y2="180" stroke="#ffa000" stroke-width="1" />
+                                <polygon points="445,170 450,180 455,170" fill="#ffa000" />
+                                <text x="470" y="170" font-size="12">1:n</text>
+                            </svg>
+                            <p class="text-center">図6.2: オブジェクトリレーショナルマッピングの概念</p>
+                        </div>
+
+                        <h4>オブジェクトリレーショナルマッピングの主な課題</h4>
+                        <p>ORMを実装する際に解決すべき主な課題は以下の通りです：</p>
+                        <ul>
+                            <li><strong>データ型のマッピング</strong>：データベースのデータ型とJavaのデータ型の違いを橋渡しする</li>
+                            <li><strong>関連のマッピング</strong>：テーブル間の外部キー関係をオブジェクト間の関連にマッピングする（1対1、1対多、多対多）</li>
+                            <li><strong>継承のマッピング</strong>：オブジェクト指向の継承階層をテーブル構造にマッピングする</li>
+                            <li><strong>識別子のマッピング</strong>：主キーとオブジェクトIDの同期</li>
+                            <li><strong>遅延ロード</strong>：必要になるまでデータを読み込まないようにする最適化</li>
+                        </ul>
+
+                        <h4>JDBCを使用した簡易ORMの実装</h4>
+                        <p>JDBCを使用して基本的なORMの概念を実装する方法を見てみましょう。ここでは前節のDAOパターンを拡張し、より汎用的なマッピングを実装します。</p>
+
+                        <h5>1. 基本的なエンティティクラス</h5>
+                        <code>/**
+ * 基本的なエンティティクラス
+ */
+public class User {
+    private Integer id;
+    private String name;
+    private String email;
+    private List<Order> orders;
+    
+    // ゲッターとセッター省略
+    
+    @Override
+    public String toString() {
+        return "User [id=" + id + ", name=" + name + ", email=" + email + "]";
+    }
+}</code>
+
+                        <h5>2. 関連エンティティクラス</h5>
+                        <code>/**
+ * ユーザーと関連するエンティティクラス
+ */
+public class Order {
+    private Integer id;
+    private Date orderDate;
+    private User user;
+    private List<OrderItem> items;
+    
+    // ゲッターとセッター省略
+    
+    @Override
+    public String toString() {
+        return "Order [id=" + id + ", orderDate=" + orderDate + ", userId=" + 
+               (user != null ? user.getId() : null) + "]";
+    }
+}</code>
+
+                        <h5>3. 基本的なORMマッパーインターフェース</h5>
+                        <code>/**
+ * 基本的なORMマッパーインターフェース
+ * @param <T> マッピング対象のエンティティクラス
+ * @param <ID> エンティティのID型
+ */
+public interface EntityMapper<T, ID> {
+    // ResultSetからエンティティへのマッピング
+    T mapFromResultSet(ResultSet rs) throws SQLException;
+    
+    // エンティティからPreparedStatementへのパラメータセット（INSERT用）
+    void setInsertParameters(PreparedStatement ps, T entity) throws SQLException;
+    
+    // エンティティからPreparedStatementへのパラメータセット（UPDATE用）
+    void setUpdateParameters(PreparedStatement ps, T entity) throws SQLException;
+    
+    // テーブル名の取得
+    String getTableName();
+    
+    // ID列名の取得
+    String getIdColumnName();
+    
+    // 挿入用のSQL構築
+    String getInsertSQL();
+    
+    // 更新用のSQL構築
+    String getUpdateSQL();
+    
+    // 削除用のSQL構築
+    String getDeleteSQL();
+    
+    // エンティティからIDの取得
+    ID getEntityId(T entity);
+    
+    // エンティティにIDを設定
+    void setEntityId(T entity, ID id);
+}</code>
+
+                        <h5>4. ユーザーエンティティのマッパー実装</h5>
+                        <code>/**
+ * ユーザーエンティティのマッパー実装
+ */
+public class UserMapper implements EntityMapper<User, Integer> {
+    
+    @Override
+    public User mapFromResultSet(ResultSet rs) throws SQLException {
+        User user = new User();
+        user.setId(rs.getInt("id"));
+        user.setName(rs.getString("name"));
+        user.setEmail(rs.getString("email"));
+        return user;
+    }
+    
+    @Override
+    public void setInsertParameters(PreparedStatement ps, User entity) throws SQLException {
+        ps.setString(1, entity.getName());
+        ps.setString(2, entity.getEmail());
+    }
+    
+    @Override
+    public void setUpdateParameters(PreparedStatement ps, User entity) throws SQLException {
+        ps.setString(1, entity.getName());
+        ps.setString(2, entity.getEmail());
+        ps.setInt(3, entity.getId());
+    }
+    
+    @Override
+    public String getTableName() {
+        return "users";
+    }
+    
+    @Override
+    public String getIdColumnName() {
+        return "id";
+    }
+    
+    @Override
+    public String getInsertSQL() {
+        return "INSERT INTO users (name, email) VALUES (?, ?)";
+    }
+    
+    @Override
+    public String getUpdateSQL() {
+        return "UPDATE users SET name = ?, email = ? WHERE id = ?";
+    }
+    
+    @Override
+    public String getDeleteSQL() {
+        return "DELETE FROM users WHERE id = ?";
+    }
+    
+    @Override
+    public Integer getEntityId(User entity) {
+        return entity.getId();
+    }
+    
+    @Override
+    public void setEntityId(User entity, Integer id) {
+        entity.setId(id);
+    }
+}</code>
+
+                        <h5>5. 汎用的なDAOの実装</h5>
+                        <code>/**
+ * 汎用的なDAO実装
+ * @param <T> エンティティクラス
+ * @param <ID> IDの型
+ */
+public class GenericDAO<T, ID> {
+    private final DataSource dataSource;
+    private final EntityMapper<T, ID> mapper;
+    
+    public GenericDAO(DataSource dataSource, EntityMapper<T, ID> mapper) {
+        this.dataSource = dataSource;
+        this.mapper = mapper;
+    }
+    
+    public T findById(ID id) throws SQLException {
+        String sql = "SELECT * FROM " + mapper.getTableName() + 
+                     " WHERE " + mapper.getIdColumnName() + " = ?";
+        
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            if (id instanceof Integer) {
+                ps.setInt(1, (Integer) id);
+            } else if (id instanceof String) {
+                ps.setString(1, (String) id);
+            } else if (id instanceof Long) {
+                ps.setLong(1, (Long) id);
+            }
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapper.mapFromResultSet(rs);
+                }
+                return null;
+            }
+        }
+    }
+    
+    public List<T> findAll() throws SQLException {
+        String sql = "SELECT * FROM " + mapper.getTableName();
+        
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            
+            List<T> results = new ArrayList<>();
+            while (rs.next()) {
+                results.add(mapper.mapFromResultSet(rs));
+            }
+            return results;
+        }
+    }
+    
+    public int insert(T entity) throws SQLException {
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = conn.prepareStatement(
+                 mapper.getInsertSQL(), Statement.RETURN_GENERATED_KEYS)) {
+            
+            mapper.setInsertParameters(ps, entity);
+            int result = ps.executeUpdate();
+            
+            if (result > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        Object generatedId = null;
+                        if (rs.getObject(1) instanceof Integer) {
+                            generatedId = rs.getInt(1);
+                        } else if (rs.getObject(1) instanceof Long) {
+                            generatedId = rs.getLong(1);
+                        } else if (rs.getObject(1) instanceof String) {
+                            generatedId = rs.getString(1);
+                        }
+                        mapper.setEntityId(entity, (ID) generatedId);
+                    }
+                }
+            }
+            
+            return result;
+        }
+    }
+    
+    public int update(T entity) throws SQLException {
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = conn.prepareStatement(mapper.getUpdateSQL())) {
+            
+            mapper.setUpdateParameters(ps, entity);
+            return ps.executeUpdate();
+        }
+    }
+    
+    public int delete(ID id) throws SQLException {
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = conn.prepareStatement(mapper.getDeleteSQL())) {
+            
+            if (id instanceof Integer) {
+                ps.setInt(1, (Integer) id);
+            } else if (id instanceof String) {
+                ps.setString(1, (String) id);
+            } else if (id instanceof Long) {
+                ps.setLong(1, (Long) id);
+            }
+            
+            return ps.executeUpdate();
+        }
+    }
+}</code>
+
+                        <h5>6. 関連のマッピングと遅延ロード</h5>
+                        <code>/**
+ * ユーザーとその注文を遅延ロードするマッパー
+ */
+public class UserWithOrdersMapper implements EntityMapper<User, Integer> {
+    private final UserMapper baseMapper = new UserMapper();
+    private final DataSource dataSource;
+    
+    public UserWithOrdersMapper(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+    
+    @Override
+    public User mapFromResultSet(ResultSet rs) throws SQLException {
+        // 基本プロパティのマッピング
+        User user = baseMapper.mapFromResultSet(rs);
+        
+        // 注文の遅延ロードを設定
+        user.setOrders(new LazyList<>(() -> loadOrdersForUser(user.getId())));
+        
+        return user;
+    }
+    
+    private List<Order> loadOrdersForUser(int userId) throws SQLException {
+        String sql = "SELECT * FROM orders WHERE user_id = ?";
+        List<Order> orders = new ArrayList<>();
+        
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, userId);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                OrderMapper orderMapper = new OrderMapper();
+                while (rs.next()) {
+                    orders.add(orderMapper.mapFromResultSet(rs));
+                }
+            }
+        }
+        
+        return orders;
+    }
+    
+    // 他のメソッドはUserMapperに委譲
+    @Override
+    public void setInsertParameters(PreparedStatement ps, User entity) throws SQLException {
+        baseMapper.setInsertParameters(ps, entity);
+    }
+    
+    @Override
+    public void setUpdateParameters(PreparedStatement ps, User entity) throws SQLException {
+        baseMapper.setUpdateParameters(ps, entity);
+    }
+    
+    @Override
+    public String getTableName() {
+        return baseMapper.getTableName();
+    }
+    
+    @Override
+    public String getIdColumnName() {
+        return baseMapper.getIdColumnName();
+    }
+    
+    @Override
+    public String getInsertSQL() {
+        return baseMapper.getInsertSQL();
+    }
+    
+    @Override
+    public String getUpdateSQL() {
+        return baseMapper.getUpdateSQL();
+    }
+    
+    @Override
+    public String getDeleteSQL() {
+        return baseMapper.getDeleteSQL();
+    }
+    
+    @Override
+    public Integer getEntityId(User entity) {
+        return baseMapper.getEntityId(entity);
+    }
+    
+    @Override
+    public void setEntityId(User entity, Integer id) {
+        baseMapper.setEntityId(entity, id);
+    }
+}</code>
+
+                        <h5>7. 遅延リストの実装</h5>
+                        <code>/**
+ * 遅延ロードを実装するリスト
+ * @param <T> リストの要素型
+ */
+public class LazyList<T> extends ArrayList<T> {
+    private final Supplier<List<T>> loader;
+    private boolean loaded = false;
+    
+    public LazyList(Supplier<List<T>> loader) {
+        this.loader = loader;
+    }
+    
+    private void loadIfNeeded() {
+        if (!loaded) {
+            try {
+                List<T> loadedItems = loader.get();
+                super.addAll(loadedItems);
+                loaded = true;
+            } catch (Exception e) {
+                throw new RuntimeException("データのロードに失敗しました", e);
+            }
+        }
+    }
+    
+    @Override
+    public int size() {
+        loadIfNeeded();
+        return super.size();
+    }
+    
+    @Override
+    public boolean isEmpty() {
+        loadIfNeeded();
+        return super.isEmpty();
+    }
+    
+    @Override
+    public T get(int index) {
+        loadIfNeeded();
+        return super.get(index);
+    }
+    
+    @Override
+    public Iterator<T> iterator() {
+        loadIfNeeded();
+        return super.iterator();
+    }
+    
+    // 他のメソッドもオーバーライド（省略）
+}</code>
+
+                        <h5>8. ORMの使用例</h5>
+                        <code>/**
+ * 簡易ORMの使用例
+ */
+public class SimpleORMExample {
+    public static void main(String[] args) {
+        try {
+            // データソースのセットアップ
+            HikariConfig config = new HikariConfig();
+            config.setJdbcUrl("jdbc:postgresql://localhost:5432/testdb");
+            config.setUsername("postgres");
+            config.setPassword("password");
+            DataSource dataSource = new HikariDataSource(config);
+            
+            // ユーザーDAO
+            EntityMapper<User, Integer> userMapper = new UserMapper();
+            GenericDAO<User, Integer> userDAO = new GenericDAO<>(dataSource, userMapper);
+            
+            // 新しいユーザーの挿入
+            User newUser = new User();
+            newUser.setName("鈴木一郎");
+            newUser.setEmail("suzuki@example.com");
+            
+            int result = userDAO.insert(newUser);
+            System.out.println(result + "件のユーザーが追加されました。ID: " + newUser.getId());
+            
+            // 全ユーザーの取得
+            List<User> allUsers = userDAO.findAll();
+            System.out.println("すべてのユーザー:");
+            allUsers.forEach(System.out::println);
+            
+            // 関連を持つユーザーのロード
+            EntityMapper<User, Integer> userWithOrdersMapper = new UserWithOrdersMapper(dataSource);
+            GenericDAO<User, Integer> userWithOrdersDAO = new GenericDAO<>(dataSource, userWithOrdersMapper);
+            
+            User userWithOrders = userWithOrdersDAO.findById(newUser.getId());
+            System.out.println("取得したユーザー: " + userWithOrders);
+            
+            // 遅延ロードされる注文の取得
+            List<Order> orders = userWithOrders.getOrders();
+            System.out.println("ユーザーの注文数: " + orders.size());
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}</code>
+
+                        <div class="note">
+                            <h5>ORMのメリットとデメリット</h5>
+                            <h6>メリット</h6>
+                            <ul>
+                                <li><strong>生産性の向上</strong>：SQL操作をオブジェクト操作として抽象化できる</li>
+                                <li><strong>保守性の向上</strong>：データベースの変更がコードに与える影響を最小限に抑えられる</li>
+                                <li><strong>コードの可読性</strong>：SQLの代わりにオブジェクト操作を使用することで、コードが明確になる</li>
+                                <li><strong>最適化</strong>：キャッシュや遅延ロードなどの最適化が容易に実装できる</li>
+                            </ul>
+                            <h6>デメリット</h6>
+                            <ul>
+                                <li><strong>複雑性</strong>：ORMフレームワークの学習曲線が急な場合がある</li>
+                                <li><strong>パフォーマンスのオーバーヘッド</strong>：特に複雑なクエリでは、直接SQLを書くよりも効率が悪くなる可能性がある</li>
+                                <li><strong>制御の喪失</strong>：細かいSQL制御が難しくなることがある</li>
+                                <li><strong>「N+1クエリ問題」</strong>：関連オブジェクトを取得するためにN+1回のデータベースアクセスが発生する場合がある</li>
+                            </ul>
+                        </div>
+
+                        <h4>主要なJava ORMフレームワーク</h4>
+                        <p>実際のアプリケーション開発では、多くの場合、既存のORMフレームワークを使用します。主要なJava ORMフレームワークには以下のようなものがあります：</p>
+
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>ORMフレームワーク</th>
+                                    <th>説明</th>
+                                    <th>特徴</th>
+                                </tr>
+                                <tr>
+                                    <td>Hibernate</td>
+                                    <td>最も広く使われているORMフレームワーク</td>
+                                    <td>
+                                        <ul>
+                                            <li>豊富な機能セット</li>
+                                            <li>多様なマッピング戦略</li>
+                                            <li>HQLという独自のクエリ言語</li>
+                                            <li>キャッシュサポート</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>JPA (Java Persistence API)</td>
+                                    <td>Java EEの標準ORMフレームワーク</td>
+                                    <td>
+                                        <ul>
+                                            <li>標準化されたAPI</li>
+                                            <li>アノテーションベースのマッピング</li>
+                                            <li>JPQLクエリ言語</li>
+                                            <li>複数の実装（Hibernate、EclipseLink、OpenJPAなど）</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>MyBatis</td>
+                                    <td>SQLマッピングフレームワーク</td>
+                                    <td>
+                                        <ul>
+                                            <li>XMLやアノテーションでSQLを定義</li>
+                                            <li>完全なORMよりもSQLに重点を置く</li>
+                                            <li>より細かなSQL制御</li>
+                                            <li>軽量で学習が容易</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>jOOQ</td>
+                                    <td>型安全なSQLの構築に重点を置くフレームワーク</td>
+                                    <td>
+                                        <ul>
+                                            <li>Javaコードでの型安全なSQL構築</li>
+                                            <li>データベーススキーマからコード生成</li>
+                                            <li>高度なSQL機能のサポート</li>
+                                            <li>複雑なクエリに適している</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Spring Data JPA</td>
+                                    <td>Springフレームワークの一部</td>
+                                    <td>
+                                        <ul>
+                                            <li>JPAの上に構築されたリポジトリレイヤー</li>
+                                            <li>メソッド名からクエリを自動生成</li>
+                                            <li>カスタムクエリのサポート</li>
+                                            <li>ページネーションとソートのサポート</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>練習問題 6.2.1: 簡易ORMの拡張</h5>
+                            <p>前述の簡易ORMフレームワークを以下のように拡張してください：</p>
+                            <ol>
+                                <li>OrderクラスとOrderMapperクラスを実装する</li>
+                                <li>ユーザーと注文の双方向の関連を実装する（ユーザーから注文を取得でき、注文からユーザーを取得できるようにする）</li>
+                                <li>条件付き検索を行うためのfindByPropertyメソッドをGenericDAOに追加する（プロパティ名と値を指定して検索）</li>
+                                <li>ページネーションをサポートするためのfindAllPaginatedメソッドをGenericDAOに追加する（オフセットとリミットを指定）</li>
+                                <li>すべての機能を試すための簡単なテストプログラムを作成する</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="jdbc-collections">
+                        <h3 class="section-title">6.3 JDBCとJavaコレクションの連携</h3>
+                        <p>JDBCからデータを取得した後、それを効率的に処理するためにJavaのコレクションフレームワークを活用することは非常に重要です。この節では、JDBC操作の結果をJavaコレクションと効果的に連携させる方法を学びます。</p>
+
+                        <h4>結果セットとコレクションの変換</h4>
+                        <p>JDBCのResultSetオブジェクトから取得したデータを、様々なJavaコレクションに変換する基本的な方法を見ていきましょう。</p>
+
+                        <h5>1. ResultSetをListに変換する</h5>
+                        <code>/**
+ * ResultSetをListに変換するユーティリティメソッド
+ * @param rs 変換対象のResultSet
+ * @param mapper ResultSetから対象クラスへのマッピングを行うラムダ式/インターフェース
+ * @return マッピングされたオブジェクトのリスト
+ */
+public static <T> List<T> resultSetToList(ResultSet rs, ResultSetMapper<T> mapper) throws SQLException {
+    List<T> list = new ArrayList<>();
+    while (rs.next()) {
+        list.add(mapper.map(rs));
+    }
+    return list;
+}
+
+/**
+ * ResultSetからオブジェクトへのマッピングを行うための関数型インターフェース
+ */
+@FunctionalInterface
+public interface ResultSetMapper<T> {
+    T map(ResultSet rs) throws SQLException;
+}
+
+// 使用例
+public List<User> getAllUsers(Connection conn) throws SQLException {
+    String sql = "SELECT * FROM users";
+    try (PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        
+        return resultSetToList(rs, rs -> {
+            User user = new User();
+            user.setId(rs.getInt("id"));
+            user.setName(rs.getString("name"));
+            user.setEmail(rs.getString("email"));
+            return user;
+        });
+    }
+}</code>
+
+                        <h5>2. ResultSetをMapに変換する</h5>
+                        <code>/**
+ * ResultSetをMapに変換するユーティリティメソッド
+ * @param rs 変換対象のResultSet
+ * @param keyMapper ResultSetからキーを抽出するラムダ式
+ * @param valueMapper ResultSetから値を抽出するラムダ式
+ * @return キーと値のマップ
+ */
+public static <K, V> Map<K, V> resultSetToMap(
+        ResultSet rs, 
+        ResultSetKeyMapper<K> keyMapper,
+        ResultSetMapper<V> valueMapper) throws SQLException {
+    
+    Map<K, V> map = new HashMap<>();
+    while (rs.next()) {
+        K key = keyMapper.mapKey(rs);
+        V value = valueMapper.map(rs);
+        map.put(key, value);
+    }
+    return map;
+}
+
+/**
+ * ResultSetからキーを抽出するための関数型インターフェース
+ */
+@FunctionalInterface
+public interface ResultSetKeyMapper<K> {
+    K mapKey(ResultSet rs) throws SQLException;
+}
+
+// 使用例
+public Map<Integer, User> getUserMap(Connection conn) throws SQLException {
+    String sql = "SELECT * FROM users";
+    try (PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        
+        return resultSetToMap(
+            rs,
+            rs -> rs.getInt("id"),  // キーマッパー
+            rs -> {                // 値マッパー
+                User user = new User();
+                user.setId(rs.getInt("id"));
+                user.setName(rs.getString("name"));
+                user.setEmail(rs.getString("email"));
+                return user;
+            }
+        );
+    }
+}</code>
+
+                        <h5>3. グループ化されたMapの作成</h5>
+                        <code>/**
+ * ResultSetからグループ化されたMapを作成するユーティリティメソッド
+ * @param rs 変換対象のResultSet
+ * @param keyMapper ResultSetからキーを抽出するラムダ式
+ * @param valueMapper ResultSetから値を抽出するラムダ式
+ * @return キーとリスト値のマップ
+ */
+public static <K, V> Map<K, List<V>> resultSetToGroupedMap(
+        ResultSet rs, 
+        ResultSetKeyMapper<K> keyMapper,
+        ResultSetMapper<V> valueMapper) throws SQLException {
+    
+    Map<K, List<V>> map = new HashMap<>();
+    while (rs.next()) {
+        K key = keyMapper.mapKey(rs);
+        V value = valueMapper.map(rs);
+        
+        map.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
+    }
+    return map;
+}
+
+// 使用例
+public Map<String, List<User>> getUsersByDepartment(Connection conn) throws SQLException {
+    String sql = "SELECT u.*, d.name as dept_name " +
+                "FROM users u " +
+                "JOIN departments d ON u.department_id = d.id";
+                
+    try (PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        
+        return resultSetToGroupedMap(
+            rs,
+            rs -> rs.getString("dept_name"),  // 部署名をキーにする
+            rs -> {                          // ユーザーを値にする
+                User user = new User();
+                user.setId(rs.getInt("id"));
+                user.setName(rs.getString("name"));
+                user.setEmail(rs.getString("email"));
+                return user;
+            }
+        );
+    }
+}</code>
+
+                        <h5>4. Stream APIを使用した処理</h5>
+                        <p>Java 8以降はStream APIを使用して、コレクションの処理をより宣言的に行うことができます。</p>
+
+                        <code>/**
+ * ResultSetをStreamに変換するユーティリティクラス
+ */
+public class ResultSetStream<T> {
+    private final ResultSet rs;
+    private final ResultSetMapper<T> mapper;
+    
+    public ResultSetStream(ResultSet rs, ResultSetMapper<T> mapper) {
+        this.rs = rs;
+        this.mapper = mapper;
+    }
+    
+    public Stream<T> stream() {
+        Iterator<T> iterator = new Iterator<T>() {
+            private boolean hasNext = false;
+            private boolean nextChecked = false;
+            
+            @Override
+            public boolean hasNext() {
+                if (!nextChecked) {
+                    try {
+                        hasNext = rs.next();
+                        nextChecked = true;
+                    } catch (SQLException e) {
+                        throw new RuntimeException("ResultSetのイテレーション中にエラーが発生しました", e);
+                    }
+                }
+                return hasNext;
+            }
+            
+            @Override
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+                try {
+                    T result = mapper.map(rs);
+                    nextChecked = false;
+                    return result;
+                } catch (SQLException e) {
+                    throw new RuntimeException("ResultSetのマッピング中にエラーが発生しました", e);
+                }
+            }
+        };
+        
+        Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED);
+        return StreamSupport.stream(spliterator, false).onClose(() -> {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                throw new RuntimeException("ResultSetのクローズ中にエラーが発生しました", e);
+            }
+        });
+    }
+}
+
+// 使用例
+public List<String> getUserEmails(Connection conn) throws SQLException {
+    String sql = "SELECT email FROM users";
+    PreparedStatement ps = conn.prepareStatement(sql);
+    ResultSet rs = ps.executeQuery();
+    
+    try (Stream<String> stream = new ResultSetStream<>(rs, r -> r.getString("email")).stream()) {
+        return stream
+                .filter(email -> email != null && !email.isEmpty())
+                .map(String::toLowerCase)
+                .distinct()
+                .collect(Collectors.toList());
+    } finally {
+        if (ps != null) ps.close();
+    }
+}</code>
+
+                        <h4>バッチ処理とコレクション</h4>
+                        <p>大量のデータを処理する場合、コレクションを使用してバッチ処理を効率的に行うことができます。</p>
+
+                        <code>/**
+ * コレクションを使用したバッチ処理の例
+ */
+public void batchInsertUsers(Connection conn, List<User> users) throws SQLException {
+    String sql = "INSERT INTO users (name, email) VALUES (?, ?)";
+    
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        final int batchSize = 100;
+        int count = 0;
+        
+        for (User user : users) {
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getEmail());
+            ps.addBatch();
+            
+            if (++count % batchSize == 0) {
+                ps.executeBatch();
+                ps.clearBatch();
+            }
+        }
+        
+        // 残りのバッチを実行
+        if (count % batchSize != 0) {
+            ps.executeBatch();
+        }
+    }
+}</code>
+
+                        <h4>検索結果とページネーション</h4>
+                        <p>大量のデータをページ単位で取得する場合の実装例です。</p>
+
+                        <code>/**
+ * ページネーション処理を行うメソッド
+ * @param page ページ番号（0から開始）
+ * @param pageSize 1ページあたりのアイテム数
+ * @return ページングされたユーザーリスト
+ */
+public List<User> findUsersPaginated(Connection conn, int page, int pageSize) throws SQLException {
+    String sql = "SELECT * FROM users ORDER BY id LIMIT ? OFFSET ?";
+    
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, pageSize);
+        ps.setInt(2, page * pageSize);
+        
+        try (ResultSet rs = ps.executeQuery()) {
+            return resultSetToList(rs, rs -> {
+                User user = new User();
+                user.setId(rs.getInt("id"));
+                user.setName(rs.getString("name"));
+                user.setEmail(rs.getString("email"));
+                return user;
+            });
+        }
+    }
+}
+
+/**
+ * ページネーション情報を含むクラス
+ */
+public class Page<T> {
+    private final List<T> content;
+    private final int pageNumber;
+    private final int pageSize;
+    private final long totalElements;
+    private final int totalPages;
+    
+    public Page(List<T> content, int pageNumber, int pageSize, long totalElements) {
+        this.content = content;
+        this.pageNumber = pageNumber;
+        this.pageSize = pageSize;
+        this.totalElements = totalElements;
+        this.totalPages = (int) Math.ceil((double) totalElements / pageSize);
+    }
+    
+    // ゲッターと便利メソッド
+    public List<T> getContent() {
+        return content;
+    }
+    
+    public int getPageNumber() {
+        return pageNumber;
+    }
+    
+    public int getPageSize() {
+        return pageSize;
+    }
+    
+    public long getTotalElements() {
+        return totalElements;
+    }
+    
+    public int getTotalPages() {
+        return totalPages;
+    }
+    
+    public boolean hasNext() {
+        return pageNumber < totalPages - 1;
+    }
+    
+    public boolean hasPrevious() {
+        return pageNumber > 0;
+    }
+}
+
+/**
+ * ページネーション情報を含むユーザーリストを取得
+ */
+public Page<User> findUserPage(Connection conn, int page, int pageSize) throws SQLException {
+    // 総件数の取得
+    long totalElements = 0;
+    String countSql = "SELECT COUNT(*) FROM users";
+    try (PreparedStatement countPs = conn.prepareStatement(countSql);
+         ResultSet countRs = countPs.executeQuery()) {
+        if (countRs.next()) {
+            totalElements = countRs.getLong(1);
+        }
+    }
+    
+    // ページングされたデータの取得
+    List<User> users = findUsersPaginated(conn, page, pageSize);
+    
+    // ページオブジェクトの作成
+    return new Page<>(users, page, pageSize, totalElements);
+}</code>
+
+                        <h4>検索条件の動的構築</h4>
+                        <p>複雑な検索条件を動的に構築する例です。</p>
+
+                        <code>/**
+ * 検索条件を表すクラス
+ */
+public class UserSearchCriteria {
+    private String namePattern;
+    private String emailPattern;
+    private Integer minAge;
+    private Integer maxAge;
+    
+    // ゲッターとセッター省略
+    
+    /**
+     * 検索条件からSQLとパラメータを構築
+     */
+    public PreparedStatement buildPreparedStatement(Connection conn) throws SQLException {
+        StringBuilder sql = new StringBuilder("SELECT * FROM users WHERE 1=1");
+        List&lt;Object&gt; params = new ArrayList&lt;&gt;();
+        
+        if (namePattern != null && !namePattern.isEmpty()) {
+            sql.append(" AND name LIKE ?");
+            params.add("%" + namePattern + "%");
+        }
+        
+        if (emailPattern != null && !emailPattern.isEmpty()) {
+            sql.append(" AND email LIKE ?");
+            params.add("%" + emailPattern + "%");
+        }
+        
+        if (minAge != null) {
+            sql.append(" AND age >= ?");
+            params.add(minAge);
+        }
+        
+        if (maxAge != null) {
+            sql.append(" AND age <= ?");
+            params.add(maxAge);
+        }
+        
+        PreparedStatement ps = conn.prepareStatement(sql.toString());
+        for (int i = 0; i < params.size(); i++) {
+            ps.setObject(i + 1, params.get(i));
+        }
+        
+        return ps;
+    }
+}
+
+/**
+ * 動的検索条件を使用した検索
+ */
+public List<User> searchUsers(Connection conn, UserSearchCriteria criteria) throws SQLException {
+    try (PreparedStatement ps = criteria.buildPreparedStatement(conn);
+         ResultSet rs = ps.executeQuery()) {
+        
+        return resultSetToList(rs, rs -> {
+            User user = new User();
+            user.setId(rs.getInt("id"));
+            user.setName(rs.getString("name"));
+            user.setEmail(rs.getString("email"));
+            user.setAge(rs.getInt("age"));
+            return user;
+        });
+    }
+}</code>
+
+                        <div class="note">
+                            <h5>効率的なコレクション処理のためのベストプラクティス</h5>
+                            <ul>
+                                <li><strong>適切なコレクション型の選択</strong>：用途に合わせて適切なコレクション型（List、Set、Map、Queueなど）を選択する</li>
+                                <li><strong>メモリ使用量の考慮</strong>：大量のデータを扱う場合は、ページング処理や遅延ロードを検討する</li>
+                                <li><strong>Stream APIの活用</strong>：データ処理のパイプラインを宣言的に記述するためにStream APIを活用する</li>
+                                <li><strong>並列処理の考慮</strong>：適切な場合は、parallelStream()を使用して並列処理を行う</li>
+                                <li><strong>バッチ処理の最適化</strong>：大量のデータを処理する場合は、適切なバッチサイズを選択する</li>
+                                <li><strong>インデックスの活用</strong>：検索や並べ替えが頻繁に行われるデータベースカラムにはインデックスを設定する</li>
+                            </ul>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>練習問題 6.3.1: JDBCとコレクションの連携</h5>
+                            <p>以下の要件を満たすプログラムを作成してください：</p>
+                            <ol>
+                                <li>商品（Product）テーブルとカテゴリー（Category）テーブルが存在するとする</li>
+                                <li>各商品は1つのカテゴリーに属する（外部キー制約あり）</li>
+                                <li>カテゴリー別に商品をグループ化したMapを返すメソッドを実装する</li>
+                                <li>商品名、価格範囲、カテゴリーIDによる動的な検索機能を実装する</li>
+                                <li>検索結果を任意のフィールドでソートする機能を実装する</li>
+                                <li>すべての機能をテストするための簡単なデモプログラムを作成する</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="ec-site-implementation">
+                        <h3 class="section-title">6.4 DAOパターンを使用したECサイトバックエンド実装（実習）</h3>
+                        <p>ここまで学んできたDAOパターン、ORM、コレクション処理の知識を活用して、簡単なECサイトのバックエンドを実装してみましょう。この実習では、以下の機能を持つECサイトバックエンドシステムを構築します。</p>
+
+                        <h4>システム要件</h4>
+                        <p>実装するECサイトバックエンドシステムの要件は以下の通りです：</p>
+                        <ul>
+                            <li>ユーザー管理（登録、更新、削除、認証）</li>
+                            <li>商品管理（商品の追加、更新、削除、検索）</li>
+                            <li>カート機能（カートへの商品追加、削除、更新）</li>
+                            <li>注文処理（注文の作成、履歴の確認）</li>
+                        </ul>
+
+                        <h4>データベース設計</h4>
+                        <p>ECサイトバックエンドで使用するデータベーススキーマは以下の通りです：</p>
+
+                        <code>-- ユーザーテーブル
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    full_name VARCHAR(100),
+    address TEXT,
+    phone VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 商品カテゴリーテーブル
+CREATE TABLE categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    description TEXT
+);
+
+-- 商品テーブル
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    category_id INTEGER REFERENCES categories(id),
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    price DECIMAL(10, 2) NOT NULL,
+    stock_quantity INTEGER NOT NULL DEFAULT 0,
+    image_url VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 注文テーブル
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    total_amount DECIMAL(10, 2) NOT NULL,
+    status VARCHAR(20) NOT NULL, -- 例: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED
+    shipping_address TEXT NOT NULL,
+    payment_method VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 注文詳細テーブル
+CREATE TABLE order_items (
+    id SERIAL PRIMARY KEY,
+    order_id INTEGER NOT NULL REFERENCES orders(id),
+    product_id INTEGER NOT NULL REFERENCES products(id),
+    quantity INTEGER NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- カートテーブル
+CREATE TABLE carts (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- カート内の商品テーブル
+CREATE TABLE cart_items (
+    id SERIAL PRIMARY KEY,
+    cart_id INTEGER NOT NULL REFERENCES carts(id),
+    product_id INTEGER NOT NULL REFERENCES products(id),
+    quantity INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (cart_id, product_id)
+);</code>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="600" height="450">
+                                <!-- Users -->
+                                <rect x="50" y="20" width="160" height="100" fill="#bbdefb" stroke="#1976d2" stroke-width="1" rx="3" />
+                                <text x="130" y="40" text-anchor="middle" font-size="14" font-weight="bold">Users</text>
+                                <line x1="50" y1="50" x2="210" y2="50" stroke="#1976d2" stroke-width="1" />
+                                <text x="55" y="65" font-size="10">id (PK)</text>
+                                <text x="55" y="80" font-size="10">username</text>
+                                <text x="55" y="95" font-size="10">email</text>
+                                <text x="55" y="110" font-size="10">password</text>
+                                
+                                <!-- Carts -->
+                                <rect x="50" y="150" width="160" height="80" fill="#c8e6c9" stroke="#388e3c" stroke-width="1" rx="3" />
+                                <text x="130" y="170" text-anchor="middle" font-size="14" font-weight="bold">Carts</text>
+                                <line x1="50" y1="180" x2="210" y2="180" stroke="#388e3c" stroke-width="1" />
+                                <text x="55" y="195" font-size="10">id (PK)</text>
+                                <text x="55" y="210" font-size="10">user_id (FK)</text>
+                                <text x="55" y="225" font-size="10">created_at</text>
+                                
+                                <!-- Cart Items -->
+                                <rect x="50" y="260" width="160" height="100" fill="#c8e6c9" stroke="#388e3c" stroke-width="1" rx="3" />
+                                <text x="130" y="280" text-anchor="middle" font-size="14" font-weight="bold">Cart Items</text>
+                                <line x1="50" y1="290" x2="210" y2="290" stroke="#388e3c" stroke-width="1" />
+                                <text x="55" y="305" font-size="10">id (PK)</text>
+                                <text x="55" y="320" font-size="10">cart_id (FK)</text>
+                                <text x="55" y="335" font-size="10">product_id (FK)</text>
+                                <text x="55" y="350" font-size="10">quantity</text>
+                                
+                                <!-- Categories -->
+                                <rect x="390" y="20" width="160" height="80" fill="#ffecb3" stroke="#ffa000" stroke-width="1" rx="3" />
+                                <text x="470" y="40" text-anchor="middle" font-size="14" font-weight="bold">Categories</text>
+                                <line x1="390" y1="50" x2="550" y2="50" stroke="#ffa000" stroke-width="1" />
+                                <text x="395" y="65" font-size="10">id (PK)</text>
+                                <text x="395" y="80" font-size="10">name</text>
+                                <text x="395" y="95" font-size="10">description</text>
+                                
+                                <!-- Products -->
+                                <rect x="390" y="130" width="160" height="120" fill="#ffecb3" stroke="#ffa000" stroke-width="1" rx="3" />
+                                <text x="470" y="150" text-anchor="middle" font-size="14" font-weight="bold">Products</text>
+                                <line x1="390" y1="160" x2="550" y2="160" stroke="#ffa000" stroke-width="1" />
+                                <text x="395" y="175" font-size="10">id (PK)</text>
+                                <text x="395" y="190" font-size="10">category_id (FK)</text>
+                                <text x="395" y="205" font-size="10">name</text>
+                                <text x="395" y="220" font-size="10">price</text>
+                                <text x="395" y="235" font-size="10">stock_quantity</text>
+                                
+                                <!-- Orders -->
+                                <rect x="390" y="280" width="160" height="100" fill="#e1bee7" stroke="#8e24aa" stroke-width="1" rx="3" />
+                                <text x="470" y="300" text-anchor="middle" font-size="14" font-weight="bold">Orders</text>
+                                <line x1="390" y1="310" x2="550" y2="310" stroke="#8e24aa" stroke-width="1" />
+                                <text x="395" y="325" font-size="10">id (PK)</text>
+                                <text x="395" y="340" font-size="10">user_id (FK)</text>
+                                <text x="395" y="355" font-size="10">total_amount</text>
+                                <text x="395" y="370" font-size="10">status</text>
+                                
+                                <!-- Order Items -->
+                                <rect x="390" y="410" width="160" height="100" fill="#e1bee7" stroke="#8e24aa" stroke-width="1" rx="3" />
+                                <text x="470" y="430" text-anchor="middle" font-size="14" font-weight="bold">Order Items</text>
+                                <line x1="390" y1="440" x2="550" y2="440" stroke="#8e24aa" stroke-width="1" />
+                                <text x="395" y="455" font-size="10">id (PK)</text>
+                                <text x="395" y="470" font-size="10">order_id (FK)</text>
+                                <text x="395" y="485" font-size="10">product_id (FK)</text>
+                                <text x="395" y="500" font-size="10">quantity</text>
+                                
+                                <!-- Relationships -->
+                                <line x1="130" y1="120" x2="130" y2="150" stroke="#000" stroke-width="1" />
+                                <polygon points="125,140 130,150 135,140" fill="#000" />
+                                
+                                <line x1="130" y1="230" x2="130" y2="260" stroke="#000" stroke-width="1" />
+                                <polygon points="125,250 130,260 135,250" fill="#000" />
+                                
+                                <line x1="210" y1="310" x2="380" y2="190" stroke="#000" stroke-width="1" stroke-dasharray="5,5" />
+                                <polygon points="370,192 380,190 372,200" fill="#000" />
+                                
+                                <line x1="470" y1="100" x2="470" y2="130" stroke="#000" stroke-width="1" />
+                                <polygon points="465,120 470,130 475,120" fill="#000" />
+                                
+                                <line x1="210" y1="70" x2="380" y2="320" stroke="#000" stroke-width="1" stroke-dasharray="5,5" />
+                                <polygon points="370,315 380,320 372,325" fill="#000" />
+                                
+                                <line x1="470" y1="380" x2="470" y2="410" stroke="#000" stroke-width="1" />
+                                <polygon points="465,400 470,410 475,400" fill="#000" />
+                                
+                                <line x1="390" y1="480" x2="220" y2="180" stroke="#000" stroke-width="1" stroke-dasharray="5,5" />
+                                <polygon points="225,190 220,180 230,185" fill="#000" />
+                                
+                                <line x1="550" y1="190" x2="550" y2="480" stroke="#000" stroke-width="1" stroke-dasharray="5,5" />
+                                <polygon points="545,470 550,480 555,470" fill="#000" />
+                            </svg>
+                            <p class="text-center">図6.3: ECサイトデータベーススキーマ</p>
+                        </div>
+
+                        <h4>実装するクラス構造</h4>
+                        <p>実装するシステムのクラス構造は以下の通りです：</p>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 500" width="600" height="500">
+                                <!-- パッケージ構造 -->
+                                <rect x="50" y="20" width="500" height="460" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="1" stroke-dasharray="5,3" rx="5" />
+                                <text x="60" y="40" font-size="14" font-weight="bold">com.example.ecsite</text>
+                                
+                                <!-- モデル層 -->
+                                <rect x="70" y="60" width="460" height="100" fill="#e3f2fd" stroke="#1976d2" stroke-width="1" rx="5" />
+                                <text x="80" y="80" font-size="14" font-weight="bold">model</text>
+                                <rect x="90" y="90" width="100" height="25" fill="#bbdefb" stroke="#1976d2" stroke-width="1" rx="3" />
+                                <text x="140" y="107" text-anchor="middle" font-size="12">User</text>
+                                <rect x="200" y="90" width="100" height="25" fill="#bbdefb" stroke="#1976d2" stroke-width="1" rx="3" />
+                                <text x="250" y="107" text-anchor="middle" font-size="12">Product</text>
+                                <rect x="310" y="90" width="100" height="25" fill="#bbdefb" stroke="#1976d2" stroke-width="1" rx="3" />
+                                <text x="360" y="107" text-anchor="middle" font-size="12">Order</text>
+                                <rect x="420" y="90" width="100" height="25" fill="#bbdefb" stroke="#1976d2" stroke-width="1" rx="3" />
+                                <text x="470" y="107" text-anchor="middle" font-size="12">Cart</text>
+                                <rect x="90" y="125" width="100" height="25" fill="#bbdefb" stroke="#1976d2" stroke-width="1" rx="3" />
+                                <text x="140" y="142" text-anchor="middle" font-size="12">Category</text>
+                                <rect x="200" y="125" width="100" height="25" fill="#bbdefb" stroke="#1976d2" stroke-width="1" rx="3" />
+                                <text x="250" y="142" text-anchor="middle" font-size="12">OrderItem</text>
+                                <rect x="310" y="125" width="100" height="25" fill="#bbdefb" stroke="#1976d2" stroke-width="1" rx="3" />
+                                <text x="360" y="142" text-anchor="middle" font-size="12">CartItem</text>
+                                
+                                <!-- データアクセス層 -->
+                                <rect x="70" y="170" width="460" height="100" fill="#e8f5e9" stroke="#388e3c" stroke-width="1" rx="5" />
+                                <text x="80" y="190" font-size="14" font-weight="bold">dao</text>
+                                <rect x="90" y="200" width="100" height="25" fill="#c8e6c9" stroke="#388e3c" stroke-width="1" rx="3" />
+                                <text x="140" y="217" text-anchor="middle" font-size="12">UserDAO</text>
+                                <rect x="200" y="200" width="100" height="25" fill="#c8e6c9" stroke="#388e3c" stroke-width="1" rx="3" />
+                                <text x="250" y="217" text-anchor="middle" font-size="12">ProductDAO</text>
+                                <rect x="310" y="200" width="100" height="25" fill="#c8e6c9" stroke="#388e3c" stroke-width="1" rx="3" />
+                                <text x="360" y="217" text-anchor="middle" font-size="12">OrderDAO</text>
+                                <rect x="420" y="200" width="100" height="25" fill="#c8e6c9" stroke="#388e3c" stroke-width="1" rx="3" />
+                                <text x="470" y="217" text-anchor="middle" font-size="12">CartDAO</text>
+                                <rect x="90" y="235" width="100" height="25" fill="#c8e6c9" stroke="#388e3c" stroke-width="1" rx="3" />
+                                <text x="140" y="252" text-anchor="middle" font-size="12">CategoryDAO</text>
+                                <rect x="200" y="235" width="100" height="25" fill="#c8e6c9" stroke="#388e3c" stroke-width="1" rx="3" />
+                                <text x="250" y="252" text-anchor="middle" font-size="12">OrderItemDAO</text>
+                                <rect x="310" y="235" width="100" height="25" fill="#c8e6c9" stroke="#388e3c" stroke-width="1" rx="3" />
+                                <text x="360" y="252" text-anchor="middle" font-size="12">CartItemDAO</text>
+                                
+                                <!-- サービス層 -->
+                                <rect x="70" y="280" width="460" height="100" fill="#fff8e1" stroke="#ffa000" stroke-width="1" rx="5" />
+                                <text x="80" y="300" font-size="14" font-weight="bold">service</text>
+                                <rect x="90" y="310" width="100" height="25" fill="#ffecb3" stroke="#ffa000" stroke-width="1" rx="3" />
+                                <text x="140" y="327" text-anchor="middle" font-size="12">UserService</text>
+                                <rect x="200" y="310" width="100" height="25" fill="#ffecb3" stroke="#ffa000" stroke-width="1" rx="3" />
+                                <text x="250" y="327" text-anchor="middle" font-size="12">ProductService</text>
+                                <rect x="310" y="310" width="100" height="25" fill="#ffecb3" stroke="#ffa000" stroke-width="1" rx="3" />
+                                <text x="360" y="327" text-anchor="middle" font-size="12">OrderService</text>
+                                <rect x="420" y="310" width="100" height="25" fill="#ffecb3" stroke="#ffa000" stroke-width="1" rx="3" />
+                                <text x="470" y="327" text-anchor="middle" font-size="12">CartService</text>
+                                <rect x="200" y="345" width="200" height="25" fill="#ffecb3" stroke="#ffa000" stroke-width="1" rx="3" />
+                                <text x="300" y="362" text-anchor="middle" font-size="12">AuthenticationService</text>
+                                
+                                <!-- ユーティリティ -->
+                                <rect x="70" y="390" width="460" height="80" fill="#f3e5f5" stroke="#8e24aa" stroke-width="1" rx="5" />
+                                <text x="80" y="410" font-size="14" font-weight="bold">util</text>
+                                <rect x="90" y="420" width="135" height="25" fill="#e1bee7" stroke="#8e24aa" stroke-width="1" rx="3" />
+                                <text x="157" y="437" text-anchor="middle" font-size="12">DatabaseUtil</text>
+                                <rect x="235" y="420" width="135" height="25" fill="#e1bee7" stroke="#8e24aa" stroke-width="1" rx="3" />
+                                <text x="302" y="437" text-anchor="middle" font-size="12">PasswordUtil</text>
+                                <rect x="380" y="420" width="135" height="25" fill="#e1bee7" stroke="#8e24aa" stroke-width="1" rx="3" />
+                                <text x="447" y="437" text-anchor="middle" font-size="12">ValidationUtil</text>
+                            </svg>
+                            <p class="text-center">図6.4: ECサイトシステムのクラス構造</p>
+                        </div>
+
+                        <h4>主要クラスの実装例</h4>
+                        <p>以下に、ECサイトバックエンドの主要なクラスの実装例を示します。</p>
+
+                        <h5>1. モデルクラス</h5>
+                        <p>まずはモデルクラスの例を示します。ここでは<span class="inline-code">User</span>クラスと<span class="inline-code">Product</span>クラスを例として示します。</p>
+
+                        <code>/**
+ * ユーザー情報を表すモデルクラス
+ */
+package com.example.ecsite.model;
+
+import java.util.Date;
+
+public class User {
+    private Integer id;
+    private String username;
+    private String email;
+    private String password;
+    private String fullName;
+    private String address;
+    private String phone;
+    private Date createdAt;
+    private Date updatedAt;
+    
+    // コンストラクタ
+    public User() {}
+    
+    public User(Integer id, String username, String email, String password, 
+                String fullName, String address, String phone) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.fullName = fullName;
+        this.address = address;
+        this.phone = phone;
+    }
+    
+    // ゲッターとセッター (略)
+    
+    @Override
+    public String toString() {
+        return "User [id=" + id + ", username=" + username + ", email=" + email + 
+               ", fullName=" + fullName + "]";
+    }
+}</code>
+
+                        <code>/**
+ * 商品情報を表すモデルクラス
+ */
+package com.example.ecsite.model;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+public class Product {
+    private Integer id;
+    private Integer categoryId;
+    private String name;
+    private String description;
+    private BigDecimal price;
+    private Integer stockQuantity;
+    private String imageUrl;
+    private Date createdAt;
+    private Date updatedAt;
+    
+    // カテゴリー（遅延ロード用）
+    private Category category;
+    
+    // コンストラクタ
+    public Product() {}
+    
+    public Product(Integer id, Integer categoryId, String name, String description, 
+                  BigDecimal price, Integer stockQuantity, String imageUrl) {
+        this.id = id;
+        this.categoryId = categoryId;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.stockQuantity = stockQuantity;
+        this.imageUrl = imageUrl;
+    }
+    
+    // ゲッターとセッター (略)
+    
+    @Override
+    public String toString() {
+        return "Product [id=" + id + ", name=" + name + ", price=" + price + 
+               ", stockQuantity=" + stockQuantity + "]";
+    }
+}</code>
+
+                        <h5>2. DAOインターフェース</h5>
+                        <p>次に、DAOインターフェースの例を示します。汎用的なDAOインターフェースと具体的な実装の例を示します。</p>
+
+                        <code>/**
+ * 汎用DAOインターフェース
+ */
+package com.example.ecsite.dao;
+
+import java.sql.SQLException;
+import java.util.List;
+
+public interface GenericDAO<T, ID> {
+    T findById(ID id) throws SQLException;
+    List<T> findAll() throws SQLException;
+    List<T> findAll(int limit, int offset) throws SQLException;
+    int insert(T entity) throws SQLException;
+    int update(T entity) throws SQLException;
+    int delete(ID id) throws SQLException;
+    long count() throws SQLException;
+}</code>
+
+                        <code>/**
+ * ユーザー情報用DAOインターフェース
+ */
+package com.example.ecsite.dao;
+
+import com.example.ecsite.model.User;
+import java.sql.SQLException;
+
+public interface UserDAO extends GenericDAO<User, Integer> {
+    User findByUsername(String username) throws SQLException;
+    User findByEmail(String email) throws SQLException;
+    boolean authenticate(String username, String password) throws SQLException;
+}</code>
+
+                        <h5>3. DAO実装クラス</h5>
+                        <p>次に、DAOの実装クラスの例を示します。</p>
+
+                        <code>/**
+ * 抽象DAO実装クラス
+ */
+package com.example.ecsite.dao.impl;
+
+import com.example.ecsite.dao.GenericDAO;
+import com.example.ecsite.util.DatabaseUtil;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+public abstract class AbstractDAO<T, ID> implements GenericDAO<T, ID> {
+    // マッピングメソッド（サブクラスで実装）
+    protected abstract T mapRow(ResultSet rs) throws SQLException;
+    
+    // テーブル名の取得（サブクラスで実装）
+    protected abstract String getTableName();
+    
+    // ID列名の取得（サブクラスで実装）
+    protected abstract String getIdColumnName();
+    
+    // INSERT文の構築（サブクラスで実装）
+    protected abstract String getInsertSQL();
+    
+    // UPDATE文の構築（サブクラスで実装）
+    protected abstract String getUpdateSQL();
+    
+    // INSERT用のパラメータ設定（サブクラスで実装）
+    protected abstract void setInsertParameters(PreparedStatement ps, T entity) throws SQLException;
+    
+    // UPDATE用のパラメータ設定（サブクラスで実装）
+    protected abstract void setUpdateParameters(PreparedStatement ps, T entity) throws SQLException;
+    
+    @Override
+    public T findById(ID id) throws SQLException {
+        String sql = "SELECT * FROM " + getTableName() + " WHERE " + getIdColumnName() + " = ?";
+        
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setObject(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapRow(rs);
+                }
+                return null;
+            }
+        }
+    }
+    
+    @Override
+    public List<T> findAll() throws SQLException {
+        String sql = "SELECT * FROM " + getTableName();
+        
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            
+            List<T> results = new ArrayList<>();
+            while (rs.next()) {
+                results.add(mapRow(rs));
+            }
+            return results;
+        }
+    }
+    
+    @Override
+    public List<T> findAll(int limit, int offset) throws SQLException {
+        String sql = "SELECT * FROM " + getTableName() + " LIMIT ? OFFSET ?";
+        
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, limit);
+            ps.setInt(2, offset);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                List<T> results = new ArrayList<>();
+                while (rs.next()) {
+                    results.add(mapRow(rs));
+                }
+                return results;
+            }
+        }
+    }
+    
+    @Override
+    public int insert(T entity) throws SQLException {
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(getInsertSQL(), Statement.RETURN_GENERATED_KEYS)) {
+            
+            setInsertParameters(ps, entity);
+            int result = ps.executeUpdate();
+            
+            // 生成されたキーの取得処理はサブクラスで必要に応じて実装
+            
+            return result;
+        }
+    }
+    
+    @Override
+    public int update(T entity) throws SQLException {
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(getUpdateSQL())) {
+            
+            setUpdateParameters(ps, entity);
+            return ps.executeUpdate();
+        }
+    }
+    
+    @Override
+    public int delete(ID id) throws SQLException {
+        String sql = "DELETE FROM " + getTableName() + " WHERE " + getIdColumnName() + " = ?";
+        
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setObject(1, id);
+            return ps.executeUpdate();
+        }
+    }
+    
+    @Override
+    public long count() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM " + getTableName();
+        
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            
+            if (rs.next()) {
+                return rs.getLong(1);
+            }
+            return 0;
+        }
+    }
+}</code>
+
+                        <code>/**
+ * UserDAOの実装クラス
+ */
+package com.example.ecsite.dao.impl;
+
+import com.example.ecsite.dao.UserDAO;
+import com.example.ecsite.model.User;
+import com.example.ecsite.util.DatabaseUtil;
+import com.example.ecsite.util.PasswordUtil;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+
+public class UserDAOImpl extends AbstractDAO<User, Integer> implements UserDAO {
+    
+    @Override
+    protected User mapRow(ResultSet rs) throws SQLException {
+        User user = new User();
+        user.setId(rs.getInt("id"));
+        user.setUsername(rs.getString("username"));
+        user.setEmail(rs.getString("email"));
+        user.setPassword(rs.getString("password"));
+        user.setFullName(rs.getString("full_name"));
+        user.setAddress(rs.getString("address"));
+        user.setPhone(rs.getString("phone"));
+        user.setCreatedAt(rs.getTimestamp("created_at"));
+        user.setUpdatedAt(rs.getTimestamp("updated_at"));
+        return user;
+    }
+    
+    @Override
+    protected String getTableName() {
+        return "users";
+    }
+    
+    @Override
+    protected String getIdColumnName() {
+        return "id";
+    }
+    
+    @Override
+    protected String getInsertSQL() {
+        return "INSERT INTO users (username, email, password, full_name, address, phone, created_at, updated_at) " +
+               "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    }
+    
+    @Override
+    protected String getUpdateSQL() {
+        return "UPDATE users SET username = ?, email = ?, password = ?, full_name = ?, " +
+               "address = ?, phone = ?, updated_at = ? WHERE id = ?";
+    }
+    
+    @Override
+    protected void setInsertParameters(PreparedStatement ps, User entity) throws SQLException {
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        
+        ps.setString(1, entity.getUsername());
+        ps.setString(2, entity.getEmail());
+        ps.setString(3, entity.getPassword());
+        ps.setString(4, entity.getFullName());
+        ps.setString(5, entity.getAddress());
+        ps.setString(6, entity.getPhone());
+        ps.setTimestamp(7, now);
+        ps.setTimestamp(8, now);
+    }
+    
+    @Override
+    protected void setUpdateParameters(PreparedStatement ps, User entity) throws SQLException {
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        
+        ps.setString(1, entity.getUsername());
+        ps.setString(2, entity.getEmail());
+        ps.setString(3, entity.getPassword());
+        ps.setString(4, entity.getFullName());
+        ps.setString(5, entity.getAddress());
+        ps.setString(6, entity.getPhone());
+        ps.setTimestamp(7, now);
+        ps.setInt(8, entity.getId());
+    }
+    
+    @Override
+    public int insert(User entity) throws SQLException {
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(getInsertSQL(), Statement.RETURN_GENERATED_KEYS)) {
+            
+            // パスワードのハッシュ化
+            entity.setPassword(PasswordUtil.hashPassword(entity.getPassword()));
+            
+            // パラメータのセット
+            setInsertParameters(ps, entity);
+            int result = ps.executeUpdate();
+            
+            // 生成されたIDを取得
+            if (result > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        entity.setId(rs.getInt(1));
+                    }
+                }
+            }
+            
+            return result;
+        }
+    }
+    
+    @Override
+    public User findByUsername(String username) throws SQLException {
+        String sql = "SELECT * FROM users WHERE username = ?";
+        
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, username);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapRow(rs);
+                }
+                return null;
+            }
+        }
+    }
+    
+    @Override
+    public User findByEmail(String email) throws SQLException {
+        String sql = "SELECT * FROM users WHERE email = ?";
+        
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, email);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapRow(rs);
+                }
+                return null;
+            }
+        }
+    }
+    
+    @Override
+    public boolean authenticate(String username, String password) throws SQLException {
+        User user = findByUsername(username);
+        if (user == null) {
+            return false;
+        }
+        
+        return PasswordUtil.verifyPassword(password, user.getPassword());
+    }
+}</code>
+
+                        <h5>4. サービスレイヤー</h5>
+                        <p>次に、ビジネスロジックを提供するサービスレイヤーの例を示します。</p>
+
+                        <code>/**
+ * カートサービスクラス
+ */
+package com.example.ecsite.service;
+
+import com.example.ecsite.dao.CartDAO;
+import com.example.ecsite.dao.CartItemDAO;
+import com.example.ecsite.dao.ProductDAO;
+import com.example.ecsite.dao.impl.CartDAOImpl;
+import com.example.ecsite.dao.impl.CartItemDAOImpl;
+import com.example.ecsite.dao.impl.ProductDAOImpl;
+import com.example.ecsite.model.Cart;
+import com.example.ecsite.model.CartItem;
+import com.example.ecsite.model.Product;
+import com.example.ecsite.util.DatabaseUtil;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+
+public class CartService {
+    private final CartDAO cartDAO;
+    private final CartItemDAO cartItemDAO;
+    private final ProductDAO productDAO;
+    
+    public CartService() {
+        this.cartDAO = new CartDAOImpl();
+        this.cartItemDAO = new CartItemDAOImpl();
+        this.productDAO = new ProductDAOImpl();
+    }
+    
+    /**
+     * ユーザーのカートを取得（なければ作成）
+     */
+    public Cart getOrCreateCart(int userId) throws SQLException {
+        Cart cart = cartDAO.findByUserId(userId);
+        if (cart == null) {
+            cart = new Cart();
+            cart.setUserId(userId);
+            cartDAO.insert(cart);
+        }
+        
+        // カート内の商品を読み込み
+        List<CartItem> items = cartItemDAO.findByCartId(cart.getId());
+        cart.setItems(items);
+        
+        // 各アイテムの商品情報を読み込み
+        for (CartItem item : items) {
+            Product product = productDAO.findById(item.getProductId());
+            item.setProduct(product);
+        }
+        
+        return cart;
+    }
+    
+    /**
+     * カートに商品を追加
+     */
+    public void addToCart(int userId, int productId, int quantity) throws SQLException {
+        // トランザクション開始
+        Connection conn = null;
+        try {
+            conn = DatabaseUtil.getConnection();
+            conn.setAutoCommit(false);
+            
+            // 商品の存在確認と在庫チェック
+            Product product = productDAO.findById(productId);
+            if (product == null) {
+                throw new IllegalArgumentException("商品が存在しません。ID: " + productId);
+            }
+            
+            if (product.getStockQuantity() < quantity) {
+                throw new IllegalArgumentException("在庫が不足しています。在庫数: " + product.getStockQuantity());
+            }
+            
+            // カートの取得または作成
+            Cart cart = cartDAO.findByUserId(userId);
+            if (cart == null) {
+                cart = new Cart();
+                cart.setUserId(userId);
+                cartDAO.insert(cart);
+            }
+            
+            // カート内の既存アイテムを確認
+            CartItem existingItem = cartItemDAO.findByCartIdAndProductId(cart.getId(), productId);
+            
+            if (existingItem != null) {
+                // 既存アイテムの数量を更新
+                existingItem.setQuantity(existingItem.getQuantity() + quantity);
+                cartItemDAO.update(existingItem);
+            } else {
+                // 新しいアイテムを追加
+                CartItem newItem = new CartItem();
+                newItem.setCartId(cart.getId());
+                newItem.setProductId(productId);
+                newItem.setQuantity(quantity);
+                cartItemDAO.insert(newItem);
+            }
+            
+            conn.commit();
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            throw e;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
+    /**
+     * カートから商品を削除
+     */
+    public void removeFromCart(int userId, int productId) throws SQLException {
+        // カートの取得
+        Cart cart = cartDAO.findByUserId(userId);
+        if (cart == null) {
+            return;  // カートが存在しない場合は何もしない
+        }
+        
+        // カートアイテムの削除
+        cartItemDAO.deleteByCartIdAndProductId(cart.getId(), productId);
+    }
+    
+    /**
+     * カート内商品の数量を更新
+     */
+    public void updateCartItemQuantity(int userId, int productId, int quantity) throws SQLException {
+        if (quantity <= 0) {
+            removeFromCart(userId, productId);
+            return;
+        }
+        
+        // トランザクション開始
+        Connection conn = null;
+        try {
+            conn = DatabaseUtil.getConnection();
+            conn.setAutoCommit(false);
+            
+            // 商品の存在確認と在庫チェック
+            Product product = productDAO.findById(productId);
+            if (product == null) {
+                throw new IllegalArgumentException("商品が存在しません。ID: " + productId);
+            }
+            
+            if (product.getStockQuantity() < quantity) {
+                throw new IllegalArgumentException("在庫が不足しています。在庫数: " + product.getStockQuantity());
+            }
+            
+            // カートの取得
+            Cart cart = cartDAO.findByUserId(userId);
+            if (cart == null) {
+                throw new IllegalArgumentException("カートが存在しません。");
+            }
+            
+            // カートアイテムの更新
+            CartItem item = cartItemDAO.findByCartIdAndProductId(cart.getId(), productId);
+            if (item == null) {
+                throw new IllegalArgumentException("カート内に指定された商品がありません。");
+            }
+            
+            item.setQuantity(quantity);
+            cartItemDAO.update(item);
+            
+            conn.commit();
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            throw e;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
+    /**
+     * カートを空にする
+     */
+    public void clearCart(int userId) throws SQLException {
+        Cart cart = cartDAO.findByUserId(userId);
+        if (cart != null) {
+            cartItemDAO.deleteByCartId(cart.getId());
+        }
+    }
+}</code>
+
+                        <h5>5. アプリケーション動作例</h5>
+                        <p>最後に、実装したクラスを使用してECサイトバックエンドの動作を示す例を示します。</p>
+
+                        <code>/**
+ * ECサイトアプリケーションのサンプル実行
+ */
+package com.example.ecsite;
+
+import com.example.ecsite.model.*;
+import com.example.ecsite.service.*;
+import com.example.ecsite.util.DatabaseUtil;
+
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.util.List;
+
+public class ECSiteDemo {
+    
+    public static void main(String[] args) {
+        try {
+            // サービスの初期化
+            UserService userService = new UserService();
+            ProductService productService = new ProductService();
+            CategoryService categoryService = new CategoryService();
+            CartService cartService = new CartService();
+            OrderService orderService = new OrderService();
+            
+            System.out.println("ECサイトバックエンドデモを開始します...");
+            
+            // ユーザーの登録
+            User user = new User();
+            user.setUsername("yamada_taro");
+            user.setEmail("yamada@example.com");
+            user.setPassword("password123");
+            user.setFullName("山田 太郎");
+            user.setAddress("東京都新宿区新宿1-1-1");
+            user.setPhone("03-1234-5678");
+            
+            userService.registerUser(user);
+            System.out.println("ユーザーを登録しました: " + user);
+            
+            // カテゴリーの追加
+            Category category = new Category();
+            category.setName("電子機器");
+            category.setDescription("電子製品やガジェットのカテゴリー");
+            
+            categoryService.createCategory(category);
+            System.out.println("カテゴリーを追加しました: " + category);
+            
+            // 商品の追加
+            Product product1 = new Product();
+            product1.setCategoryId(category.getId());
+            product1.setName("スマートフォン X");
+            product1.setDescription("最新のスマートフォン、高性能カメラ搭載");
+            product1.setPrice(new BigDecimal("89800"));
+            product1.setStockQuantity(100);
+            product1.setImageUrl("/images/smartphone-x.jpg");
+            
+            Product product2 = new Product();
+            product2.setCategoryId(category.getId());
+            product2.setName("タブレット Y");
+            product2.setDescription("10.5インチの大画面タブレット");
+            product2.setPrice(new BigDecimal("59800"));
+            product2.setStockQuantity(50);
+            product2.setImageUrl("/images/tablet-y.jpg");
+            
+            productService.addProduct(product1);
+            productService.addProduct(product2);
+            System.out.println("商品を追加しました: " + product1);
+            System.out.println("商品を追加しました: " + product2);
+            
+            // 商品一覧の取得
+            List<Product> products = productService.getAllProducts();
+            System.out.println("\n=== 商品一覧 ===");
+            for (Product p : products) {
+                System.out.println(p);
+            }
+            
+            // カートに商品を追加
+            cartService.addToCart(user.getId(), product1.getId(), 1);
+            cartService.addToCart(user.getId(), product2.getId(), 2);
+            System.out.println("\n商品をカートに追加しました");
+            
+            // カートの表示
+            Cart cart = cartService.getOrCreateCart(user.getId());
+            System.out.println("\n=== カート内容 ===");
+            BigDecimal totalAmount = BigDecimal.ZERO;
+            for (CartItem item : cart.getItems()) {
+                Product product = item.getProduct();
+                BigDecimal itemTotal = product.getPrice().multiply(new BigDecimal(item.getQuantity()));
+                System.out.println(product.getName() + " x " + item.getQuantity() + " = " + 
+                                  itemTotal + "円");
+                totalAmount = totalAmount.add(itemTotal);
+            }
+            System.out.println("合計: " + totalAmount + "円");
+            
+            // 注文の作成
+            Order order = orderService.createOrder(user.getId(), "東京都新宿区新宿1-1-1", "クレジットカード");
+            System.out.println("\n注文を作成しました: " + order);
+            
+            // 注文履歴の取得
+            List<Order> orders = orderService.getUserOrders(user.getId());
+            System.out.println("\n=== 注文履歴 ===");
+            for (Order o : orders) {
+                System.out.println(o);
+                List<OrderItem> orderItems = orderService.getOrderItems(o.getId());
+                for (OrderItem item : orderItems) {
+                    Product p = productService.getProductById(item.getProductId());
+                    System.out.println("  - " + p.getName() + " x " + item.getQuantity() + 
+                                      " = " + item.getPrice() + "円");
+                }
+                System.out.println("  合計: " + o.getTotalAmount() + "円");
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("エラーが発生しました: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            // データベース接続のクリーンアップ
+            DatabaseUtil.closeConnection();
+        }
+    }
+}</code>
+
+                        <div class="note">
+                            <h5>実装のポイント</h5>
+                            <ul>
+                                <li><strong>階層化された設計</strong>：モデル、DAO、サービスと明確に役割を分けることで、各レイヤーの責任を明確にしています</li>
+                                <li><strong>トランザクション管理</strong>：複数のデータベース操作が必要な処理では、トランザクションを適切に管理しています</li>
+                                <li><strong>例外処理</strong>：SQLExceptionを適切にキャッチし、上位レイヤーに伝播させています</li>
+                                <li><strong>リソース管理</strong>：try-with-resourcesを使用して接続、ステートメント、結果セットを確実にクローズしています</li>
+                                <li><strong>セキュリティ</strong>：パスワードはハッシュ化して保存するなど、基本的なセキュリティ対策を実装しています</li>
+                                <li><strong>データの整合性</strong>：在庫不足などのビジネスルールをチェックし、例外を投げています</li>
+                            </ul>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>実習課題 6.4.1: ECサイトバックエンドの実装と拡張</h5>
+                            <p>上記の例を参考に、以下の要件を満たすECサイトバックエンドを実装してください：</p>
+                            <ol>
+                                <li>必要なテーブルを作成するためのSQLスクリプトを作成</li>
+                                <li>必要なモデルクラス、DAOインターフェース、DAOの実装クラスを作成</li>
+                                <li>ユーザー管理、商品管理、カート管理、注文管理のサービスクラスを実装</li>
+                                <li>以下の機能を実装：
+                                    <ul>
+                                        <li>ユーザーの登録、認証、情報更新</li>
+                                        <li>商品の検索（カテゴリー別、キーワード検索など）</li>
+                                        <li>カートへの商品追加、削除、数量変更</li>
+                                        <li>注文の作成、注文履歴の取得</li>
+                                        <li>商品在庫の管理（注文時に在庫を減らすなど）</li>
+                                    </ul>
+                                </li>
+                                <li>以下の拡張機能から最低1つを実装：
+                                    <ul>
+                                        <li>商品のレビュー機能</li>
+                                        <li>クーポン機能</li>
+                                        <li>お気に入り商品機能</li>
+                                        <li>商品のソート機能（価格順、人気順など）</li>
+                                    </ul>
+                                </li>
+                                <li>テスト用の商品データとユーザーデータを追加するスクリプトの作成</li>
+                                <li>各機能をデモンストレーションするためのメインクラスの作成</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="chapter6-quiz">
+                        <h3 class="section-title">6.5 理解度確認テスト</h3>
+                        <div class="quiz-container">
+                            <h4>第6章の理解度チェック</h4>
+                            <p>以下の問題に答えて、第6章の内容の理解度を確認しましょう。</p>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題1:</strong> DAOパターンの主な目的は何ですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1a" value="a">
+                                    <label class="form-check-label" for="q1a">
+                                        ビジネスロジックとプレゼンテーション層を分離する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1b" value="b">
+                                    <label class="form-check-label" for="q1b">
+                                        データアクセスロジックとビジネスロジックを分離する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1c" value="c">
+                                        <label class="form-check-label" for="q1c">
+                                        JDBCの複雑さを隠蔽し、シンプルなインターフェースを提供する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1d" value="d">
+                                        <label class="form-check-label" for="q1d">
+                                        SQLインジェクションを防止する
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題2:</strong> 次のうち、DAOパターンの構成要素として正しくないものはどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2a" value="a">
+                                    <label class="form-check-label" for="q2a">
+                                        DAOインターフェース
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2b" value="b">
+                                    <label class="form-check-label" for="q2b">
+                                        DTO（データ転送オブジェクト）
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2c" value="c">
+                                        <label class="form-check-label" for="q2c">
+                                        MVC（モデル-ビュー-コントローラ）
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2d" value="d">
+                                        <label class="form-check-label" for="q2d">
+                                        DAO実装クラス
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題3:</strong> オブジェクトリレーショナルマッピング（ORM）の主な目的は何ですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3a" value="a">
+                                    <label class="form-check-label" for="q3a">
+                                        SQLの実行速度を向上させる
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3b" value="b">
+                                    <label class="form-check-label" for="q3b">
+                                        リレーショナルデータベースのテーブルとオブジェクト指向クラスの間のマッピングを行う
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3c" value="c">
+                                        <label class="form-check-label" for="q3c">
+                                        データベースのセキュリティを向上させる
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3d" value="d">
+                                        <label class="form-check-label" for="q3d">
+                                        トランザクション管理を自動化する
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題4:</strong> 次のJava ORMフレームワークのうち、標準化されたJava EEの仕様はどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4a" value="a">
+                                    <label class="form-check-label" for="q4a">
+                                        Hibernate
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4b" value="b">
+                                    <label class="form-check-label" for="q4b">
+                                        JPA (Java Persistence API)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4c" value="c">
+                                        <label class="form-check-label" for="q4c">
+                                        MyBatis
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4d" value="d">
+                                        <label class="form-check-label" for="q4d">
+                                        jOOQ
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題5:</strong> JDBCの結果セットをJavaコレクションに変換する際の最適な方法として、不適切なものはどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5a" value="a">
+                                    <label class="form-check-label" for="q5a">
+                                        ResultSetの各行を処理してList&lt;T&gt;に追加する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5b" value="b">
+                                    <label class="form-check-label" for="q5b">
+                                        ResultSetの全行を一度にメモリに読み込んでからコレクションに変換する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5c" value="c">
+                                        <label class="form-check-label" for="q5c">
+                                        マッピング処理を関数インターフェースに切り出して再利用する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5d" value="d">
+                                        <label class="form-check-label" for="q5d">
+                                        Stream APIを使用して宣言的にResultSetを処理する
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary mt-3" id="checkAnswers">回答を確認</button>
+                            <div id="quizResults" class="mt-3 d-none">
+                                <div class="alert alert-success">
+                                    <h5>正解:</h5>
+                                    <ol>
+                                        <li>b（データアクセスロジックとビジネスロジックを分離する）</li>
+                                        <li>c（MVC（モデル-ビュー-コントローラ））</li>
+                                        <li>b（リレーショナルデータベースのテーブルとオブジェクト指向クラスの間のマッピングを行う）</li>
+                                        <li>b（JPA (Java Persistence API)）</li>
+                                        <li>b（ResultSetの全行を一度にメモリに読み込んでからコレクションに変換する - 大量データの場合はメモリ効率が悪い）</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="next-steps">
+                        <h3 class="section-title">次のステップ</h3>
+                        <p>この章では、JDBCとオブジェクト指向設計を組み合わせる方法について学びました。DAOパターン、オブジェクトリレーショナルマッピング、コレクション処理など、実践的なテクニックを習得しました。</p>
+                        <p>ここまで学んだ知識を活かして、より高度なJavaデータベースアプリケーションの開発に取り組んでみましょう。</p>
+                        <div class="note">
+                            <h5>推奨される追加学習</h5>
+                            <ul>
+                                <li><strong>Spring Framework</strong>：Spring JDBCやSpring Data JPAなど、Springフレームワークのデータアクセス機能について学ぶ</li>
+                                <li><strong>JPA/Hibernate</strong>：Java Persistence APIとHibernateについて詳しく学ぶ</li>
+                                <li><strong>コネクションプール</strong>：HikariCP、Apache DBCP、C3P0などのコネクションプールライブラリについて学ぶ</li>
+                                <li><strong>NoSQLデータベース</strong>：MongoDBやRedisなどのNoSQLデータベースとJavaの連携について学ぶ</li>
+                                <li><strong>マイクロサービスアーキテクチャ</strong>：分散データベースアクセスとマイクロサービスの設計について学ぶ</li>
+                            </ul>
+                        </div>
+                    </section>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4">
+        <div class="container">
+            <p class="mb-0">Copyright © 2025 F-Circle All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 理解度テストの回答確認ボタンの処理
+        document.getElementById('checkAnswers').addEventListener('click', function() {
+            document.getElementById('quizResults').classList.remove('d-none');
+        });
+    </script>
+</body>
+</html>                                

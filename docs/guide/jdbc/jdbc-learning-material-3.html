@@ -1,0 +1,2016 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JDBC初心者向け学習教材 - 基本的なCRUD操作</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+        .navbar {
+            background-color: #1565c0;
+        }
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+        .chapter-title {
+            color: #1565c0;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #1565c0;
+            padding-bottom: 0.5rem;
+        }
+        .section-title {
+            color: #1976d2;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+        code {
+            display: block;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .quiz-container {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        .quiz-question {
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        .diagram {
+            max-width: 100%;
+            height: auto;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        .exercise {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        .note {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        #table-of-contents .list-group-item {
+            border: none;
+            padding: 0.5rem 1rem;
+        }
+        #table-of-contents .list-group-item-action {
+            color: #1976d2;
+        }
+        /* 選択された目次項目のスタイル */
+        #table-of-contents .list-group-item-action.active,
+        .list-group-item.active {
+            color: white !important; /* テキストを白色にして青い背景に対してコントラストをつける */
+            background-color: #1976d2;
+            border-color: #1976d2;
+        }
+        .section-nav {
+            padding-left: 1rem;
+        }
+        .inline-code {
+            background-color: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            display: inline;
+        }
+        footer {
+            background-color: #1565c0;
+            color: white;
+            padding: 1rem 0;
+            margin-top: 3rem;
+        }
+        .table-example {
+            width: 100%;
+            margin-bottom: 1rem;
+            border-collapse: collapse;
+        }
+        .table-example th {
+            background-color: #e3f2fd;
+            border: 1px solid #b3e5fc;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .table-example td {
+            border: 1px solid #b3e5fc;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .example-result {
+            background-color: #f1f8e9;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .warning {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+    </style>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#tableOfContents">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">JDBC初心者向け学習教材</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#introduction">はじめに</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#chapter3">第3章: 基本的なCRUD操作</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <div class="row">
+            <!-- Sidebar - Table of Contents -->
+            <div class="col-lg-3">
+                <div class="sidebar">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">目次</h5>
+                        </div>
+                        <div id="table-of-contents" class="list-group list-group-flush">
+                            <a href="#introduction" class="list-group-item list-group-item-action">はじめに</a>
+                            <a href="#chapter3" class="list-group-item list-group-item-action">第3章: 基本的なCRUD操作</a>
+                            <div class="section-nav">
+                                <a href="#select-operations" class="list-group-item list-group-item-action">3.1 SELECT文を使用したデータの取得と処理</a>
+                                <a href="#insert-operations" class="list-group-item list-group-item-action">3.2 PreparedStatementを使用したデータの挿入</a>
+                                <a href="#update-delete-operations" class="list-group-item list-group-item-action">3.3 データの更新と削除</a>
+                                <a href="#address-book-system" class="list-group-item list-group-item-action">3.4 住所録管理システムの作成（実習）</a>
+                                <a href="#chapter3-quiz" class="list-group-item list-group-item-action">3.5 理解度確認テスト</a>
+                            </div>
+                            <a href="#next-steps" class="list-group-item list-group-item-action">次のステップ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <section id="introduction">
+                    <h1 class="display-5 mb-4">JDBC初心者向け学習教材</h1>
+                    <p class="lead">この第3章では、JDBCを使用した基本的なデータベース操作（CRUD操作）について学習します。SELECTによるデータの取得、PreparedStatementを使用したデータの挿入、更新、削除の方法を理解し、最後に実践的な住所録管理システムを作成します。</p>
+
+                    <div class="note">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>SELECT文を使用したデータの取得と結果セットの処理方法</li>
+                            <li>PreparedStatementを使用した安全なデータ挿入の手法</li>
+                            <li>データの更新と削除の基本的な操作方法</li>
+                            <li>JDBCを使用した実践的なアプリケーション開発（住所録管理システム）</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="chapter3">
+                    <h2 class="chapter-title">第3章：基本的なCRUD操作</h2>
+                    <p>データベースアプリケーションの基本となるのは、CRUD（Create, Read, Update, Delete）操作です。これらの操作はそれぞれ、データの作成、読み取り、更新、削除を表しています。JDBCを使用することで、JavaプログラムからこれらのCRUD操作を簡単に実行することができます。この章では、それぞれの操作について詳しく学んでいきましょう。</p>
+
+                    <section id="select-operations">
+                        <h3 class="section-title">3.1 SELECT文を使用したデータの取得と処理</h3>
+                        <p>データベースからデータを取得するには、SQL SELECT文を使用します。JDBCでは、Statement, PreparedStatement, CallableStatementのいずれかを使用してSELECT文を実行し、ResultSetオブジェクトを取得してデータを処理します。</p>
+
+                        <h4>基本的なSELECT操作</h4>
+                        <p>以下は、基本的なSELECT操作の例です：</p>
+
+                        <code>import java.sql.*;
+
+public class SelectExample {
+    public static void main(String[] args) {
+        // データベース接続情報
+        String url = "jdbc:postgresql://localhost:5432/jdbctest";
+        String user = "postgres";
+        String password = "password"; // 実際のパスワードに置き換えてください
+        
+        // 自動リソース管理を使用した接続とSELECT操作
+        try (
+            Connection conn = DriverManager.getConnection(url, user, password);
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT id, name, email, age FROM users")
+        ) {
+            // 結果セットのデータを表示
+            System.out.println("取得したユーザー情報:");
+            System.out.println("--------------------------------------------------");
+            System.out.printf("%-5s %-15s %-25s %-5s%n", "ID", "名前", "メール", "年齢");
+            System.out.println("--------------------------------------------------");
+            
+            // 各行のデータを処理
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String email = rs.getString("email");
+                int age = rs.getInt("age");
+                
+                System.out.printf("%-5d %-15s %-25s %-5d%n", id, name, email, age);
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("データベースエラー: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+}</code>
+
+                        <h4>ResultSetの基本操作</h4>
+                        <p>ResultSetオブジェクトは、SELECT文の実行結果を保持し、行単位でデータを取得するためのメソッドを提供します。主な操作方法は以下の通りです：</p>
+
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>メソッド</th>
+                                    <th>説明</th>
+                                    <th>使用例</th>
+                                </tr>
+                                <tr>
+                                    <td>next()</td>
+                                    <td>次の行に移動し、行が存在すればtrueを返す</td>
+                                    <td>while (rs.next()) { ... }</td>
+                                </tr>
+                                <tr>
+                                    <td>getXXX(インデックス)</td>
+                                    <td>列インデックス（1から始まる）を指定してデータを取得</td>
+                                    <td>int id = rs.getInt(1);</td>
+                                </tr>
+                                <tr>
+                                    <td>getXXX(カラム名)</td>
+                                    <td>列名を指定してデータを取得</td>
+                                    <td>String name = rs.getString("name");</td>
+                                </tr>
+                                <tr>
+                                    <td>isFirst(), isLast()</td>
+                                    <td>現在の位置が最初/最後の行かどうかを確認</td>
+                                    <td>if (rs.isFirst()) { ... }</td>
+                                </tr>
+                                <tr>
+                                    <td>beforeFirst(), afterLast()</td>
+                                    <td>カーソルを最初の行の前/最後の行の後に移動</td>
+                                    <td>rs.beforeFirst();</td>
+                                </tr>
+                                <tr>
+                                    <td>absolute(行番号)</td>
+                                    <td>指定した行番号に移動</td>
+                                    <td>rs.absolute(5); // 5行目に移動</td>
+                                </tr>
+                                <tr>
+                                    <td>wasNull()</td>
+                                    <td>最後に読み取った値がNULLだったかを確認</td>
+                                    <td>int age = rs.getInt("age"); boolean isNull = rs.wasNull();</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="note">
+                            <h5>ResultSetの型とスクロール可能性</h5>
+                            <p>デフォルトのResultSetは前方向にのみスクロール可能で、読み取り専用です。より高度な操作が必要な場合は、Statementを作成する際に以下のようにタイプを指定できます：</p>
+                            <code>// スクロール可能で更新可能なResultSetを取得
+Statement stmt = conn.createStatement(
+    ResultSet.TYPE_SCROLL_INSENSITIVE,  // スクロール可能
+    ResultSet.CONCUR_UPDATABLE          // 更新可能
+);</code>
+                        </div>
+
+                        <h4>条件付きSELECT文</h4>
+                        <p>WHERE句を使用して、特定の条件に合致するデータのみを取得することができます：</p>
+
+                        <code>// 年齢が30歳以上のユーザーを検索
+String sql = "SELECT id, name, email, age FROM users WHERE age >= 30";
+ResultSet rs = stmt.executeQuery(sql);</code>
+
+                        <h4>ResultSetMetaDataの活用</h4>
+                        <p>ResultSetMetaDataを使用すると、結果セットの構造（列数、列名、データ型など）を動的に取得できます：</p>
+
+                        <code>// ResultSetMetaDataを使用して列情報を取得
+ResultSetMetaData metaData = rs.getMetaData();
+int columnCount = metaData.getColumnCount();
+
+// 列名を表示
+for (int i = 1; i <= columnCount; i++) {
+    System.out.printf("%-20s", metaData.getColumnName(i));
+}
+System.out.println();
+
+// データを表示（動的に列数に対応）
+while (rs.next()) {
+    for (int i = 1; i <= columnCount; i++) {
+        System.out.printf("%-20s", rs.getString(i));
+    }
+    System.out.println();
+}</code>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 250" width="600" height="250">
+                                <!-- データベース -->
+                                <rect x="50" y="20" width="120" height="60" fill="#ffecb3" stroke="#ffa000" stroke-width="2" rx="5" />
+                                <text x="110" y="55" text-anchor="middle" font-size="16">データベース</text>
+                                
+                                <!-- JDBC Driver -->
+                                <rect x="240" y="20" width="120" height="60" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5" />
+                                <text x="300" y="55" text-anchor="middle" font-size="14">JDBC Driver</text>
+                                
+                                <!-- Javaアプリケーション -->
+                                <rect x="430" y="20" width="120" height="60" fill="#bbdefb" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="490" y="55" text-anchor="middle" font-size="14">Javaアプリケーション</text>
+                                
+                                <!-- SELECT SQL -->
+                                <rect x="430" y="120" width="120" height="40" fill="#e1bee7" stroke="#8e24aa" stroke-width="2" rx="5" />
+                                <text x="490" y="143" text-anchor="middle" font-size="14">SELECT SQL</text>
+                                
+                                <!-- Statement -->
+                                <rect x="240" y="120" width="120" height="40" fill="#e1bee7" stroke="#8e24aa" stroke-width="2" rx="5" />
+                                <text x="300" y="143" text-anchor="middle" font-size="14">Statement</text>
+                                
+                                <!-- ResultSet -->
+                                <rect x="240" y="190" width="120" height="40" fill="#e1bee7" stroke="#8e24aa" stroke-width="2" rx="5" />
+                                <text x="300" y="213" text-anchor="middle" font-size="14">ResultSet</text>
+                                
+                                <!-- 結果処理 -->
+                                <rect x="430" y="190" width="120" height="40" fill="#e1bee7" stroke="#8e24aa" stroke-width="2" rx="5" />
+                                <text x="490" y="213" text-anchor="middle" font-size="14">結果処理</text>
+                                
+                                <!-- 矢印 -->
+                                <line x1="170" y1="50" x2="240" y2="50" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="360" y1="50" x2="430" y2="50" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                
+                                <line x1="490" y1="80" x2="490" y2="120" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="430" y1="140" x2="360" y2="140" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                
+                                <line x1="300" y1="160" x2="300" y2="190" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="360" y1="210" x2="430" y2="210" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                
+                                <line x1="170" y1="70" x2="230" y2="130" stroke="#000" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow)" />
+                                <line x1="230" y1="170" x2="170" y2="90" stroke="#000" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow)" />
+                                
+                                <defs>
+                                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                        <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+                                    </marker>
+                                </defs>
+                                
+                                <!-- テキスト説明 -->
+                                <text x="200" y="35" text-anchor="middle" font-size="12">接続</text>
+                                <text x="390" y="35" text-anchor="middle" font-size="12">JDBC API</text>
+                                <text x="510" y="100" text-anchor="middle" font-size="12">SQL生成</text>
+                                <text x="390" y="125" text-anchor="middle" font-size="12">実行</text>
+                                <text x="180" y="120" text-anchor="middle" font-size="12">クエリ</text>
+                                <text x="180" y="150" text-anchor="middle" font-size="12">実行</text>
+                                <text x="320" y="175" text-anchor="middle" font-size="12">結果取得</text>
+                                <text x="390" y="195" text-anchor="middle" font-size="12">データ処理</text>
+                            </svg>
+                            <p class="text-center">図3.1: SELECT操作のフロー</p>
+                        </div>
+
+                        <h4>複雑なSELECT文の例</h4>
+                        <p>JOINやGROUP BYなどを使用した複雑なSELECT文も実行できます：</p>
+
+                        <code>// 部署ごとの平均給与を計算するSQL
+String sql = "SELECT d.department_name, AVG(e.salary) as avg_salary, COUNT(e.id) as employee_count " +
+             "FROM employees e " +
+             "JOIN departments d ON e.department_id = d.id " +
+             "GROUP BY d.department_name " +
+             "HAVING AVG(e.salary) > 50000 " +
+             "ORDER BY avg_salary DESC";
+
+try (ResultSet rs = stmt.executeQuery(sql)) {
+    System.out.println("部署別平均給与（50,000円以上の部署のみ）:");
+    System.out.printf("%-20s %-15s %-15s%n", "部署名", "平均給与", "従業員数");
+    System.out.println("--------------------------------------------------");
+    
+    while (rs.next()) {
+        String deptName = rs.getString("department_name");
+        double avgSalary = rs.getDouble("avg_salary");
+        int count = rs.getInt("employee_count");
+        
+        System.out.printf("%-20s %-15.2f %-15d%n", deptName, avgSalary, count);
+    }
+}</code>
+
+                        <div class="exercise">
+                            <h5>練習問題 3.1.1: 条件付きSELECT</h5>
+                            <p>次の要件を満たすJavaプログラムを作成してください：</p>
+                            <ol>
+                                <li>usersテーブルから特定の年齢範囲（25歳〜40歳）のユーザーだけを取得するプログラム</li>
+                                <li>取得したデータを年齢の昇順で表示する</li>
+                                <li>結果には、ID、名前、メールアドレス、年齢を含める</li>
+                            </ol>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>練習問題 3.1.2: ResultSetMetaDataの活用</h5>
+                            <p>任意のSQLクエリの結果を表示するユーティリティメソッドを作成してください。このメソッドは以下の機能を持ちます：</p>
+                            <ol>
+                                <li>接続オブジェクトとSQL文字列を引数に取る</li>
+                                <li>ResultSetMetaDataを使用して動的に列情報を取得</li>
+                                <li>すべての列名とデータ型を表示</li>
+                                <li>すべての行のデータを表形式で表示</li>
+                                <li>結果の行数を返す</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="insert-operations">
+                        <h3 class="section-title">3.2 PreparedStatementを使用したデータの挿入</h3>
+                        <p>データベースに新しいデータを挿入する際は、SQLのINSERT文を使用します。特に、ユーザー入力値をデータベースに挿入する場合は、セキュリティ上の理由からPreparedStatementを使用することが推奨されます。</p>
+
+                        <h4>PreparedStatementの利点</h4>
+                        <ul>
+                            <li><strong>SQLインジェクション攻撃からの保護</strong>：ユーザー入力値が自動的にエスケープされる</li>
+                            <li><strong>パフォーマンスの向上</strong>：SQLがプリコンパイルされるため、繰り返し実行時に効率的</li>
+                            <li><strong>複雑なデータ型のサポート</strong>：バイナリデータなど特殊なデータ型の扱いが容易</li>
+                            <li><strong>コードの可読性向上</strong>：SQLとパラメータが分離され、コードが読みやすくなる</li>
+                        </ul>
+
+                        <div class="warning">
+                            <h5>SQLインジェクションの危険性</h5>
+                            <p>通常のStatement使用時に文字列連結でSQLを構築すると、悪意のある入力によってSQLインジェクション攻撃が可能になります。</p>
+                            <code>// 危険な例（絶対に使用しないでください！）
+String name = request.getParameter("username"); // ユーザー入力
+String sql = "SELECT * FROM users WHERE username = '" + name + "'";
+// 悪意のあるユーザーが name に "' OR '1'='1" を入力すると
+// "SELECT * FROM users WHERE username = '' OR '1'='1'" となり、
+// すべてのユーザー情報が漏洩する可能性がある</code>
+                        </div>
+
+                        <h4>基本的なINSERT操作</h4>
+                        <p>PreparedStatementを使用したINSERT操作の基本的な例：</p>
+
+                        <code>import java.sql.*;
+
+public class InsertExample {
+    public static void main(String[] args) {
+        // データベース接続情報
+        String url = "jdbc:postgresql://localhost:5432/jdbctest";
+        String user = "postgres";
+        String password = "password"; // 実際のパスワードに置き換えてください
+        
+        // 挿入するユーザーデータ
+        String userName = "伊藤誠";
+        String email = "ito@example.com";
+        int age = 28;
+        
+        // 自動リソース管理を使用した接続とINSERT操作
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+            // SQLステートメントの準備（?はプレースホルダー）
+            String sql = "INSERT INTO users (name, email, age) VALUES (?, ?, ?)";
+            
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                // プレースホルダに値をセット
+                pstmt.setString(1, userName);  // 1番目の?に名前をセット
+                pstmt.setString(2, email);     // 2番目の?にメールアドレスをセット
+                pstmt.setInt(3, age);          // 3番目の?に年齢をセット
+                
+                // SQLを実行して影響を受けた行数を取得
+                int rowsAffected = pstmt.executeUpdate();
+                
+                // 結果の表示
+                System.out.println(rowsAffected + "行のデータが挿入されました。");
+            }
+            
+            // 挿入されたデータを確認
+            try (Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE email = '" + email + "'")) {
+                
+                if (rs.next()) {
+                    System.out.println("挿入されたユーザー情報:");
+                    System.out.println("ID: " + rs.getInt("id"));
+                    System.out.println("名前: " + rs.getString("name"));
+                    System.out.println("メール: " + rs.getString("email"));
+                    System.out.println("年齢: " + rs.getInt("age"));
+                }
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("データベースエラー: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+}</code>
+
+                        <h4>生成されたキー値の取得</h4>
+                        <p>多くのデータベースでは、主キーとして自動採番される列（PostgreSQLではSERIAL型など）が使用されます。INSERTで生成された値を取得するには：</p>
+
+                        <code>// 生成されたキー値を取得するためのSQL
+String sql = "INSERT INTO users (name, email, age) VALUES (?, ?, ?)";
+
+try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+    // プレースホルダに値をセット
+    pstmt.setString(1, userName);
+    pstmt.setString(2, email);
+    pstmt.setInt(3, age);
+    
+    // SQLを実行
+    int rowsAffected = pstmt.executeUpdate();
+    
+    // 生成されたキー値を取得
+    try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+        if (generatedKeys.next()) {
+            int generatedId = generatedKeys.getInt(1);
+            System.out.println("生成されたID: " + generatedId);
+        }
+    }
+}</code>
+
+                        <h4>バッチ処理によるデータ挿入</h4>
+                        <p>大量のデータを効率的に挿入するには、バッチ処理が有効です：</p>
+
+                        <code>// バッチ処理による複数行のデータ挿入
+String sql = "INSERT INTO users (name, email, age) VALUES (?, ?, ?)";
+
+try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    // トランザクションの手動制御の開始
+    conn.setAutoCommit(false);
+    
+    // ユーザーデータの配列（実際のアプリケーションでは外部から取得）
+    String[][] userData = {
+        {"山本浩二", "yamamoto@example.com", "33"},
+        {"中村美咲", "nakamura@example.com", "27"},
+        {"小林健太", "kobayashi@example.com", "41"}
+    };
+    
+    // バッチにデータを追加
+    for (String[] user : userData) {
+        pstmt.setString(1, user[0]);  // 名前
+        pstmt.setString(2, user[1]);  // メール
+        pstmt.setInt(3, Integer.parseInt(user[2]));  // 年齢
+        
+        // バッチに追加
+        pstmt.addBatch();
+    }
+    
+    // バッチを実行して結果を取得
+    int[] results = pstmt.executeBatch();
+    
+    // コミット
+    conn.commit();
+    
+    // 結果の表示
+    int totalInserted = 0;
+    for (int count : results) {
+        totalInserted += count;
+    }
+    System.out.println("バッチ処理により " + totalInserted + " 行のデータが挿入されました。");
+    
+    // 自動コミットモードに戻す
+    conn.setAutoCommit(true);
+}</code>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" width="600" height="300">
+                                <!-- Javaアプリケーション -->
+                                <rect x="50" y="20" width="500" height="60" fill="#bbdefb" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="300" y="55" text-anchor="middle" font-size="16">Javaアプリケーション</text>
+                                
+                                <!-- PreparedStatement -->
+                                <rect x="50" y="120" width="500" height="60" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5" />
+                                <text x="170" y="145" text-anchor="start" font-size="16">PreparedStatement:</text>
+                                <text x="300" y="165" text-anchor="start" font-size="14">INSERT INTO users VALUES (?, ?, ?)</text>
+                                
+                                <!-- パラメータ設定 -->
+                                <rect x="50" y="220" width="140" height="60" fill="#ffecb3" stroke="#ffa000" stroke-width="2" rx="5" />
+                                <text x="120" y="250" text-anchor="middle" font-size="14">setString(1, "名前")</text>
+                                
+                                <rect x="230" y="220" width="140" height="60" fill="#ffecb3" stroke="#ffa000" stroke-width="2" rx="5" />
+                                <text x="300" y="250" text-anchor="middle" font-size="14">setString(2, "メール")</text>
+                                
+                                <rect x="410" y="220" width="140" height="60" fill="#ffecb3" stroke="#ffa000" stroke-width="2" rx="5" />
+                                <text x="480" y="250" text-anchor="middle" font-size="14">setInt(3, 年齢)</text>
+                                
+                                <!-- 矢印 -->
+                                <line x1="300" y1="80" x2="300" y2="120" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                
+                                <line x1="120" y1="180" x2="120" y2="220" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="300" y1="180" x2="300" y2="220" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="480" y1="180" x2="480" y2="220" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                
+                                <defs>
+                                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                        <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+                                    </marker>
+                                </defs>
+                                
+                                <!-- テキスト説明 -->
+                                <text x="320" y="105" text-anchor="middle" font-size="12">SQL準備</text>
+                                <text x="120" y="205" text-anchor="middle" font-size="12">パラメータ1設定</text>
+                                <text x="300" y="205" text-anchor="middle" font-size="12">パラメータ2設定</text>
+                                <text x="480" y="205" text-anchor="middle" font-size="12">パラメータ3設定</text>
+                            </svg>
+                            <p class="text-center">図3.2: PreparedStatementの使用フロー</p>
+                        </div>
+
+                        <h4>様々なデータ型の挿入</h4>
+                        <p>PreparedStatementでは様々なJavaデータ型をデータベースに挿入できます：</p>
+
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>Javaデータ型</th>
+                                    <th>PostgreSQLデータ型</th>
+                                    <th>setXXXメソッド</th>
+                                    <th>例</th>
+                                </tr>
+                                <tr>
+                                    <td>String</td>
+                                    <td>VARCHAR, TEXT</td>
+                                    <td>setString()</td>
+                                    <td>pstmt.setString(1, "山田太郎");</td>
+                                </tr>
+                                <tr>
+                                    <td>int, Integer</td>
+                                    <td>INTEGER</td>
+                                    <td>setInt()</td>
+                                    <td>pstmt.setInt(2, 30);</td>
+                                </tr>
+                                <tr>
+                                    <td>long, Long</td>
+                                    <td>BIGINT</td>
+                                    <td>setLong()</td>
+                                    <td>pstmt.setLong(3, 1234567890L);</td>
+                                </tr>
+                                <tr>
+                                    <td>double, Double</td>
+                                    <td>DOUBLE PRECISION</td>
+                                    <td>setDouble()</td>
+                                    <td>pstmt.setDouble(4, 123.45);</td>
+                                </tr>
+                                <tr>
+                                    <td>java.math.BigDecimal</td>
+                                    <td>NUMERIC</td>
+                                    <td>setBigDecimal()</td>
+                                    <td>pstmt.setBigDecimal(5, new BigDecimal("123.45"));</td>
+                                </tr>
+                                <tr>
+                                    <td>boolean, Boolean</td>
+                                    <td>BOOLEAN</td>
+                                    <td>setBoolean()</td>
+                                    <td>pstmt.setBoolean(6, true);</td>
+                                </tr>
+                                <tr>
+                                    <td>java.sql.Date</td>
+                                    <td>DATE</td>
+                                    <td>setDate()</td>
+                                    <td>pstmt.setDate(7, java.sql.Date.valueOf("2025-04-20"));</td>
+                                </tr>
+                                <tr>
+                                    <td>java.sql.Timestamp</td>
+                                    <td>TIMESTAMP</td>
+                                    <td>setTimestamp()</td>
+                                    <td>pstmt.setTimestamp(8, new java.sql.Timestamp(System.currentTimeMillis()));</td>
+                                </tr>
+                                <tr>
+                                    <td>byte[]</td>
+                                    <td>BYTEA</td>
+                                    <td>setBytes()</td>
+                                    <td>pstmt.setBytes(9, fileData);</td>
+                                </tr>
+                                <tr>
+                                    <td>Object</td>
+                                    <td>任意</td>
+                                    <td>setObject()</td>
+                                    <td>pstmt.setObject(10, anyObject);</td>
+                                </tr>
+                                <tr>
+                                    <td>null</td>
+                                    <td>任意</td>
+                                    <td>setNull()</td>
+                                    <td>pstmt.setNull(11, java.sql.Types.VARCHAR);</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>練習問題 3.2.1: ユーザー登録機能の実装</h5>
+                            <p>次の要件を満たすユーザー登録機能を実装してください：</p>
+                            <ol>
+                                <li>コンソールから名前、メールアドレス、年齢、生年月日を入力できる</li>
+                                <li>PreparedStatementを使用してデータを安全に挿入する</li>
+                                <li>入力値のバリデーション（メール形式チェック、年齢の範囲チェックなど）を行う</li>
+                                <li>生成されたIDを含めて、登録されたユーザー情報を表示する</li>
+                                <li>エラー処理を適切に実装する</li>
+                            </ol>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>練習問題 3.2.2: バッチ処理による大量データ挿入</h5>
+                            <p>CSVファイルからユーザーデータを読み込み、バッチ処理でデータベースに挿入するプログラムを作成してください。</p>
+                            <ol>
+                                <li>CSVファイルの形式: id,name,email,age,birth_date</li>
+                                <li>トランザクション処理を実装し、エラー時はロールバックする</li>
+                                <li>100件ごとにバッチを実行し、挿入状況を表示する</li>
+                                <li>処理時間を計測し、パフォーマンスを表示する</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="update-delete-operations">
+                        <h3 class="section-title">3.3 データの更新と削除</h3>
+                        <p>データベース内の既存データを変更するには、UPDATE文を使用します。また、不要になったデータを削除するには、DELETE文を使用します。いずれの操作もPreparedStatementを使用することで、安全かつ効率的に実行できます。</p>
+
+                        <h4>基本的なUPDATE操作</h4>
+                        <p>以下は、PreparedStatementを使用したUPDATE操作の基本的な例です：</p>
+
+                        <code>import java.sql.*;
+
+public class UpdateExample {
+    public static void main(String[] args) {
+        // データベース接続情報
+        String url = "jdbc:postgresql://localhost:5432/jdbctest";
+        String user = "postgres";
+        String password = "password"; // 実際のパスワードに置き換えてください
+        
+        // 更新するデータ
+        int userId = 2;
+        String newEmail = "updated_sato@example.com";
+        int newAge = 26;
+        
+        // 自動リソース管理を使用した接続とUPDATE操作
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+            // 更新前のデータを表示
+            try (PreparedStatement pstmtSelect = conn.prepareStatement("SELECT * FROM users WHERE id = ?")) {
+                pstmtSelect.setInt(1, userId);
+                try (ResultSet rs = pstmtSelect.executeQuery()) {
+                    if (rs.next()) {
+                        System.out.println("更新前のユーザー情報:");
+                        System.out.println("ID: " + rs.getInt("id"));
+                        System.out.println("名前: " + rs.getString("name"));
+                        System.out.println("メール: " + rs.getString("email"));
+                        System.out.println("年齢: " + rs.getInt("age"));
+                    } else {
+                        System.out.println("指定されたIDのユーザーが見つかりません: " + userId);
+                        return;
+                    }
+                }
+            }
+            
+            // UPDATE操作
+            String sql = "UPDATE users SET email = ?, age = ? WHERE id = ?";
+            
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                // プレースホルダに値をセット
+                pstmt.setString(1, newEmail);
+                pstmt.setInt(2, newAge);
+                pstmt.setInt(3, userId);
+                
+                // SQLを実行して影響を受けた行数を取得
+                int rowsAffected = pstmt.executeUpdate();
+                
+                // 結果の表示
+                System.out.println(rowsAffected + "行のデータが更新されました。");
+            }
+            
+            // 更新後のデータを表示
+            try (PreparedStatement pstmtSelect = conn.prepareStatement("SELECT * FROM users WHERE id = ?")) {
+                pstmtSelect.setInt(1, userId);
+                try (ResultSet rs = pstmtSelect.executeQuery()) {
+                    if (rs.next()) {
+                        System.out.println("更新後のユーザー情報:");
+                        System.out.println("ID: " + rs.getInt("id"));
+                        System.out.println("名前: " + rs.getString("name"));
+                        System.out.println("メール: " + rs.getString("email"));
+                        System.out.println("年齢: " + rs.getInt("age"));
+                    }
+                }
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("データベースエラー: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+}</code>
+
+                        <h4>基本的なDELETE操作</h4>
+                        <p>PreparedStatementを使用したDELETE操作の例：</p>
+
+                        <code>import java.sql.*;
+
+public class DeleteExample {
+    public static void main(String[] args) {
+        // データベース接続情報
+        String url = "jdbc:postgresql://localhost:5432/jdbctest";
+        String user = "postgres";
+        String password = "password"; // 実際のパスワードに置き換えてください
+        
+        // 削除するユーザーのID
+        int userId = 3;
+        
+        // 自動リソース管理を使用した接続とDELETE操作
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+            // 削除前のデータを表示
+            try (PreparedStatement pstmtSelect = conn.prepareStatement("SELECT * FROM users WHERE id = ?")) {
+                pstmtSelect.setInt(1, userId);
+                try (ResultSet rs = pstmtSelect.executeQuery()) {
+                    if (rs.next()) {
+                        System.out.println("削除対象のユーザー情報:");
+                        System.out.println("ID: " + rs.getInt("id"));
+                        System.out.println("名前: " + rs.getString("name"));
+                        System.out.println("メール: " + rs.getString("email"));
+                        System.out.println("年齢: " + rs.getInt("age"));
+                    } else {
+                        System.out.println("指定されたIDのユーザーが見つかりません: " + userId);
+                        return;
+                    }
+                }
+            }
+            
+            // DELETE操作
+            String sql = "DELETE FROM users WHERE id = ?";
+            
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                // プレースホルダに値をセット
+                pstmt.setInt(1, userId);
+                
+                // SQLを実行して影響を受けた行数を取得
+                int rowsAffected = pstmt.executeUpdate();
+                
+                // 結果の表示
+                System.out.println(rowsAffected + "行のデータが削除されました。");
+            }
+            
+            // 削除後に確認
+            try (PreparedStatement pstmtSelect = conn.prepareStatement("SELECT COUNT(*) FROM users WHERE id = ?")) {
+                pstmtSelect.setInt(1, userId);
+                try (ResultSet rs = pstmtSelect.executeQuery()) {
+                    if (rs.next()) {
+                        int count = rs.getInt(1);
+                        if (count == 0) {
+                            System.out.println("ID: " + userId + " のユーザーは正常に削除されました。");
+                        } else {
+                            System.out.println("削除操作が失敗しました。ユーザーはまだ存在しています。");
+                        }
+                    }
+                }
+            }
+            
+            // 残りのユーザー数を表示
+            try (Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM users")) {
+                if (rs.next()) {
+                    System.out.println("現在のユーザー数: " + rs.getInt(1));
+                }
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("データベースエラー: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+}</code>
+
+                        <h4>条件付き更新と削除</h4>
+                        <p>複数の条件を組み合わせたUPDATEとDELETE操作も可能です：</p>
+
+                        <code>// 複数条件を使用したUPDATE
+String updateSql = "UPDATE users SET status = ? WHERE age >= ? AND last_login_date < ?";
+try (PreparedStatement pstmt = conn.prepareStatement(updateSql)) {
+    pstmt.setString(1, "inactive");
+    pstmt.setInt(2, 18);
+    pstmt.setDate(3, java.sql.Date.valueOf("2024-01-01"));
+    
+    int rowsAffected = pstmt.executeUpdate();
+    System.out.println(rowsAffected + "人のユーザーが非アクティブに設定されました。");
+}
+
+// 複数条件を使用したDELETE
+String deleteSql = "DELETE FROM temporary_users WHERE created_at < ? OR status = ?";
+try (PreparedStatement pstmt = conn.prepareStatement(deleteSql)) {
+    // 30日前の日付を計算
+    long thirtyDaysAgo = System.currentTimeMillis() - (30 * 24 * 60 * 60 * 1000L);
+    pstmt.setTimestamp(1, new java.sql.Timestamp(thirtyDaysAgo));
+    pstmt.setString(2, "expired");
+    
+    int rowsAffected = pstmt.executeUpdate();
+    System.out.println(rowsAffected + "人の一時ユーザーが削除されました。");
+}</code>
+
+                        <div class="note">
+                            <h5>トランザクション管理の重要性</h5>
+                            <p>更新や削除操作を複数まとめて実行する場合、トランザクション管理が重要です。以下は基本的なトランザクション管理の例です：</p>
+                            <code>// トランザクション管理の例
+try (Connection conn = DriverManager.getConnection(url, user, password)) {
+    // 自動コミットを無効化（トランザクション開始）
+    conn.setAutoCommit(false);
+    
+    try {
+        // 1つ目の操作: アカウント残高の減額
+        String sql1 = "UPDATE accounts SET balance = balance - ? WHERE account_id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql1)) {
+            pstmt.setDouble(1, 1000.00);
+            pstmt.setString(2, "A123");
+            pstmt.executeUpdate();
+        }
+        
+        // 2つ目の操作: 別アカウントの残高増額
+        String sql2 = "UPDATE accounts SET balance = balance + ? WHERE account_id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql2)) {
+            pstmt.setDouble(1, 1000.00);
+            pstmt.setString(2, "B456");
+            pstmt.executeUpdate();
+        }
+        
+        // すべての操作が成功したらコミット
+        conn.commit();
+        System.out.println("送金処理が正常に完了しました。");
+        
+    } catch (SQLException e) {
+        // エラーが発生した場合はロールバック
+        conn.rollback();
+        System.err.println("送金処理がロールバックされました: " + e.getMessage());
+        throw e;
+    } finally {
+        // 自動コミットモードを元に戻す
+        conn.setAutoCommit(true);
+    }
+}</code>
+                        </div>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" width="600" height="300">
+                                <!-- データベーステーブル（更新前） -->
+                                <rect x="50" y="20" width="240" height="120" fill="#ffecb3" stroke="#ffa000" stroke-width="2" rx="5" />
+                                <text x="170" y="45" text-anchor="middle" font-size="16">データベーステーブル（更新前）</text>
+                                
+                                <line x1="70" y1="60" x2="270" y2="60" stroke="#000" stroke-width="1" />
+                                
+                                <text x="90" y="80" text-anchor="middle" font-size="14">1</text>
+                                <text x="140" y="80" text-anchor="middle" font-size="14">山田太郎</text>
+                                <text x="220" y="80" text-anchor="middle" font-size="14">30</text>
+                                
+                                <text x="90" y="100" text-anchor="middle" font-size="14">2</text>
+                                <text x="140" y="100" text-anchor="middle" font-size="14">佐藤花子</text>
+                                <text x="220" y="100" text-anchor="middle" font-size="14">25</text>
+                                
+                                <text x="90" y="120" text-anchor="middle" font-size="14">3</text>
+                                <text x="140" y="120" text-anchor="middle" font-size="14">鈴木一郎</text>
+                                <text x="220" y="120" text-anchor="middle" font-size="14">42</text>
+                                
+                                <!-- JDBC操作 -->
+                                <rect x="170" y="160" width="260" height="40" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5" />
+                                <text x="300" y="185" text-anchor="middle" font-size="14">UPDATE users SET age = 26 WHERE id = 2</text>
+                                
+                                <!-- データベーステーブル（更新後） -->
+                                <rect x="310" y="20" width="240" height="120" fill="#bbdefb" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="430" y="45" text-anchor="middle" font-size="16">データベーステーブル（更新後）</text>
+                                
+                                <line x1="330" y1="60" x2="530" y2="60" stroke="#000" stroke-width="1" />
+                                
+                                <text x="350" y="80" text-anchor="middle" font-size="14">1</text>
+                                <text x="400" y="80" text-anchor="middle" font-size="14">山田太郎</text>
+                                <text x="480" y="80" text-anchor="middle" font-size="14">30</text>
+                                
+                                <text x="350" y="100" text-anchor="middle" font-size="14">2</text>
+                                <text x="400" y="100" text-anchor="middle" font-size="14">佐藤花子</text>
+                                <text x="480" y="100" text-anchor="middle" font-size="14" fill="#f44336">26</text>
+                                
+                                <text x="350" y="120" text-anchor="middle" font-size="14">3</text>
+                                <text x="400" y="120" text-anchor="middle" font-size="14">鈴木一郎</text>
+                                <text x="480" y="120" text-anchor="middle" font-size="14">42</text>
+                                
+                                <!-- トランザクション管理 -->
+                                <rect x="50" y="220" width="240" height="60" fill="#e1bee7" stroke="#8e24aa" stroke-width="2" rx="5" />
+                                <text x="170" y="250" text-anchor="middle" font-size="14">トランザクション開始</text>
+                                <text x="170" y="270" text-anchor="middle" font-size="12">conn.setAutoCommit(false)</text>
+                                
+                                <rect x="310" y="220" width="240" height="60" fill="#e1bee7" stroke="#8e24aa" stroke-width="2" rx="5" />
+                                <text x="430" y="250" text-anchor="middle" font-size="14">トランザクション終了</text>
+                                <text x="430" y="270" text-anchor="middle" font-size="12">conn.commit() / conn.rollback()</text>
+                                
+                                <!-- 矢印 -->
+                                <line x1="290" y1="80" x2="310" y2="80" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                
+                                <line x1="300" y1="140" x2="300" y2="160" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                
+                                <line x1="170" y1="180" x2="170" y2="220" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="430" y1="180" x2="430" y2="220" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                
+                                <defs>
+                                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                        <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+                                    </marker>
+                                </defs>
+                            </svg>
+                            <p class="text-center">図3.3: UPDATE操作とトランザクション管理</p>
+                        </div>
+
+                        <div class="warning">
+                            <h5>WHERE句のない更新・削除操作の危険性</h5>
+                            <p>WHERE句を指定せずにUPDATEやDELETE文を実行すると、テーブル内のすべての行が更新または削除されます。これは、特に本番環境では非常に危険な操作です。常にWHERE句を指定し、必要であれば事前にSELECT文で影響を受ける行数を確認することをお勧めします。</p>
+                            <code>// 危険な例（絶対に実行しないでください！）
+stmt.executeUpdate("DELETE FROM users"); // すべてのユーザーデータが削除される！
+
+// 安全な例
+try (PreparedStatement pstmt = conn.prepareStatement("DELETE FROM users WHERE id = ?")) {
+    pstmt.setInt(1, userId);
+    int rowsAffected = pstmt.executeUpdate();
+    // 削除された行数を確認
+    if (rowsAffected != 1) {
+        System.out.println("警告: 予期しない数の行が削除されました: " + rowsAffected);
+    }
+}</code>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>練習問題 3.3.1: ユーザー情報更新機能の実装</h5>
+                            <p>次の要件を満たすユーザー情報更新機能を実装してください：</p>
+                            <ol>
+                                <li>コンソールからユーザーIDを入力し、そのユーザーの情報を表示する</li>
+                                <li>各項目（名前、メール、年齢）ごとに更新するかどうかを選択できる</li>
+                                <li>更新する項目だけを含むUPDATE文を動的に構築する</li>
+                                <li>更新前と更新後の情報を表示する</li>
+                                <li>トランザクション管理を実装し、エラー時はロールバックする</li>
+                            </ol>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>練習問題 3.3.2: 条件付き削除処理の実装</h5>
+                            <p>以下の条件で古いユーザーデータを削除するプログラムを実装してください：</p>
+                            <ol>
+                                <li>最終ログイン日が1年以上前のユーザーを対象とする</li>
+                                <li>対象ユーザーのデータをCSVファイルにバックアップした後に削除する</li>
+                                <li>バッチ処理とトランザクション管理を実装する</li>
+                                <li>削除操作のログを記録する</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="address-book-system">
+                        <h3 class="section-title">3.4 住所録管理システムの作成（実習）</h3>
+                        <p>この節では、これまで学んだJDBCの基本的なCRUD操作を活用して、簡単な住所録管理システムを作成します。この実習を通じて、実際のアプリケーション開発におけるJDBCの使い方を体験しましょう。</p>
+
+                        <h4>システム概要</h4>
+                        <p>作成する住所録管理システムは以下の機能を持ちます：</p>
+                        <ul>
+                            <li>連絡先の一覧表示</li>
+                            <li>新しい連絡先の追加</li>
+                            <li>既存の連絡先の更新</li>
+                            <li>連絡先の削除</li>
+                            <li>連絡先の検索</li>
+                        </ul>
+
+                        <h4>データベース設計</h4>
+                        <p>まず、住所録管理システムで使用するテーブルを作成します：</p>
+
+                        <code>-- PostgreSQLのpsqlコマンドラインで実行
+
+-- contactsテーブルの作成
+CREATE TABLE contacts (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    phone VARCHAR(20),
+    address TEXT,
+    birthday DATE,
+    category VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- カテゴリ検索用のインデックス作成
+CREATE INDEX idx_contacts_category ON contacts(category);
+
+-- テスト用のサンプルデータ挿入
+INSERT INTO contacts (first_name, last_name, email, phone, address, birthday, category)
+VALUES
+    ('太郎', '山田', 'taro.yamada@example.com', '090-1234-5678', '東京都渋谷区渋谷1-1-1', '1985-05-15', '友人'),
+    ('花子', '佐藤', 'hanako.sato@example.com', '080-8765-4321', '大阪府大阪市北区梅田2-2-2', '1990-10-25', '家族'),
+    ('一郎', '鈴木', 'ichiro.suzuki@example.com', '070-5555-6666', '福岡県福岡市博多区博多3-3-3', '1978-03-18', '仕事'),
+    ('優子', '田中', 'yuko.tanaka@example.com', '090-2222-3333', '北海道札幌市中央区北4-4-4', '1995-12-05', '友人'),
+    ('健太', '佐々木', 'kenta.sasaki@example.com', '080-7777-8888', '愛知県名古屋市中区栄5-5-5', '1982-07-30', '仕事');</code>
+
+                        <h4>システム実装</h4>
+                        <p>住所録管理システムを実装します。まず、連絡先を表すContactクラスを定義します：</p>
+
+                        <code>import java.sql.Date;
+import java.sql.Timestamp;
+
+public class Contact {
+    private int id;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String phone;
+    private String address;
+    private Date birthday;
+    private String category;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
+    
+    // コンストラクタ
+    public Contact() {}
+    
+    public Contact(int id, String firstName, String lastName, String email, 
+                  String phone, String address, Date birthday, String category,
+                  Timestamp createdAt, Timestamp updatedAt) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.birthday = birthday;
+        this.category = category;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+    
+    // getter/setter メソッド
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+    
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+    
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+    
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+    
+    public Date getBirthday() { return birthday; }
+    public void setBirthday(Date birthday) { this.birthday = birthday; }
+    
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
+    
+    public Timestamp getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
+    
+    public Timestamp getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Timestamp updatedAt) { this.updatedAt = updatedAt; }
+    
+    @Override
+    public String toString() {
+        return String.format("ID: %d, 名前: %s %s, Email: %s, 電話: %s, カテゴリ: %s",
+                id, lastName, firstName, email, phone, category);
+    }
+    
+    // 詳細情報を表示するメソッド
+    public void printDetails() {
+        System.out.println("==== 連絡先詳細 ====");
+        System.out.println("ID: " + id);
+        System.out.println("名前: " + lastName + " " + firstName);
+        System.out.println("Email: " + (email != null ? email : "未設定"));
+        System.out.println("電話番号: " + (phone != null ? phone : "未設定"));
+        System.out.println("住所: " + (address != null ? address : "未設定"));
+        System.out.println("誕生日: " + (birthday != null ? birthday : "未設定"));
+        System.out.println("カテゴリ: " + (category != null ? category : "未設定"));
+        System.out.println("作成日時: " + createdAt);
+        System.out.println("更新日時: " + updatedAt);
+        System.out.println("==================");
+    }
+}</code>
+
+                        <p>次に、データベース接続とCRUD操作を担当するContactDAOクラスを実装します：</p>
+
+                        <code>import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ContactDAO {
+    // データベース接続情報
+    private static final String URL = "jdbc:postgresql://localhost:5432/jdbctest";
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "password"; // 実際のパスワードに置き換えてください
+    
+    // 接続を取得するメソッド
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
+    }
+    
+    // すべての連絡先を取得
+    public List<Contact> getAllContacts() throws SQLException {
+        List<Contact> contacts = new ArrayList<>();
+        String sql = "SELECT * FROM contacts ORDER BY last_name, first_name";
+        
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            
+            while (rs.next()) {
+                contacts.add(extractContactFromResultSet(rs));
+            }
+        }
+        
+        return contacts;
+    }
+    
+    // IDで連絡先を検索
+    public Contact getContactById(int id) throws SQLException {
+        String sql = "SELECT * FROM contacts WHERE id = ?";
+        
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, id);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return extractContactFromResultSet(rs);
+                }
+            }
+        }
+        
+        return null; // 該当する連絡先がない場合
+    }
+    
+    // 名前またはメールアドレスで連絡先を検索
+    public List<Contact> searchContacts(String searchTerm) throws SQLException {
+        List<Contact> contacts = new ArrayList<>();
+        String sql = "SELECT * FROM contacts WHERE " +
+                     "LOWER(first_name) LIKE LOWER(?) OR " +
+                     "LOWER(last_name) LIKE LOWER(?) OR " +
+                     "LOWER(email) LIKE LOWER(?) " +
+                     "ORDER BY last_name, first_name";
+        
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            String searchPattern = "%" + searchTerm + "%";
+            pstmt.setString(1, searchPattern);
+            pstmt.setString(2, searchPattern);
+            pstmt.setString(3, searchPattern);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    contacts.add(extractContactFromResultSet(rs));
+                }
+            }
+        }
+        
+        return contacts;
+    }
+    
+    // カテゴリで連絡先を検索
+    public List<Contact> getContactsByCategory(String category) throws SQLException {
+        List<Contact> contacts = new ArrayList<>();
+        String sql = "SELECT * FROM contacts WHERE category = ? ORDER BY last_name, first_name";
+        
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, category);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    contacts.add(extractContactFromResultSet(rs));
+                }
+            }
+        }
+        
+        return contacts;
+    }
+    
+    // 新しい連絡先を追加
+    public int addContact(Contact contact) throws SQLException {
+        String sql = "INSERT INTO contacts (first_name, last_name, email, phone, address, birthday, category) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id";
+        
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, contact.getFirstName());
+            pstmt.setString(2, contact.getLastName());
+            pstmt.setString(3, contact.getEmail());
+            pstmt.setString(4, contact.getPhone());
+            pstmt.setString(5, contact.getAddress());
+            pstmt.setDate(6, contact.getBirthday());
+            pstmt.setString(7, contact.getCategory());
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1); // 生成されたIDを返す
+                }
+            }
+        }
+        
+        return -1; // 失敗した場合
+    }
+    
+    // 連絡先を更新
+    public boolean updateContact(Contact contact) throws SQLException {
+        String sql = "UPDATE contacts SET first_name = ?, last_name = ?, email = ?, " +
+                     "phone = ?, address = ?, birthday = ?, category = ?, updated_at = CURRENT_TIMESTAMP " +
+                     "WHERE id = ?";
+        
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, contact.getFirstName());
+            pstmt.setString(2, contact.getLastName());
+            pstmt.setString(3, contact.getEmail());
+            pstmt.setString(4, contact.getPhone());
+            pstmt.setString(5, contact.getAddress());
+            pstmt.setDate(6, contact.getBirthday());
+            pstmt.setString(7, contact.getCategory());
+            pstmt.setInt(8, contact.getId());
+            
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+        }
+    }
+    
+    // 連絡先を削除
+    public boolean deleteContact(int id) throws SQLException {
+        String sql = "DELETE FROM contacts WHERE id = ?";
+        
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, id);
+            
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+        }
+    }
+    
+    // ResultSetからContactオブジェクトを抽出するユーティリティメソッド
+    private Contact extractContactFromResultSet(ResultSet rs) throws SQLException {
+        Contact contact = new Contact();
+        contact.setId(rs.getInt("id"));
+        contact.setFirstName(rs.getString("first_name"));
+        contact.setLastName(rs.getString("last_name"));
+        contact.setEmail(rs.getString("email"));
+        contact.setPhone(rs.getString("phone"));
+        contact.setAddress(rs.getString("address"));
+        contact.setBirthday(rs.getDate("birthday"));
+        contact.setCategory(rs.getString("category"));
+        contact.setCreatedAt(rs.getTimestamp("created_at"));
+        contact.setUpdatedAt(rs.getTimestamp("updated_at"));
+        return contact;
+    }
+}</code>
+
+                        <p>最後に、コンソールベースのユーザーインターフェースを実装します：</p>
+
+                        <code>import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Scanner;
+
+public class AddressBookApp {
+    private static ContactDAO contactDAO = new ContactDAO();
+    private static Scanner scanner = new Scanner(System.in);
+    
+    public static void main(String[] args) {
+        boolean exit = false;
+        
+        try {
+            // PostgreSQLドライバの登録
+            Class.forName("org.postgresql.Driver");
+            
+            while (!exit) {
+                System.out.println("\n===== 住所録管理システム =====");
+                System.out.println("1. 連絡先一覧を表示");
+                System.out.println("2. 連絡先を検索");
+                System.out.println("3. カテゴリで検索");
+                System.out.println("4. 新しい連絡先を追加");
+                System.out.println("5. 連絡先を更新");
+                System.out.println("6. 連絡先を削除");
+                System.out.println("0. 終了");
+                System.out.print("選択してください: ");
+                
+                int choice;
+                try {
+                    choice = Integer.parseInt(scanner.nextLine());
+                } catch (NumberFormatException e) {
+                    System.out.println("無効な入力です。数字を入力してください。");
+                    continue;
+                }
+                
+                switch (choice) {
+                    case 1:
+                        listAllContacts();
+                        break;
+                    case 2:
+                        searchContacts();
+                        break;
+                    case 3:
+                        searchByCategory();
+                        break;
+                    case 4:
+                        addContact();
+                        break;
+                    case 5:
+                        updateContact();
+                        break;
+                    case 6:
+                        deleteContact();
+                        break;
+                    case 0:
+                        exit = true;
+                        System.out.println("システムを終了します。");
+                        break;
+                    default:
+                        System.out.println("無効な選択です。もう一度お試しください。");
+                }
+            }
+            
+        } catch (ClassNotFoundException e) {
+            System.err.println("PostgreSQLドライバが見つかりません: " + e.getMessage());
+        } catch (SQLException e) {
+            System.err.println("データベースエラー: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            scanner.close();
+        }
+    }
+    
+    // すべての連絡先を表示
+    private static void listAllContacts() throws SQLException {
+        List<Contact> contacts = contactDAO.getAllContacts();
+        
+        if (contacts.isEmpty()) {
+            System.out.println("連絡先がありません。");
+            return;
+        }
+        
+        System.out.println("\n=== 連絡先一覧 ===");
+        for (Contact contact : contacts) {
+            System.out.println(contact);
+        }
+    }
+    
+    // 連絡先を検索
+    private static void searchContacts() throws SQLException {
+        System.out.print("検索キーワードを入力してください: ");
+        String searchTerm = scanner.nextLine();
+        
+        List<Contact> results = contactDAO.searchContacts(searchTerm);
+        
+        if (results.isEmpty()) {
+            System.out.println("検索結果はありません。");
+            return;
+        }
+        
+        System.out.println("\n=== 検索結果 ===");
+        for (Contact contact : results) {
+            System.out.println(contact);
+        }
+    }
+    
+    // カテゴリで検索
+    private static void searchByCategory() throws SQLException {
+        System.out.print("カテゴリを入力してください: ");
+        String category = scanner.nextLine();
+        
+        List<Contact> results = contactDAO.getContactsByCategory(category);
+        
+        if (results.isEmpty()) {
+            System.out.println("指定されたカテゴリの連絡先はありません。");
+            return;
+        }
+        
+        System.out.println("\n=== カテゴリ: " + category + " ===");
+        for (Contact contact : results) {
+            System.out.println(contact);
+        }
+    }
+    
+    // 新しい連絡先を追加
+    private static void addContact() throws SQLException {
+        Contact newContact = new Contact();
+        
+        System.out.println("\n=== 新しい連絡先を追加 ===");
+        System.out.print("姓: ");
+        newContact.setLastName(scanner.nextLine());
+        
+        System.out.print("名: ");
+        newContact.setFirstName(scanner.nextLine());
+        
+        System.out.print("メールアドレス: ");
+        newContact.setEmail(scanner.nextLine());
+        
+        System.out.print("電話番号: ");
+        newContact.setPhone(scanner.nextLine());
+        
+        System.out.print("住所: ");
+        newContact.setAddress(scanner.nextLine());
+        
+        System.out.print("誕生日 (YYYY-MM-DD): ");
+        String birthdayStr = scanner.nextLine();
+        if (!birthdayStr.isEmpty()) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                java.util.Date parsed = sdf.parse(birthdayStr);
+                newContact.setBirthday(new java.sql.Date(parsed.getTime()));
+            } catch (ParseException e) {
+                System.out.println("無効な日付形式です。YYYY-MM-DDの形式で入力してください。");
+                return;
+            }
+        }
+        
+        System.out.print("カテゴリ (友人、家族、仕事など): ");
+        newContact.setCategory(scanner.nextLine());
+        
+        int id = contactDAO.addContact(newContact);
+        if (id > 0) {
+            System.out.println("連絡先がID " + id + " で追加されました。");
+        } else {
+            System.out.println("連絡先の追加に失敗しました。");
+        }
+    }
+    
+    // 連絡先を更新
+    private static void updateContact() throws SQLException {
+        System.out.print("更新する連絡先のIDを入力してください: ");
+        int id;
+        try {
+            id = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("無効なIDです。");
+            return;
+        }
+        
+        Contact contact = contactDAO.getContactById(id);
+        if (contact == null) {
+            System.out.println("ID " + id + " の連絡先は見つかりませんでした。");
+            return;
+        }
+        
+        // 現在の情報を表示
+        System.out.println("\n=== 現在の連絡先情報 ===");
+        contact.printDetails();
+        
+        // 更新する情報を入力
+        System.out.println("\n=== 連絡先を更新 (変更がない場合は空のままEnterを押してください) ===");
+        
+        System.out.print("姓 [" + contact.getLastName() + "]: ");
+        String input = scanner.nextLine();
+        if (!input.isEmpty()) {
+            contact.setLastName(input);
+        }
+        
+        System.out.print("名 [" + contact.getFirstName() + "]: ");
+        input = scanner.nextLine();
+        if (!input.isEmpty()) {
+            contact.setFirstName(input);
+        }
+        
+        System.out.print("メールアドレス [" + contact.getEmail() + "]: ");
+        input = scanner.nextLine();
+        if (!input.isEmpty()) {
+            contact.setEmail(input);
+        }
+        
+        System.out.print("電話番号 [" + contact.getPhone() + "]: ");
+        input = scanner.nextLine();
+        if (!input.isEmpty()) {
+            contact.setPhone(input);
+        }
+        
+        System.out.print("住所 [" + contact.getAddress() + "]: ");
+        input = scanner.nextLine();
+        if (!input.isEmpty()) {
+            contact.setAddress(input);
+        }
+        
+        System.out.print("誕生日 [" + contact.getBirthday() + "] (YYYY-MM-DD): ");
+        input = scanner.nextLine();
+        if (!input.isEmpty()) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                java.util.Date parsed = sdf.parse(input);
+                contact.setBirthday(new java.sql.Date(parsed.getTime()));
+            } catch (ParseException e) {
+                System.out.println("無効な日付形式です。更新をスキップします。");
+            }
+        }
+        
+        System.out.print("カテゴリ [" + contact.getCategory() + "]: ");
+        input = scanner.nextLine();
+        if (!input.isEmpty()) {
+            contact.setCategory(input);
+        }
+        
+        boolean success = contactDAO.updateContact(contact);
+        if (success) {
+            System.out.println("連絡先が正常に更新されました。");
+        } else {
+            System.out.println("連絡先の更新に失敗しました。");
+        }
+    }
+    
+    // 連絡先を削除
+    private static void deleteContact() throws SQLException {
+        System.out.print("削除する連絡先のIDを入力してください: ");
+        int id;
+        try {
+            id = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("無効なIDです。");
+            return;
+        }
+        
+        Contact contact = contactDAO.getContactById(id);
+        if (contact == null) {
+            System.out.println("ID " + id + " の連絡先は見つかりませんでした。");
+            return;
+        }
+        
+        // 削除前に情報を表示
+        System.out.println("\n=== 削除する連絡先 ===");
+        contact.printDetails();
+        
+        System.out.print("この連絡先を削除してもよろしいですか？ (y/n): ");
+        String confirm = scanner.nextLine();
+        
+        if (confirm.equalsIgnoreCase("y")) {
+            boolean success = contactDAO.deleteContact(id);
+            if (success) {
+                System.out.println("連絡先が正常に削除されました。");
+            } else {
+                System.out.println("連絡先の削除に失敗しました。");
+            }
+        } else {
+            System.out.println("削除操作がキャンセルされました。");
+        }
+    }
+}</code>
+
+                        <h4>実装のポイント</h4>
+                        <p>このアプリケーションでは、以下のJDBC関連技術を使用しています：</p>
+                        <ul>
+                            <li>データベース接続と接続プールの管理</li>
+                            <li>PreparedStatementを使用した安全なSQL実行</li>
+                            <li>結果セットの処理とオブジェクトへのマッピング</li>
+                            <li>トランザクション管理</li>
+                            <li>例外処理</li>
+                        </ul>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+                                <!-- アプリケーション層 -->
+                                <rect x="150" y="20" width="300" height="60" fill="#bbdefb" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="300" y="55" text-anchor="middle" font-size="16">AddressBookApp (UI層)</text>
+                                
+                                <!-- DAOレイヤー -->
+                                <rect x="150" y="120" width="300" height="60" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5" />
+                                <text x="300" y="155" text-anchor="middle" font-size="16">ContactDAO (データアクセス層)</text>
+                                
+                                <!-- JDBC Driver -->
+                                <rect x="150" y="220" width="300" height="60" fill="#ffecb3" stroke="#ffa000" stroke-width="2" rx="5" />
+                                <text x="300" y="255" text-anchor="middle" font-size="16">JDBC Driver</text>
+                                
+                                <!-- データベース -->
+                                <rect x="150" y="320" width="300" height="60" fill="#e1bee7" stroke="#8e24aa" stroke-width="2" rx="5" />
+                                <text x="300" y="355" text-anchor="middle" font-size="16">PostgreSQL Database</text>
+                                
+                                <!-- 矢印 -->
+                                <line x1="300" y1="80" x2="300" y2="120" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="300" y1="180" x2="300" y2="220" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="300" y1="280" x2="300" y2="320" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                
+                                <defs>
+                                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                        <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+                                    </marker>
+                                </defs>
+                                
+                                <!-- テキスト説明 -->
+                                <text x="320" y="100" text-anchor="start" font-size="12">ユーザー操作</text>
+                                <text x="320" y="200" text-anchor="start" font-size="12">SQL操作</text>
+                                <text x="320" y="300" text-anchor="start" font-size="12">データベース接続</text>
+                            </svg>
+                            <p class="text-center">図3.4: 住所録管理システムのアーキテクチャ</p>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>実習課題 3.4.1: 住所録管理システムの拡張</h5>
+                            <p>上記の住所録管理システムを以下の機能で拡張してください：</p>
+                            <ol>
+                                <li>カテゴリの一覧表示とカテゴリ管理（追加、削除）機能</li>
+                                <li>誕生日検索機能（今月の誕生日がある連絡先を表示する）</li>
+                                <li>データのエクスポート機能（選択した連絡先をCSVファイルに出力）</li>
+                                <li>CSVからのインポート機能</li>
+                                <li>トランザクション処理の改善（一括更新や削除時のロールバック対応）</li>
+                            </ol>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>実習課題 3.4.2: データアクセスパターンの改善</h5>
+                            <p>住所録管理システムを以下のデータアクセスパターンで最適化してください：</p>
+                            <ol>
+                                <li>コネクションプールの実装（HikariCPなどのライブラリを使用）</li>
+                                <li>DAOインターフェースとその実装クラスの分離</li>
+                                <li>ファクトリーパターンを用いたDAO実装の切り替え機能</li>
+                                <li>処理結果のログ出力機能</li>
+                                <li>ページネーション対応（大量データの分割表示）</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="chapter3-quiz">
+                        <h3 class="section-title">3.5 理解度確認テスト</h3>
+                        <div class="quiz-container">
+                            <h4>第3章の理解度チェック</h4>
+                            <p>以下の問題に答えて、第3章の内容の理解度を確認しましょう。</p>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題1:</strong> JDBCでSELECT文の結果を取得するために使用するインターフェースは何ですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1a" value="a">
+                                    <label class="form-check-label" for="q1a">
+                                        QueryResult
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1b" value="b">
+                                    <label class="form-check-label" for="q1b">
+                                        ResultSet
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1c" value="c">
+                                        <label class="form-check-label" for="q1c">
+                                        DataTable
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1d" value="d">
+                                        <label class="form-check-label" for="q1d">
+                                        RecordSet
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題2:</strong> PreparedStatement使用の主な利点はどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2a" value="a">
+                                    <label class="form-check-label" for="q2a">
+                                        より短いSQLコードが書ける
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2b" value="b">
+                                    <label class="form-check-label" for="q2b">
+                                        SQLインジェクション攻撃からの保護
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2c" value="c">
+                                        <label class="form-check-label" for="q2c">
+                                        データベースの負荷を増加させる
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2d" value="d">
+                                        <label class="form-check-label" for="q2d">
+                                        複雑なORDER BY句の簡素化
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題3:</strong> JDBCでINSERT操作後に生成された主キー値を取得するためのメソッドは？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3a" value="a">
+                                    <label class="form-check-label" for="q3a">
+                                        pstmt.getLastInsertId()
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3b" value="b">
+                                    <label class="form-check-label" for="q3b">
+                                        pstmt.getGeneratedKeys()
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3c" value="c">
+                                        <label class="form-check-label" for="q3c">
+                                        pstmt.getPrimaryKey()
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3d" value="d">
+                                        <label class="form-check-label" for="q3d">
+                                        pstmt.getAutoIncrementValue()
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題4:</strong> 以下のコードのセキュリティ上の問題点は何ですか？</p>
+                                <code>String name = request.getParameter("username");
+String sql = "SELECT * FROM users WHERE username = '" + name + "'";
+Statement stmt = conn.createStatement();
+ResultSet rs = stmt.executeQuery(sql);</code>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4a" value="a">
+                                    <label class="form-check-label" for="q4a">
+                                        SQLインジェクション攻撃の可能性がある
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4b" value="b">
+                                    <label class="form-check-label" for="q4b">
+                                        トランザクション処理がされていない
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4c" value="c">
+                                        <label class="form-check-label" for="q4c">
+                                        接続クローズが正しく行われていない
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4d" value="d">
+                                        <label class="form-check-label" for="q4d">
+                                        try-catchブロックがない
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題5:</strong> JDBCでResultSetのカーソルを最後の行の後ろに移動するメソッドは？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5a" value="a">
+                                    <label class="form-check-label" for="q5a">
+                                        moveToEnd()
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5b" value="b">
+                                    <label class="form-check-label" for="q5b">
+                                        afterLast()
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5c" value="c">
+                                        <label class="form-check-label" for="q5c">
+                                        last()
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5d" value="d">
+                                        <label class="form-check-label" for="q5d">
+                                        toEnd()
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題6:</strong> トランザクション管理で、すべての変更を確定させるメソッドは何ですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q6" id="q6a" value="a">
+                                    <label class="form-check-label" for="q6a">
+                                        conn.confirm()
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q6" id="q6b" value="b">
+                                    <label class="form-check-label" for="q6b">
+                                        conn.save()
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q6" id="q6c" value="c">
+                                        <label class="form-check-label" for="q6c">
+                                        conn.commit()
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q6" id="q6d" value="d">
+                                        <label class="form-check-label" for="q6d">
+                                        conn.update()
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題7:</strong> JDBCでバッチ処理を実行するメソッドは何ですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q7" id="q7a" value="a">
+                                    <label class="form-check-label" for="q7a">
+                                        pstmt.executeBatch()
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q7" id="q7b" value="b">
+                                    <label class="form-check-label" for="q7b">
+                                        pstmt.executeMultiple()
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q7" id="q7c" value="c">
+                                        <label class="form-check-label" for="q7c">
+                                        pstmt.executeAll()
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q7" id="q7d" value="d">
+                                        <label class="form-check-label" for="q7d">
+                                        pstmt.batchExecute()
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary mt-3" id="checkAnswers">回答を確認</button>
+                            <div id="quizResults" class="mt-3 d-none">
+                                <div class="alert alert-success">
+                                    <h5>正解:</h5>
+                                    <ol>
+                                        <li>b（ResultSet）</li>
+                                        <li>b（SQLインジェクション攻撃からの保護）</li>
+                                        <li>b（pstmt.getGeneratedKeys()）</li>
+                                        <li>a（SQLインジェクション攻撃の可能性がある）</li>
+                                        <li>b（afterLast()）</li>
+                                        <li>c（conn.commit()）</li>
+                                        <li>a（pstmt.executeBatch()）</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="next-steps">
+                        <h3 class="section-title">次のステップ</h3>
+                        <p>この章では、JDBCを使用した基本的なCRUD操作（作成、読み取り、更新、削除）について学習しました。これらの操作は、データベースアプリケーション開発の基礎となるものです。また、実際のアプリケーション（住所録管理システム）を作成することで、これらの知識を実践的に活用する方法も学びました。</p>
+                        
+                        <p>次の章では、さらに高度なJDBC技術について学んでいきます。具体的には、ストアドプロシージャの呼び出し、バッチ処理、トランザクション管理、大規模データの処理などについて詳しく学習します。</p>
+                        
+                        <div class="note">
+                            <h5>推奨される追加学習</h5>
+                            <ul>
+                                <li><strong>DAOパターン</strong>：Data Access Object パターンについて詳しく調べると、よりクリーンなデータアクセスコードが書けるようになります</li>
+                                <li><strong>コネクションプール</strong>：HikariCP や Apache DBCP などのコネクションプールライブラリを調べてみましょう</li>
+                                <li><strong>ORマッピング</strong>：JPA や Hibernate などのORマッピングフレームワークについて学ぶと、より高レベルなデータアクセス手法を理解できます</li>
+                                <li><strong>Spring JDBC</strong>：Spring Framework の JDBC サポート機能について調べると、JDBCをより効率的に使用する方法が分かります</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="exercise">
+                            <h5>チャレンジ課題: 図書館管理システムの開発</h5>
+                            <p>この章で学んだ知識を活用して、図書館管理システムを開発してみましょう。以下の要件を満たすシステムを作成してください：</p>
+                            <ol>
+                                <li>書籍情報（タイトル、著者、出版年、カテゴリなど）の管理</li>
+                                <li>利用者情報の管理</li>
+                                <li>貸出・返却処理の実装</li>
+                                <li>書籍検索機能（タイトル、著者、カテゴリなど）</li>
+                                <li>貸出履歴の管理</li>
+                                <li>延滞管理および通知機能</li>
+                            </ol>
+                            <p>このシステムでは、適切なテーブル設計とリレーションシップ、トランザクション処理、例外処理など、これまで学んだすべての技術を活用してください。</p>
+                        </div>
+                    </section>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4">
+        <div class="container">
+            <p class="mb-0">Copyright © 2025 F-Circle All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 理解度テストの回答確認ボタンの処理
+        document.getElementById('checkAnswers').addEventListener('click', function() {
+            document.getElementById('quizResults').classList.remove('d-none');
+        });
+    </script>
+</body>
+</html>

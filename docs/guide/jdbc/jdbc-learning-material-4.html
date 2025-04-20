@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JDBC学習教材 - 第4章：例外処理とリソース管理</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+        .navbar {
+            background-color: #1565c0;
+        }
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+        .chapter-title {
+            color: #1565c0;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #1565c0;
+            padding-bottom: 0.5rem;
+        }
+        .section-title {
+            color: #1976d2;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+        code {
+            display: block;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .quiz-container {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        .quiz-question {
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        .diagram {
+            max-width: 100%;
+            height: auto;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        .exercise {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        .note {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        #table-of-contents .list-group-item {
+            border: none;
+            padding: 0.5rem 1rem;
+        }
+        #table-of-contents .list-group-item-action {
+            color: #1976d2;
+        }
+        /* 選択された目次項目のスタイル */
+        #table-of-contents .list-group-item-action.active,
+        .list-group-item.active {
+            color: white !important; /* テキストを白色にして青い背景に対してコントラストをつける */
+            background-color: #1976d2;
+            border-color: #1976d2;
+        }
+        .section-nav {
+            padding-left: 1rem;
+        }
+        .inline-code {
+            background-color: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            display: inline;
+        }
+        footer {
+            background-color: #1565c0;
+            color: white;
+            padding: 1rem 0;
+            margin-top: 3rem;
+        }
+        .table-example {
+            width: 100%;
+            margin-bottom: 1rem;
+            border-collapse: collapse;
+        }
+        .table-example th {
+            background-color: #e3f2fd;
+            border: 1px solid #b3e5fc;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .table-example td {
+            border: 1px solid #b3e5fc;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .example-result {
+            background-color: #f1f8e9;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .warning {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+    </style>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#tableOfContents">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">JDBC学習教材</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#introduction">はじめに</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#chapter4">第4章: 例外処理とリソース管理</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <div class="row">
+            <!-- Sidebar - Table of Contents -->
+            <div class="col-lg-3">
+                <div class="sidebar">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">目次</h5>
+                        </div>
+                        <div id="table-of-contents" class="list-group list-group-flush">
+                            <a href="#introduction" class="list-group-item list-group-item-action">はじめに</a>
+                            <a href="#chapter4" class="list-group-item list-group-item-action">第4章: 例外処理とリソース管理</a>
+                            <div class="section-nav">
+                                <a href="#sqlexception-handling" class="list-group-item list-group-item-action">4.1 SQLExceptionの処理方法</a>
+                                <a href="#try-with-resources" class="list-group-item list-group-item-action">4.2 try-with-resources構文を使用したリソース管理</a>
+                                <a href="#connection-pool" class="list-group-item list-group-item-action">4.3 コネクションプールの概念と基本</a>
+                                <a href="#exception-practice" class="list-group-item list-group-item-action">4.4 例外処理を実装したプログラム作成（実習）</a>
+                                <a href="#chapter4-quiz" class="list-group-item list-group-item-action">4.5 理解度確認テスト</a>
+                            </div>
+                            <a href="#next-steps" class="list-group-item list-group-item-action">次のステップ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <section id="introduction">
+                    <h1 class="display-5 mb-4">JDBC学習教材 - 例外処理とリソース管理</h1>
+                    <p class="lead">この第4章では、JDBCにおける例外処理とリソース管理について学習します。データベース操作における例外の適切な処理方法、効率的なリソース管理、コネクションプールの概念とその活用方法を理解し、実践的なプログラムを作成します。</p>
+
+                    <div class="note">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>JDBCにおける例外の種類と処理方法</li>
+                            <li>try-with-resources構文を使用した効率的なリソース管理</li>
+                            <li>コネクションプールの基本概念と実装方法</li>
+                            <li>例外処理を実装した実践的なJDBCプログラムの作成</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="chapter4">
+                    <h2 class="chapter-title">第4章：例外処理とリソース管理</h2>
+                    <p>データベース操作を行うJDBCプログラミングにおいて、例外処理とリソース管理は非常に重要な要素です。適切な例外処理とリソース管理を行わないと、メモリリーク、接続リソースの枯渇、アプリケーションのパフォーマンス低下などの問題が発生する可能性があります。この章では、これらの問題を回避するための適切な方法と実践的なテクニックを学びます。</p>
+
+                    <section id="sqlexception-handling">
+                        <h3 class="section-title">4.1 SQLExceptionの処理方法</h3>
+                        <p>JDBCプログラミングにおいて、データベース操作中に発生する可能性のあるエラーはSQLExceptionとして通知されます。SQLExceptionは様々な原因で発生する可能性があり、適切に処理しなければアプリケーションがクラッシュする恐れがあります。</p>
+
+                        <h4>SQLExceptionの主な原因</h4>
+                        <p>SQLExceptionが発生する一般的な原因は以下のとおりです：</p>
+                        <ul>
+                            <li><strong>接続エラー</strong>：データベースサーバーへの接続が確立できない</li>
+                            <li><strong>認証エラー</strong>：無効なユーザー名やパスワード</li>
+                            <li><strong>SQL構文エラー</strong>：不正なSQL文</li>
+                            <li><strong>制約違反</strong>：一意性制約、外部キー制約などのデータベース制約に違反</li>
+                            <li><strong>タイムアウト</strong>：クエリの実行時間が長すぎる</li>
+                            <li><strong>リソース不足</strong>：接続プールの枯渇など</li>
+                        </ul>
+
+                        <h4>SQLExceptionの階層構造</h4>
+                        <p>Java 6以降、SQLExceptionクラスには様々なサブクラスが追加され、より具体的な例外を特定できるようになりました。</p>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+                                <!-- java.lang.Exception -->
+                                <rect x="200" y="20" width="200" height="40" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="300" y="45" text-anchor="middle" font-size="16">java.lang.Exception</text>
+                                
+                                <!-- java.sql.SQLException -->
+                                <rect x="200" y="100" width="200" height="40" fill="#bbdefb" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="300" y="125" text-anchor="middle" font-size="16">java.sql.SQLException</text>
+                                
+                                <!-- Line connecting Exception to SQLException -->
+                                <line x1="300" y1="60" x2="300" y2="100" stroke="#1976d2" stroke-width="2" />
+                                <polygon points="295,90 300,100 305,90" fill="#1976d2" />
+                                
+                                <!-- SQLTransientException -->
+                                <rect x="20" y="180" width="180" height="40" fill="#90caf9" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="110" y="205" text-anchor="middle" font-size="14">SQLTransientException</text>
+                                
+                                <!-- SQLNonTransientException -->
+                                <rect x="210" y="180" width="180" height="40" fill="#90caf9" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="300" y="205" text-anchor="middle" font-size="14">SQLNonTransientException</text>
+                                
+                                <!-- BatchUpdateException -->
+                                <rect x="400" y="180" width="180" height="40" fill="#90caf9" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="490" y="205" text-anchor="middle" font-size="14">BatchUpdateException</text>
+                                
+                                <!-- Lines connecting SQLException to its subclasses -->
+                                <line x1="300" y1="140" x2="110" y2="180" stroke="#1976d2" stroke-width="2" />
+                                <polygon points="115,175 110,180 120,185" fill="#1976d2" />
+                                
+                                <line x1="300" y1="140" x2="300" y2="180" stroke="#1976d2" stroke-width="2" />
+                                <polygon points="295,170 300,180 305,170" fill="#1976d2" />
+                                
+                                <line x1="300" y1="140" x2="490" y2="180" stroke="#1976d2" stroke-width="2" />
+                                <polygon points="480,175 490,180 485,185" fill="#1976d2" />
+                                
+                                <!-- SQLTransientException Subclasses -->
+                                <rect x="20" y="260" width="180" height="30" fill="#64b5f6" stroke="#1976d2" stroke-width="1" rx="5" />
+                                <text x="110" y="280" text-anchor="middle" font-size="12">SQLTransientConnectionException</text>
+                                
+                                <rect x="20" y="300" width="180" height="30" fill="#64b5f6" stroke="#1976d2" stroke-width="1" rx="5" />
+                                <text x="110" y="320" text-anchor="middle" font-size="12">SQLTransientTimeoutException</text>
+                                
+                                <!-- SQLNonTransientException Subclasses -->
+                                <rect x="210" y="260" width="180" height="30" fill="#64b5f6" stroke="#1976d2" stroke-width="1" rx="5" />
+                                <text x="300" y="280" text-anchor="middle" font-size="12">SQLSyntaxErrorException</text>
+                                
+                                <rect x="210" y="300" width="180" height="30" fill="#64b5f6" stroke="#1976d2" stroke-width="1" rx="5" />
+                                <text x="300" y="320" text-anchor="middle" font-size="12">SQLIntegrityConstraintViolationException</text>
+                                
+                                <rect x="210" y="340" width="180" height="30" fill="#64b5f6" stroke="#1976d2" stroke-width="1" rx="5" />
+                                <text x="300" y="360" text-anchor="middle" font-size="12">SQLDataException</text>
+                                
+                                <!-- Lines connecting parent classes to their subclasses -->
+                                <line x1="110" y1="220" x2="110" y2="260" stroke="#1976d2" stroke-width="1" />
+                                <line x1="110" y1="290" x2="110" y2="300" stroke="#1976d2" stroke-width="1" />
+                                
+                                <line x1="300" y1="220" x2="300" y2="260" stroke="#1976d2" stroke-width="1" />
+                                <line x1="300" y1="290" x2="300" y2="300" stroke="#1976d2" stroke-width="1" />
+                                <line x1="300" y1="330" x2="300" y2="340" stroke="#1976d2" stroke-width="1" />
+                            </svg>
+                            <p class="text-center">図4.1: SQLExceptionクラス階層</p>
+                        </div>
+
+                        <h4>主なSQLException</h4>
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>例外クラス</th>
+                                    <th>説明</th>
+                                    <th>対応方法</th>
+                                </tr>
+                                <tr>
+                                    <td>SQLSyntaxErrorException</td>
+                                    <td>SQL文の構文エラー</td>
+                                    <td>SQLクエリを確認して修正する</td>
+                                </tr>
+                                <tr>
+                                    <td>SQLIntegrityConstraintViolationException</td>
+                                    <td>主キーや外部キーなどの制約違反</td>
+                                    <td>データの整合性を確認し、制約に合うデータを使用する</td>
+                                </tr>
+                                <tr>
+                                    <td>SQLTransientConnectionException</td>
+                                    <td>一時的な接続問題（再試行で解決する可能性あり）</td>
+                                    <td>接続を再試行する、または後で再接続を試みる</td>
+                                </tr>
+                                <tr>
+                                    <td>SQLTimeoutException</td>
+                                    <td>クエリ実行のタイムアウト</td>
+                                    <td>クエリを最適化するか、タイムアウト設定を調整する</td>
+                                </tr>
+                                <tr>
+                                    <td>SQLDataException</td>
+                                    <td>データ型の不一致や値の範囲外など</td>
+                                    <td>正しいデータ型と値の範囲を使用する</td>
+                                </tr>
+                                <tr>
+                                    <td>BatchUpdateException</td>
+                                    <td>バッチ更新操作中のエラー</td>
+                                    <td>getUpdateCounts()を使用して成功した更新を確認し、エラーの原因を特定する</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h4>SQLExceptionの処理方法</h4>
+                        <p>効果的なSQLException処理のための基本的なアプローチは以下のとおりです：</p>
+
+                        <code>import java.sql.*;
+
+public class SQLExceptionHandlingExample {
+
+    public static void main(String[] args) {
+        String url = "jdbc:postgresql://localhost:5432/testdb";
+        String user = "postgres";
+        String password = "password";
+        
+        try {
+            // JDBCドライバのロード
+            Class.forName("org.postgresql.Driver");
+            
+            // データベース接続
+            Connection conn = DriverManager.getConnection(url, user, password);
+            
+            // SQLステートメントの作成と実行
+            Statement stmt = conn.createStatement();
+            
+            try {
+                // 存在しないテーブル名を使用して例外を発生させる
+                stmt.executeQuery("SELECT * FROM non_existent_table");
+            } catch (SQLException e) {
+                // 詳細なエラー情報を取得
+                System.err.println("SQLエラーが発生しました");
+                System.err.println("SQLステート: " + e.getSQLState());
+                System.err.println("エラーコード: " + e.getErrorCode());
+                System.err.println("メッセージ: " + e.getMessage());
+                
+                // 例外の種類によって異なる処理を行う
+                if (e instanceof SQLSyntaxErrorException) {
+                    System.err.println("SQL構文エラーです。クエリを確認してください。");
+                } else if (e instanceof SQLIntegrityConstraintViolationException) {
+                    System.err.println("制約違反エラーです。データを確認してください。");
+                }
+                
+                // 実際のアプリケーションではより適切な対応を行う
+                // 例: ログの記録、ユーザーへの通知、再試行など
+            }
+            
+            // リソースのクローズ
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+            
+        } catch (ClassNotFoundException e) {
+            System.err.println("JDBCドライバが見つかりません: " + e.getMessage());
+        } catch (SQLException e) {
+            System.err.println("データベース接続エラー: " + e.getMessage());
+            
+            // 接続エラーの原因を特定
+            if (e instanceof SQLTransientConnectionException) {
+                System.err.println("一時的な接続エラーです。しばらく後に再試行してください。");
+            }
+        }
+    }
+}</code>
+
+                        <h4>SQLExceptionの効果的な処理のためのベストプラクティス</h4>
+                        <ol>
+                            <li><strong>具体的な例外クラスをキャッチする</strong>：可能な限り具体的な例外クラスをキャッチして、それぞれに適した処理を行います。</li>
+                            <li><strong>SQL状態コードを確認する</strong>：getSQLState()メソッドで返されるコードは、XOPEN SQLStateまたはSQL:2003標準に基づいており、エラーの種類を特定するのに役立ちます。</li>
+                            <li><strong>エラーメッセージを記録する</strong>：getMessage()で得られるエラーメッセージをログに記録することで、問題の診断が容易になります。</li>
+                            <li><strong>例外連鎖を確認する</strong>：getNextException()メソッドを使用して、関連する例外のチェーンを調べることができます。</li>
+                            <li><strong>一時的なエラーは再試行する</strong>：SQLTransientExceptionのサブクラスの場合、一定の間隔をおいて操作を再試行することでエラーを解決できる場合があります。</li>
+                            <li><strong>ユーザーフレンドリーなメッセージを表示する</strong>：技術的なエラーメッセージではなく、ユーザーが理解しやすいメッセージを表示します。</li>
+                        </ol>
+
+                        <div class="note">
+                            <h5>PostgreSQLのSQLStateコード</h5>
+                            <p>PostgreSQLは、ANSI/ISO標準SQLStateコードを使用しています。いくつかの一般的なコードは以下のとおりです：</p>
+                            <ul>
+                                <li><strong>42P01</strong>: テーブルが存在しない（relation does not exist）</li>
+                                <li><strong>42703</strong>: カラムが存在しない（column does not exist）</li>
+                                <li><strong>23505</strong>: 一意性制約違反（unique_violation）</li>
+                                <li><strong>23503</strong>: 外部キー制約違反（foreign_key_violation）</li>
+                                <li><strong>08006</strong>: 接続障害（connection failure）</li>
+                            </ul>
+                            <p>完全なリストはPostgreSQLのドキュメントで確認できます。</p>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>練習問題 4.1.1: SQLExceptionの処理</h5>
+                            <p>以下のシナリオに対応するSQLException処理コードを書いてください：</p>
+                            <ol>
+                                <li>ユーザーテーブルにレコードを挿入する際に、メールアドレスの一意性制約に違反した場合の処理</li>
+                                <li>データベース接続が確立できない場合に、最大3回まで5秒間隔で再試行する処理</li>
+                                <li>クエリの構文エラーをキャッチして、エラー箇所を特定しやすいようにエラーメッセージとクエリを出力する処理</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="try-with-resources">
+                        <h3 class="section-title">4.2 try-with-resources構文を使用したリソース管理</h3>
+                        <p>JDBCプログラミングでは、Connection、Statement、ResultSetなどのリソースを適切に管理することが非常に重要です。これらのリソースを適切にクローズしないと、メモリリークやデータベース接続枯渇などの問題が発生する可能性があります。</p>
+
+                        <h4>従来のリソース管理方法</h4>
+                        <p>従来のJDBCプログラミングでは、finallyブロックでリソースをクローズするのが一般的でした：</p>
+
+                        <code>import java.sql.*;
+
+public class TraditionalResourceManagement {
+    public static void main(String[] args) {
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            // リソースの初期化
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/testdb", "postgres", "password");
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("SELECT id, name FROM users");
+            
+            // 結果の処理
+            while (rs.next()) {
+                System.out.println(rs.getInt("id") + ": " + rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            System.err.println("データベースエラー: " + e.getMessage());
+        } finally {
+            // リソースのクローズ
+            try {
+                if (rs != null) rs.close();
+            } catch (SQLException e) {
+                // クローズ時のエラー処理
+                System.err.println("ResultSetクローズエラー: " + e.getMessage());
+            }
+            
+            try {
+                if (stmt != null) stmt.close();
+            } catch (SQLException e) {
+                System.err.println("Statementクローズエラー: " + e.getMessage());
+            }
+            
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.err.println("Connectionクローズエラー: " + e.getMessage());
+            }
+        }
+    }
+}</code>
+
+                        <p>このアプローチには以下の問題があります：</p>
+                        <ul>
+                            <li>コードが冗長になる</li>
+                            <li>リソースのクローズ順序に注意が必要</li>
+                            <li>クローズ処理自体でも例外が発生する可能性がある</li>
+                            <li>リソースを追加するたびにfinallyブロックが複雑になる</li>
+                        </ul>
+
+                        <h4>try-with-resources構文の利用</h4>
+                        <p>Java 7以降では、try-with-resources構文を使用して、リソース管理を大幅に簡略化できます。この構文を使用すると、tryブロックの終了時に自動的にリソースがクローズされます。</p>
+
+                        <code>import java.sql.*;
+
+public class TryWithResourcesExample {
+    public static void main(String[] args) {
+        String url = "jdbc:postgresql://localhost:5432/testdb";
+        String user = "postgres";
+        String password = "password";
+        
+        // try-with-resourcesを使用したリソース管理
+        try (
+            // リソースの初期化
+            Connection conn = DriverManager.getConnection(url, user, password);
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT id, name FROM users")
+        ) {
+            // 結果の処理
+            while (rs.next()) {
+                System.out.println(rs.getInt("id") + ": " + rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            System.err.println("データベースエラー: " + e.getMessage());
+        }
+        // finallyブロックは不要 - リソースは自動的にクローズされる
+    }
+}</code>
+
+                        <h4>try-with-resourcesの仕組み</h4>
+                        <p>try-with-resources構文は、AutoCloseableインターフェースを実装するすべてのクラスで使用できます。JDBCの主要なクラス（Connection、Statement、ResultSet）はすべてこのインターフェースを実装しています。</p>
+
+                        <p>try-with-resources構文の特徴：</p>
+                        <ul>
+                            <li><strong>自動リソースクローズ</strong>：tryブロックの終了時（正常終了または例外発生時）に自動的にリソースがクローズされます。</li>
+                            <li><strong>クローズの順序</strong>：リソースは初期化の逆順でクローズされるため、JDBCリソースの適切なクローズ順序（ResultSet→Statement→Connection）が自動的に保証されます。</li>
+                            <li><strong>抑制された例外</strong>：リソースのクローズ中に例外が発生した場合、それらは元の例外に抑制された例外（Suppressed Exception）として追加されます。</li>
+                        </ul>
+
+                        <h4>複数のリソースを使用する場合</h4>
+                        <p>複数のステートメントや結果セットを使用する場合でも、try-with-resourcesで効率的に管理できます：</p>
+
+                        <code>import java.sql.*;
+
+public class MultipleResourcesExample {
+    public static void main(String[] args) {
+        String url = "jdbc:postgresql://localhost:5432/testdb";
+        
+        try (
+            // 1つの接続を共有
+            Connection conn = DriverManager.getConnection(url, "postgres", "password")
+        ) {
+            // ユーザー情報を取得
+            try (
+                PreparedStatement userStmt = conn.prepareStatement("SELECT id, name FROM users WHERE id = ?");
+                PreparedStatement orderStmt = conn.prepareStatement("SELECT * FROM orders WHERE user_id = ?")
+            ) {
+                userStmt.setInt(1, 1);  // ID=1のユーザーを検索
+                
+                try (ResultSet userRs = userStmt.executeQuery()) {
+                    if (userRs.next()) {
+                        int userId = userRs.getInt("id");
+                        String userName = userRs.getString("name");
+                        System.out.println("ユーザー: " + userId + " - " + userName);
+                        
+                        // ユーザーの注文情報を取得
+                        orderStmt.setInt(1, userId);
+                        try (ResultSet orderRs = orderStmt.executeQuery()) {
+                            System.out.println("注文履歴:");
+                            while (orderRs.next()) {
+                                System.out.println("  注文ID: " + orderRs.getInt("id") + 
+                                                   ", 日付: " + orderRs.getDate("order_date"));
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("データベースエラー: " + e.getMessage());
+        }
+    }
+}</code>
+
+                        <p>このように、try-with-resourcesをネストして使用することで、リソースの有効範囲を明確にし、必要なタイミングで確実にクローズできます。</p>
+
+                        <h4>カスタムAutoCloseableの作成</h4>
+                        <p>複数のJDBCリソースをまとめて管理したい場合は、カスタムAutoCloseable実装を作成することも可能です：</p>
+
+                        <code>import java.sql.*;
+
+public class DatabaseTransaction implements AutoCloseable {
+    private Connection conn;
+    private boolean committed;
+    
+    public DatabaseTransaction(String url, String user, String password) throws SQLException {
+        this.conn = DriverManager.getConnection(url, user, password);
+        this.conn.setAutoCommit(false);  // トランザクションモード
+        this.committed = false;
+    }
+    
+    public Connection getConnection() {
+        return conn;
+    }
+    
+    public void commit() throws SQLException {
+        conn.commit();
+        committed = true;
+    }
+    
+    public void rollback() throws SQLException {
+        conn.rollback();
+    }
+    
+    @Override
+    public void close() throws SQLException {
+        try {
+            if (conn != null && !conn.isClosed()) {
+                if (!committed) {
+                    // コミットされていない場合はロールバック
+                    try {
+                        conn.rollback();
+                    } catch (SQLException e) {
+                        System.err.println("ロールバックエラー: " + e.getMessage());
+                    }
+                }
+                conn.close();
+            }
+        } finally {
+            conn = null;
+        }
+    }
+}
+
+// 使用例
+public class CustomAutoCloseableExample {
+    public static void main(String[] args) {
+        try (
+            DatabaseTransaction transaction = new DatabaseTransaction(
+                "jdbc:postgresql://localhost:5432/testdb", "postgres", "password"
+            )
+        ) {
+            Connection conn = transaction.getConnection();
+            
+            // トランザクションを使った処理
+            try (
+                PreparedStatement stmt = conn.prepareStatement("INSERT INTO users(name, email) VALUES(?, ?)");
+            ) {
+                stmt.setString(1, "新規ユーザー");
+                stmt.setString(2, "new@example.com");
+                stmt.executeUpdate();
+                
+                // 正常に完了したらコミット
+                transaction.commit();
+            }
+        } catch (SQLException e) {
+            System.err.println("トランザクションエラー: " + e.getMessage());
+        }
+    }
+}</code>
+
+                        <div class="note">
+                            <h5>Java 9以降の機能拡張</h5>
+                            <p>Java 9以降では、try-with-resources構文がさらに改善され、既に宣言された変数をtryブロックで使用できるようになりました：</p>
+                            <code>// Java 9以降
+Connection conn = DriverManager.getConnection(url, user, password);
+Statement stmt = conn.createStatement();
+
+// 既に宣言された変数を使用
+try (conn; stmt) {
+    // リソースを使用した処理
+} catch (SQLException e) {
+    // 例外処理
+}</code>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>練習問題 4.2.1: try-with-resourcesの活用</h5>
+                            <p>以下の要件を満たすコードを作成してください：</p>
+                            <ol>
+                                <li>try-with-resources構文を使用して、usersテーブルの全レコードをCSVファイルにエクスポートする処理</li>
+                                <li>バッチ処理でデータを挿入する際にtry-with-resourcesを使用し、例外が発生した場合はトランザクションをロールバックする処理</li>
+                                <li>AutoCloseableを実装したカスタムのデータベース接続クラスを作成し、データベース接続プールからの接続取得と返却を自動化する処理</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="connection-pool">
+                        <h3 class="section-title">4.3 コネクションプールの概念と基本</h3>
+                        <p>データベース接続の確立は比較的コストの高い操作です。特に多くのユーザーが同時にアクセスするWebアプリケーションなどでは、リクエストごとに接続を開いて閉じると、パフォーマンスが著しく低下する可能性があります。コネクションプールはこの問題を解決するための効果的な手法です。</p>
+
+                        <h4>コネクションプールとは</h4>
+                        <p>コネクションプールは、データベース接続のプールを事前に作成し、アプリケーションが必要なときに接続を貸し出し、使用が終わったら返却する仕組みです。これにより、接続の確立にかかるオーバーヘッドを削減し、アプリケーションのパフォーマンスを向上させることができます。</p>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" width="600" height="300">
+                                <!-- Application -->
+                                <rect x="50" y="20" width="120" height="60" fill="#bbdefb" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="110" y="55" text-anchor="middle" font-size="16">アプリケーション</text>
+                                
+                                <!-- Connection Pool -->
+                                <rect x="220" y="20" width="160" height="200" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5" />
+                                <text x="300" y="45" text-anchor="middle" font-size="16">コネクションプール</text>
+                                
+                                <!-- Database -->
+                                <rect x="430" y="20" width="120" height="60" fill="#ffecb3" stroke="#ffa000" stroke-width="2" rx="5" />
+                                <text x="490" y="55" text-anchor="middle" font-size="16">データベース</text>
+                                
+                                <!-- Connections in Pool -->
+                                <rect x="240" y="70" width="120" height="25" fill="#dcedc8" stroke="#7cb342" stroke-width="1" rx="3" />
+                                <text x="300" y="87" text-anchor="middle" font-size="14">接続1 (使用可)</text>
+                                
+                                <rect x="240" y="105" width="120" height="25" fill="#ffcdd2" stroke="#d32f2f" stroke-width="1" rx="3" />
+                                <text x="300" y="122" text-anchor="middle" font-size="14">接続2 (使用中)</text>
+                                
+                                <rect x="240" y="140" width="120" height="25" fill="#dcedc8" stroke="#7cb342" stroke-width="1" rx="3" />
+                                <text x="300" y="157" text-anchor="middle" font-size="14">接続3 (使用可)</text>
+                                
+                                <rect x="240" y="175" width="120" height="25" fill="#dcedc8" stroke="#7cb342" stroke-width="1" rx="3" />
+                                <text x="300" y="192" text-anchor="middle" font-size="14">接続4 (使用可)</text>
+                                
+                                <!-- Arrows -->
+                                <path d="M170,40 L220,40" stroke="#000" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+                                <text x="195" y="35" text-anchor="middle" font-size="12">1. 接続要求</text>
+                                
+                                <path d="M170,60 L220,60" stroke="#000" stroke-width="2" fill="none" stroke-dasharray="5,5" marker-start="url(#arrow)" />
+                                <text x="195" y="75" text-anchor="middle" font-size="12">4. 接続返却</text>
+                                
+                                <path d="M380,30 L430,30" stroke="#000" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+                                <text x="405" y="25" text-anchor="middle" font-size="12">2. 初期化時に接続</text>
+                                
+                                <path d="M380,50 L430,50" stroke="#000" stroke-width="2" fill="none" stroke-dasharray="5,5" marker-start="url(#arrow)" />
+                                <text x="405" y="65" text-anchor="middle" font-size="12">3. 使用終了時</text>
+                                
+                                <defs>
+                                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                        <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+                                    </marker>
+                                </defs>
+                                
+                                <!-- Notes -->
+                                <text x="300" y="230" text-anchor="middle" font-size="14" fill="#388e3c">アイドル接続: 3</text>
+                                <text x="300" y="250" text-anchor="middle" font-size="14" fill="#d32f2f">使用中接続: 1</text>
+                                <text x="300" y="270" text-anchor="middle" font-size="14">最大接続数: 4</text>
+                            </svg>
+                            <p class="text-center">図4.2: コネクションプールの概念図</p>
+                        </div>
+
+                        <h4>コネクションプールの主なメリット</h4>
+                        <ul>
+                            <li><strong>パフォーマンスの向上</strong>：接続の確立と破棄のオーバーヘッドを削減</li>
+                            <li><strong>リソース使用量の制御</strong>：同時接続数の上限を設定可能</li>
+                            <li><strong>接続管理の簡素化</strong>：タイムアウト、検証、モニタリングなどの機能を一元管理</li>
+                            <li><strong>スケーラビリティの向上</strong>：高負荷時でも効率的に接続を提供</li>
+                            <li><strong>接続の再利用</strong>：接続を繰り返し使用することで効率向上</li>
+                        </ul>
+
+                        <h4>主なコネクションプール実装</h4>
+                        <p>Java/JDBCで利用できる主なコネクションプール実装には以下のようなものがあります：</p>
+
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>名前</th>
+                                    <th>特徴</th>
+                                    <th>主な用途</th>
+                                </tr>
+                                <tr>
+                                    <td>HikariCP</td>
+                                    <td>
+                                        <ul>
+                                            <li>非常に高速かつ軽量</li>
+                                            <li>シンプルな設定</li>
+                                            <li>メトリクス機能</li>
+                                        </ul>
+                                    </td>
+                                    <td>高パフォーマンスが求められるアプリケーション、Spring Boot 2.0以降のデフォルト</td>
+                                </tr>
+                                <tr>
+                                    <td>Apache DBCP</td>
+                                    <td>
+                                        <ul>
+                                            <li>Apacheプロジェクトの一部</li>
+                                            <li>豊富な設定オプション</li>
+                                            <li>長い運用実績</li>
+                                        </ul>
+                                    </td>
+                                    <td>多くのJavaEEアプリケーション、Tomcatのデフォルト</td>
+                                </tr>
+                                <tr>
+                                    <td>C3P0</td>
+                                    <td>
+                                        <ul>
+                                            <li>自動リカバリ機能</li>
+                                            <li>ステートメントプーリング</li>
+                                            <li>JDBCドライバラッパー</li>
+                                        </ul>
+                                    </td>
+                                    <td>Hibernate、JPA実装との組み合わせ</td>
+                                </tr>
+                                <tr>
+                                    <td>Tomcat JDBC Pool</td>
+                                    <td>
+                                        <ul>
+                                            <li>Tomcat用に最適化</li>
+                                            <li>接続バリデーション</li>
+                                            <li>非同期接続取得</li>
+                                        </ul>
+                                    </td>
+                                    <td>Tomcatベースのアプリケーション</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h4>HikariCPを使用したコネクションプールの実装</h4>
+                        <p>ここでは、最も人気のあるコネクションプール実装の1つであるHikariCPを使用した例を示します。</p>
+
+                        <p>まず、HikariCPをプロジェクトに追加します：</p>
+
+                        <h5>Mavenの場合（pom.xmlに追加）</h5>
+                        <code>&lt;dependency&gt;
+    &lt;groupId&gt;com.zaxxer&lt;/groupId&gt;
+    &lt;artifactId&gt;HikariCP&lt;/artifactId&gt;
+    &lt;version&gt;5.0.1&lt;/version&gt;
+&lt;/dependency&gt;</code>
+
+                        <h5>Gradleの場合（build.gradleに追加）</h5>
+                        <code>implementation 'com.zaxxer:HikariCP:5.0.1'</code>
+
+                        <p>HikariCPを使用したシンプルなコネクションプールの実装例：</p>
+
+                        <code>import java.sql.*;
+import com.zaxxer.hikari.*;
+
+public class HikariCPExample {
+    
+    private static HikariDataSource dataSource;
+    
+    // コネクションプールの初期化
+    public static void initPool() {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:postgresql://localhost:5432/testdb");
+        config.setUsername("postgres");
+        config.setPassword("password");
+        
+        // 基本的な設定
+        config.setMaximumPoolSize(10);      // 最大接続数
+        config.setMinimumIdle(2);          // 最小アイドル接続数
+        config.setIdleTimeout(30000);      // アイドル接続のタイムアウト（ミリ秒）
+        config.setConnectionTimeout(5000); // 接続タイムアウト（ミリ秒）
+        
+        // 接続テスト
+        config.setConnectionTestQuery("SELECT 1");
+        
+        // プール名
+        config.setPoolName("TestDBPool");
+        
+        // データソースの作成
+        dataSource = new HikariDataSource(config);
+    }
+    
+    // コネクションプールの終了処理
+    public static void closePool() {
+        if (dataSource != null) {
+            dataSource.close();
+        }
+    }
+    
+    // 接続の取得
+    public static Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
+    }
+    
+    // サンプル使用例
+    public static void main(String[] args) {
+        try {
+            // プールの初期化
+            initPool();
+            
+            // 複数のクエリを実行する例
+            for (int i = 0; i < 5; i++) {
+                executeQuery();
+            }
+            
+            // 使用終了後にプールをクローズ
+            closePool();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    // クエリを実行する例
+    private static void executeQuery() {
+        try (
+            Connection conn = getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT id, name FROM users")
+        ) {
+            System.out.println("接続取得: " + conn);
+            
+            while (rs.next()) {
+                System.out.println(rs.getInt("id") + ": " + rs.getString("name"));
+            }
+            
+            // try-with-resources構文で自動的に接続はプールに返却される
+        } catch (SQLException e) {
+            System.err.println("クエリ実行エラー: " + e.getMessage());
+        }
+    }
+}</code>
+
+                        <h4>DataSourceインターフェースの使用</h4>
+                        <p>JDBCには、javax.sql.DataSourceインターフェースが提供されており、コネクションプールの実装はこのインターフェースを実装します。これにより、異なるプール実装間の切り替えが容易になります。</p>
+
+                        <code>import javax.sql.DataSource;
+import java.sql.*;
+import com.zaxxer.hikari.*;
+
+public class DataSourceExample {
+    
+    // DataSourceインターフェースを使用
+    private static DataSource setupDataSource() {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:postgresql://localhost:5432/testdb");
+        config.setUsername("postgres");
+        config.setPassword("password");
+        config.setMaximumPoolSize(5);
+        
+        return new HikariDataSource(config);
+    }
+    
+    public static void main(String[] args) {
+        DataSource dataSource = null;
+        
+        try {
+            // データソースの設定
+            dataSource = setupDataSource();
+            
+            // データソースから接続を取得
+            try (
+                Connection conn = dataSource.getConnection();
+                PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE id = ?")
+            ) {
+                stmt.setInt(1, 1);
+                
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        System.out.println("ユーザー名: " + rs.getString("name"));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("データベースエラー: " + e.getMessage());
+        } finally {
+            // HikariDataSourceの場合はクローズする
+            if (dataSource instanceof HikariDataSource) {
+                ((HikariDataSource) dataSource).close();
+            }
+        }
+    }
+}</code>
+
+                        <h4>コネクションプール使用時の注意点</h4>
+                        <ol>
+                            <li><strong>接続を確実に返却する</strong>：try-with-resourcesを使用するか、finallyブロックで必ずcloseメソッドを呼び出す</li>
+                            <li><strong>適切なプールサイズの設定</strong>：大きすぎるとリソースの無駄、小さすぎると接続待ちが発生</li>
+                            <li><strong>接続の有効性確認</strong>：長時間使用されていない接続は無効になっている可能性がある</li>
+                            <li><strong>トランザクションの適切な管理</strong>：未コミットのトランザクションを残したまま接続を返却しない</li>
+                            <li><strong>ステートメントのキャッシュ</strong>：一部のプール実装ではPreparedStatementもキャッシュ可能</li>
+                            <li><strong>モニタリング</strong>：プールの使用状況を監視して、必要に応じて設定を調整</li>
+                        </ol>
+
+                        <div class="warning">
+                            <h5>リソースリークの防止</h5>
+                            <p>コネクションプールを使用する場合でも、接続を使用後に必ずcloseメソッドを呼び出す必要があります。closeメソッドは接続を破棄するのではなく、プールに返却するだけです。接続をcloseし忘れると、利用可能な接続が徐々に減少し、最終的にはプールが枯渇して新しい接続を取得できなくなります。</p>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>練習問題 4.3.1: コネクションプールの実装</h5>
+                            <p>以下の要件を満たすコネクションプール実装を作成してください：</p>
+                            <ol>
+                                <li>HikariCPを使用したシングルトンパターンのコネクションプールマネージャークラス</li>
+                                <li>プール設定をプロパティファイルから読み込む機能</li>
+                                <li>接続の取得と接続プール統計情報（使用中接続数、アイドル接続数など）を出力するサンプルプログラム</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="exception-practice">
+                        <h3 class="section-title">4.4 例外処理を実装したプログラム作成（実習）</h3>
+                        <p>この実習では、これまで学んだ例外処理とリソース管理の知識を活用して、実際のプログラムを作成します。データベースアクセスにおいて適切な例外処理とリソース管理を実装することで、堅牢なアプリケーションを構築する練習をしましょう。</p>
+
+                        <h4>実習の目的</h4>
+                        <ul>
+                            <li>適切な例外処理を実装したJDBCプログラムの作成</li>
+                            <li>try-with-resources構文を使用したリソース管理</li>
+                            <li>コネクションプールの使用</li>
+                            <li>トランザクション処理と例外発生時のロールバック</li>
+                        </ul>
+
+                        <h4>準備</h4>
+                        <p>まず、以下のライブラリをプロジェクトに追加します：</p>
+                        <ul>
+                            <li>PostgreSQL JDBCドライバ</li>
+                            <li>HikariCP</li>
+                        </ul>
+
+                        <p>次に、PostgreSQLデータベースに以下のテーブルを作成します：</p>
+
+                        <code>-- 商品テーブル
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    stock INT NOT NULL
+);
+
+-- 注文テーブル
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    customer_name VARCHAR(100) NOT NULL,
+    total_amount DECIMAL(10, 2) NOT NULL
+);
+
+-- 注文詳細テーブル
+CREATE TABLE order_items (
+    id SERIAL PRIMARY KEY,
+    order_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+-- サンプルデータの挿入
+INSERT INTO products (name, price, stock) VALUES
+    ('ノートパソコン', 89800, 10),
+    ('スマートフォン', 54800, 20),
+    ('ヘッドフォン', 12800, 30),
+    ('タブレット', 45800, 15),
+    ('スマートウォッチ', 23800, 25);</code>
+
+                        <h4>実習課題：注文処理システムの実装</h4>
+                        <p>この実習では、商品の注文処理を行うシステムを実装します。注文処理中に例外が発生した場合は適切に処理し、必要に応じてトランザクションをロールバックします。</p>
+
+                        <h5>1. コネクションプールマネージャーの実装</h5>
+
+                        <code>import com.zaxxer.hikari.*;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+public class ConnectionPoolManager {
+    private static HikariDataSource dataSource;
+    
+    // シングルトンパターン
+    private static class Holder {
+        private static final ConnectionPoolManager INSTANCE = new ConnectionPoolManager();
+    }
+    
+    public static ConnectionPoolManager getInstance() {
+        return Holder.INSTANCE;
+    }
+    
+    private ConnectionPoolManager() {
+        initDataSource();
+    }
+    
+    private void initDataSource() {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:postgresql://localhost:5432/testdb");
+        config.setUsername("postgres");
+        config.setPassword("password");
+        
+        // コネクションプール設定
+        config.setMaximumPoolSize(10);
+        config.setMinimumIdle(2);
+        config.setIdleTimeout(30000);
+        config.setConnectionTimeout(5000);
+        
+        // プール名
+        config.setPoolName("OrderSystemPool");
+        
+        dataSource = new HikariDataSource(config);
+    }
+    
+    public Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
+    }
+    
+    public void closePool() {
+        if (dataSource != null && !dataSource.isClosed()) {
+            dataSource.close();
+        }
+    }
+    
+    // プール統計情報の取得
+    public String getPoolStats() {
+        return String.format(
+            "プール統計: アクティブ接続=%d, アイドル接続=%d, 待機中=%d, 合計=%d",
+            dataSource.getHikariPoolMXBean().getActiveConnections(),
+            dataSource.getHikariPoolMXBean().getIdleConnections(),
+            dataSource.getHikariPoolMXBean().getThreadsAwaitingConnection(),
+            dataSource.getHikariPoolMXBean().getTotalConnections()
+        );
+    }
+}</code>
+
+                        <h5>2. 商品リポジトリクラスの実装</h5>
+
+                        <code>import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProductRepository {
+    private ConnectionPoolManager poolManager;
+    
+    public ProductRepository() {
+        this.poolManager = ConnectionPoolManager.getInstance();
+    }
+    
+    // 全商品の取得
+    public List<Product> findAll() throws SQLException {
+        List<Product> products = new ArrayList<>();
+        String sql = "SELECT id, name, price, stock FROM products";
+        
+        try (
+            Connection conn = poolManager.getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql)
+        ) {
+            while (rs.next()) {
+                Product product = new Product(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getBigDecimal("price"),
+                    rs.getInt("stock")
+                );
+                products.add(product);
+            }
+        } catch (SQLException e) {
+            System.err.println("商品一覧取得エラー: " + e.getMessage());
+            throw e; // 上位層で処理するために再スロー
+        }
+        
+        return products;
+    }
+    
+    // IDによる商品取得
+    public Product findById(int id) throws SQLException {
+        String sql = "SELECT id, name, price, stock FROM products WHERE id = ?";
+        
+        try (
+            Connection conn = poolManager.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+            stmt.setInt(1, id);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Product(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getBigDecimal("price"),
+                        rs.getInt("stock")
+                    );
+                } else {
+                    return null; // 商品が見つからない場合
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("商品取得エラー (ID: " + id + "): " + e.getMessage());
+            throw e;
+        }
+    }
+    
+    // 在庫更新（トランザクション内で使用）
+    public void updateStock(Connection conn, int productId, int quantity) throws SQLException {
+        String sql = "UPDATE products SET stock = stock - ? WHERE id = ? AND stock >= ?";
+        
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, quantity);
+            stmt.setInt(2, productId);
+            stmt.setInt(3, quantity);
+            
+            int affected = stmt.executeUpdate();
+            if (affected == 0) {
+                throw new SQLException("在庫不足または商品が存在しません (ID: " + productId + ")");
+            }
+        }
+    }
+}</code>
+
+                        <h5>3. 注文サービスクラスの実装</h5>
+
+                        <code>import java.math.BigDecimal;
+import java.sql.*;
+import java.util.List;
+
+public class OrderService {
+    private ConnectionPoolManager poolManager;
+    private ProductRepository productRepository;
+    
+    public OrderService() {
+        this.poolManager = ConnectionPoolManager.getInstance();
+        this.productRepository = new ProductRepository();
+    }
+    
+    // 注文処理
+    public int createOrder(String customerName, List<OrderItem> items) throws OrderException {
+        Connection conn = null;
+        int orderId = -1;
+        
+        try {
+            // 接続取得
+            conn = poolManager.getConnection();
+            
+            // 自動コミットを無効化（トランザクション開始）
+            conn.setAutoCommit(false);
+            
+            // 注文合計金額の計算
+            BigDecimal totalAmount = calculateTotal(items);
+            
+            // 注文テーブルへの挿入
+            orderId = insertOrder(conn, customerName, totalAmount);
+            
+            // 注文アイテムの処理
+            for (OrderItem item : items) {
+                // 商品の存在確認
+                Product product = productRepository.findById(item.getProductId());
+                if (product == null) {
+                    throw new OrderException("商品が存在しません (ID: " + item.getProductId() + ")");
+                }
+                
+                // 在庫更新
+                try {
+                    productRepository.updateStock(conn, item.getProductId(), item.getQuantity());
+                } catch (SQLException e) {
+                    throw new OrderException("在庫更新エラー: " + e.getMessage());
+                }
+                
+                // 注文詳細の挿入
+                insertOrderItem(conn, orderId, item, product.getPrice());
+            }
+            
+            // トランザクションのコミット
+            conn.commit();
+            
+            return orderId;
+            
+        } catch (SQLException e) {
+            // SQL例外発生時のロールバック
+            rollbackTransaction(conn);
+            throw new OrderException("注文処理中のデータベースエラー: " + e.getMessage(), e);
+        } catch (OrderException e) {
+            // 注文処理の例外発生時のロールバック
+            rollbackTransaction(conn);
+            throw e;
+        } finally {
+            closeConnection(conn);
+        }
+    }
+    
+    // 注文テーブルへの挿入
+    private int insertOrder(Connection conn, String customerName, BigDecimal totalAmount) throws SQLException {
+        String sql = "INSERT INTO orders (customer_name, total_amount) VALUES (?, ?) RETURNING id";
+        
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, customerName);
+            stmt.setBigDecimal(2, totalAmount);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                } else {
+                    throw new SQLException("注文IDの取得に失敗しました");
+                }
+            }
+        }
+    }
+    
+    // 注文詳細テーブルへの挿入
+    private void insertOrderItem(Connection conn, int orderId, OrderItem item, BigDecimal price) throws SQLException {
+        String sql = "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)";
+        
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, orderId);
+            stmt.setInt(2, item.getProductId());
+            stmt.setInt(3, item.getQuantity());
+            stmt.setBigDecimal(4, price);
+            
+            stmt.executeUpdate();
+        }
+    }
+    
+    // 合計金額の計算
+    private BigDecimal calculateTotal(List<OrderItem> items) throws OrderException {
+        BigDecimal total = BigDecimal.ZERO;
+        
+        try {
+            for (OrderItem item : items) {
+                Product product = productRepository.findById(item.getProductId());
+                if (product == null) {
+                    throw new OrderException("商品が存在しません (ID: " + item.getProductId() + ")");
+                }
+                
+                total = total.add(product.getPrice().multiply(new BigDecimal(item.getQuantity())));
+            }
+        } catch (SQLException e) {
+            throw new OrderException("合計金額計算中のエラー: " + e.getMessage(), e);
+        }
+        
+        return total;
+    }
+    
+    // トランザクションのロールバック
+    private void rollbackTransaction(Connection conn) {
+        if (conn != null) {
+            try {
+                conn.rollback();
+                System.err.println("トランザクションをロールバックしました");
+            } catch (SQLException e) {
+                System.err.println("ロールバック中のエラー: " + e.getMessage());
+            }
+        }
+    }
+    
+    // 接続のクローズ
+    private void closeConnection(Connection conn) {
+        if (conn != null) {
+            try {
+                // 自動コミットを元に戻してから接続を返却
+                conn.setAutoCommit(true);
+                conn.close();
+            } catch (SQLException e) {
+                System.err.println("接続クローズ中のエラー: " + e.getMessage());
+            }
+        }
+    }
+}</code>
+
+                        <h5>4. 必要なモデルクラス</h5>
+
+                        <code>import java.math.BigDecimal;
+
+// 商品クラス
+public class Product {
+    private int id;
+    private String name;
+    private BigDecimal price;
+    private int stock;
+    
+    public Product(int id, String name, BigDecimal price, int stock) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.stock = stock;
+    }
+    
+    // Getterメソッド
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public BigDecimal getPrice() { return price; }
+    public int getStock() { return stock; }
+    
+    @Override
+    public String toString() {
+        return String.format("Product[id=%d, name='%s', price=%.2f, stock=%d]",
+            id, name, price, stock);
+    }
+}
+
+// 注文項目クラス
+public class OrderItem {
+    private int productId;
+    private int quantity;
+    
+    public OrderItem(int productId, int quantity) {
+        this.productId = productId;
+        this.quantity = quantity;
+    }
+    
+    // Getterメソッド
+    public int getProductId() { return productId; }
+    public int getQuantity() { return quantity; }
+}
+
+// 注文例外クラス
+public class OrderException extends Exception {
+    public OrderException(String message) {
+        super(message);
+    }
+    
+    public OrderException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}</code>
+
+                        <h5>5. メインアプリケーションクラス</h5>
+
+                        <code>import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class OrderSystemApp {
+    
+    private static ProductRepository productRepository = new ProductRepository();
+    private static OrderService orderService = new OrderService();
+    
+    public static void main(String[] args) {
+        try {
+            // 商品一覧の表示
+            displayProducts();
+            
+            // ユーザー入力
+            List<OrderItem> orderItems = getUserInput();
+            
+            // 注文処理
+            try {
+                int orderId = orderService.createOrder("山田太郎", orderItems);
+                System.out.println("\n注文が正常に処理されました。注文ID: " + orderId);
+            } catch (OrderException e) {
+                System.err.println("注文処理エラー: " + e.getMessage());
+                
+                // 原因となったSQLExceptionがある場合は詳細を表示
+                if (e.getCause() instanceof SQLException) {
+                    SQLException sqlEx = (SQLException) e.getCause();
+                    System.err.println("SQL State: " + sqlEx.getSQLState());
+                    System.err.println("Error Code: " + sqlEx.getErrorCode());
+                }
+            }
+            
+            // 更新後の商品一覧を表示
+            System.out.println("\n更新後の商品一覧:");
+            displayProducts();
+            
+            // プール統計の表示
+            System.out.println("\n" + ConnectionPoolManager.getInstance().getPoolStats());
+            
+        } catch (SQLException e) {
+            System.err.println("アプリケーションエラー: " + e.getMessage());
+        } finally {
+            // コネクションプールのクローズ
+            ConnectionPoolManager.getInstance().closePool();
+        }
+    }
+    
+    // 商品一覧の表示
+    private static void displayProducts() throws SQLException {
+        List<Product> products = productRepository.findAll();
+        System.out.println("\n利用可能な商品:");
+        System.out.println("------------------------------");
+        for (Product product : products) {
+            System.out.printf("%d: %s - ¥%.2f (在庫: %d)%n",
+                product.getId(), product.getName(), product.getPrice(), product.getStock());
+        }
+        System.out.println("------------------------------");
+    }
+    
+    // ユーザー入力の取得
+    private static List<OrderItem> getUserInput() {
+        List<OrderItem> items = new ArrayList<>();
+        Scanner scanner = new Scanner(System.in);
+        
+        try {
+            boolean addMore = true;
+            
+            while (addMore) {
+                System.out.print("\n商品ID: ");
+                int productId = scanner.nextInt();
+                
+                System.out.print("数量: ");
+                int quantity = scanner.nextInt();
+                
+                // 注文アイテムを追加
+                items.add(new OrderItem(productId, quantity));
+                
+                // 続けるかどうか
+                System.out.print("別の商品も追加しますか？ (1=はい, 0=いいえ): ");
+                int answer = scanner.nextInt();
+                addMore = (answer == 1);
+            }
+        } catch (Exception e) {
+            System.err.println("入力エラー: " + e.getMessage());
+            // エラー発生時は空のリストを返す
+            return new ArrayList<>();
+        }
+        
+        return items;
+    }
+}</code>
+
+                        <h4>実習のポイント</h4>
+                        <ol>
+                            <li><strong>例外処理</strong>：適切な場所で異なる種類の例外をキャッチし、原因に応じた処理を行っています。</li>
+                            <li><strong>カスタム例外</strong>：OrderExceptionクラスを定義して、ビジネスロジックに関連する例外を明確に示しています。</li>
+                            <li><strong>リソース管理</strong>：try-with-resources構文を使用して、データベースリソースを適切に管理しています。</li>
+                            <li><strong>トランザクション処理</strong>：複数のデータベース操作をひとつのトランザクションとして扱い、エラー発生時にはロールバックします。</li>
+                            <li><strong>コネクションプール</strong>：HikariCPを使用して効率的な接続管理を実現しています。</li>
+                        </ol>
+
+                        <div class="exercise">
+                            <h5>実習課題 4.4.1: 注文システムの拡張</h5>
+                            <p>上記の注文システムに以下の機能を追加してください：</p>
+                            <ol>
+                                <li>大量注文処理のためのバッチ更新機能と関連する例外処理</li>
+                                <li>注文キャンセル機能（在庫数の復元を含む）とトランザクション管理</li>
+                                <li>接続タイムアウトなどの一時的なエラーに対する自動再試行メカニズム</li>
+                                <li>適切なログ出力（java.util.logging または SLF4J + Logbackなどを使用）</li>
+                                <li>※オプション課題：注文データの検索機能と結果の CSV エクスポート</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="chapter4-quiz">
+                        <h3 class="section-title">4.5 理解度確認テスト</h3>
+                        <div class="quiz-container">
+                            <h4>第4章の理解度チェック</h4>
+                            <p>以下の問題に答えて、第4章の内容の理解度を確認しましょう。</p>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題1:</strong> SQLExceptionのサブクラスのうち、一時的な接続問題を示すクラスはどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1a" value="a">
+                                    <label class="form-check-label" for="q1a">
+                                        SQLIntegrityConstraintViolationException
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1b" value="b">
+                                    <label class="form-check-label" for="q1b">
+                                        SQLTransientConnectionException
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1c" value="c">
+                                        <label class="form-check-label" for="q1c">
+                                        SQLSyntaxErrorException
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1d" value="d">
+                                        <label class="form-check-label" for="q1d">
+                                        BatchUpdateException
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題2:</strong> try-with-resources構文を使用する利点として正しくないものはどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2a" value="a">
+                                    <label class="form-check-label" for="q2a">
+                                        リソースの自動クローズ
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2b" value="b">
+                                    <label class="form-check-label" for="q2b">
+                                        例外発生時もリソースが確実にクローズされる
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2c" value="c">
+                                        <label class="form-check-label" for="q2c">
+                                        データベースエラーの自動修復
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2d" value="d">
+                                        <label class="form-check-label" for="q2d">
+                                        コードの簡潔さ
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題3:</strong> コネクションプールの主なメリットとして正しくないものはどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3a" value="a">
+                                    <label class="form-check-label" for="q3a">
+                                        データベース接続確立のオーバーヘッドを削減
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3b" value="b">
+                                    <label class="form-check-label" for="q3b">
+                                        アプリケーションのパフォーマンスを向上
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3c" value="c">
+                                        <label class="form-check-label" for="q3c">
+                                        SQL構文エラーの自動修正
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3d" value="d">
+                                        <label class="form-check-label" for="q3d">
+                                        同時接続数の制御
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題4:</strong> 以下のうち、リソース管理に関する正しい記述はどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4a" value="a">
+                                    <label class="form-check-label" for="q4a">
+                                        コネクションプールを使用している場合、接続のcloseメソッドを呼び出す必要はない
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4b" value="b">
+                                    <label class="form-check-label" for="q4b">
+                                        JDBCリソースのクローズ順序は任意である
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4c" value="c">
+                                        <label class="form-check-label" for="q4c">
+                                        try-with-resourcesを使用する場合、リソース初期化の逆順でクローズされる
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4d" value="d">
+                                        <label class="form-check-label" for="q4d">
+                                        トランザクションが失敗した場合、自動的にロールバックされる
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題5:</strong> 以下のコードに関する説明として正しいものはどれですか？</p>
+                                <code>Connection conn = null;
+try {
+    conn = DriverManager.getConnection(url, user, password);
+    conn.setAutoCommit(false);
+    
+    // いくつかの操作...
+    
+    conn.commit();
+} catch (SQLException e) {
+    if (conn != null) {
+        try {
+            conn.rollback();
+        } catch (SQLException ex) {
+            // ロールバックエラー処理
+        }
+    }
+} finally {
+    if (conn != null) {
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            // クローズエラー処理
+        }
+    }
+}</code>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5a" value="a">
+                                    <label class="form-check-label" for="q5a">
+                                        このコードはtry-with-resources構文を使用している
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5b" value="b">
+                                    <label class="form-check-label" for="q5b">
+                                        このコードは接続のクローズを忘れている
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5c" value="c">
+                                        <label class="form-check-label" for="q5c">
+                                        このコードはトランザクション管理を行っており、例外発生時にロールバックする
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5d" value="d">
+                                        <label class="form-check-label" for="q5d">
+                                        このコードはコネクションプールを使用している
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary mt-3" id="checkAnswers">回答を確認</button>
+                            <div id="quizResults" class="mt-3 d-none">
+                                <div class="alert alert-success">
+                                    <h5>正解:</h5>
+                                    <ol>
+                                        <li>b（SQLTransientConnectionException）</li>
+                                        <li>c（データベースエラーの自動修復）</li>
+                                        <li>c（SQL構文エラーの自動修正）</li>
+                                        <li>c（try-with-resourcesを使用する場合、リソース初期化の逆順でクローズされる）</li>
+                                        <li>c（このコードはトランザクション管理を行っており、例外発生時にロールバックする）</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="next-steps">
+                        <h3 class="section-title">次のステップ</h3>
+                        <p>この章では、JDBCプログラミングにおける例外処理とリソース管理の重要性について学びました。適切な例外処理とリソース管理は、堅牢なデータベースアプリケーションを構築するための基本的なスキルです。</p>
+                        <p>次章では、さらに高度なJDBCプログラミングの技術とパターンについて学び、実際のアプリケーション開発に応用していきましょう。</p>
+                        <div class="note">
+                            <h5>推奨される追加学習</h5>
+                            <ul>
+                                <li><strong>Java例外処理のベストプラクティス</strong>：より効果的な例外処理の方法</li>
+                                <li><strong>HikariCPの詳細ドキュメント</strong>：<a href="https://github.com/brettwooldridge/HikariCP" target="_blank">HikariCP GitHub</a></li>
+                                <li><strong>JDBCと各種ORMフレームワークの連携</strong>：Spring JDBC、MyBatis、Hibernateなど</li>
+                                <li><strong>データベーストランザクション管理の詳細</strong>：分散トランザクション、トランザクション分離レベルなど</li>
+                            </ul>
+                        </div>
+                    </section>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4">
+        <div class="container">
+            <p class="mb-0">Copyright © 2025 F-Circle All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 理解度テストの回答確認ボタンの処理
+        document.getElementById('checkAnswers').addEventListener('click', function() {
+            document.getElementById('quizResults').classList.remove('d-none');
+        });
+    </script>
+</body>
+</html>
