@@ -1,0 +1,2242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JDBC初心者向け学習教材 - パフォーマンスとセキュリティ</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+        .navbar {
+            background-color: #1565c0;
+        }
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+        .chapter-title {
+            color: #1565c0;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #1565c0;
+            padding-bottom: 0.5rem;
+        }
+        .section-title {
+            color: #1976d2;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+        code {
+            display: block;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .quiz-container {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        .quiz-question {
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        .diagram {
+            max-width: 100%;
+            height: auto;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        .exercise {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        .note {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        #table-of-contents .list-group-item {
+            border: none;
+            padding: 0.5rem 1rem;
+        }
+        #table-of-contents .list-group-item-action {
+            color: #1976d2;
+        }
+        /* 選択された目次項目のスタイル */
+        #table-of-contents .list-group-item-action.active,
+        .list-group-item.active {
+            color: white !important; /* テキストを白色にして青い背景に対してコントラストをつける */
+            background-color: #1976d2;
+            border-color: #1976d2;
+        }
+        .section-nav {
+            padding-left: 1rem;
+        }
+        .inline-code {
+            background-color: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            display: inline;
+        }
+        footer {
+            background-color: #1565c0;
+            color: white;
+            padding: 1rem 0;
+            margin-top: 3rem;
+        }
+        .table-example {
+            width: 100%;
+            margin-bottom: 1rem;
+            border-collapse: collapse;
+        }
+        .table-example th {
+            background-color: #e3f2fd;
+            border: 1px solid #b3e5fc;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .table-example td {
+            border: 1px solid #b3e5fc;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .example-result {
+            background-color: #f1f8e9;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .warning {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+    </style>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#tableOfContents">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">JDBC初心者向け学習教材</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#introduction">はじめに</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#chapter7">第7章: パフォーマンスとセキュリティ</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <div class="row">
+            <!-- Sidebar - Table of Contents -->
+            <div class="col-lg-3">
+                <div class="sidebar">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">目次</h5>
+                        </div>
+                        <div id="table-of-contents" class="list-group list-group-flush">
+                            <a href="#introduction" class="list-group-item list-group-item-action">はじめに</a>
+                            <a href="#chapter7" class="list-group-item list-group-item-action">第7章: パフォーマンスとセキュリティ</a>
+                            <div class="section-nav">
+                                <a href="#sql-injection" class="list-group-item list-group-item-action">7.1 SQLインジェクション対策</a>
+                                <a href="#performance-tuning" class="list-group-item list-group-item-action">7.2 パフォーマンスチューニングの基本</a>
+                                <a href="#connection-pool" class="list-group-item list-group-item-action">7.3 コネクションプールの実装と利用</a>
+                                <a href="#secure-application" class="list-group-item list-group-item-action">7.4 セキュアなアプリケーションへの改良（実習）</a>
+                                <a href="#chapter7-quiz" class="list-group-item list-group-item-action">7.5 理解度確認テスト</a>
+                            </div>
+                            <a href="#next-steps" class="list-group-item list-group-item-action">次のステップ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <section id="introduction">
+                    <h1 class="display-5 mb-4">JDBC初心者向け学習教材</h1>
+                    <p class="lead">この第7章では、JDBCアプリケーションのセキュリティとパフォーマンスについて学習します。SQLインジェクション対策の方法と、JDBCプログラムのパフォーマンスを向上させるためのテクニックを理解しましょう。</p>
+
+                    <div class="note">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>SQLインジェクションとは何か、その危険性</li>
+                            <li>PreparedStatementを使用したSQLインジェクション対策</li>
+                            <li>入力検証とエスケープ処理</li>
+                            <li>JDBCアプリケーションのパフォーマンスチューニング手法</li>
+                            <li>コネクションプールの効果的な利用方法</li>
+                            <li>SQLクエリの最適化テクニック</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="chapter7">
+                    <h2 class="chapter-title">第7章：パフォーマンスとセキュリティ</h2>
+                    <p>データベースを使用するアプリケーションでは、セキュリティとパフォーマンスが非常に重要です。セキュリティが不十分なアプリケーションはデータ漏洩やシステム侵害のリスクがあり、パフォーマンスが悪いアプリケーションはユーザー体験を損ねます。この章では、JDBCアプリケーションのセキュリティとパフォーマンスを向上させるための重要な手法を学びます。</p>
+
+                    <section id="sql-injection">
+                        <h3 class="section-title">7.1 SQLインジェクション対策</h3>
+                        <p>SQLインジェクションは、最も一般的で危険なWebアプリケーションの脆弱性の一つです。この攻撃手法では、悪意のあるSQLコードをアプリケーションに注入し、データベースに不正アクセスしたり、データを改ざん・削除したりすることが可能になります。</p>
+
+                        <h4>SQLインジェクションとは</h4>
+                        <p>SQLインジェクションは、ユーザー入力を適切に検証・サニタイズせずにSQLクエリに組み込んだ場合に発生する脆弱性です。攻撃者は特殊な文字列を入力することで、開発者が意図していないSQLコマンドを実行させることができます。</p>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 250" width="600" height="250">
+                                <!-- 悪意あるユーザー -->
+                                <rect x="50" y="20" width="120" height="60" fill="#ffcdd2" stroke="#d32f2f" stroke-width="2" rx="5" />
+                                <text x="110" y="55" text-anchor="middle" font-size="14">悪意ある入力</text>
+                                
+                                <!-- アプリケーション -->
+                                <rect x="240" y="20" width="120" height="60" fill="#bbdefb" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="300" y="55" text-anchor="middle" font-size="14">アプリケーション</text>
+                                
+                                <!-- データベース -->
+                                <rect x="430" y="20" width="120" height="60" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5" />
+                                <text x="490" y="55" text-anchor="middle" font-size="14">データベース</text>
+                                
+                                <!-- 悪意あるSQLの可視化 -->
+                                <rect x="240" y="130" width="310" height="80" fill="#fff9c4" stroke="#fbc02d" stroke-width="2" rx="5" />
+                                <text x="395" y="155" text-anchor="middle" font-size="14">元のSQL: SELECT * FROM users</text>
+                                <text x="395" y="175" text-anchor="middle" font-size="14">WHERE username = 'ユーザー入力'</text>
+                                <text x="395" y="195" text-anchor="middle" font-size="14">AND password = 'パスワード入力'</text>
+                                
+                                <!-- 攻撃の流れ -->
+                                <line x1="170" y1="50" x2="240" y2="50" stroke="#d32f2f" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="360" y1="50" x2="430" y2="50" stroke="#d32f2f" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="300" y1="80" x2="300" y2="130" stroke="#fbc02d" stroke-width="2" marker-end="url(#arrow)" />
+                                
+                                <defs>
+                                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                        <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+                                    </marker>
+                                </defs>
+                                
+                                <text x="80" y="100" text-anchor="middle" font-size="12" fill="#d32f2f">admin' --</text>
+                                <text x="420" y="100" text-anchor="middle" font-size="12" fill="#d32f2f">不正アクセス</text>
+                            </svg>
+                            <p class="text-center">図7.1: SQLインジェクション攻撃の概念図</p>
+                        </div>
+
+                        <h4>SQLインジェクションの例</h4>
+                        <p>以下は、SQLインジェクションに脆弱なコードの例です：</p>
+
+                        <code>// 危険なコード例（SQLインジェクションに脆弱）
+String username = request.getParameter("username"); // ユーザーからの入力
+String password = request.getParameter("password"); // ユーザーからの入力
+
+String query = "SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'";
+
+Statement stmt = connection.createStatement();
+ResultSet rs = stmt.executeQuery(query);</code>
+
+                        <p>このコードでは、ユーザー入力を直接SQLクエリに連結しています。攻撃者が以下のような入力を行うと、認証をバイパスすることができます：</p>
+
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>フィールド</th>
+                                    <th>悪意ある入力例</th>
+                                    <th>結果のSQL</th>
+                                    <th>影響</th>
+                                </tr>
+                                <tr>
+                                    <td>username</td>
+                                    <td>admin' --</td>
+                                    <td>SELECT * FROM users WHERE username = 'admin' -- ' AND password = 'anything'</td>
+                                    <td>パスワードチェックがコメントアウトされ、adminとしてログイン可能</td>
+                                </tr>
+                                <tr>
+                                    <td>username</td>
+                                    <td>' OR '1'='1</td>
+                                    <td>SELECT * FROM users WHERE username = '' OR '1'='1' AND password = 'anything'</td>
+                                    <td>条件が常に真となり、最初のユーザーとしてログイン可能</td>
+                                </tr>
+                                <tr>
+                                    <td>username</td>
+                                    <td>admin'; DROP TABLE users; --</td>
+                                    <td>SELECT * FROM users WHERE username = 'admin'; DROP TABLE users; -- ' AND password = 'anything'</td>
+                                    <td>usersテーブルが削除される</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h4>PreparedStatementを使用したSQLインジェクション対策</h4>
+                        <p>JDBCでSQLインジェクションを防ぐ最も効果的な方法は、PreparedStatementを使用することです。PreparedStatementはSQL文をコンパイル時にパラメータ化し、ユーザー入力をSQL文の構造から分離します。</p>
+
+                        <code>// 安全なコード例（PreparedStatementを使用）
+String query = "SELECT * FROM users WHERE username = ? AND password = ?";
+
+PreparedStatement pstmt = connection.prepareStatement(query);
+pstmt.setString(1, username);
+pstmt.setString(2, password);
+
+ResultSet rs = pstmt.executeQuery();</code>
+
+                        <p>PreparedStatementを使用する利点：</p>
+                        <ul>
+                            <li><strong>セキュリティ</strong>：パラメータ値はSQL文の構造から分離され、SQLインジェクションを防止</li>
+                            <li><strong>パフォーマンス</strong>：SQL文はデータベースでプリコンパイルされ、再利用可能</li>
+                            <li><strong>可読性</strong>：パラメータ化されたクエリはより読みやすく、メンテナンスしやすい</li>
+                            <li><strong>データ型の安全性</strong>：適切なsetXXXメソッドを使用することでデータ型の整合性が保たれる</li>
+                        </ul>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 250" width="600" height="250">
+                                <!-- 通常の処理 -->
+                                <rect x="50" y="20" width="120" height="60" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="110" y="55" text-anchor="middle" font-size="14">ユーザー入力</text>
+                                
+                                <!-- PreparedStatement -->
+                                <rect x="240" y="20" width="120" height="60" fill="#e8f5e9" stroke="#388e3c" stroke-width="2" rx="5" />
+                                <text x="300" y="45" text-anchor="middle" font-size="14">PreparedStatement</text>
+                                <text x="300" y="65" text-anchor="middle" font-size="12">(SQL構造とデータを分離)</text>
+                                
+                                <!-- データベース -->
+                                <rect x="430" y="20" width="120" height="60" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5" />
+                                <text x="490" y="55" text-anchor="middle" font-size="14">データベース</text>
+                                
+                                <!-- 安全なSQLの可視化 -->
+                                <rect x="240" y="130" width="310" height="100" fill="#e8f5e9" stroke="#388e3c" stroke-width="2" rx="5" />
+                                <text x="395" y="155" text-anchor="middle" font-size="14">1. SQL構造の送信と解析</text>
+                                <text x="395" y="175" text-anchor="middle" font-size="14">SELECT * FROM users WHERE username = ? AND password = ?</text>
+                                <text x="395" y="195" text-anchor="middle" font-size="14">2. パラメータ値の安全な送信</text>
+                                <text x="395" y="215" text-anchor="middle" font-size="14">(値はSQLの構造から分離されている)</text>
+                                
+                                <!-- 処理の流れ -->
+                                <line x1="170" y1="50" x2="240" y2="50" stroke="#1976d2" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="360" y1="50" x2="430" y2="50" stroke="#388e3c" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="300" y1="80" x2="300" y2="130" stroke="#388e3c" stroke-width="2" marker-end="url(#arrow)" />
+                                
+                                <defs>
+                                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                        <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+                                    </marker>
+                                </defs>
+                                
+                                <text x="205" y="40" text-anchor="middle" font-size="12">入力</text>
+                                <text x="395" y="40" text-anchor="middle" font-size="12">安全な実行</text>
+                            </svg>
+                            <p class="text-center">図7.2: PreparedStatementによるSQLインジェクション防止の仕組み</p>
+                        </div>
+
+                        <h4>その他のSQLインジェクション対策</h4>
+                        <p>PreparedStatementの使用に加えて、以下の対策も重要です：</p>
+
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>対策</th>
+                                    <th>説明</th>
+                                    <th>実装例</th>
+                                </tr>
+                                <tr>
+                                    <td>入力検証</td>
+                                    <td>ユーザー入力が期待される形式かどうかを検証する</td>
+                                    <td>正規表現による検証、長さの制限、型チェックなど</td>
+                                </tr>
+                                <tr>
+                                    <td>エスケープ処理</td>
+                                    <td>特殊文字をエスケープして無害化する</td>
+                                    <td>SQLエスケープライブラリの使用</td>
+                                </tr>
+                                <tr>
+                                    <td>最小権限の原則</td>
+                                    <td>データベースユーザーに必要最小限の権限のみを付与する</td>
+                                    <td>読み取り専用操作には読み取り専用ユーザーを使用</td>
+                                </tr>
+                                <tr>
+                                    <td>ストアドプロシージャ</td>
+                                    <td>直接SQLを実行せず、ストアドプロシージャを呼び出す</td>
+                                    <td>CallableStatementを使用したストアドプロシージャの実行</td>
+                                </tr>
+                                <tr>
+                                    <td>ORM（Object-Relational Mapping）</td>
+                                    <td>SQLを直接扱わずORMフレームワークを利用する</td>
+                                    <td>Hibernate、JPA、MyBatisなどの利用</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="warning">
+                            <h5>絶対に避けるべき実装</h5>
+                            <ul>
+                                <li>動的SQLをStringの連結で構築すること（特にユーザー入力を直接組み込む場合）</li>
+                                <li>SQL文の中で文字列を単一引用符（'）で囲むことでセキュリティが確保できると考えること</li>
+                                <li>信頼できない入力をStatement.execute()、Statement.executeUpdate()、Statement.executeQuery()に直接渡すこと</li>
+                                <li>エラーメッセージにデータベースの詳細情報を含めること（攻撃者に情報を与えることになる）</li>
+                            </ul>
+                        </div>
+
+                        <h4>実装例：安全なログイン処理</h4>
+                        <p>以下は、PreparedStatementを使用した安全なログイン処理の例です：</p>
+
+                        <code>public boolean authenticateUser(String username, String password) {
+    boolean authenticated = false;
+    
+    // 入力検証
+    if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
+        return false;
+    }
+    
+    // データベース接続
+    try (Connection conn = dataSource.getConnection()) {
+        // PreparedStatementを使用したセキュアなクエリ
+        String query = "SELECT COUNT(*) FROM users WHERE username = ? AND password_hash = ?";
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            // パラメータの設定
+            pstmt.setString(1, username);
+            // 実際のアプリケーションではハッシュ化したパスワードを比較すべき
+            pstmt.setString(2, hashPassword(password));
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    authenticated = (rs.getInt(1) > 0);
+                }
+            }
+        }
+    } catch (SQLException e) {
+        // 例外処理
+        logger.error("Authentication failed: " + e.getMessage());
+    }
+    
+    return authenticated;
+}
+
+// パスワードハッシュ化のサンプルメソッド（実際はより安全なハッシュアルゴリズムを使用すべき）
+private String hashPassword(String password) {
+    // この例では簡易的な実装ですが、実際はより安全なハッシュアルゴリズムとソルトを使用すべき
+    try {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        byte[] hash = md.digest(password.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(hash);
+    } catch (NoSuchAlgorithmException e) {
+        throw new RuntimeException("Failed to hash password", e);
+    }
+}</code>
+
+                        <div class="note">
+                            <h5>パスワード保存のベストプラクティス</h5>
+                            <p>実際のアプリケーションでは、以下のベストプラクティスに従ってパスワードを保存すべきです：</p>
+                            <ul>
+                                <li>平文でパスワードを保存しない</li>
+                                <li>適切なハッシュアルゴリズム（bcrypt、Argon2、PBKDF2など）を使用する</li>
+                                <li>ユーザーごとに一意のソルト（salt）を使用する</li>
+                                <li>ハッシュ化を複数回繰り返す（ストレッチング）</li>
+                            </ul>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>練習問題 7.1.1: SQLインジェクション対策</h5>
+                            <p>以下のコードにはSQLインジェクションの脆弱性があります。PreparedStatementを使用して安全なコードに書き換えてください：</p>
+                            <code>// 脆弱なコード
+public List<Product> searchProducts(String keyword) {
+    List<Product> products = new ArrayList<>();
+    String query = "SELECT * FROM products WHERE name LIKE '%" + keyword + "%' OR description LIKE '%" + keyword + "%'";
+    
+    try (Statement stmt = connection.createStatement();
+         ResultSet rs = stmt.executeQuery(query)) {
+        
+        while (rs.next()) {
+            Product product = new Product();
+            product.setId(rs.getInt("id"));
+            product.setName(rs.getString("name"));
+            product.setPrice(rs.getDouble("price"));
+            product.setDescription(rs.getString("description"));
+            products.add(product);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    
+    return products;
+}</code>
+                        </div>
+                    </section>
+
+                    <section id="performance-tuning">
+                        <h3 class="section-title">7.2 パフォーマンスチューニングの基本</h3>
+                        <p>JDBCアプリケーションのパフォーマンスは、アプリケーション全体のレスポンス時間と処理能力に大きな影響を与えます。この節では、JDBCアプリケーションのパフォーマンスを向上させるための主要な手法を学びます。</p>
+
+                        <h4>JDBCパフォーマンスの主要な要素</h4>
+                        <p>JDBCアプリケーションのパフォーマンスに影響を与える主な要素は以下のとおりです：</p>
+                        <ul>
+                            <li><strong>接続管理</strong>：データベース接続の確立と管理</li>
+                            <li><strong>クエリ実行</strong>：SQLクエリの作成と実行</li>
+                            <li><strong>データ取得と処理</strong>：結果セットからのデータ取得と処理</li>
+                            <li><strong>リソース管理</strong>：接続、ステートメント、結果セットのクローズ</li>
+                        </ul>
+
+                        <h4>1. コネクションプールの利用</h4>
+                        <p>データベース接続の確立は、非常にコストの高い操作です。接続を必要なたびに開いて閉じると、アプリケーションのパフォーマンスが大幅に低下します。コネクションプールを使用することで、接続を再利用し、アプリケーションのパフォーマンスを向上させることができます。</p>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" width="600" height="300">
+                                <!-- 左側：コネクションプールなし -->
+                                <rect x="50" y="20" width="200" height="260" fill="#ffebee" stroke="#d32f2f" stroke-width="2" rx="5" />
+                                <text x="150" y="40" text-anchor="middle" font-size="14" font-weight="bold">コネクションプールなし</text>
+                                
+                                <rect x="70" y="60" width="160" height="40" fill="#bbdefb" stroke="#1976d2" stroke-width="1" rx="3" />
+                                <text x="150" y="85" text-anchor="middle" font-size="12">アプリケーション</text>
+                                
+                                <rect x="70" y="230" width="160" height="40" fill="#c8e6c9" stroke="#388e3c" stroke-width="1" rx="3" />
+                                <text x="150" y="255" text-anchor="middle" font-size="12">データベース</text>
+                                
+                                <line x1="100" y1="100" x2="100" y2="230" stroke="#d32f2f" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <line x1="120" y1="100" x2="120" y2="230" stroke="#d32f2f" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <line x1="140" y1="100" x2="140" y2="230" stroke="#d32f2f" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <line x1="160" y1="100" x2="160" y2="230" stroke="#d32f2f" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <line x1="180" y1="100" x2="180" y2="230" stroke="#d32f2f" stroke-width="1.5" marker-end="url(#arrow)" />
+                                
+                                <text x="140" y="130" text-anchor="middle" font-size="12" fill="#d32f2f">各リクエストごとに</text>
+                                <text x="140" y="145" text-anchor="middle" font-size="12" fill="#d32f2f">新しい接続</text>
+                                <text x="140" y="180" text-anchor="middle" font-size="12" fill="#d32f2f">遅延</text>
+                                
+                                <!-- 右側：コネクションプールあり -->
+                                <rect x="350" y="20" width="200" height="260" fill="#e8f5e9" stroke="#388e3c" stroke-width="2" rx="5" />
+                                <text x="450" y="40" text-anchor="middle" font-size="14" font-weight="bold">コネクションプールあり</text>
+                                
+                                <rect x="370" y="60" width="160" height="40" fill="#bbdefb" stroke="#1976d2" stroke-width="1" rx="3" />
+                                <text x="450" y="85" text-anchor="middle" font-size="12">アプリケーション</text>
+                                
+                                <rect x="370" y="130" width="160" height="40" fill="#fff9c4" stroke="#fbc02d" stroke-width="1" rx="3" />
+                                <text x="450" y="155" text-anchor="middle" font-size="12">コネクションプール</text>
+                                
+                                <rect x="370" y="230" width="160" height="40" fill="#c8e6c9" stroke="#388e3c" stroke-width="1" rx="3" />
+                                <text x="450" y="255" text-anchor="middle" font-size="12">データベース</text>
+                                
+                                <line x1="400" y1="100" x2="400" y2="130" stroke="#388e3c" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <line x1="420" y1="100" x2="420" y2="130" stroke="#388e3c" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <line x1="450" y1="100" x2="450" y2="130" stroke="#388e3c" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <line x1="480" y1="100" x2="480" y2="130" stroke="#388e3c" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <line x1="500" y1="100" x2="500" y2="130" stroke="#388e3c" stroke-width="1.5" marker-end="url(#arrow)" />
+                                
+                                <line x1="400" y1="170" x2="400" y2="230" stroke="#fbc02d" stroke-width="1.5" />
+                                <line x1="420" y1="170" x2="420" y2="230" stroke="#fbc02d" stroke-width="1.5" />
+                                <line x1="450" y1="170" x2="450" y2="230" stroke="#fbc02d" stroke-width="1.5" />
+                                <line x1="480" y1="170" x2="480" y2="230" stroke="#fbc02d" stroke-width="1.5" />
+                                <line x1="500" y1="170" x2="500" y2="230" stroke="#fbc02d" stroke-width="1.5" />
+                                
+                                <text x="450" y="200" text-anchor="middle" font-size="12" fill="#388e3c">再利用可能な接続</text>
+                                
+                                <defs>
+                                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                        <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+                                    </marker>
+                                </defs>
+                            </svg>
+                            <p class="text-center">図7.3: コネクションプールの効果</p>
+                        </div>
+
+                        <p>人気のあるコネクションプールライブラリには、以下のようなものがあります：</p>
+                        <ul>
+                            <li><strong>HikariCP</strong>：最も高速で軽量なJDBCコネクションプール</li>
+                            <li><strong>Apache DBCP</strong>：Apache Commonsプロジェクトの一部</li>
+                            <li><strong>C3P0</strong>：安定した老舗のコネクションプール</li>
+                            <li><strong>Tomcat JDBC Connection Pool</strong>：Tomcatサーバーに組み込まれたプール</li>
+                        </ul>
+
+                        <p>以下は、HikariCPを使用したコネクションプールの設定例です：</p>
+
+                        <code>// HikariCPを使用したコネクションプールの設定
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
+public class ConnectionPool {
+    private static HikariDataSource dataSource;
+
+    static {
+        // HikariCP設定
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:postgresql://localhost:5432/mydb");
+        config.setUsername("postgres");
+        config.setPassword("password");
+        
+        // パフォーマンス設定
+        config.setMaximumPoolSize(10); // 最大接続数
+        config.setMinimumIdle(5);      // アイドル状態での最小接続数
+        config.setIdleTimeout(30000);  // アイドル接続のタイムアウト（ミリ秒）
+        config.setConnectionTimeout(10000); // 接続取得のタイムアウト（ミリ秒）
+        
+        // コネクションのテスト
+        config.setConnectionTestQuery("SELECT 1");
+        
+        // データソースの初期化
+        dataSource = new HikariDataSource(config);
+    }
+
+    public static Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
+    }
+    
+    public static void closeDataSource() {
+        if (dataSource != null) {
+            dataSource.close();
+        }
+    }
+}</code>
+
+                        <p>コネクションプールを使用すると、以下の利点があります：</p>
+                        <ul>
+                            <li><strong>接続確立のオーバーヘッド削減</strong>：接続を再利用することで、接続確立の遅延を排除</li>
+                            <li><strong>スループット向上</strong>：同時に処理できる要求の数が増加</li>
+                            <li><strong>リソース管理の改善</strong>：接続数の制限とタイムアウト設定により、リソース枯渇を防止</li>
+                            <li><strong>接続の検証</strong>：未使用の接続が自動的に検証され、無効な接続が排除される</li>
+                        </ul>
+
+                        <h4>2. バッチ処理の活用</h4>
+                        <p>複数のSQLステートメントを実行する場合、バッチ処理を使用することでパフォーマンスを大幅に向上させることができます。特に、多くのINSERT、UPDATE、DELETEステートメントを実行する場合に効果的です。</p>
+
+                        <code>// バッチ処理を使用した大量データの挿入
+String sql = "INSERT INTO products (name, price, category) VALUES (?, ?, ?)";
+
+try (Connection conn = dataSource.getConnection();
+     PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    
+    // 自動コミットを無効にする
+    conn.setAutoCommit(false);
+    
+    for (Product product : productList) {
+        pstmt.setString(1, product.getName());
+        pstmt.setDouble(2, product.getPrice());
+        pstmt.setString(3, product.getCategory());
+        
+        // バッチに追加
+        pstmt.addBatch();
+        
+        // バッチサイズが1000に達したら実行
+        if (++count % 1000 == 0) {
+            pstmt.executeBatch();
+        }
+    }
+    
+    // 残りのバッチを実行
+    pstmt.executeBatch();
+    
+    // コミット
+    conn.commit();
+} catch (SQLException e) {
+    // エラー処理
+    if (conn != null) {
+        try {
+            // ロールバック
+            conn.rollback();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+} finally {
+    // 自動コミットを元に戻す
+    if (conn != null) {
+        try {
+            conn.setAutoCommit(true);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}</code>
+
+                        <div class="note">
+                            <h5>バッチサイズの最適化</h5>
+                            <p>バッチサイズは、パフォーマンスに大きな影響を与えます。小さすぎると頻繁にデータベースと通信することになり、大きすぎるとメモリ使用量が増加します。一般的には、100～1000程度のバッチサイズが適切ですが、具体的なアプリケーションやデータベースに合わせて調整する必要があります。</p>
+                        </div>
+
+                        <h4>3. 効率的なクエリ設計</h4>
+                        <p>効率的なSQLクエリの設計はパフォーマンスに大きな影響を与えます。以下の点に注意してください：</p>
+
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>最適化項目</th>
+                                    <th>効率の悪い方法</th>
+                                    <th>効率の良い方法</th>
+                                </tr>
+                                <tr>
+                                    <td>必要なカラムのみ取得</td>
+                                    <td>SELECT * FROM users</td>
+                                    <td>SELECT id, name, email FROM users</td>
+                                </tr>
+                                <tr>
+                                    <td>適切なWHERE句</td>
+                                    <td>SELECT * FROM orders WHERE YEAR(order_date) = 2025</td>
+                                    <td>SELECT * FROM orders WHERE order_date BETWEEN '2025-01-01' AND '2025-12-31'</td>
+                                </tr>
+                                <tr>
+                                    <td>インデックスの利用</td>
+                                    <td>SELECT * FROM products WHERE description LIKE '%organic%'</td>
+                                    <td>SELECT * FROM products WHERE category = 'organic'<br>（categoryにインデックスを作成）</td>
+                                </tr>
+                                <tr>
+                                    <td>結合の最適化</td>
+                                    <td>複数のクエリを実行して結果をアプリケーションで結合</td>
+                                    <td>適切なJOINを使用して一度のクエリで結果を取得</td>
+                                </tr>
+                                <tr>
+                                    <td>ページネーション</td>
+                                    <td>すべての結果を取得して必要な部分だけ表示</td>
+                                    <td>LIMIT/OFFSETを使用して必要な部分だけ取得</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <p>以下は、効率的なクエリ設計の例です：</p>
+
+                        <code>// 非効率なクエリ
+String inefficientQuery = "SELECT * FROM products ORDER BY created_at DESC";
+
+// 効率的なクエリ（ページネーション付き）
+String efficientQuery = "SELECT id, name, price, category FROM products ORDER BY created_at DESC LIMIT ? OFFSET ?";
+
+try (PreparedStatement pstmt = conn.prepareStatement(efficientQuery)) {
+    int pageSize = 20;
+    int pageNumber = 1;
+    
+    pstmt.setInt(1, pageSize);
+    pstmt.setInt(2, (pageNumber - 1) * pageSize);
+    
+    ResultSet rs = pstmt.executeQuery();
+    // 結果の処理
+}</code>
+
+                        <h4>4. 結果セットの効率的な処理</h4>
+                        <p>大量のデータを取得する場合、結果セットの処理方法がパフォーマンスに影響します。以下のテクニックを検討してください：</p>
+
+                        <ul>
+                            <li><strong>スクロール可能な結果セット</strong>：大量のデータを少しずつ処理する場合に有効</li>
+                            <li><strong>フェッチサイズの設定</strong>：ネットワーク通信を減らすために適切なサイズを設定</li>
+                            <li><strong>ストリーム処理</strong>：大量データを一度にメモリに読み込まずに処理</li>
+                        </ul>
+
+                        <code>// フェッチサイズの設定
+String query = "SELECT * FROM large_table";
+
+try (Connection conn = dataSource.getConnection();
+     Statement stmt = conn.createStatement()) {
+    
+    // フェッチサイズを設定（一度に取得する行数）
+    stmt.setFetchSize(1000);
+    
+    ResultSet rs = stmt.executeQuery(query);
+    while (rs.next()) {
+        // 結果の処理
+    }
+}
+
+// スクロール可能な結果セット
+try (Connection conn = dataSource.getConnection();
+     Statement stmt = conn.createStatement(
+         ResultSet.TYPE_SCROLL_INSENSITIVE,
+         ResultSet.CONCUR_READ_ONLY)) {
+    
+    ResultSet rs = stmt.executeQuery("SELECT * FROM large_table");
+    
+    // 特定の位置にジャンプ
+    rs.absolute(1000); // 1000行目に移動
+    
+    // または特定の範囲の行を処理
+    rs.setFetchSize(100);
+    for (int i = 1; i <= 100; i++) {
+        rs.relative(1);
+        // 結果の処理
+    }
+}</code>
+
+                        <h4>5. キャッシュの活用</h4>
+                        <p>頻繁にアクセスされるデータや変更頻度の低いデータをキャッシュすることで、データベースへのアクセスを減らし、パフォーマンスを向上させることができます。</p>
+
+                        <ul>
+                            <li><strong>アプリケーションレベルのキャッシュ</strong>：EhCache、Caffeine、Google Guavaなど</li>
+                            <li><strong>分散キャッシュ</strong>：Redisや Memcachedなど</li>
+                            <li><strong>2次キャッシュ</strong>：Hibernateの2次キャッシュなど</li>
+                        </ul>
+
+                        <code>// Caffeineを使用したシンプルなキャッシュの実装例
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+
+public class ProductService {
+    private final ProductRepository repository;
+    private final Cache<Long, Product> productCache;
+    
+    public ProductService(ProductRepository repository) {
+        this.repository = repository;
+        
+        // キャッシュの設定
+        this.productCache = Caffeine.newBuilder()
+            .maximumSize(1000)        // 最大1000エントリ
+            .expireAfterWrite(1, TimeUnit.HOURS)  // 1時間後に期限切れ
+            .build();
+    }
+    
+    public Product getProduct(Long id) {
+        // キャッシュから取得を試みる
+        return productCache.get(id, key -> {
+            // キャッシュにない場合はデータベースから取得
+            return repository.findById(key);
+        });
+    }
+    
+    public void updateProduct(Product product) {
+        // データベースを更新
+        repository.update(product);
+        // キャッシュを更新
+        productCache.put(product.getId(), product);
+    }
+    
+    public void deleteProduct(Long id) {
+        // データベースから削除
+        repository.deleteById(id);
+        // キャッシュから削除
+        productCache.invalidate(id);
+    }
+}</code>
+
+                        <div class="warning">
+                            <h5>キャッシュ使用時の注意点</h5>
+                            <p>キャッシュを使用する際は、以下の点に注意してください：</p>
+                            <ul>
+                                <li>データの一貫性：キャッシュと実際のデータベースに不整合が生じないようにする</li>
+                                <li>キャッシュの無効化：データが更新された場合、関連するキャッシュエントリを適切に無効化する</li>
+                                <li>メモリ使用量：キャッシュが大きすぎると、かえってパフォーマンスが低下する場合がある</li>
+                                <li>キャッシュの有効期限：古いデータがキャッシュされたままにならないよう、適切な有効期限を設定する</li>
+                            </ul>
+                        </div>
+
+                        <h4>6. トランザクション管理の最適化</h4>
+                        <p>適切なトランザクション管理は、パフォーマンスとデータの整合性の両方にとって重要です。</p>
+
+                        <ul>
+                            <li><strong>トランザクションの範囲</strong>：必要な処理だけをトランザクションに含める</li>
+                            <li><strong>トランザクションの分割</strong>：大きなトランザクションを小さく分割する</li>
+                            <li><strong>適切な分離レベル</strong>：必要最小限の分離レベルを選択する</li>
+                        </ul>
+
+                        <code>// 適切なトランザクション管理の例
+public void processOrders(List<Order> orders) {
+    // トランザクションの外で準備作業を行う（重い処理）
+    prepareData();
+    
+    // データベース操作のみをトランザクション内で行う
+    try (Connection conn = dataSource.getConnection()) {
+        try {
+            // トランザクション開始
+            conn.setAutoCommit(false);
+            
+            // バッチ処理を使用して注文を処理
+            processOrdersBatch(conn, orders);
+            
+            // トランザクションをコミット
+            conn.commit();
+        } catch (SQLException e) {
+            // 問題が発生した場合はロールバック
+            conn.rollback();
+            throw e;
+        } finally {
+            // 自動コミットを元に戻す
+            conn.setAutoCommit(true);
+        }
+    } catch (SQLException e) {
+        // 例外処理
+    }
+    
+    // トランザクション外で後処理（通知送信など）
+    sendNotifications();
+}</code>
+
+                        <div class="exercise">
+                            <h5>練習問題 7.2.1: パフォーマンス最適化</h5>
+                            <p>以下のコードにはパフォーマンス上の問題があります。コネクションプール、バッチ処理、適切なトランザクション管理を使用して最適化してください：</p>
+                            <code>// 最適化が必要なコード
+public void importProducts(List<Product> products) {
+    for (Product product : products) {
+        try {
+            // 毎回新しい接続を取得
+            Connection conn = DriverManager.getConnection(
+                "jdbc:postgresql://localhost:5432/mydb", "user", "password");
+            
+            // 製品を挿入
+            String sql = "INSERT INTO products (name, price, category) VALUES (?, ?, ?)";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, product.getName());
+            pstmt.setDouble(2, product.getPrice());
+            pstmt.setString(3, product.getCategory());
+            pstmt.executeUpdate();
+            
+            // リソースクローズ
+            pstmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}</code>
+                        </div>
+                    </section>
+
+                    <section id="connection-pool">
+                        <h3 class="section-title">7.3 コネクションプールの実装と利用</h3>
+                        <p>前節でコネクションプールの概念とその重要性について学びました。この節では、実際にコネクションプールを実装し、アプリケーションで利用する方法について詳しく見ていきます。</p>
+
+                        <h4>コネクションプールのライブラリ</h4>
+                        <p>Javaでコネクションプールを実装するためのライブラリはいくつかありますが、ここでは代表的な2つを紹介します：</p>
+
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>ライブラリ名</th>
+                                    <th>特徴</th>
+                                    <th>使用シナリオ</th>
+                                </tr>
+                                <tr>
+                                    <td>HikariCP</td>
+                                    <td>
+                                        <ul>
+                                            <li>超高速で軽量</li>
+                                            <li>設定がシンプル</li>
+                                            <li>安定性が高い</li>
+                                            <li>Spring Bootのデフォルト</li>
+                                        </ul>
+                                    </td>
+                                    <td>高パフォーマンスが求められる本番アプリケーション</td>
+                                </tr>
+                                <tr>
+                                    <td>Apache DBCP2</td>
+                                    <td>
+                                        <ul>
+                                            <li>歴史が長く実績がある</li>
+                                            <li>設定オプションが豊富</li>
+                                            <li>Apache Tomcatとの統合</li>
+                                        </ul>
+                                    </td>
+                                    <td>より詳細な設定が必要なアプリケーション</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h4>HikariCP コネクションプールの実装</h4>
+                        <p>まず、プロジェクトにHikariCPの依存関係を追加します：</p>
+
+                        <h5>Maven（pom.xml）</h5>
+                        <code>&lt;dependency&gt;
+    &lt;groupId&gt;com.zaxxer&lt;/groupId&gt;
+    &lt;artifactId&gt;HikariCP&lt;/artifactId&gt;
+    &lt;version&gt;5.0.1&lt;/version&gt;
+&lt;/dependency&gt;</code>
+
+                        <h5>Gradle（build.gradle）</h5>
+                        <code>implementation 'com.zaxxer:HikariCP:5.0.1'</code>
+
+                        <p>次に、HikariCPを使用したコネクションプールを実装するシングルトンクラスを作成します：</p>
+
+                        <code>package com.example.jdbc.util;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+public class DatabaseConnectionPool {
+    private static DatabaseConnectionPool instance;
+    private final HikariDataSource dataSource;
+
+    // プライベートコンストラクタ（シングルトンパターン）
+    private DatabaseConnectionPool() {
+        // HikariCP設定
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:postgresql://localhost:5432/mydb");
+        config.setUsername("postgres");
+        config.setPassword("password");
+        
+        // 基本的なプール設定
+        config.setMaximumPoolSize(10);
+        config.setMinimumIdle(5);
+        config.setIdleTimeout(30000);
+        config.setConnectionTimeout(10000);
+        config.setMaxLifetime(1800000); // 30分
+        
+        // 接続テスト設定
+        config.setConnectionTestQuery("SELECT 1");
+        config.setValidationTimeout(5000);
+        
+        // データソースの作成
+        dataSource = new HikariDataSource(config);
+    }
+
+    // インスタンス取得メソッド（シングルトンパターン）
+    public static synchronized DatabaseConnectionPool getInstance() {
+        if (instance == null) {
+            instance = new DatabaseConnectionPool();
+        }
+        return instance;
+    }
+
+    // コネクション取得メソッド
+    public Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
+    }
+
+    // リソース解放メソッド（アプリケーション終了時に呼び出す）
+    public void closePool() {
+        if (dataSource != null && !dataSource.isClosed()) {
+            dataSource.close();
+        }
+    }
+}</code>
+
+                        <div class="note">
+                            <h5>HikariCP設定パラメータの意味</h5>
+                            <ul>
+                                <li><strong>maximumPoolSize</strong>：プールが保持する接続の最大数</li>
+                                <li><strong>minimumIdle</strong>：アイドル状態で常に保持する最小接続数</li>
+                                <li><strong>idleTimeout</strong>：接続がプールに戻されてから削除されるまでの最大時間（ミリ秒）</li>
+                                <li><strong>connectionTimeout</strong>：接続を取得する際のタイムアウト（ミリ秒）</li>
+                                <li><strong>maxLifetime</strong>：接続の最大存続時間（ミリ秒）- 設定した時間が経過すると再作成される</li>
+                                <li><strong>connectionTestQuery</strong>：接続の有効性を確認するためのクエリ</li>
+                                <li><strong>validationTimeout</strong>：接続の検証タイムアウト（ミリ秒）</li>
+                            </ul>
+                        </div>
+
+                        <h4>プロパティファイルを使用した設定</h4>
+                        <p>実際のアプリケーションでは、データベース接続情報をソースコードに直接記述するのではなく、外部のプロパティファイルから読み込むことが推奨されます。以下はその実装例です：</p>
+
+                        <h5>database.properties</h5>
+                        <code>db.url=jdbc:postgresql://localhost:5432/mydb
+db.username=postgres
+db.password=password
+db.maximumPoolSize=10
+db.minimumIdle=5
+db.idleTimeout=30000
+db.connectionTimeout=10000
+db.maxLifetime=1800000</code>
+
+                        <h5>プロパティファイルを読み込むConnectionPool実装</h5>
+                        <code>package com.example.jdbc.util;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Properties;
+
+public class ConfigurableConnectionPool {
+    private static ConfigurableConnectionPool instance;
+    private final HikariDataSource dataSource;
+
+    private ConfigurableConnectionPool() {
+        Properties props = loadProperties();
+        
+        // HikariCP設定
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(props.getProperty("db.url"));
+        config.setUsername(props.getProperty("db.username"));
+        config.setPassword(props.getProperty("db.password"));
+        
+        // プール設定
+        config.setMaximumPoolSize(Integer.parseInt(props.getProperty("db.maximumPoolSize")));
+        config.setMinimumIdle(Integer.parseInt(props.getProperty("db.minimumIdle")));
+        config.setIdleTimeout(Long.parseLong(props.getProperty("db.idleTimeout")));
+        config.setConnectionTimeout(Long.parseLong(props.getProperty("db.connectionTimeout")));
+        config.setMaxLifetime(Long.parseLong(props.getProperty("db.maxLifetime")));
+        
+        // 接続テスト設定
+        config.setConnectionTestQuery("SELECT 1");
+        
+        // データソースの作成
+        dataSource = new HikariDataSource(config);
+    }
+
+    private Properties loadProperties() {
+        Properties props = new Properties();
+        
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream("database.properties")) {
+            if (input == null) {
+                throw new RuntimeException("database.propertiesファイルが見つかりません");
+            }
+            
+            props.load(input);
+        } catch (IOException e) {
+            throw new RuntimeException("プロパティファイルの読み込みに失敗しました", e);
+        }
+        
+        return props;
+    }
+
+    public static synchronized ConfigurableConnectionPool getInstance() {
+        if (instance == null) {
+            instance = new ConfigurableConnectionPool();
+        }
+        return instance;
+    }
+
+    public Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
+    }
+
+    public void closePool() {
+        if (dataSource != null && !dataSource.isClosed()) {
+            dataSource.close();
+        }
+    }
+}</code>
+
+                        <h4>コネクションプールを使用したDAO実装</h4>
+                        <p>作成したコネクションプールを使用して、データアクセスオブジェクト（DAO）を実装する例を見てみましょう：</p>
+
+                        <code>package com.example.jdbc.dao;
+
+import com.example.jdbc.model.Product;
+import com.example.jdbc.util.DatabaseConnectionPool;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProductDAO {
+    // コネクションプールからコネクションを取得
+    private DatabaseConnectionPool connectionPool = DatabaseConnectionPool.getInstance();
+    
+    // 全商品取得
+    public List<Product> getAllProducts() {
+        List<Product> products = new ArrayList<>();
+        String sql = "SELECT id, name, price, category FROM products";
+        
+        // try-with-resourcesでコネクション、ステートメント、結果セットを自動クローズ
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            
+            while (rs.next()) {
+                Product product = new Product();
+                product.setId(rs.getLong("id"));
+                product.setName(rs.getString("name"));
+                product.setPrice(rs.getDouble("price"));
+                product.setCategory(rs.getString("category"));
+                products.add(product);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("商品情報の取得に失敗しました", e);
+        }
+        
+        return products;
+    }
+    
+    // 商品登録（バッチ処理使用）
+    public int[] addProducts(List<Product> products) {
+        String sql = "INSERT INTO products (name, price, category) VALUES (?, ?, ?)";
+        
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            // 自動コミット無効化（トランザクション開始）
+            conn.setAutoCommit(false);
+            
+            try {
+                for (Product product : products) {
+                    pstmt.setString(1, product.getName());
+                    pstmt.setDouble(2, product.getPrice());
+                    pstmt.setString(3, product.getCategory());
+                    pstmt.addBatch();
+                }
+                
+                // バッチ実行
+                int[] results = pstmt.executeBatch();
+                
+                // コミット
+                conn.commit();
+                
+                return results;
+            } catch (SQLException e) {
+                // エラー発生時はロールバック
+                conn.rollback();
+                throw e;
+            } finally {
+                // 自動コミットを元に戻す
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("商品情報の登録に失敗しました", e);
+        }
+    }
+    
+    // 商品更新
+    public boolean updateProduct(Product product) {
+        String sql = "UPDATE products SET name = ?, price = ?, category = ? WHERE id = ?";
+        
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, product.getName());
+            pstmt.setDouble(2, product.getPrice());
+            pstmt.setString(3, product.getCategory());
+            pstmt.setLong(4, product.getId());
+            
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("商品情報の更新に失敗しました", e);
+        }
+    }
+    
+    // 商品削除
+    public boolean deleteProduct(long id) {
+        String sql = "DELETE FROM products WHERE id = ?";
+        
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setLong(1, id);
+            
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("商品情報の削除に失敗しました", e);
+        }
+    }
+}</code>
+
+                        <h4>コネクションプールのモニタリングと管理</h4>
+                        <p>実際の運用環境では、コネクションプールのパフォーマンスをモニタリングし、必要に応じて設定を調整することが重要です。HikariCPはJMX（Java Management Extensions）を通じてモニタリング情報を提供します。</p>
+
+                        <p>JMXを有効にする設定例：</p>
+
+                        <code>HikariConfig config = new HikariConfig();
+// 基本設定
+config.setJdbcUrl("jdbc:postgresql://localhost:5432/mydb");
+config.setUsername("postgres");
+config.setPassword("password");
+
+// JMX管理を有効化
+config.setRegisterMbeans(true);
+
+// プールの名前を設定（複数のプールを区別するため）
+config.setPoolName("MainDatabasePool");</code>
+
+                        <p>モニタリングできる主な指標：</p>
+                        <ul>
+                            <li>アクティブな接続数</li>
+                            <li>アイドル状態の接続数</li>
+                            <li>合計接続数</li>
+                            <li>待機中のスレッド数</li>
+                            <li>平均接続取得時間</li>
+                            <li>最大接続取得時間</li>
+                        </ul>
+
+                        <div class="warning">
+                            <h5>コネクションプール使用時の注意点</h5>
+                            <ul>
+                                <li><strong>接続のリーク防止</strong>：必ずtry-with-resourcesブロックでConnectionをクローズしてください</li>
+                                <li><strong>プールサイズの適正化</strong>：大きすぎるプールサイズはデータベースリソースを浪費し、小さすぎると性能低下の原因になります</li>
+                                <li><strong>接続の最大存続時間（maxLifetime）設定</strong>：データベース側のタイムアウト設定より短く設定して、「接続が突然切れる」問題を防止します</li>
+                                <li><strong>例外処理</strong>：プールからの接続取得失敗に対して適切に対応するコードを実装してください</li>
+                            </ul>
+                        </div>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 320" width="600" height="320">
+                                <!-- アプリケーション層 -->
+                                <rect x="50" y="20" width="500" height="60" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="300" y="55" text-anchor="middle" font-size="16">アプリケーション層（ビジネスロジック）</text>
+                                
+                                <!-- DAOレイヤー -->
+                                <rect x="50" y="100" width="500" height="60" fill="#bbdefb" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="300" y="135" text-anchor="middle" font-size="16">DAOレイヤー（データアクセスオブジェクト）</text>
+                                
+                                <!-- コネクションプール層 -->
+                                <rect x="50" y="180" width="500" height="60" fill="#90caf9" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="300" y="215" text-anchor="middle" font-size="16">コネクションプール（HikariCP）</text>
+                                
+                                <!-- データベース層 -->
+                                <rect x="50" y="260" width="500" height="40" fill="#64b5f6" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="300" y="285" text-anchor="middle" font-size="16">データベース（PostgreSQL）</text>
+                                
+                                <!-- 接続の流れを示す矢印 -->
+                                <line x1="150" y1="80" x2="150" y2="100" stroke="#1976d2" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="300" y1="80" x2="300" y2="100" stroke="#1976d2" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="450" y1="80" x2="450" y2="100" stroke="#1976d2" stroke-width="2" marker-end="url(#arrow)" />
+                                
+                                <line x1="150" y1="160" x2="150" y2="180" stroke="#1976d2" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="300" y1="160" x2="300" y2="180" stroke="#1976d2" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="450" y1="160" x2="450" y2="180" stroke="#1976d2" stroke-width="2" marker-end="url(#arrow)" />
+                                
+                                <line x1="250" y1="240" x2="250" y2="260" stroke="#1976d2" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="350" y1="240" x2="350" y2="260" stroke="#1976d2" stroke-width="2" marker-end="url(#arrow)" />
+                                
+                                <!-- プール内の接続を示す円 -->
+                                <circle cx="200" cy="210" r="8" fill="#4caf50" stroke="#388e3c" stroke-width="1.5" />
+                                <circle cx="230" cy="210" r="8" fill="#4caf50" stroke="#388e3c" stroke-width="1.5" />
+                                <circle cx="260" cy="210" r="8" fill="#4caf50" stroke="#388e3c" stroke-width="1.5" />
+                                <circle cx="290" cy="210" r="8" fill="#f44336" stroke="#d32f2f" stroke-width="1.5" /> <!-- 使用中 -->
+                                <circle cx="320" cy="210" r="8" fill="#f44336" stroke="#d32f2f" stroke-width="1.5" /> <!-- 使用中 -->
+                                <circle cx="350" cy="210" r="8" fill="#4caf50" stroke="#388e3c" stroke-width="1.5" />
+                                <circle cx="380" cy="210" r="8" fill="#4caf50" stroke="#388e3c" stroke-width="1.5" />
+
+                                <text x="220" y="195" text-anchor="middle" font-size="10">アイドル接続</text>
+                                <text x="305" y="195" text-anchor="middle" font-size="10">使用中の接続</text>
+                                
+                                <defs>
+                                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                        <path d="M0,0 L0,6 L9,3 z" fill="#1976d2" />
+                                    </marker>
+                                </defs>
+                            </svg>
+                            <p class="text-center">図7.4: コネクションプールを使用したアプリケーションアーキテクチャ</p>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>練習問題 7.3.1: コネクションプールの実装</h5>
+                            <p>以下の要件に基づいて、HikariCPを使用したコネクションプールクラスを実装してください：</p>
+                            <ol>
+                                <li>シングルトンパターンを使用する</li>
+                                <li>プロパティファイルから設定を読み込む</li>
+                                <li>最大接続数、最小アイドル接続数、接続タイムアウト、アイドルタイムアウト、最大寿命を設定できるようにする</li>
+                                <li>プールのシャットダウンメソッドを実装する</li>
+                                <li>例外処理を適切に行う</li>
+                            </ol>
+                            <p>さらに、このコネクションプールを使用して「users」テーブルにアクセスするDAOクラスも実装してください。少なくとも「全ユーザー取得」と「ユーザー追加」の機能を実装してください。</p>
+                        </div>
+                    </section>
+
+                    <section id="secure-application">
+                        <h3 class="section-title">7.4 セキュアなアプリケーションへの改良（実習）</h3>
+                        <p>この節では、これまで学んだセキュリティとパフォーマンスの知識を活用して、既存のJDBCアプリケーションをより安全で効率的なものに改良する実習を行います。</p>
+
+                        <h4>実習の概要</h4>
+                        <p>この実習では、シンプルな商品管理アプリケーションを例にとり、以下のような改良を加えていきます：</p>
+                        <ol>
+                            <li>SQLインジェクション脆弱性の排除</li>
+                            <li>コネクションプールの導入</li>
+                            <li>バッチ処理の実装</li>
+                            <li>入力値の検証強化</li>
+                            <li>例外処理の改善</li>
+                        </ol>
+
+                        <h4>ステップ1: 現状の脆弱なアプリケーションの確認</h4>
+                        <p>まずは、セキュリティとパフォーマンスの問題を含んだ商品管理アプリケーションのコードを確認します。</p>
+
+                        <code>// 脆弱な実装のProductDAO
+package com.example.insecure;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+public class InsecureProductDAO {
+    // データベース接続情報（ソースコードにハードコード）
+    private static final String URL = "jdbc:postgresql://localhost:5432/productdb";
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "password";
+    
+    // 商品検索メソッド（SQLインジェクションに脆弱）
+    public List<Product> searchProducts(String keyword) {
+        List<Product> products = new ArrayList<>();
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            // 毎回新しい接続を作成
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            stmt = conn.createStatement();
+            
+            // SQLインジェクションに脆弱なクエリ
+            String sql = "SELECT * FROM products WHERE name LIKE '%" + keyword + "%' OR description LIKE '%" + keyword + "%'";
+            rs = stmt.executeQuery(sql);
+            
+            while (rs.next()) {
+                Product product = new Product();
+                product.setId(rs.getLong("id"));
+                product.setName(rs.getString("name"));
+                product.setPrice(rs.getDouble("price"));
+                product.setDescription(rs.getString("description"));
+                product.setCategory(rs.getString("category"));
+                products.add(product);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // リソースのクローズ（古い方法）
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return products;
+    }
+    
+    // 商品一括登録メソッド（パフォーマンスが悪い）
+    public void addProducts(List<Product> products) {
+        for (Product product : products) {
+            Connection conn = null;
+            Statement stmt = null;
+            
+            try {
+                // 毎回新しい接続を作成
+                conn = DriverManager.getConnection(URL, USER, PASSWORD);
+                stmt = conn.createStatement();
+                
+                // SQLインジェクションに脆弱なクエリ
+                String sql = "INSERT INTO products (name, price, description, category) VALUES ('" 
+                    + product.getName() + "', " 
+                    + product.getPrice() + ", '" 
+                    + product.getDescription() + "', '" 
+                    + product.getCategory() + "')";
+                
+                stmt.executeUpdate(sql);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (stmt != null) stmt.close();
+                    if (conn != null) conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+}</code>
+
+                        <div class="warning">
+                            <h5>このコードの問題点</h5>
+                            <ol>
+                                <li>SQLインジェクションの脆弱性がある（文字列連結でSQLを構築）</li>
+                                <li>データベース接続情報がハードコードされている</li>
+                                <li>毎回新しいデータベース接続を作成している（効率が悪い）</li>
+                                <li>例外処理が不十分（単にスタックトレースを出力するだけ）</li>
+                                <li>バッチ処理を使用していない（大量データ処理時に非効率）</li>
+                                <li>入力値の検証を行っていない</li>
+                                <li>トランザクション管理が不適切</li>
+                                <li>リソースクローズが旧式（try-with-resourcesを使用していない）</li>
+                            </ol>
+                        </div>
+
+                        <h4>ステップ2: セキュアなコネクションプールの実装</h4>
+                        <p>まず、HikariCPを使用したコネクションプールを実装します。データベース接続情報はプロパティファイルから読み込みます。</p>
+
+                        <h5>database.properties</h5>
+                        <code>db.url=jdbc:postgresql://localhost:5432/productdb
+db.username=postgres
+db.password=password
+db.poolSize=10
+db.minimumIdle=5
+db.connectionTimeout=10000
+db.idleTimeout=30000
+db.maxLifetime=1800000</code>
+
+                        <h5>ConnectionPool.java</h5>
+                        <code>package com.example.secure.db;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class ConnectionPool {
+    private static final Logger LOGGER = Logger.getLogger(ConnectionPool.class.getName());
+    private static ConnectionPool instance;
+    private final HikariDataSource dataSource;
+    
+    private ConnectionPool() {
+        Properties props = loadDatabaseProperties();
+        HikariConfig config = createHikariConfig(props);
+        dataSource = new HikariDataSource(config);
+    }
+    
+    private Properties loadDatabaseProperties() {
+        Properties props = new Properties();
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream("database.properties")) {
+            if (input == null) {
+                LOGGER.severe("database.propertiesファイルが見つかりません");
+                throw new RuntimeException("設定ファイルが見つかりません");
+            }
+            props.load(input);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "プロパティファイルの読み込みに失敗しました", e);
+            throw new RuntimeException("設定ファイルの読み込みに失敗しました", e);
+        }
+        return props;
+    }
+    
+    private HikariConfig createHikariConfig(Properties props) {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(props.getProperty("db.url"));
+        config.setUsername(props.getProperty("db.username"));
+        config.setPassword(props.getProperty("db.password"));
+        
+        config.setMaximumPoolSize(Integer.parseInt(props.getProperty("db.poolSize", "10")));
+        config.setMinimumIdle(Integer.parseInt(props.getProperty("db.minimumIdle", "5")));
+        config.setConnectionTimeout(Long.parseLong(props.getProperty("db.connectionTimeout", "10000")));
+        config.setIdleTimeout(Long.parseLong(props.getProperty("db.idleTimeout", "30000")));
+        config.setMaxLifetime(Long.parseLong(props.getProperty("db.maxLifetime", "1800000")));
+        
+        config.setConnectionTestQuery("SELECT 1");
+        config.setPoolName("ProductDBPool");
+        
+        return config;
+    }
+    
+    public static synchronized ConnectionPool getInstance() {
+        if (instance == null) {
+            instance = new ConnectionPool();
+        }
+        return instance;
+    }
+    
+    public Connection getConnection() throws SQLException {
+        try {
+            return dataSource.getConnection();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "データベース接続の取得に失敗しました", e);
+            throw e;
+        }
+    }
+    
+    public void shutdown() {
+        if (dataSource != null && !dataSource.isClosed()) {
+            dataSource.close();
+            LOGGER.info("コネクションプールを閉じました");
+        }
+    }
+}</code>
+
+                        <h4>ステップ3: 入力検証ユーティリティの実装</h4>
+                        <p>次に、ユーザー入力を検証するためのユーティリティクラスを実装します。</p>
+
+                        <code>package com.example.secure.util;
+
+import java.util.regex.Pattern;
+
+public class InputValidator {
+    // 製品名の検証（英数字、日本語、スペース、一部の記号のみ許可）
+    private static final Pattern PRODUCT_NAME_PATTERN = 
+        Pattern.compile("^[\\p{L}\\p{N}\\s\\-_.,&()]{1,100}$");
+    
+    // カテゴリの検証（英数字、日本語、スペースのみ許可）
+    private static final Pattern CATEGORY_PATTERN = 
+        Pattern.compile("^[\\p{L}\\p{N}\\s]{1,50}$");
+    
+    // 価格の検証（正の数値のみ許可）
+    public static boolean isValidPrice(double price) {
+        return price >= 0.0 && price <= 1000000.0;
+    }
+    
+    // 製品名の検証
+    public static boolean isValidProductName(String name) {
+        return name != null && PRODUCT_NAME_PATTERN.matcher(name).matches();
+    }
+    
+    // カテゴリの検証
+    public static boolean isValidCategory(String category) {
+        return category != null && CATEGORY_PATTERN.matcher(category).matches();
+    }
+    
+    // 説明の検証（長さとHTML/SQLインジェクション対策）
+    public static boolean isValidDescription(String description) {
+        if (description == null) {
+            return true; // 説明はオプション
+        }
+        
+        if (description.length() > 1000) {
+            return false;
+        }
+        
+        // 危険なHTMLタグやSQLインジェクションの可能性のある文字列をチェック
+        String[] dangerousPatterns = {
+            "<script", "javascript:", "onload=", "onerror=", "onclick=",
+            "';", "--;", "/*", "*/", "@@", "xp_", "sp_"
+        };
+        
+        for (String pattern : dangerousPatterns) {
+            if (description.toLowerCase().contains(pattern)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    // 検索キーワードの検証
+    public static boolean isValidSearchKeyword(String keyword) {
+        if (keyword == null) {
+            return false;
+        }
+        
+        // 長さチェック
+        if (keyword.length() > 100) {
+            return false;
+        }
+        
+        // SQLインジェクションの可能性のある文字列をチェック
+        String[] sqlInjectionPatterns = {
+            "'", "\"", ";", "--", "/*", "*/", "xp_", "sp_", "exec", "SELECT", "DROP", "DELETE", "UPDATE"
+        };
+        
+        for (String pattern : sqlInjectionPatterns) {
+            if (keyword.toLowerCase().contains(pattern)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+}</code>
+
+                        <h4>ステップ4: セキュアなProductDAOの実装</h4>
+                        <p>これまでに実装したコンポーネントを使用して、安全で効率的なProductDAOを実装します。</p>
+
+                        <code>package com.example.secure.dao;
+
+import com.example.secure.db.ConnectionPool;
+import com.example.secure.model.Product;
+import com.example.secure.util.InputValidator;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class SecureProductDAO {
+    private static final Logger LOGGER = Logger.getLogger(SecureProductDAO.class.getName());
+    private final ConnectionPool connectionPool;
+    
+    public SecureProductDAO() {
+        this.connectionPool = ConnectionPool.getInstance();
+    }
+    
+    // 商品検索メソッド（セキュア実装）
+    public List<Product> searchProducts(String keyword) throws IllegalArgumentException, SQLException {
+        // 入力検証
+        if (!InputValidator.isValidSearchKeyword(keyword)) {
+            LOGGER.warning("不正な検索キーワード: " + keyword);
+            throw new IllegalArgumentException("無効な検索キーワードです");
+        }
+        
+        List<Product> products = new ArrayList<>();
+        String sql = "SELECT id, name, price, description, category FROM products WHERE name LIKE ? OR description LIKE ?";
+        
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            // パラメータ設定（PreparedStatement使用でSQLインジェクション対策）
+            pstmt.setString(1, "%" + keyword + "%");
+            pstmt.setString(2, "%" + keyword + "%");
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Product product = new Product();
+                    product.setId(rs.getLong("id"));
+                    product.setName(rs.getString("name"));
+                    product.setPrice(rs.getDouble("price"));
+                    product.setDescription(rs.getString("description"));
+                    product.setCategory(rs.getString("category"));
+                    products.add(product);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "商品検索中にエラーが発生しました", e);
+            throw e;
+        }
+        
+        return products;
+    }
+    
+    // 商品一括登録メソッド（バッチ処理使用）
+    public int[] addProducts(List<Product> products) throws IllegalArgumentException, SQLException {
+        if (products == null || products.isEmpty()) {
+            throw new IllegalArgumentException("商品リストが空です");
+        }
+        
+        // 入力検証
+        for (Product product : products) {
+            validateProduct(product);
+        }
+        
+        String sql = "INSERT INTO products (name, price, description, category) VALUES (?, ?, ?, ?)";
+        
+        try (Connection conn = connectionPool.getConnection()) {
+            // 自動コミットを無効化（トランザクション開始）
+            conn.setAutoCommit(false);
+            
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                for (Product product : products) {
+                    pstmt.setString(1, product.getName());
+                    pstmt.setDouble(2, product.getPrice());
+                    pstmt.setString(3, product.getDescription());
+                    pstmt.setString(4, product.getCategory());
+                    pstmt.addBatch();
+                }
+                
+                // バッチ実行
+                int[] results = pstmt.executeBatch();
+                
+                // コミット
+                conn.commit();
+                
+                return results;
+            } catch (SQLException e) {
+                // エラー発生時はロールバック
+                conn.rollback();
+                LOGGER.log(Level.SEVERE, "商品一括登録中にエラーが発生しました", e);
+                throw e;
+            } finally {
+                // 自動コミットを元に戻す
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "データベース接続エラー", e);
+            throw e;
+        }
+    }
+    
+    // 商品情報の検証
+    private void validateProduct(Product product) throws IllegalArgumentException {
+        List<String> errors = new ArrayList<>();
+        
+        if (!InputValidator.isValidProductName(product.getName())) {
+            errors.add("商品名が無効です");
+        }
+        
+        if (!InputValidator.isValidPrice(product.getPrice())) {
+            errors.add("価格が無効です");
+        }
+        
+        if (!InputValidator.isValidDescription(product.getDescription())) {
+            errors.add("商品説明が無効です");
+        }
+        
+        if (!InputValidator.isValidCategory(product.getCategory())) {
+            errors.add("カテゴリが無効です");
+        }
+        
+        if (!errors.isEmpty()) {
+            throw new IllegalArgumentException(String.join(", ", errors));
+        }
+    }
+}</code>
+
+                        <h4>ステップ5: 例外処理の改善</h4>
+                        <p>データアクセス層で発生する例外を適切に処理するためのカスタム例外クラスを実装します。</p>
+
+                        <code>package com.example.secure.exception;
+
+public class DatabaseException extends RuntimeException {
+    private final String errorCode;
+    
+    public DatabaseException(String message) {
+        super(message);
+        this.errorCode = "DB-ERROR";
+    }
+    
+    public DatabaseException(String message, Throwable cause) {
+        super(message, cause);
+        this.errorCode = "DB-ERROR";
+    }
+    
+    public DatabaseException(String errorCode, String message, Throwable cause) {
+        super(message, cause);
+        this.errorCode = errorCode;
+    }
+    
+    public String getErrorCode() {
+        return errorCode;
+    }
+}
+
+// より具体的な例外クラス
+public class DataAccessException extends DatabaseException {
+    public DataAccessException(String message) {
+        super("DB-ACCESS", message, null);
+    }
+    
+    public DataAccessException(String message, Throwable cause) {
+        super("DB-ACCESS", message, cause);
+    }
+}
+
+public class ConnectionPoolException extends DatabaseException {
+    public ConnectionPoolException(String message) {
+        super("DB-POOL", message, null);
+    }
+    
+    public ConnectionPoolException(String message, Throwable cause) {
+        super("DB-POOL", message, cause);
+    }
+}</code>
+
+                        <h4>ステップ6: ビジネスロジック層の実装</h4>
+                        <p>データアクセス層を使用するビジネスロジック層を実装します。</p>
+
+                        <code>package com.example.secure.service;
+
+import com.example.secure.dao.SecureProductDAO;
+import com.example.secure.exception.DataAccessException;
+import com.example.secure.model.Product;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class ProductService {
+    private static final Logger LOGGER = Logger.getLogger(ProductService.class.getName());
+    private final SecureProductDAO productDAO;
+    
+    public ProductService() {
+        this.productDAO = new SecureProductDAO();
+    }
+    
+    public List<Product> searchProducts(String keyword) {
+        try {
+            return productDAO.searchProducts(keyword);
+        } catch (IllegalArgumentException e) {
+            LOGGER.warning("無効な検索キーワード: " + e.getMessage());
+            throw e;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "商品検索中にデータベースエラーが発生しました", e);
+            throw new DataAccessException("商品検索に失敗しました", e);
+        }
+    }
+    
+    public boolean addProducts(List<Product> products) {
+        try {
+            int[] results = productDAO.addProducts(products);
+            
+            // すべての商品が正常に登録されたか確認
+            boolean allSuccessful = true;
+            for (int result : results) {
+                if (result < 1) {
+                    allSuccessful = false;
+                    break;
+                }
+            }
+            
+            return allSuccessful;
+        } catch (IllegalArgumentException e) {
+            LOGGER.warning("無効な商品データ: " + e.getMessage());
+            throw e;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "商品登録中にデータベースエラーが発生しました", e);
+            throw new DataAccessException("商品の一括登録に失敗しました", e);
+        }
+    }
+}</code>
+
+                        <div class="note">
+                            <h5>改良されたアプリケーションの特徴</h5>
+                            <ol>
+                                <li><strong>SQLインジェクション対策</strong>：PreparedStatementの使用</li>
+                                <li><strong>入力検証</strong>：InputValidatorクラスによる堅牢な検証</li>
+                                <li><strong>効率的なデータベース接続</strong>：コネクションプールの使用</li>
+                                <li><strong>パフォーマンス向上</strong>：バッチ処理の実装</li>
+                                <li><strong>適切なトランザクション管理</strong>：トランザクションの明示的な制御</li>
+                                <li><strong>改善された例外処理</strong>：カスタム例外クラスとロギング</li>
+                                <li><strong>リソース管理</strong>：try-with-resourcesブロックの使用</li>
+                                <li><strong>セキュアな設定管理</strong>：プロパティファイルからの読み込み</li>
+                            </ol>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>実習課題 7.4.1: 既存アプリケーションのセキュリティ強化とパフォーマンス改善</h5>
+                            <p>以下のシンプルなユーザー管理DAOには、セキュリティとパフォーマンスの問題があります。このコードを改善して、セキュアで効率的なアプリケーションに変更してください。</p>
+                            <code>// 改善が必要なユーザー管理DAO
+public class UserDAO {
+    private static final String URL = "jdbc:postgresql://localhost:5432/userdb";
+    private static final String USER = "postgres";
+    private static final String PASS = "password";
+    
+    // ユーザー検索（SQLインジェクションに脆弱）
+    public User findUserByUsername(String username) {
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        User user = null;
+        
+        try {
+            conn = DriverManager.getConnection(URL, USER, PASS);
+            stmt = conn.createStatement();
+            
+            String sql = "SELECT * FROM users WHERE username = '" + username + "'";
+            rs = stmt.executeQuery(sql);
+            
+            if (rs.next()) {
+                user = new User();
+                user.setId(rs.getLong("id"));
+                user.setUsername(rs.getString("username"));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password")); // パスワードが平文で取得される
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return user;
+    }
+    
+    // ユーザー認証（安全でない実装）
+    public boolean authenticate(String username, String password) {
+        User user = findUserByUsername(username);
+        
+        if (user != null) {
+            // 平文パスワードの比較（安全でない）
+            return user.getPassword().equals(password);
+        }
+        
+        return false;
+    }
+    
+    // ユーザー登録（安全でない実装）
+    public boolean registerUser(User user) {
+        Connection conn = null;
+        Statement stmt = null;
+        boolean success = false;
+        
+        try {
+            conn = DriverManager.getConnection(URL, USER, PASS);
+            stmt = conn.createStatement();
+            
+            // SQLインジェクションに脆弱なクエリ、平文パスワード
+            String sql = "INSERT INTO users (username, email, password) VALUES ('" 
+                + user.getUsername() + "', '" 
+                + user.getEmail() + "', '" 
+                + user.getPassword() + "')";
+            
+            int result = stmt.executeUpdate(sql);
+            success = result > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return success;
+    }
+}</code>
+                            <p>主な改善ポイント：</p>
+                            <ol>
+                                <li>SQLインジェクション対策</li>
+                                <li>コネクションプールの実装</li>
+                                <li>パスワードのハッシュ化</li>
+                                <li>入力検証の追加</li>
+                                <li>例外処理の改善</li>
+                                <li>トランザクション管理の改善</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="chapter7-quiz">
+                        <h3 class="section-title">7.5 理解度確認テスト</h3>
+                        <div class="quiz-container">
+                            <h4>第7章の理解度チェック</h4>
+                            <p>以下の問題に答えて、第7章の内容の理解度を確認しましょう。</p>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題1:</strong> SQLインジェクションを防ぐために最も効果的な方法はどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1a" value="a">
+                                    <label class="form-check-label" for="q1a">
+                                        ユーザー入力を直接SQLクエリに連結する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1b" value="b">
+                                    <label class="form-check-label" for="q1b">
+                                        Statement.executeQuery()を使用する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1c" value="c">
+                                        <label class="form-check-label" for="q1c">
+                                        PreparedStatementとパラメータ化されたクエリを使用する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1d" value="d">
+                                        <label class="form-check-label" for="q1d">
+                                        全てのユーザー入力を単一引用符で囲む
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題2:</strong> コネクションプールを使用する主な利点は何ですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2a" value="a">
+                                    <label class="form-check-label" for="q2a">
+                                        SQLクエリの自動最適化
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2b" value="b">
+                                    <label class="form-check-label" for="q2b">
+                                        データベース接続のオーバーヘッド削減と再利用
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2c" value="c">
+                                        <label class="form-check-label" for="q2c">
+                                        アプリケーションコードの自動生成
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2d" value="d">
+                                        <label class="form-check-label" for="q2d">
+                                        データベースの自動バックアップ
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題3:</strong> 大量のデータをデータベースに挿入する際、最もパフォーマンスの高い方法はどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3a" value="a">
+                                    <label class="form-check-label" for="q3a">
+                                        各レコードごとに新しい接続を開く
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3b" value="b">
+                                    <label class="form-check-label" for="q3b">
+                                        各レコードごとに別々のInsert文を実行する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3c" value="c">
+                                        <label class="form-check-label" for="q3c">
+                                        バッチ処理を使用してまとめて挿入する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3d" value="d">
+                                        <label class="form-check-label" for="q3d">
+                                        全てのレコードを文字列連結してひとつのSQLで実行する
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題4:</strong> パスワードを安全に保存するためのベストプラクティスはどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4a" value="a">
+                                    <label class="form-check-label" for="q4a">
+                                        平文で保存する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4b" value="b">
+                                    <label class="form-check-label" for="q4b">
+                                        単純なMD5ハッシュで保存する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4c" value="c">
+                                        <label class="form-check-label" for="q4c">
+                                        Base64エンコードで保存する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4d" value="d">
+                                        <label class="form-check-label" for="q4d">
+                                        bcryptなどの適切なアルゴリズムとソルトを使用してハッシュ化する
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題5:</strong> 大量データを処理する際にResultSetのパフォーマンスを向上させる方法は何ですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5a" value="a">
+                                    <label class="form-check-label" for="q5a">
+                                        すべての行を一度にメモリに読み込む
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5b" value="b">
+                                    <label class="form-check-label" for="q5b">
+                                        フェッチサイズを適切に設定し、一定量ずつ処理する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5c" value="c">
+                                        <label class="form-check-label" for="q5c">
+                                        毎回新しいResultSetインスタンスを作成する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5d" value="d">
+                                        <label class="form-check-label" for="q5d">
+                                        常にSELECT *を使用してすべてのカラムを取得する
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題6:</strong> HikariCPコネクションプールで設定できる重要なパラメータとして正しくないものはどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q6" id="q6a" value="a">
+                                    <label class="form-check-label" for="q6a">
+                                        maximumPoolSize（最大プールサイズ）
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q6" id="q6b" value="b">
+                                    <label class="form-check-label" for="q6b">
+                                        connectionTimeout（接続タイムアウト）
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q6" id="q6c" value="c">
+                                        <label class="form-check-label" for="q6c">
+                                        queryOptimizer（クエリ最適化機能）
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q6" id="q6d" value="d">
+                                        <label class="form-check-label" for="q6d">
+                                        idleTimeout（アイドル接続のタイムアウト）
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題7:</strong> セキュアなアプリケーション開発において重要な原則はどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q7" id="q7a" value="a">
+                                    <label class="form-check-label" for="q7a">
+                                        エラーメッセージに詳細なデータベース情報を含める
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q7" id="q7b" value="b">
+                                    <label class="form-check-label" for="q7b">
+                                        データベース接続情報をソースコードに直接記述する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q7" id="q7c" value="c">
+                                        <label class="form-check-label" for="q7c">
+                                        すべてのユーザー入力を信頼する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q7" id="q7d" value="d">
+                                        <label class="form-check-label" for="q7d">
+                                        最小権限の原則に従ってデータベースアクセス権を設定する
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary mt-3" id="checkAnswers">回答を確認</button>
+                            <div id="quizResults" class="mt-3 d-none">
+                                <div class="alert alert-success">
+                                    <h5>正解:</h5>
+                                    <ol>
+                                        <li>c（PreparedStatementとパラメータ化されたクエリを使用する）</li>
+                                        <li>b（データベース接続のオーバーヘッド削減と再利用）</li>
+                                        <li>c（バッチ処理を使用してまとめて挿入する）</li>
+                                        <li>d（bcryptなどの適切なアルゴリズムとソルトを使用してハッシュ化する）</li>
+                                        <li>b（フェッチサイズを適切に設定し、一定量ずつ処理する）</li>
+                                        <li>c（queryOptimizer - HikariCPには存在しないパラメータ）</li>
+                                        <li>d（最小権限の原則に従ってデータベースアクセス権を設定する）</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="next-steps">
+                        <h3 class="section-title">次のステップ</h3>
+                        <p>この章では、JDBCアプリケーションのセキュリティとパフォーマンスに関する重要な概念とテクニックを学びました。これらの知識を活かして、安全で高速なJDBCアプリケーションを構築しましょう。</p>
+                        <p>実際のプロジェクトでこれらの手法を適用し、セキュリティの脆弱性がないか定期的に確認し、パフォーマンスのボトルネックを特定・改善することをお勧めします。</p>
+                        <div class="note">
+                            <h5>推奨される追加学習</h5>
+                            <ul>
+                                <li><strong>セキュリティ関連</strong>：OWASP（Open Web Application Security Project）のSQL Injectionガイド</li>
+                                <li><strong>パフォーマンスチューニング</strong>：データベース固有のパフォーマンスチューニングガイド（PostgreSQLの場合はEXPLAINコマンドの活用など）</li>
+                                <li><strong>コネクションプール</strong>：HikariCP、Apache DBCP、C3P0などのライブラリのドキュメント</li>
+                                <li><strong>キャッシュ技術</strong>：EhCache、Caffeine、Redis、Memcachedなどのキャッシュソリューション</li>
+                                <li><strong>ORM技術</strong>：Hibernate、JPA、MyBatisなどのORMフレームワークの学習</li>
+                            </ul>
+                        </div>
+                    </section>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4">
+        <div class="container">
+            <p class="mb-0">Copyright © 2025 F-Circle All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 理解度テストの回答確認ボタンの処理
+        document.getElementById('checkAnswers').addEventListener('click', function() {
+            document.getElementById('quizResults').classList.remove('d-none');
+        });
+    </script>
+</body>
+</html>

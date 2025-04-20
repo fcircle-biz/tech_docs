@@ -1,0 +1,3405 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JDBC初心者向け学習教材 - 第8章：総合プロジェクト - 図書館管理システム</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+        .navbar {
+            background-color: #1565c0;
+        }
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+        .chapter-title {
+            color: #1565c0;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #1565c0;
+            padding-bottom: 0.5rem;
+        }
+        .section-title {
+            color: #1976d2;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+        code {
+            display: block;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .quiz-container {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        .quiz-question {
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        .diagram {
+            max-width: 100%;
+            height: auto;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        .exercise {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        .note {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        #table-of-contents .list-group-item {
+            border: none;
+            padding: 0.5rem 1rem;
+        }
+        #table-of-contents .list-group-item-action {
+            color: #1976d2;
+        }
+        /* 選択された目次項目のスタイル */
+        #table-of-contents .list-group-item-action.active,
+        .list-group-item.active {
+            color: white !important; /* テキストを白色にして青い背景に対してコントラストをつける */
+            background-color: #1976d2;
+            border-color: #1976d2;
+        }
+        .section-nav {
+            padding-left: 1rem;
+        }
+        .inline-code {
+            background-color: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            display: inline;
+        }
+        footer {
+            background-color: #1565c0;
+            color: white;
+            padding: 1rem 0;
+            margin-top: 3rem;
+        }
+        .table-example {
+            width: 100%;
+            margin-bottom: 1rem;
+            border-collapse: collapse;
+        }
+        .table-example th {
+            background-color: #e3f2fd;
+            border: 1px solid #b3e5fc;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .table-example td {
+            border: 1px solid #b3e5fc;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .example-result {
+            background-color: #f1f8e9;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .warning {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+    </style>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#tableOfContents">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">JDBC初心者向け学習教材</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#introduction">はじめに</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#chapter8">第8章: 総合プロジェクト</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <div class="row">
+            <!-- Sidebar - Table of Contents -->
+            <div class="col-lg-3">
+                <div class="sidebar">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">目次</h5>
+                        </div>
+                        <div id="table-of-contents" class="list-group list-group-flush">
+                            <a href="#introduction" class="list-group-item list-group-item-action">はじめに</a>
+                            <a href="#chapter8" class="list-group-item list-group-item-action">第8章: 総合プロジェクト - 図書館管理システム</a>
+                            <div class="section-nav">
+                                <a href="#requirements-analysis" class="list-group-item list-group-item-action">8.1 要件分析とデータベース設計</a>
+                                <a href="#project-structure" class="list-group-item list-group-item-action">8.2 プロジェクト構造の設定</a>
+                                <a href="#database-tables" class="list-group-item list-group-item-action">8.3 データベーステーブルとER図の作成</a>
+                                <a href="#data-access-layer" class="list-group-item list-group-item-action">8.4 データアクセス層の実装</a>
+                                <a href="#business-logic" class="list-group-item list-group-item-action">8.5 ビジネスロジック層の構築</a>
+                                <a href="#user-interface" class="list-group-item list-group-item-action">8.6 ユーザーインターフェースの作成</a>
+                                <a href="#testing" class="list-group-item list-group-item-action">8.7 システムのテスト</a>
+                                <a href="#deployment" class="list-group-item list-group-item-action">8.8 デプロイメントとドキュメント作成</a>
+                                <a href="#chapter8-quiz" class="list-group-item list-group-item-action">8.9 理解度確認テスト</a>
+                            </div>
+                            <a href="#next-steps" class="list-group-item list-group-item-action">次のステップ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <section id="introduction">
+                    <h1 class="display-5 mb-4">JDBC初心者向け学習教材 - 第8章</h1>
+                    <p class="lead">この第8章では、これまでに学んだJDBCの知識を活用して、実践的な「図書館管理システム」を構築します。要件分析からデプロイメントまで、実際のプロジェクト開発の流れを体験しながら学習していきます。</p>
+
+                    <div class="note">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>実際のプロジェクトにおける要件分析とデータベース設計</li>
+                            <li>レイヤー化アーキテクチャに基づくプロジェクト構造の設計</li>
+                            <li>複数のテーブルを持つデータベースの設計と実装</li>
+                            <li>DAOパターンを用いたデータアクセス層の構築</li>
+                            <li>ビジネスロジック層でのトランザクション管理</li>
+                            <li>シンプルなコンソールUIの実装</li>
+                            <li>JUnit を用いたテスト方法</li>
+                            <li>プロジェクトのデプロイとドキュメント作成</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="chapter8">
+                    <h2 class="chapter-title">第8章：総合プロジェクト - 図書館管理システム</h2>
+                    <p>これまでの章で学んだJDBCの知識を実践に活かすため、実際のアプリケーション開発プロジェクトを通して総合的な学習を行います。この章では、シンプルな図書館管理システムの開発を通じて、データベース設計からアプリケーション実装までの一連のプロセスを体験します。</p>
+
+                    <section id="requirements-analysis">
+                        <h3 class="section-title">8.1 要件分析とデータベース設計</h3>
+                        <p>プロジェクト開発の最初のステップとして、要件分析とデータベース設計を行います。要件を明確にすることで、必要なデータベース構造や機能を特定できます。</p>
+
+                        <h4>図書館管理システムの要件</h4>
+                        <p>以下は、開発する図書館管理システムの基本要件です：</p>
+                        <ul>
+                            <li><strong>書籍管理</strong>：書籍の登録、更新、削除、検索</li>
+                            <li><strong>利用者管理</strong>：利用者の登録、更新、削除、検索</li>
+                            <li><strong>貸出管理</strong>：書籍の貸出、返却、貸出状況の確認</li>
+                            <li><strong>レポート機能</strong>：延滞書籍のリスト、人気書籍ランキングなどの簡易レポート</li>
+                        </ul>
+
+                        <h4>ユースケース図</h4>
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+                                <!-- Actor: 図書館員 -->
+                                <circle cx="50" cy="150" r="20" fill="#bbdefb" stroke="#1976d2" stroke-width="2" />
+                                <line x1="50" y1="170" x2="50" y2="220" stroke="#1976d2" stroke-width="2" />
+                                <line x1="20" y1="190" x2="80" y2="190" stroke="#1976d2" stroke-width="2" />
+                                <line x1="50" y1="220" x2="20" y2="270" stroke="#1976d2" stroke-width="2" />
+                                <line x1="50" y1="220" x2="80" y2="270" stroke="#1976d2" stroke-width="2" />
+                                <text x="50" y="300" text-anchor="middle" font-size="14">図書館員</text>
+                                
+                                <!-- System boundary -->
+                                <rect x="120" y="20" width="400" height="360" fill="none" stroke="#9e9e9e" stroke-width="2" rx="10" ry="10" />
+                                <text x="320" y="40" text-anchor="middle" font-size="16">図書館管理システム</text>
+                                
+                                <!-- Use cases -->
+                                <ellipse cx="320" cy="80" rx="100" ry="30" fill="#e8f5e9" stroke="#4caf50" stroke-width="2" />
+                                <text x="320" y="85" text-anchor="middle" font-size="14">書籍管理</text>
+                                
+                                <ellipse cx="320" cy="150" rx="100" ry="30" fill="#e8f5e9" stroke="#4caf50" stroke-width="2" />
+                                <text x="320" y="155" text-anchor="middle" font-size="14">利用者管理</text>
+                                
+                                <ellipse cx="320" cy="220" rx="100" ry="30" fill="#e8f5e9" stroke="#4caf50" stroke-width="2" />
+                                <text x="320" y="225" text-anchor="middle" font-size="14">貸出・返却管理</text>
+                                
+                                <ellipse cx="320" cy="290" rx="100" ry="30" fill="#e8f5e9" stroke="#4caf50" stroke-width="2" />
+                                <text x="320" y="295" text-anchor="middle" font-size="14">レポート生成</text>
+                                
+                                <!-- Connection lines from actor to use cases -->
+                                <line x1="70" y1="150" x2="220" y2="80" stroke="#000" stroke-width="1.5" />
+                                <line x1="70" y1="150" x2="220" y2="150" stroke="#000" stroke-width="1.5" />
+                                <line x1="70" y1="150" x2="220" y2="220" stroke="#000" stroke-width="1.5" />
+                                <line x1="70" y1="150" x2="220" y2="290" stroke="#000" stroke-width="1.5" />
+                            </svg>
+                            <p class="text-center">図8.1: 図書館管理システムのユースケース図</p>
+                        </div>
+
+                        <h4>エンティティ関連図（ER図）の設計</h4>
+                        <p>図書館管理システムに必要なエンティティ（テーブル）とその関連を設計します。</p>
+                        
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+                                <!-- Books Table -->
+                                <rect x="50" y="50" width="200" height="120" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <line x1="50" y1="80" x2="250" y2="80" stroke="#1976d2" stroke-width="2" />
+                                <text x="150" y="70" text-anchor="middle" font-size="16" font-weight="bold">Books</text>
+                                <text x="60" y="100" font-size="14">book_id (PK)</text>
+                                <text x="60" y="120" font-size="14">title</text>
+                                <text x="60" y="140" font-size="14">author</text>
+                                <text x="60" y="160" font-size="14">isbn</text>
+                                
+                                <!-- Members Table -->
+                                <rect x="350" y="50" width="200" height="120" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <line x1="350" y1="80" x2="550" y2="80" stroke="#1976d2" stroke-width="2" />
+                                <text x="450" y="70" text-anchor="middle" font-size="16" font-weight="bold">Members</text>
+                                <text x="360" y="100" font-size="14">member_id (PK)</text>
+                                <text x="360" y="120" font-size="14">name</text>
+                                <text x="360" y="140" font-size="14">email</text>
+                                <text x="360" y="160" font-size="14">phone</text>
+                                
+                                <!-- Loans Table -->
+                                <rect x="200" y="230" width="200" height="140" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <line x1="200" y1="260" x2="400" y2="260" stroke="#1976d2" stroke-width="2" />
+                                <text x="300" y="250" text-anchor="middle" font-size="16" font-weight="bold">Loans</text>
+                                <text x="210" y="280" font-size="14">loan_id (PK)</text>
+                                <text x="210" y="300" font-size="14">book_id (FK)</text>
+                                <text x="210" y="320" font-size="14">member_id (FK)</text>
+                                <text x="210" y="340" font-size="14">loan_date</text>
+                                <text x="210" y="360" font-size="14">due_date</text>
+                                <text x="210" y="380" font-size="14">return_date</text>
+                                
+                                <!-- Relationships -->
+                                <line x1="150" y1="170" x2="200" y2="300" stroke="#1976d2" stroke-width="2" />
+                                <line x1="450" y1="170" x2="400" y2="320" stroke="#1976d2" stroke-width="2" />
+                                
+                                <!-- Relationship annotations -->
+                                <text x="170" y="230" font-size="12" transform="rotate(-30, 170, 230)">1</text>
+                                <text x="190" y="290" font-size="12" transform="rotate(-30, 190, 290)">N</text>
+                                
+                                <text x="430" y="230" font-size="12" transform="rotate(30, 430, 230)">1</text>
+                                <text x="410" y="290" font-size="12" transform="rotate(30, 410, 290)">N</text>
+                            </svg>
+                            <p class="text-center">図8.2: 図書館管理システムのER図</p>
+                        </div>
+
+                        <h4>データベーステーブルの定義</h4>
+                        <p>ER図に基づいて、具体的なデータベーステーブルのスキーマを定義します。</p>
+                        
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th colspan="4">Books（書籍テーブル）</th>
+                                </tr>
+                                <tr>
+                                    <th>カラム名</th>
+                                    <th>データ型</th>
+                                    <th>制約</th>
+                                    <th>説明</th>
+                                </tr>
+                                <tr>
+                                    <td>book_id</td>
+                                    <td>SERIAL</td>
+                                    <td>PRIMARY KEY</td>
+                                    <td>書籍ID</td>
+                                </tr>
+                                <tr>
+                                    <td>title</td>
+                                    <td>VARCHAR(255)</td>
+                                    <td>NOT NULL</td>
+                                    <td>書籍タイトル</td>
+                                </tr>
+                                <tr>
+                                    <td>author</td>
+                                    <td>VARCHAR(255)</td>
+                                    <td>NOT NULL</td>
+                                    <td>著者名</td>
+                                </tr>
+                                <tr>
+                                    <td>isbn</td>
+                                    <td>VARCHAR(20)</td>
+                                    <td>UNIQUE</td>
+                                    <td>ISBN番号</td>
+                                </tr>
+                                <tr>
+                                    <td>publication_year</td>
+                                    <td>INT</td>
+                                    <td></td>
+                                    <td>出版年</td>
+                                </tr>
+                                <tr>
+                                    <td>publisher</td>
+                                    <td>VARCHAR(100)</td>
+                                    <td></td>
+                                    <td>出版社</td>
+                                </tr>
+                                <tr>
+                                    <td>available</td>
+                                    <td>BOOLEAN</td>
+                                    <td>DEFAULT TRUE</td>
+                                    <td>貸出可能かどうか</td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <div class="table-responsive mt-4">
+                            <table class="table-example">
+                                <tr>
+                                    <th colspan="4">Members（利用者テーブル）</th>
+                                </tr>
+                                <tr>
+                                    <th>カラム名</th>
+                                    <th>データ型</th>
+                                    <th>制約</th>
+                                    <th>説明</th>
+                                </tr>
+                                <tr>
+                                    <td>member_id</td>
+                                    <td>SERIAL</td>
+                                    <td>PRIMARY KEY</td>
+                                    <td>利用者ID</td>
+                                </tr>
+                                <tr>
+                                    <td>name</td>
+                                    <td>VARCHAR(100)</td>
+                                    <td>NOT NULL</td>
+                                    <td>利用者名</td>
+                                </tr>
+                                <tr>
+                                    <td>email</td>
+                                    <td>VARCHAR(100)</td>
+                                    <td>UNIQUE</td>
+                                    <td>メールアドレス</td>
+                                </tr>
+                                <tr>
+                                    <td>phone</td>
+                                    <td>VARCHAR(20)</td>
+                                    <td></td>
+                                    <td>電話番号</td>
+                                </tr>
+                                <tr>
+                                    <td>address</td>
+                                    <td>VARCHAR(255)</td>
+                                    <td></td>
+                                    <td>住所</td>
+                                </tr>
+                                <tr>
+                                    <td>join_date</td>
+                                    <td>DATE</td>
+                                    <td>DEFAULT CURRENT_DATE</td>
+                                    <td>登録日</td>
+                                </tr>
+                                <tr>
+                                    <td>active</td>
+                                    <td>BOOLEAN</td>
+                                    <td>DEFAULT TRUE</td>
+                                    <td>有効な会員かどうか</td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <div class="table-responsive mt-4">
+                            <table class="table-example">
+                                <tr>
+                                    <th colspan="4">Loans（貸出テーブル）</th>
+                                </tr>
+                                <tr>
+                                    <th>カラム名</th>
+                                    <th>データ型</th>
+                                    <th>制約</th>
+                                    <th>説明</th>
+                                </tr>
+                                <tr>
+                                    <td>loan_id</td>
+                                    <td>SERIAL</td>
+                                    <td>PRIMARY KEY</td>
+                                    <td>貸出ID</td>
+                                </tr>
+                                <tr>
+                                    <td>book_id</td>
+                                    <td>INT</td>
+                                    <td>FOREIGN KEY REFERENCES Books(book_id)</td>
+                                    <td>書籍ID</td>
+                                </tr>
+                                <tr>
+                                    <td>member_id</td>
+                                    <td>INT</td>
+                                    <td>FOREIGN KEY REFERENCES Members(member_id)</td>
+                                    <td>利用者ID</td>
+                                </tr>
+                                <tr>
+                                    <td>loan_date</td>
+                                    <td>DATE</td>
+                                    <td>NOT NULL DEFAULT CURRENT_DATE</td>
+                                    <td>貸出日</td>
+                                </tr>
+                                <tr>
+                                    <td>due_date</td>
+                                    <td>DATE</td>
+                                    <td>NOT NULL</td>
+                                    <td>返却予定日</td>
+                                </tr>
+                                <tr>
+                                    <td>return_date</td>
+                                    <td>DATE</td>
+                                    <td></td>
+                                    <td>実際の返却日（NULL=未返却）</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="note">
+                            <h5>データベース設計のポイント</h5>
+                            <ul>
+                                <li><strong>主キーと外部キー</strong>：各テーブルに一意の主キーを設定し、関連するテーブル間で外部キー制約を設定</li>
+                                <li><strong>正規化</strong>：データの重複を避け、一貫性を保つために第3正規形までのデータベース正規化を適用</li>
+                                <li><strong>索引設計</strong>：検索クエリのパフォーマンスを向上させるための適切な索引を設定</li>
+                                <li><strong>データ型の選択</strong>：各カラムに適切なデータ型を選択し、ストレージを最適化</li>
+                            </ul>
+                        </div>
+
+                        <h4>DDLスクリプトの作成</h4>
+                        <p>設計したデータベースを実際に作成するためのDDL（Data Definition Language）スクリプトを作成します。</p>
+
+                        <code>-- 図書館管理システムのデータベーステーブル作成
+
+-- データベース作成（既存の場合は使用する前にドロップ）
+DROP DATABASE IF EXISTS library_management;
+CREATE DATABASE library_management;
+
+-- データベースに接続
+\c library_management
+
+-- Booksテーブル作成
+CREATE TABLE Books (
+    book_id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    author VARCHAR(255) NOT NULL,
+    isbn VARCHAR(20) UNIQUE,
+    publication_year INT,
+    publisher VARCHAR(100),
+    available BOOLEAN DEFAULT TRUE
+);
+
+-- タイトルと著者に複合インデックスを作成
+CREATE INDEX idx_books_title_author ON Books(title, author);
+
+-- Membersテーブル作成
+CREATE TABLE Members (
+    member_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    phone VARCHAR(20),
+    address VARCHAR(255),
+    join_date DATE DEFAULT CURRENT_DATE,
+    active BOOLEAN DEFAULT TRUE
+);
+
+-- 名前検索用のインデックスを作成
+CREATE INDEX idx_members_name ON Members(name);
+
+-- Loansテーブル作成
+CREATE TABLE Loans (
+    loan_id SERIAL PRIMARY KEY,
+    book_id INT REFERENCES Books(book_id) ON DELETE RESTRICT,
+    member_id INT REFERENCES Members(member_id) ON DELETE RESTRICT,
+    loan_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    due_date DATE NOT NULL,
+    return_date DATE,
+    CONSTRAINT unique_active_loan UNIQUE (book_id, return_date)
+);
+
+-- 返却されていない本の検索を効率化するインデックスを作成
+CREATE INDEX idx_loans_book_return ON Loans(book_id) WHERE return_date IS NULL;
+CREATE INDEX idx_loans_member_return ON Loans(member_id) WHERE return_date IS NULL;</code>
+
+                        <div class="exercise">
+                            <h5>練習問題 8.1.1: データベース設計の修正</h5>
+                            <p>上記のデータベース設計を見直し、以下の要件に対応するための修正案を考えてください：</p>
+                            <ol>
+                                <li>書籍にカテゴリ（例：小説、科学、歴史など）を追加する必要があります。これをどのように実装しますか？</li>
+                                <li>一部の書籍は複数の著者が存在する場合があります。このケースに対応するためにデータ構造をどのように変更しますか？</li>
+                                <li>図書館では同じ書籍を複数冊所蔵する場合があります。現在の設計ではどのような問題が発生するでしょうか？解決策を提案してください。</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="project-structure">
+                        <h3 class="section-title">8.2 プロジェクト構造の設定</h3>
+                        <p>アプリケーションの開発を始める前に、適切なプロジェクト構造を設計することが重要です。ここでは、レイヤー化アーキテクチャに基づいたプロジェクト構造を設定します。</p>
+
+                        <h4>レイヤー化アーキテクチャの概要</h4>
+                        <p>図書館管理システムでは、以下の3つの主要なレイヤーを持つアーキテクチャを採用します：</p>
+                        
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 300" width="500" height="300">
+                                <!-- UI Layer -->
+                                <rect x="50" y="50" width="400" height="60" fill="#bbdefb" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="250" y="85" text-anchor="middle" font-size="16">プレゼンテーション層 (UI Layer)</text>
+                                
+                                <!-- Business Logic Layer -->
+                                <rect x="50" y="130" width="400" height="60" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5" />
+                                <text x="250" y="165" text-anchor="middle" font-size="16">ビジネスロジック層 (Service Layer)</text>
+                                
+                                <!-- Data Access Layer -->
+                                <rect x="50" y="210" width="400" height="60" fill="#ffecb3" stroke="#ffa000" stroke-width="2" rx="5" />
+                                <text x="250" y="245" text-anchor="middle" font-size="16">データアクセス層 (DAO Layer)</text>
+                                
+                                <!-- Arrows -->
+                                <line x1="250" y1="110" x2="250" y2="130" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                <line x1="250" y1="190" x2="250" y2="210" stroke="#000" stroke-width="2" marker-end="url(#arrow)" />
+                                
+                                <defs>
+                                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                        <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+                                    </marker>
+                                </defs>
+                            </svg>
+                            <p class="text-center">図8.3: 図書館管理システムのレイヤー化アーキテクチャ</p>
+                        </div>
+
+                        <ul>
+                            <li><strong>プレゼンテーション層（UI Layer）</strong>：ユーザーとのインタラクションを担当。今回はコンソールインターフェースとして実装</li>
+                            <li><strong>ビジネスロジック層（Service Layer）</strong>：アプリケーションのビジネスロジックとトランザクション管理を担当</li>
+                            <li><strong>データアクセス層（DAO Layer）</strong>：データベースとのやり取りを担当し、JDBCを使用してデータの読み書きを実行</li>
+                        </ul>
+
+                        <h4>パッケージ構造</h4>
+                        <p>レイヤー化アーキテクチャに基づいて、以下のようなパッケージ構造を設計します：</p>
+
+                        <code>library-management/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   ├── com/
+│   │   │   │   ├── example/
+│   │   │   │   │   ├── library/
+│   │   │   │   │   │   ├── Main.java                      # エントリーポイント
+│   │   │   │   │   │   ├── model/                         # モデルクラス
+│   │   │   │   │   │   │   ├── Book.java
+│   │   │   │   │   │   │   ├── Member.java
+│   │   │   │   │   │   │   └── Loan.java
+│   │   │   │   │   │   ├── dao/                           # データアクセスオブジェクト
+│   │   │   │   │   │   │   ├── BookDAO.java
+│   │   │   │   │   │   │   ├── MemberDAO.java
+│   │   │   │   │   │   │   ├── LoanDAO.java
+│   │   │   │   │   │   │   └── impl/                      # DAOの実装クラス
+│   │   │   │   │   │   │       ├── BookDAOImpl.java
+│   │   │   │   │   │   │       ├── MemberDAOImpl.java
+│   │   │   │   │   │   │       └── LoanDAOImpl.java
+│   │   │   │   │   │   ├── service/                       # サービス（ビジネスロジック）
+│   │   │   │   │   │   │   ├── BookService.java
+│   │   │   │   │   │   │   ├── MemberService.java
+│   │   │   │   │   │   │   ├── LoanService.java
+│   │   │   │   │   │   │   └── impl/                      # サービスの実装クラス
+│   │   │   │   │   │   │       ├── BookServiceImpl.java
+│   │   │   │   │   │   │       ├── MemberServiceImpl.java
+│   │   │   │   │   │   │       └── LoanServiceImpl.java
+│   │   │   │   │   │   ├── ui/                            # ユーザーインターフェース
+│   │   │   │   │   │   │   ├── LibraryUI.java
+│   │   │   │   │   │   │   ├── BookMenu.java
+│   │   │   │   │   │   │   ├── MemberMenu.java
+│   │   │   │   │   │   │   └── LoanMenu.java
+│   │   │   │   │   │   └── util/                          # ユーティリティクラス
+│   │   │   │   │   │       ├── DatabaseConnection.java    # DB接続管理
+│   │   │   │   │   │       └── DateUtils.java             # 日付操作ユーティリティ
+│   │   ├── resources/
+│   │   │   └── db.properties                              # データベース設定ファイル
+│   ├── test/
+│   │   └── java/
+│   │       └── com/
+│   │           └── example/
+│   │               └── library/
+│   │                   ├── dao/                           # DAOのテスト
+│   │                   └── service/                       # サービスのテスト
+├── pom.xml                                                # Mavenプロジェクト設定（またはbuild.gradle）
+├── sql/
+│   ├── create_tables.sql                                  # テーブル作成スクリプト
+│   └── sample_data.sql                                    # サンプルデータ挿入スクリプト
+└── README.md                                              # プロジェクト説明</code>
+
+                        <h4>モデルクラスの設計</h4>
+                        <p>データベースのテーブルに対応するモデルクラスを設計します。例として、Book（書籍）クラスを実装してみましょう。</p>
+
+                        <code>package com.example.library.model;
+
+public class Book {
+    private int bookId;
+    private String title;
+    private String author;
+    private String isbn;
+    private Integer publicationYear;
+    private String publisher;
+    private boolean available;
+    
+    // コンストラクタ
+    public Book() {
+    }
+    
+    public Book(int bookId, String title, String author, String isbn, 
+                Integer publicationYear, String publisher, boolean available) {
+        this.bookId = bookId;
+        this.title = title;
+        this.author = author;
+        this.isbn = isbn;
+        this.publicationYear = publicationYear;
+        this.publisher = publisher;
+        this.available = available;
+    }
+    
+    // IDなしコンストラクタ（新規登録用）
+    public Book(String title, String author, String isbn, 
+                Integer publicationYear, String publisher, boolean available) {
+        this.title = title;
+        this.author = author;
+        this.isbn = isbn;
+        this.publicationYear = publicationYear;
+        this.publisher = publisher;
+        this.available = available;
+    }
+    
+    // Getter/Setterメソッド
+    public int getBookId() {
+        return bookId;
+    }
+    
+    public void setBookId(int bookId) {
+        this.bookId = bookId;
+    }
+    
+    public String getTitle() {
+        return title;
+    }
+    
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    
+    public String getAuthor() {
+        return author;
+    }
+    
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+    
+    public String getIsbn() {
+        return isbn;
+    }
+    
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+    
+    public Integer getPublicationYear() {
+        return publicationYear;
+    }
+    
+    public void setPublicationYear(Integer publicationYear) {
+        this.publicationYear = publicationYear;
+    }
+    
+    public String getPublisher() {
+        return publisher;
+    }
+    
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+    
+    public boolean isAvailable() {
+        return available;
+    }
+    
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
+    
+    @Override
+    public String toString() {
+        return "Book [ID: " + bookId + ", Title: " + title + ", Author: " + author + 
+               ", ISBN: " + isbn + ", Year: " + publicationYear + 
+               ", Publisher: " + publisher + ", Available: " + available + "]";
+    }
+}</code>
+
+                        <div class="note">
+                            <h5>モデルクラス設計のポイント</h5>
+                            <ul>
+                                <li><strong>カプセル化</strong>：すべてのフィールドをprivateにし、getterとsetterを通じてアクセスできるようにする</li>
+                                <li><strong>コンストラクタ</strong>：デフォルトコンストラクタ、全フィールド用コンストラクタ、新規作成用コンストラクタなど複数用意する</li>
+                                <li><strong>toString()</strong>：デバッグやログ出力用にtoStringメソッドをオーバーライドする</li>
+                                <li><strong>データ型の選択</strong>：nullableな項目はプリミティブ型ではなくラッパークラスを使用する</li>
+                            </ul>
+                        </div>
+                        
+                        <h4>データベース接続設定</h4>
+                        <p>データベース接続情報は、ハードコードせずに設定ファイルで管理します。src/main/resources/db.propertiesファイルを作成します。</p>
+                        
+                        <code># データベース接続設定
+db.url=jdbc:postgresql://localhost:5432/library_management
+db.user=postgres
+db.password=password
+db.driver=org.postgresql.Driver</code>
+
+                        <p>そして、この設定ファイルを読み込むためのDatabaseConnectionクラスを実装します。</p>
+
+                        <code>package com.example.library.util;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
+
+public class DatabaseConnection {
+    private static final String PROPERTIES_FILE = "db.properties";
+    private static Properties properties;
+    
+    static {
+        try {
+            loadProperties();
+            // JDBCドライバの登録
+            Class.forName(properties.getProperty("db.driver"));
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("JDBCドライバの登録に失敗しました", e);
+        } catch (IOException e) {
+            throw new RuntimeException("設定ファイルの読み込みに失敗しました", e);
+        }
+    }
+    
+    // プロパティファイルの読み込み
+    private static void loadProperties() throws IOException {
+        properties = new Properties();
+        try (InputStream input = DatabaseConnection.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE)) {
+            if (input == null) {
+                throw new IOException(PROPERTIES_FILE + "ファイルが見つかりません");
+            }
+            properties.load(input);
+        }
+    }
+    
+    // データベース接続を取得するメソッド
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(
+            properties.getProperty("db.url"),
+            properties.getProperty("db.user"),
+            properties.getProperty("db.password")
+        );
+    }
+}</code>
+
+                        <div class="exercise">
+                            <h5>練習問題 8.2.1: Member（利用者）モデルクラスの実装</h5>
+                            <p>データベーステーブル定義に基づいて、Member（利用者）クラスを実装してください。以下の要件を満たす必要があります：</p>
+                            <ol>
+                                <li>Membersテーブルの全てのカラムに対応するフィールドを持つこと</li>
+                                <li>適切なコンストラクタ（デフォルト、全フィールド、ID無し）を実装すること</li>
+                                <li>すべてのフィールドに対するgetterとsetterメソッドを実装すること</li>
+                                <li>toStringメソッドをオーバーライドすること</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="database-tables">
+                        <h3 class="section-title">8.3 データベーステーブルとER図の作成</h3>
+                        <p>8.1節で設計したデータベーススキーマを実際に作成します。PostgreSQLを使用して、テーブル作成とサンプルデータの挿入を行います。</p>
+
+                        <h4>データベースの作成</h4>
+                        <p>8.1節で作成したDDLスクリプトを実行して、データベースとテーブルを作成します。PostgreSQLコマンドラインツール（psql）またはpgAdminなどのGUIツールを使用できます。</p>
+
+                        <code>-- PostgreSQLコマンドラインでの実行例
+psql -U postgres -f sql/create_tables.sql</code>
+
+                        <h4>サンプルデータの挿入</h4>
+                        <p>テーブルにサンプルデータを挿入するためのスクリプトを作成し、実行します。</p>
+
+                        <code>-- sample_data.sql：サンプルデータ挿入スクリプト
+
+-- 書籍データの挿入
+INSERT INTO Books (title, author, isbn, publication_year, publisher, available)
+VALUES
+    ('PostgreSQL実践入門', '著者太郎', '978-4-xxxx-xxxx-1', 2023, 'DBテック出版', true),
+    ('Java開発マスターガイド', '開発次郎', '978-4-xxxx-xxxx-2', 2022, 'プログラミング社', true),
+    ('データベース設計の基礎と実践', 'DB三郎', '978-4-xxxx-xxxx-3', 2021, 'システム書房', true),
+    ('Webアプリケーション開発入門', 'ウェブ花子', '978-4-xxxx-xxxx-4', 2023, 'プログラミング社', true),
+    ('JDBCプログラミング完全ガイド', 'JDBC五郎', '978-4-xxxx-xxxx-5', 2020, 'DBテック出版', true);
+
+-- 利用者データの挿入
+INSERT INTO Members (name, email, phone, address, join_date, active)
+VALUES
+    ('山田太郎', 'yamada@example.com', '090-1234-5678', '東京都新宿区1-1-1', '2023-01-15', true),
+    ('佐藤花子', 'sato@example.com', '080-8765-4321', '大阪府大阪市中央区2-2-2', '2023-02-20', true),
+    ('鈴木一郎', 'suzuki@example.com', '070-2222-3333', '福岡県福岡市博多区3-3-3', '2023-03-10', true),
+    ('田中慎太郎', 'tanaka@example.com', '090-5555-6666', '北海道札幌市中央区4-4-4', '2023-04-05', true);
+
+-- 貸出データの挿入（一部の本は既に貸し出されている状態）
+INSERT INTO Loans (book_id, member_id, loan_date, due_date, return_date)
+VALUES
+    (1, 1, '2023-05-01', '2023-05-15', '2023-05-10'),  -- 既に返却済み
+    (2, 2, '2023-05-10', '2023-05-24', NULL),          -- まだ返却されていない
+    (3, 3, '2023-05-05', '2023-05-19', '2023-05-18'),  -- 返却済み
+    (4, 1, '2023-05-20', '2023-06-03', NULL);          -- まだ返却されていない
+
+-- 貸出中の本のavailableフラグを更新
+UPDATE Books SET available = false WHERE book_id IN (2, 4);</code>
+
+                        <code>-- PostgreSQLコマンドラインでの実行例
+psql -U postgres -d library_management -f sql/sample_data.sql</code>
+
+                        <h4>ER図の詳細化</h4>
+                        <p>データベース作成後、さらに詳細なER図を作成することで、テーブル間の関連性と制約を視覚化できます。</p>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+                                <!-- 詳細なER図を描画するSVGコード -->
+                                <!-- Books Table -->
+                                <rect x="50" y="50" width="200" height="160" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <line x1="50" y1="80" x2="250" y2="80" stroke="#1976d2" stroke-width="2" />
+                                <text x="150" y="70" text-anchor="middle" font-size="16" font-weight="bold">Books</text>
+                                <text x="60" y="100" font-size="14">book_id (PK)</text>
+                                <text x="60" y="120" font-size="14">title</text>
+                                <text x="60" y="140" font-size="14">author</text>
+                                <text x="60" y="160" font-size="14">isbn</text>
+                                <text x="60" y="180" font-size="14">publication_year</text>
+                                <text x="60" y="200" font-size="14">publisher</text>
+                                <text x="60" y="220" font-size="14">available</text>
+                                
+                                <!-- Members Table -->
+                                <rect x="350" y="50" width="200" height="160" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <line x1="350" y1="80" x2="550" y2="80" stroke="#1976d2" stroke-width="2" />
+                                <text x="450" y="70" text-anchor="middle" font-size="16" font-weight="bold">Members</text>
+                                <text x="360" y="100" font-size="14">member_id (PK)</text>
+                                <text x="360" y="120" font-size="14">name</text>
+                                <text x="360" y="140" font-size="14">email</text>
+                                <text x="360" y="160" font-size="14">phone</text>
+                                <text x="360" y="180" font-size="14">address</text>
+                                <text x="360" y="200" font-size="14">join_date</text>
+                                <text x="360" y="220" font-size="14">active</text>
+                                
+                                <!-- Loans Table -->
+                                <rect x="200" y="250" width="200" height="140" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <line x1="200" y1="280" x2="400" y2="280" stroke="#1976d2" stroke-width="2" />
+                                <text x="300" y="270" text-anchor="middle" font-size="16" font-weight="bold">Loans</text>
+                                <text x="210" y="300" font-size="14">loan_id (PK)</text>
+                                <text x="210" y="320" font-size="14">book_id (FK)</text>
+                                <text x="210" y="340" font-size="14">member_id (FK)</text>
+                                <text x="210" y="360" font-size="14">loan_date</text>
+                                <text x="210" y="380" font-size="14">due_date</text>
+                                <text x="210" y="400" font-size="14">return_date</text>
+                                
+                                <!-- Relationships with cardinality -->
+                                <line x1="150" y1="210" x2="250" y2="320" stroke="#1976d2" stroke-width="2" />
+                                <line x1="450" y1="210" x2="350" y2="340" stroke="#1976d2" stroke-width="2" />
+                                
+                                <!-- Add diamonds for relationships -->
+                                <polygon points="190,260 210,280 190,300 170,280" fill="#ffe0b2" stroke="#ff9800" stroke-width="1.5" />
+                                <text x="190" y="285" text-anchor="middle" font-size="12">貸出</text>
+                                
+                                <polygon points="410,260 430,280 410,300 390,280" fill="#ffe0b2" stroke="#ff9800" stroke-width="1.5" />
+                                <text x="410" y="285" text-anchor="middle" font-size="12">借用</text>
+                                
+                                <!-- Cardinality markers -->
+                                <text x="160" y="230" font-size="12">1</text>
+                                <text x="230" y="310" font-size="12">N</text>
+                                
+                                <text x="440" y="230" font-size="12">1</text>
+                                <text x="370" y="330" font-size="12">N</text>
+                            </svg>
+                            <p class="text-center">図8.4: 図書館管理システムの詳細ER図</p>
+                        </div>
+
+                        <div class="note">
+                            <h5>データベース作成とER図のポイント</h5>
+                            <ul>
+                                <li><strong>スクリプト化</strong>：データベース作成とサンプルデータ挿入はスクリプトとして管理し、再現性を確保する</li>
+                                <li><strong>適切な制約</strong>：外部キー制約や一意性制約を適切に設定し、データの整合性を確保する</li>
+                                <li><strong>索引の設定</strong>：頻繁に検索する条件に対して適切な索引を設定し、パフォーマンスを向上させる</li>
+                                <li><strong>ER図のドキュメント化</strong>：データベース構造を視覚的に理解し、チーム内で共有するためにER図を作成・管理する</li>
+                            </ul>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>練習問題 8.3.1: データベース拡張</h5>
+                            <p>現在の図書館管理システムのデータベースに「予約」機能を追加するための拡張を行ってください。以下の要件を考慮してください：</p>
+                            <ol>
+                                <li>利用者は現在貸出中の書籍に対して予約を入れることができる</li>
+                                <li>予約は先着順で処理され、書籍が返却されたら予約順に貸出が可能になる</li>
+                                <li>一人の利用者が同じ書籍に対して複数の予約を入れることはできない</li>
+                            </ol>
+                            <p>必要なテーブル定義と、既存テーブルへの変更点を示してください。また、拡張後のER図も描いてください。</p>
+                        </div>
+                    </section>
+
+                    <section id="data-access-layer">
+                        <h3 class="section-title">8.4 データアクセス層の実装</h3>
+                        <p>データアクセス層（Data Access Layer, DAL）はアプリケーションとデータベースの間の橋渡しとなる重要な部分です。DAOパターンを用いて、データベース操作を抽象化し、再利用可能なコンポーネントとして実装します。</p>
+
+                        <h4>DAOインターフェースの設計</h4>
+                        <p>まず、各エンティティに対応するDAOインターフェースを定義します。BookDAO（書籍データアクセスオブジェクト）の例を示します。</p>
+
+                        <code>package com.example.library.dao;
+
+import com.example.library.model.Book;
+import java.util.List;
+
+public interface BookDAO {
+    // 書籍をIDで検索
+    Book findById(int id);
+    
+    // すべての書籍を取得
+    List<Book> findAll();
+    
+    // タイトルまたは著者名で書籍を検索
+    List<Book> findByTitleOrAuthor(String searchTerm);
+    
+    // 利用可能な（貸出中でない）書籍のみを取得
+    List<Book> findAvailable();
+    
+    // 新しい書籍を追加（戻り値は追加された書籍のID）
+    int save(Book book);
+    
+    // 既存の書籍情報を更新
+    boolean update(Book book);
+    
+    // 書籍を削除
+    boolean delete(int id);
+    
+    // ISBNで書籍を検索
+    Book findByIsbn(String isbn);
+}</code>
+
+                        <h4>DAOの実装クラス</h4>
+                        <p>次に、インターフェースに対応する実装クラスを作成します。JDBCを使用してデータベース操作を行います。</p>
+
+                        <code>package com.example.library.dao.impl;
+
+import com.example.library.dao.BookDAO;
+import com.example.library.model.Book;
+import com.example.library.util.DatabaseConnection;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class BookDAOImpl implements BookDAO {
+
+    @Override
+    public Book findById(int id) {
+        String sql = "SELECT * FROM Books WHERE book_id = ?";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, id);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return extractBookFromResultSet(rs);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("書籍の検索中にエラーが発生しました: " + e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public List<Book> findAll() {
+        List<Book> books = new ArrayList<>();
+        String sql = "SELECT * FROM Books ORDER BY title";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            
+            while (rs.next()) {
+                books.add(extractBookFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("すべての書籍の取得中にエラーが発生しました: " + e.getMessage());
+        }
+        return books;
+    }
+
+    @Override
+    public List<Book> findByTitleOrAuthor(String searchTerm) {
+        List<Book> books = new ArrayList<>();
+        String sql = "SELECT * FROM Books WHERE LOWER(title) LIKE ? OR LOWER(author) LIKE ? ORDER BY title";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            String searchPattern = "%" + searchTerm.toLowerCase() + "%";
+            stmt.setString(1, searchPattern);
+            stmt.setString(2, searchPattern);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    books.add(extractBookFromResultSet(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("書籍の検索中にエラーが発生しました: " + e.getMessage());
+        }
+        return books;
+    }
+
+    @Override
+    public List<Book> findAvailable() {
+        List<Book> books = new ArrayList<>();
+        String sql = "SELECT * FROM Books WHERE available = TRUE ORDER BY title";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            
+            while (rs.next()) {
+                books.add(extractBookFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("利用可能な書籍の取得中にエラーが発生しました: " + e.getMessage());
+        }
+        return books;
+    }
+
+    @Override
+    public int save(Book book) {
+        String sql = "INSERT INTO Books (title, author, isbn, publication_year, publisher, available) " +
+                     "VALUES (?, ?, ?, ?, ?, ?) RETURNING book_id";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, book.getTitle());
+            stmt.setString(2, book.getAuthor());
+            stmt.setString(3, book.getIsbn());
+            
+            if (book.getPublicationYear() != null) {
+                stmt.setInt(4, book.getPublicationYear());
+            } else {
+                stmt.setNull(4, Types.INTEGER);
+            }
+            
+            stmt.setString(5, book.getPublisher());
+            stmt.setBoolean(6, book.isAvailable());
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1); // 生成されたIDを返す
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("書籍の登録中にエラーが発生しました: " + e.getMessage());
+        }
+        return -1; // エラーの場合
+    }
+
+    @Override
+    public boolean update(Book book) {
+        String sql = "UPDATE Books SET title = ?, author = ?, isbn = ?, " +
+                     "publication_year = ?, publisher = ?, available = ? " +
+                     "WHERE book_id = ?";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, book.getTitle());
+            stmt.setString(2, book.getAuthor());
+            stmt.setString(3, book.getIsbn());
+            
+            if (book.getPublicationYear() != null) {
+                stmt.setInt(4, book.getPublicationYear());
+            } else {
+                stmt.setNull(4, Types.INTEGER);
+            }
+            
+            stmt.setString(5, book.getPublisher());
+            stmt.setBoolean(6, book.isAvailable());
+            stmt.setInt(7, book.getBookId());
+            
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("書籍の更新中にエラーが発生しました: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean delete(int id) {
+        // 外部キー制約があるため、貸出テーブルに関連レコードがないか確認する必要がある
+        String checkSql = "SELECT COUNT(*) FROM Loans WHERE book_id = ?";
+        String deleteSql = "DELETE FROM Books WHERE book_id = ?";
+        
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            // トランザクション開始
+            conn.setAutoCommit(false);
+            
+            // 関連レコードの確認
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+                checkStmt.setInt(1, id);
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (rs.next() && rs.getInt(1) > 0) {
+                        System.err.println("この書籍には貸出履歴があるため削除できません");
+                        conn.rollback();
+                        return false;
+                    }
+                }
+            }
+            
+            // 書籍の削除
+            try (PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
+                deleteStmt.setInt(1, id);
+                int rowsAffected = deleteStmt.executeUpdate();
+                
+                if (rowsAffected > 0) {
+                    conn.commit();
+                    return true;
+                } else {
+                    conn.rollback();
+                    return false;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("書籍の削除中にエラーが発生しました: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public Book findByIsbn(String isbn) {
+        String sql = "SELECT * FROM Books WHERE isbn = ?";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, isbn);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return extractBookFromResultSet(rs);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("ISBNによる書籍の検索中にエラーが発生しました: " + e.getMessage());
+        }
+        return null;
+    }
+    
+    // ResultSetからBookオブジェクトを抽出するヘルパーメソッド
+    private Book extractBookFromResultSet(ResultSet rs) throws SQLException {
+        Book book = new Book();
+        book.setBookId(rs.getInt("book_id"));
+        book.setTitle(rs.getString("title"));
+        book.setAuthor(rs.getString("author"));
+        book.setIsbn(rs.getString("isbn"));
+        
+        // publicationYearはNULL許容なので、getObjectを使用
+        Object pubYear = rs.getObject("publication_year");
+        if (pubYear != null) {
+            book.setPublicationYear((Integer) pubYear);
+        }
+        
+        book.setPublisher(rs.getString("publisher"));
+        book.setAvailable(rs.getBoolean("available"));
+        return book;
+    }
+}</code>
+
+                        <div class="note">
+                            <h5>DAOパターンのポイント</h5>
+                            <ul>
+                                <li><strong>インターフェースと実装の分離</strong>：DAOインターフェースと実装クラスを分けることで、実装の詳細を隠蔽</li>
+                                <li><strong>例外処理</strong>：SQLExceptionなどの例外を適切に処理し、上位レイヤーには意味のあるメッセージを返す</li>
+                                <li><strong>リソース管理</strong>：try-with-resourcesを使用して、Connectionなどのリソースを確実に閉じる</li>
+                                <li><strong>PreparedStatement</strong>：SQLインジェクション攻撃を防ぐためにPreparedStatementを使用</li>
+                                <li><strong>トランザクション管理</strong>：必要に応じてトランザクションを開始し、commit/rollbackを適切に行う</li>
+                                <li><strong>ヘルパーメソッド</strong>：ResultSetからモデルオブジェクトを作成するロジックをヘルパーメソッドに分離して再利用</li>
+                            </ul>
+                        </div>
+
+                        <h4>DAOファクトリーの実装</h4>
+                        <p>DAOの生成を管理するファクトリークラスを実装すると、DAOの取得と依存性注入が容易になります。</p>
+
+                        <code>package com.example.library.dao;
+
+import com.example.library.dao.impl.BookDAOImpl;
+import com.example.library.dao.impl.MemberDAOImpl;
+import com.example.library.dao.impl.LoanDAOImpl;
+
+public class DAOFactory {
+    // シングルトンインスタンス
+    private static DAOFactory instance;
+    
+    // 各DAOの単一インスタンス
+    private final BookDAO bookDAO;
+    private final MemberDAO memberDAO;
+    private final LoanDAO loanDAO;
+    
+    // プライベートコンストラクタ（シングルトン）
+    private DAOFactory() {
+        bookDAO = new BookDAOImpl();
+        memberDAO = new MemberDAOImpl();
+        loanDAO = new LoanDAOImpl();
+    }
+    
+    // シングルトンインスタンスの取得
+    public static synchronized DAOFactory getInstance() {
+        if (instance == null) {
+            instance = new DAOFactory();
+        }
+        return instance;
+    }
+    
+    // 各DAOの取得メソッド
+    public BookDAO getBookDAO() {
+        return bookDAO;
+    }
+    
+    public MemberDAO getMemberDAO() {
+        return memberDAO;
+    }
+    
+    public LoanDAO getLoanDAO() {
+        return loanDAO;
+    }
+}</code>
+
+                        <div class="exercise">
+                            <h5>練習問題 8.4.1: LoanDAOインターフェースと実装クラスの作成</h5>
+                            <p>貸出管理（Loan）のためのDAOインターフェースとその実装クラスを作成してください。以下の機能を実装する必要があります：</p>
+                            <ol>
+                                <li>貸出IDによる貸出情報の検索</li>
+                                <li>すべての貸出情報の取得</li>
+                                <li>特定の利用者の貸出履歴の取得</li>
+                                <li>特定の書籍の貸出履歴の取得</li>
+                                <li>返却されていない（現在貸出中の）貸出情報の取得</li>
+                                <li>新しい貸出情報の登録</li>
+                                <li>貸出情報の更新（特に返却処理）</li>
+                                <li>延滞している貸出の取得</li>
+                            </ol>
+                            <p>BookDAOImplと同様の例外処理とリソース管理を行い、トランザクション管理も適切に実装してください。</p>
+                        </div>
+                    </section>
+
+                    <section id="business-logic">
+                        <h3 class="section-title">8.5 ビジネスロジック層の構築</h3>
+                        <p>ビジネスロジック層（サービス層）は、アプリケーションのビジネスルールを実装し、データアクセス層とプレゼンテーション層の橋渡しをします。複数のDAOを組み合わせた処理やトランザクション管理もこの層で行います。</p>
+
+                        <h4>サービスインターフェースの設計</h4>
+                        <p>まず、各機能領域に対応するサービスインターフェースを定義します。BookService（書籍サービス）の例を示します。</p>
+
+                        <code>package com.example.library.service;
+
+import com.example.library.model.Book;
+import java.util.List;
+
+public interface BookService {
+    // 書籍をIDで検索
+    Book getBookById(int id);
+    
+    // すべての書籍を取得
+    List<Book> getAllBooks();
+    
+    // タイトルまたは著者名で書籍を検索
+    List<Book> searchBooks(String searchTerm);
+    
+    // 貸出可能な書籍のみを取得
+    List<Book> getAvailableBooks();
+    
+    // 新しい書籍を追加
+    int addBook(Book book);
+    
+    // 書籍情報を更新
+    boolean updateBook(Book book);
+    
+    // 書籍を削除
+    boolean deleteBook(int id);
+    
+    // ISBNで書籍を検索
+    Book findBookByIsbn(String isbn);
+    
+    // 書籍の貸出状態を更新（trueならば貸出可能、falseならば貸出中）
+    boolean updateBookAvailability(int bookId, boolean available);
+}</code>
+
+                        <h4>サービスの実装クラス</h4>
+                        <p>次に、サービスインターフェースの実装クラスを作成します。データアクセス層のDAOを使用してビジネスロジックを実装します。</p>
+
+                        <code>package com.example.library.service.impl;
+
+import com.example.library.dao.BookDAO;
+import com.example.library.dao.DAOFactory;
+import com.example.library.model.Book;
+import com.example.library.service.BookService;
+
+import java.util.List;
+
+public class BookServiceImpl implements BookService {
+    // DAOの取得
+    private final BookDAO bookDAO;
+    
+    public BookServiceImpl() {
+        // DAOファクトリーからBookDAOを取得
+        this.bookDAO = DAOFactory.getInstance().getBookDAO();
+    }
+    
+    @Override
+    public Book getBookById(int id) {
+        return bookDAO.findById(id);
+    }
+    
+    @Override
+    public List<Book> getAllBooks() {
+        return bookDAO.findAll();
+    }
+    
+    @Override
+    public List<Book> searchBooks(String searchTerm) {
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return getAllBooks();
+        }
+        return bookDAO.findByTitleOrAuthor(searchTerm.trim());
+    }
+    
+    @Override
+    public List<Book> getAvailableBooks() {
+        return bookDAO.findAvailable();
+    }
+    
+    @Override
+    public int addBook(Book book) {
+        // 入力検証
+        if (book == null || book.getTitle() == null || book.getTitle().trim().isEmpty() ||
+            book.getAuthor() == null || book.getAuthor().trim().isEmpty()) {
+            throw new IllegalArgumentException("書籍のタイトルと著者は必須です");
+        }
+        
+        // ISBN重複チェック（ISBNがある場合）
+        if (book.getIsbn() != null && !book.getIsbn().trim().isEmpty()) {
+            Book existingBook = bookDAO.findByIsbn(book.getIsbn().trim());
+            if (existingBook != null) {
+                throw new IllegalArgumentException("このISBNの書籍は既に登録されています: " + book.getIsbn());
+            }
+        }
+        
+        return bookDAO.save(book);
+    }
+    
+    @Override
+    public boolean updateBook(Book book) {
+        // 入力検証
+        if (book == null || book.getBookId() <= 0 || 
+            book.getTitle() == null || book.getTitle().trim().isEmpty() ||
+            book.getAuthor() == null || book.getAuthor().trim().isEmpty()) {
+            throw new IllegalArgumentException("書籍ID、タイトル、著者は必須です");
+        }
+        
+        // ISBN重複チェック（ISBNが変更される場合）
+        if (book.getIsbn() != null && !book.getIsbn().trim().isEmpty()) {
+            Book existingBook = bookDAO.findByIsbn(book.getIsbn().trim());
+            if (existingBook != null && existingBook.getBookId() != book.getBookId()) {
+                throw new IllegalArgumentException("このISBNの書籍は既に登録されています: " + book.getIsbn());
+            }
+        }
+        
+        return bookDAO.update(book);
+    }
+    
+    @Override
+    public boolean deleteBook(int id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("無効な書籍IDです");
+        }
+        return bookDAO.delete(id);
+    }
+    
+    @Override
+    public Book findBookByIsbn(String isbn) {
+        if (isbn == null || isbn.trim().isEmpty()) {
+            throw new IllegalArgumentException("ISBNは必須です");
+        }
+        return bookDAO.findByIsbn(isbn.trim());
+    }
+    
+    @Override
+    public boolean updateBookAvailability(int bookId, boolean available) {
+        Book book = bookDAO.findById(bookId);
+        if (book == null) {
+            throw new IllegalArgumentException("指定された書籍が見つかりません: " + bookId);
+        }
+        
+        book.setAvailable(available);
+        return bookDAO.update(book);
+    }
+}</code>
+
+                        <h4>トランザクション管理を含むサービス実装</h4>
+                        <p>複数のDAO操作を含むビジネスロジックでは、トランザクション管理が重要です。貸出処理を例に、トランザクション管理を含むサービス実装を示します。</p>
+
+                        <code>package com.example.library.service.impl;
+
+import com.example.library.dao.DAOFactory;
+import com.example.library.dao.BookDAO;
+import com.example.library.dao.LoanDAO;
+import com.example.library.dao.MemberDAO;
+import com.example.library.model.Book;
+import com.example.library.model.Loan;
+import com.example.library.model.Member;
+import com.example.library.service.LoanService;
+import com.example.library.util.DatabaseConnection;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.List;
+
+public class LoanServiceImpl implements LoanService {
+    private final LoanDAO loanDAO;
+    private final BookDAO bookDAO;
+    private final MemberDAO memberDAO;
+    
+    public LoanServiceImpl() {
+        DAOFactory factory = DAOFactory.getInstance();
+        this.loanDAO = factory.getLoanDAO();
+        this.bookDAO = factory.getBookDAO();
+        this.memberDAO = factory.getMemberDAO();
+    }
+    
+    @Override
+    public Loan getLoanById(int id) {
+        return loanDAO.findById(id);
+    }
+    
+    @Override
+    public List<Loan> getAllLoans() {
+        return loanDAO.findAll();
+    }
+    
+    @Override
+    public List<Loan> getCurrentLoans() {
+        return loanDAO.findCurrentLoans();
+    }
+    
+    @Override
+    public List<Loan> getOverdueLoans() {
+        return loanDAO.findOverdueLoans();
+    }
+    
+    @Override
+    public List<Loan> getLoansByMember(int memberId) {
+        return loanDAO.findByMemberId(memberId);
+    }
+    
+    @Override
+    public List<Loan> getCurrentLoansByMember(int memberId) {
+        return loanDAO.findCurrentLoansByMemberId(memberId);
+    }
+    
+    @Override
+    public int checkoutBook(int bookId, int memberId, LocalDate dueDate) {
+        // 入力検証
+        if (bookId <= 0 || memberId <= 0 || dueDate == null) {
+            throw new IllegalArgumentException("無効なパラメータです");
+        }
+        
+        if (dueDate.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("返却予定日は現在の日付より後である必要があります");
+        }
+        
+        Connection conn = null;
+        try {
+            // 手動でコネクションを取得してトランザクション管理
+            conn = DatabaseConnection.getConnection();
+            conn.setAutoCommit(false);
+            
+            // 書籍の存在と利用可能状態の確認
+            Book book = bookDAO.findById(bookId, conn);
+            if (book == null) {
+                throw new IllegalArgumentException("指定された書籍が見つかりません: " + bookId);
+            }
+            
+            if (!book.isAvailable()) {
+                throw new IllegalArgumentException("この書籍は現在貸出中です: " + bookId);
+            }
+            
+            // 利用者の存在と有効状態の確認
+            Member member = memberDAO.findById(memberId, conn);
+            if (member == null) {
+                throw new IllegalArgumentException("指定された利用者が見つかりません: " + memberId);
+            }
+            
+            if (!member.isActive()) {
+                throw new IllegalArgumentException("この利用者は現在無効状態です: " + memberId);
+            }
+            
+            // 貸出情報の作成
+            Loan loan = new Loan();
+            loan.setBookId(bookId);
+            loan.setMemberId(memberId);
+            loan.setLoanDate(LocalDate.now());
+            loan.setDueDate(dueDate);
+            
+            // 貸出情報の保存
+            int loanId = loanDAO.save(loan, conn);
+            
+            // 書籍の利用可能状態を更新
+            book.setAvailable(false);
+            bookDAO.update(book, conn);
+            
+            // トランザクションのコミット
+            conn.commit();
+            return loanId;
+            
+        } catch (SQLException e) {
+            // トランザクションのロールバック
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    System.err.println("トランザクションのロールバック中にエラーが発生しました: " + ex.getMessage());
+                }
+            }
+            throw new RuntimeException("貸出処理中にエラーが発生しました: " + e.getMessage(), e);
+        } finally {
+            // コネクションのクローズ
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    System.err.println("コネクションのクローズ中にエラーが発生しました: " + e.getMessage());
+                }
+            }
+        }
+    }
+    
+    @Override
+    public boolean returnBook(int loanId) {
+        Connection conn = null;
+        try {
+            // 手動でコネクションを取得してトランザクション管理
+            conn = DatabaseConnection.getConnection();
+            conn.setAutoCommit(false);
+            
+            // 貸出情報の存在と未返却状態の確認
+            Loan loan = loanDAO.findById(loanId, conn);
+            if (loan == null) {
+                throw new IllegalArgumentException("指定された貸出情報が見つかりません: " + loanId);
+            }
+            
+            if (loan.getReturnDate() != null) {
+                throw new IllegalArgumentException("この貸出は既に返却されています: " + loanId);
+            }
+            
+            // 返却日の設定
+            loan.setReturnDate(LocalDate.now());
+            
+            // 貸出情報の更新
+            loanDAO.update(loan, conn);
+            
+            // 書籍の利用可能状態を更新
+            Book book = bookDAO.findById(loan.getBookId(), conn);
+            book.setAvailable(true);
+            bookDAO.update(book, conn);
+            
+            // トランザクションのコミット
+            conn.commit();
+            return true;
+            
+        } catch (SQLException e) {
+            // トランザクションのロールバック
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    System.err.println("トランザクションのロールバック中にエラーが発生しました: " + ex.getMessage());
+                }
+            }
+            throw new RuntimeException("返却処理中にエラーが発生しました: " + e.getMessage(), e);
+        } finally {
+            // コネクションのクローズ
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    System.err.println("コネクションのクローズ中にエラーが発生しました: " + e.getMessage());
+                }
+            }
+        }
+    }
+}</code>
+
+                        <h4>サービスファクトリーの実装</h4>
+                        <p>サービスの生成を管理するファクトリークラスを実装します。</p>
+
+                        <code>package com.example.library.service;
+
+import com.example.library.service.impl.BookServiceImpl;
+import com.example.library.service.impl.MemberServiceImpl;
+import com.example.library.service.impl.LoanServiceImpl;
+
+public class ServiceFactory {
+    // シングルトンインスタンス
+    private static ServiceFactory instance;
+    
+    // 各サービスの単一インスタンス
+    private final BookService bookService;
+    private final MemberService memberService;
+    private final LoanService loanService;
+    
+    // プライベートコンストラクタ（シングルトン）
+    private ServiceFactory() {
+        bookService = new BookServiceImpl();
+        memberService = new MemberServiceImpl();
+        loanService = new LoanServiceImpl();
+    }
+    
+    // シングルトンインスタンスの取得
+    public static synchronized ServiceFactory getInstance() {
+        if (instance == null) {
+            instance = new ServiceFactory();
+        }
+        return instance;
+    }
+    
+    // 各サービスの取得メソッド
+    public BookService getBookService() {
+        return bookService;
+    }
+    
+    public MemberService getMemberService() {
+        return memberService;
+    }
+    
+    public LoanService getLoanService() {
+        return loanService;
+    }
+}</code>
+
+                        <div class="note">
+                            <h5>ビジネスロジック層のポイント</h5>
+                            <ul>
+                                <li><strong>ビジネスルールの実装</strong>：ビジネスロジック層では、データの検証やビジネスルールの適用を行う</li>
+                                <li><strong>トランザクション管理</strong>：複数のDAO操作を含む処理では、トランザクション管理を行い、データの一貫性を確保する</li>
+                                <li><strong>例外処理</strong>：適切な例外処理を行い、発生したエラーを適切に上位層に伝える</li>
+                                <li><strong>ファクトリーパターン</strong>：サービスの生成と依存性注入を管理するファクトリークラスを使用する</li>
+                            </ul>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>練習問題 8.5.1: MemberServiceの実装</h5>
+                            <p>利用者管理のためのMemberServiceインターフェースとその実装クラスを作成してください。以下の機能を実装する必要があります：</p>
+                            <ol>
+                                <li>利用者IDによる検索</li>
+                                <li>すべての利用者情報の取得</li>
+                                <li>名前またはメールアドレスによる利用者検索</li>
+                                <li>有効な利用者のみの取得</li>
+                                <li>新規利用者の登録（重複チェックなどの検証を含む）</li>
+                                <li>利用者情報の更新</li>
+                                <li>利用者の有効/無効状態の更新</li>
+                                <li>現在本を借りている利用者のリスト取得</li>
+                            </ol>
+                            <p>適切な入力検証とビジネスルールを実装し、例外処理も適切に行ってください。</p>
+                        </div>
+                    </section>
+
+                    <section id="user-interface">
+                        <h3 class="section-title">8.6 ユーザーインターフェースの作成</h3>
+                        <p>ユーザーインターフェース（UI）層はアプリケーションとユーザーのインタラクションを管理します。今回は簡単なコンソールベースのUIを実装します。</p>
+
+                        <h4>メインメニューの実装</h4>
+                        <p>まず、アプリケーションのメインメニューとなるクラスを実装します。</p>
+
+                        <code>package com.example.library.ui;
+
+import com.example.library.service.ServiceFactory;
+import java.util.Scanner;
+
+public class LibraryUI {
+    private final Scanner scanner;
+    private final BookMenu bookMenu;
+    private final MemberMenu memberMenu;
+    private final LoanMenu loanMenu;
+    
+    public LibraryUI() {
+        scanner = new Scanner(System.in);
+        ServiceFactory serviceFactory = ServiceFactory.getInstance();
+        
+        bookMenu = new BookMenu(scanner, serviceFactory.getBookService());
+        memberMenu = new MemberMenu(scanner, serviceFactory.getMemberService());
+        loanMenu = new LoanMenu(scanner, serviceFactory.getBookService(), 
+                               serviceFactory.getMemberService(), serviceFactory.getLoanService());
+    }
+    
+    public void start() {
+        boolean exit = false;
+        
+        while (!exit) {
+            displayMainMenu();
+            int choice = getMenuChoice(0, 4);
+            
+            switch (choice) {
+                case 1:
+                    bookMenu.show();
+                    break;
+                case 2:
+                    memberMenu.show();
+                    break;
+                case 3:
+                    loanMenu.show();
+                    break;
+                case 4:
+                    showAbout();
+                    break;
+                case 0:
+                    exit = true;
+                    System.out.println("図書館管理システムを終了します。お疲れ様でした！");
+                    break;
+            }
+        }
+        
+        scanner.close();
+    }
+    
+    private void displayMainMenu() {
+        System.out.println("\n===== 図書館管理システム =====");
+        System.out.println("1. 書籍管理");
+        System.out.println("2. 利用者管理");
+        System.out.println("3. 貸出管理");
+        System.out.println("4. システム情報");
+        System.out.println("0. 終了");
+        System.out.print("選択してください: ");
+    }
+    
+    private int getMenuChoice(int min, int max) {
+        int choice = -1;
+        while (choice < min || choice > max) {
+            try {
+                choice = Integer.parseInt(scanner.nextLine());
+                if (choice < min || choice > max) {
+                    System.out.print("無効な選択です。再度入力してください: ");
+                }
+            } catch (NumberFormatException e) {
+                System.out.print("数字を入力してください: ");
+            }
+        }
+        return choice;
+    }
+    
+    private void showAbout() {
+        System.out.println("\n===== システム情報 =====");
+        System.out.println("図書館管理システム バージョン 1.0");
+        System.out.println("JDBC学習カリキュラム 第8章 総合プロジェクト");
+        System.out.println("Copyright © 2025 F-Circle All rights reserved.");
+        System.out.println("\nEnterキーを押すとメインメニューに戻ります...");
+        scanner.nextLine();
+    }
+    
+    public static void main(String[] args) {
+        new LibraryUI().start();
+    }
+}</code>
+
+                        <h4>書籍管理メニューの実装</h4>
+                        <p>次に、書籍管理のためのサブメニューを実装します。</p>
+
+                        <code>package com.example.library.ui;
+
+import com.example.library.model.Book;
+import com.example.library.service.BookService;
+
+import java.util.List;
+import java.util.Scanner;
+
+public class BookMenu {
+    private final Scanner scanner;
+    private final BookService bookService;
+    
+    public BookMenu(Scanner scanner, BookService bookService) {
+        this.scanner = scanner;
+        this.bookService = bookService;
+    }
+    
+    public void show() {
+        boolean back = false;
+        
+        while (!back) {
+            displayMenu();
+            int choice = getMenuChoice(0, 6);
+            
+            switch (choice) {
+                case 1:
+                    listAllBooks();
+                    break;
+                case 2:
+                    searchBooks();
+                    break;
+                case 3:
+                    addBook();
+                    break;
+                case 4:
+                    updateBook();
+                    break;
+                case 5:
+                    deleteBook();
+                    break;
+                case 6:
+                    listAvailableBooks();
+                    break;
+                case 0:
+                    back = true;
+                    break;
+            }
+        }
+    }
+    
+    private void displayMenu() {
+        System.out.println("\n===== 書籍管理 =====");
+        System.out.println("1. すべての書籍を表示");
+        System.out.println("2. 書籍を検索");
+        System.out.println("3. 新しい書籍を追加");
+        System.out.println("4. 書籍情報を更新");
+        System.out.println("5. 書籍を削除");
+        System.out.println("6. 貸出可能な書籍を表示");
+        System.out.println("0. メインメニューに戻る");
+        System.out.print("選択してください: ");
+    }
+    
+    private int getMenuChoice(int min, int max) {
+        int choice = -1;
+        while (choice < min || choice > max) {
+            try {
+                choice = Integer.parseInt(scanner.nextLine());
+                if (choice < min || choice > max) {
+                    System.out.print("無効な選択です。再度入力してください: ");
+                }
+            } catch (NumberFormatException e) {
+                System.out.print("数字を入力してください: ");
+            }
+        }
+        return choice;
+    }
+    
+    private void listAllBooks() {
+        System.out.println("\n===== すべての書籍 =====");
+        List<Book> books = bookService.getAllBooks();
+        
+        if (books.isEmpty()) {
+            System.out.println("登録されている書籍がありません。");
+            return;
+        }
+        
+        for (Book book : books) {
+            System.out.println(book);
+        }
+        
+        System.out.println("\n合計: " + books.size() + "冊の書籍");
+        System.out.println("\nEnterキーを押すと書籍管理メニューに戻ります...");
+        scanner.nextLine();
+    }
+    
+    private void searchBooks() {
+        System.out.println("\n===== 書籍検索 =====");
+        System.out.print("タイトルまたは著者名を入力してください: ");
+        String searchTerm = scanner.nextLine();
+        
+        List<Book> books = bookService.searchBooks(searchTerm);
+        
+        if (books.isEmpty()) {
+            System.out.println("検索条件に一致する書籍が見つかりませんでした。");
+            return;
+        }
+        
+        System.out.println("\n検索結果:");
+        for (Book book : books) {
+            System.out.println(book);
+        }
+        
+        System.out.println("\n合計: " + books.size() + "冊の書籍が見つかりました");
+        System.out.println("\nEnterキーを押すと書籍管理メニューに戻ります...");
+        scanner.nextLine();
+    }
+    
+    private void addBook() {
+        System.out.println("\n===== 新規書籍登録 =====");
+        
+        System.out.print("タイトル: ");
+        String title = scanner.nextLine();
+        
+        System.out.print("著者: ");
+        String author = scanner.nextLine();
+        
+        System.out.print("ISBN（空白可）: ");
+        String isbn = scanner.nextLine();
+        if (isbn.isEmpty()) {
+            isbn = null;
+        }
+        
+        System.out.print("出版年（空白可）: ");
+        String yearStr = scanner.nextLine();
+        Integer publicationYear = null;
+        if (!yearStr.isEmpty()) {
+            try {
+                publicationYear = Integer.parseInt(yearStr);
+            } catch (NumberFormatException e) {
+                System.out.println("出版年は数字で入力してください。空白として処理します。");
+            }
+        }
+        
+        System.out.print("出版社（空白可）: ");
+        String publisher = scanner.nextLine();
+        if (publisher.isEmpty()) {
+            publisher = null;
+        }
+        
+        try {
+            Book book = new Book(title, author, isbn, publicationYear, publisher, true);
+            int id = bookService.addBook(book);
+            
+            if (id > 0) {
+                System.out.println("書籍が正常に登録されました。ID: " + id);
+            } else {
+                System.out.println("書籍の登録に失敗しました。");
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("エラー: " + e.getMessage());
+        }
+        
+        System.out.println("\nEnterキーを押すと書籍管理メニューに戻ります...");
+        scanner.nextLine();
+    }
+    
+    private void updateBook() {
+        System.out.println("\n===== 書籍情報更新 =====");
+        
+        System.out.print("更新する書籍のIDを入力してください: ");
+        try {
+            int id = Integer.parseInt(scanner.nextLine());
+            Book book = bookService.getBookById(id);
+            
+            if (book == null) {
+                System.out.println("指定されたIDの書籍が見つかりません: " + id);
+                System.out.println("\nEnterキーを押すと書籍管理メニューに戻ります...");
+                scanner.nextLine();
+                return;
+            }
+            
+            System.out.println("現在の情報: " + book);
+            
+            System.out.print("タイトル [" + book.getTitle() + "]: ");
+            String title = scanner.nextLine();
+            if (!title.isEmpty()) {
+                book.setTitle(title);
+            }
+            
+            System.out.print("著者 [" + book.getAuthor() + "]: ");
+            String author = scanner.nextLine();
+            if (!author.isEmpty()) {
+                book.setAuthor(author);
+            }
+            
+            System.out.print("ISBN [" + (book.getIsbn() != null ? book.getIsbn() : "") + "]: ");
+            String isbn = scanner.nextLine();
+            if (!isbn.isEmpty()) {
+                book.setIsbn(isbn);
+            }
+            
+            System.out.print("出版年 [" + (book.getPublicationYear() != null ? book.getPublicationYear() : "") + "]: ");
+            String yearStr = scanner.nextLine();
+            if (!yearStr.isEmpty()) {
+                try {
+                    book.setPublicationYear(Integer.parseInt(yearStr));
+                } catch (NumberFormatException e) {
+                    System.out.println("出版年は数字で入力してください。変更せずに続行します。");
+                }
+            }
+            
+            System.out.print("出版社 [" + (book.getPublisher() != null ? book.getPublisher() : "") + "]: ");
+            String publisher = scanner.nextLine();
+            if (!publisher.isEmpty()) {
+                book.setPublisher(publisher);
+            }
+            
+            try {
+                boolean success = bookService.updateBook(book);
+                if (success) {
+                    System.out.println("書籍情報が正常に更新されました。");
+                } else {
+                    System.out.println("書籍情報の更新に失敗しました。");
+                }
+            } catch (IllegalArgumentException e) {
+                System.out.println("エラー: " + e.getMessage());
+            }
+            
+        } catch (NumberFormatException e) {
+            System.out.println("無効なID形式です。");
+        }
+        
+        System.out.println("\nEnterキーを押すと書籍管理メニューに戻ります...");
+        scanner.nextLine();
+    }
+    
+    private void deleteBook() {
+        System.out.println("\n===== 書籍削除 =====");
+        
+        System.out.print("削除する書籍のIDを入力してください: ");
+        try {
+            int id = Integer.parseInt(scanner.nextLine());
+            Book book = bookService.getBookById(id);
+            
+            if (book == null) {
+                System.out.println("指定されたIDの書籍が見つかりません: " + id);
+                System.out.println("\nEnterキーを押すと書籍管理メニューに戻ります...");
+                scanner.nextLine();
+                return;
+            }
+            
+            System.out.println("削除対象: " + book);
+            System.out.print("この書籍を削除してもよろしいですか？ (y/n): ");
+            String confirm = scanner.nextLine();
+            
+            if (confirm.equalsIgnoreCase("y")) {
+                try {
+                    boolean success = bookService.deleteBook(id);
+                    if (success) {
+                        System.out.println("書籍が正常に削除されました。");
+                    } else {
+                        System.out.println("書籍の削除に失敗しました。貸出履歴がある可能性があります。");
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.out.println("エラー: " + e.getMessage());
+                }
+            } else {
+                System.out.println("削除をキャンセルしました。");
+            }
+            
+        } catch (NumberFormatException e) {
+            System.out.println("無効なID形式です。");
+        }
+        
+        System.out.println("\nEnterキーを押すと書籍管理メニューに戻ります...");
+        scanner.nextLine();
+    }
+    
+    private void listAvailableBooks() {
+        System.out.println("\n===== 貸出可能な書籍 =====");
+        List<Book> books = bookService.getAvailableBooks();
+        
+        if (books.isEmpty()) {
+            System.out.println("貸出可能な書籍がありません。");
+            return;
+        }
+        
+        for (Book book : books) {
+            System.out.println(book);
+        }
+        
+        System.out.println("\n合計: " + books.size() + "冊の貸出可能な書籍");
+        System.out.println("\nEnterキーを押すと書籍管理メニューに戻ります...");
+        scanner.nextLine();
+    }
+}</code>
+
+                        <h4>貸出管理メニューの実装</h4>
+                        <p>続いて、貸出・返却などの操作を行うメニューを実装します。</p>
+
+                        <code>package com.example.library.ui;
+
+import com.example.library.model.Book;
+import com.example.library.model.Loan;
+import com.example.library.model.Member;
+import com.example.library.service.BookService;
+import com.example.library.service.LoanService;
+import com.example.library.service.MemberService;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.Scanner;
+
+public class LoanMenu {
+    private final Scanner scanner;
+    private final BookService bookService;
+    private final MemberService memberService;
+    private final LoanService loanService;
+    
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    
+    public LoanMenu(Scanner scanner, BookService bookService, 
+                    MemberService memberService, LoanService loanService) {
+        this.scanner = scanner;
+        this.bookService = bookService;
+        this.memberService = memberService;
+        this.loanService = loanService;
+    }
+    
+    public void show() {
+        boolean back = false;
+        
+        while (!back) {
+            displayMenu();
+            int choice = getMenuChoice(0, 6);
+            
+            switch (choice) {
+                case 1:
+                    checkoutBook();
+                    break;
+                case 2:
+                    returnBook();
+                    break;
+                case 3:
+                    listAllLoans();
+                    break;
+                case 4:
+                    listCurrentLoans();
+                    break;
+                case 5:
+                    listOverdueLoans();
+                    break;
+                case 6:
+                    searchMemberLoans();
+                    break;
+                case 0:
+                    back = true;
+                    break;
+            }
+        }
+    }
+    
+    private void displayMenu() {
+        System.out.println("\n===== 貸出管理 =====");
+        System.out.println("1. 書籍の貸出");
+        System.out.println("2. 書籍の返却");
+        System.out.println("3. すべての貸出履歴を表示");
+        System.out.println("4. 現在の貸出状況を表示");
+        System.out.println("5. 延滞中の貸出を表示");
+        System.out.println("6. 利用者の貸出状況を表示");
+        System.out.println("0. メインメニューに戻る");
+        System.out.print("選択してください: ");
+    }
+    
+    private int getMenuChoice(int min, int max) {
+        int choice = -1;
+        while (choice < min || choice > max) {
+            try {
+                choice = Integer.parseInt(scanner.nextLine());
+                if (choice < min || choice > max) {
+                    System.out.print("無効な選択です。再度入力してください: ");
+                }
+            } catch (NumberFormatException e) {
+                System.out.print("数字を入力してください: ");
+            }
+        }
+        return choice;
+    }
+    
+    private void checkoutBook() {
+        System.out.println("\n===== 書籍の貸出 =====");
+        
+        // 書籍IDの入力
+        System.out.print("貸し出す書籍のIDを入力してください: ");
+        int bookId;
+        try {
+            bookId = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("無効なID形式です。");
+            System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+            scanner.nextLine();
+            return;
+        }
+        
+        // 書籍の存在と貸出可能状態の確認
+        Book book = bookService.getBookById(bookId);
+        if (book == null) {
+            System.out.println("指定されたIDの書籍が見つかりません: " + bookId);
+            System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+            scanner.nextLine();
+            return;
+        }
+        
+        if (!book.isAvailable()) {
+            System.out.println("この書籍は現在貸出中です: " + book.getTitle());
+            System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+            scanner.nextLine();
+            return;
+        }
+        
+        // 利用者IDの入力
+        System.out.print("利用者IDを入力してください: ");
+        int memberId;
+        try {
+            memberId = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("無効なID形式です。");
+            System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+            scanner.nextLine();
+            return;
+        }
+        
+        // 利用者の存在と有効状態の確認
+        Member member = memberService.getMemberById(memberId);
+        if (member == null) {
+            System.out.println("指定されたIDの利用者が見つかりません: " + memberId);
+            System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+            scanner.nextLine();
+            return;
+        }
+        
+        if (!member.isActive()) {
+            System.out.println("この利用者は現在無効状態です: " + member.getName());
+            System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+            scanner.nextLine();
+            return;
+        }
+        
+        // 返却予定日の入力
+        System.out.print("返却予定日を入力してください (yyyy-MM-dd): ");
+        LocalDate dueDate;
+        try {
+            dueDate = LocalDate.parse(scanner.nextLine(), DATE_FORMATTER);
+        } catch (DateTimeParseException e) {
+            System.out.println("無効な日付形式です。yyyy-MM-dd形式で入力してください。");
+            System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+            scanner.nextLine();
+            return;
+        }
+        
+        // 貸出処理
+        try {
+            int loanId = loanService.checkoutBook(bookId, memberId, dueDate);
+            if (loanId > 0) {
+                System.out.println("書籍「" + book.getTitle() + "」を「" + member.getName() + 
+                                   "」さんに貸し出しました。");
+                System.out.println("貸出ID: " + loanId);
+                System.out.println("返却予定日: " + dueDate.format(DATE_FORMATTER));
+            } else {
+                System.out.println("貸出処理に失敗しました。");
+            }
+        } catch (Exception e) {
+            System.out.println("エラー: " + e.getMessage());
+        }
+        
+        System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+        scanner.nextLine();
+    }
+    
+    private void returnBook() {
+        System.out.println("\n===== 書籍の返却 =====");
+        
+        // 貸出IDまたは書籍IDで検索
+        System.out.println("1. 貸出IDで返却");
+        System.out.println("2. 書籍IDで返却");
+        System.out.print("選択してください: ");
+        
+        int choice;
+        try {
+            choice = Integer.parseInt(scanner.nextLine());
+            if (choice < 1 || choice > 2) {
+                System.out.println("無効な選択です。");
+                System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+                scanner.nextLine();
+                return;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("無効な選択です。");
+            System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+            scanner.nextLine();
+            return;
+        }
+        
+        int loanId = -1;
+        
+        if (choice == 1) {
+            // 貸出IDで返却
+            System.out.print("貸出IDを入力してください: ");
+            try {
+                loanId = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("無効なID形式です。");
+                System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+                scanner.nextLine();
+                return;
+            }
+        } else {
+            // 書籍IDで返却
+            System.out.print("書籍IDを入力してください: ");
+            int bookId;
+            try {
+                bookId = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("無効なID形式です。");
+                System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+                scanner.nextLine();
+                return;
+            }
+            
+            // 現在貸し出されている該当書籍の貸出情報を取得
+            Loan loan = loanService.getCurrentLoanByBookId(bookId);
+            if (loan == null) {
+                System.out.println("指定された書籍は現在貸し出されていません。");
+                System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+                scanner.nextLine();
+                return;
+            }
+            
+            loanId = loan.getLoanId();
+        }
+        
+        // 貸出情報の存在と未返却状態の確認
+        Loan loan = loanService.getLoanById(loanId);
+        if (loan == null) {
+            System.out.println("指定されたIDの貸出情報が見つかりません: " + loanId);
+            System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+            scanner.nextLine();
+            return;
+        }
+        
+        if (loan.getReturnDate() != null) {
+            System.out.println("この貸出は既に返却されています。");
+            System.out.println("返却日: " + loan.getReturnDate().format(DATE_FORMATTER));
+            System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+            scanner.nextLine();
+            return;
+        }
+        
+        // 返却処理
+        try {
+            boolean success = loanService.returnBook(loanId);
+            if (success) {
+                Book book = bookService.getBookById(loan.getBookId());
+                Member member = memberService.getMemberById(loan.getMemberId());
+                
+                System.out.println("書籍「" + book.getTitle() + "」が「" + member.getName() + 
+                                   "」さんから返却されました。");
+                
+                // 延滞チェック
+                if (LocalDate.now().isAfter(loan.getDueDate())) {
+                    System.out.println("注意: この貸出は延滞していました。");
+                    System.out.println("返却予定日: " + loan.getDueDate().format(DATE_FORMATTER));
+                }
+            } else {
+                System.out.println("返却処理に失敗しました。");
+            }
+        } catch (Exception e) {
+            System.out.println("エラー: " + e.getMessage());
+        }
+        
+        System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+        scanner.nextLine();
+    }
+    
+    private void listAllLoans() {
+        System.out.println("\n===== すべての貸出履歴 =====");
+        List<Loan> loans = loanService.getAllLoans();
+        
+        if (loans.isEmpty()) {
+            System.out.println("貸出履歴がありません。");
+            System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+            scanner.nextLine();
+            return;
+        }
+        
+        displayLoans(loans);
+        
+        System.out.println("\n合計: " + loans.size() + "件の貸出履歴");
+        System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+        scanner.nextLine();
+    }
+    
+    private void listCurrentLoans() {
+        System.out.println("\n===== 現在の貸出状況 =====");
+        List<Loan> loans = loanService.getCurrentLoans();
+        
+        if (loans.isEmpty()) {
+            System.out.println("現在貸し出されている書籍はありません。");
+            System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+            scanner.nextLine();
+            return;
+        }
+        
+        displayLoans(loans);
+        
+        System.out.println("\n合計: " + loans.size() + "件の貸出中");
+        System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+        scanner.nextLine();
+    }
+    
+    private void listOverdueLoans() {
+        System.out.println("\n===== 延滞中の貸出 =====");
+        List<Loan> loans = loanService.getOverdueLoans();
+        
+        if (loans.isEmpty()) {
+            System.out.println("延滞中の貸出はありません。");
+            System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+            scanner.nextLine();
+            return;
+        }
+        
+        displayLoans(loans);
+        
+        System.out.println("\n合計: " + loans.size() + "件の延滞");
+        System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+        scanner.nextLine();
+    }
+    
+    private void searchMemberLoans() {
+        System.out.println("\n===== 利用者の貸出状況 =====");
+        
+        System.out.print("利用者IDを入力してください: ");
+        int memberId;
+        try {
+            memberId = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("無効なID形式です。");
+            System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+            scanner.nextLine();
+            return;
+        }
+        
+        Member member = memberService.getMemberById(memberId);
+        if (member == null) {
+            System.out.println("指定されたIDの利用者が見つかりません: " + memberId);
+            System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+            scanner.nextLine();
+            return;
+        }
+        
+        System.out.println("\n利用者: " + member.getName());
+        
+        // 現在の貸出
+        List<Loan> currentLoans = loanService.getCurrentLoansByMember(memberId);
+        System.out.println("\n----- 現在の貸出 -----");
+        if (currentLoans.isEmpty()) {
+            System.out.println("現在貸し出されている書籍はありません。");
+        } else {
+            displayLoans(currentLoans);
+            System.out.println("\n合計: " + currentLoans.size() + "件の貸出中");
+        }
+        
+        // 貸出履歴
+        List<Loan> allLoans = loanService.getLoansByMember(memberId);
+        System.out.println("\n----- 貸出履歴 -----");
+        if (allLoans.isEmpty()) {
+            System.out.println("貸出履歴がありません。");
+        } else {
+            displayLoans(allLoans);
+            System.out.println("\n合計: " + allLoans.size() + "件の貸出履歴");
+        }
+        
+        System.out.println("\nEnterキーを押すと貸出管理メニューに戻ります...");
+        scanner.nextLine();
+    }
+    
+    private void displayLoans(List<Loan> loans) {
+        for (Loan loan : loans) {
+            Book book = bookService.getBookById(loan.getBookId());
+            Member member = memberService.getMemberById(loan.getMemberId());
+            
+            System.out.println("貸出ID: " + loan.getLoanId() + 
+                              " | 書籍: " + book.getTitle() + 
+                              " | 利用者: " + member.getName() + 
+                              " | 貸出日: " + loan.getLoanDate().format(DATE_FORMATTER) + 
+                              " | 返却予定日: " + loan.getDueDate().format(DATE_FORMATTER) + 
+                              " | 返却日: " + (loan.getReturnDate() != null ? 
+                                             loan.getReturnDate().format(DATE_FORMATTER) : "未返却"));
+            
+            // 返却されていない場合は延滞状況を表示
+            if (loan.getReturnDate() == null) {
+                if (LocalDate.now().isAfter(loan.getDueDate())) {
+                    long daysOverdue = LocalDate.now().toEpochDay() - loan.getDueDate().toEpochDay();
+                    System.out.println("    ** 延滞中: " + daysOverdue + "日 **");
+                }
+            }
+        }
+    }
+}</code>
+
+                        <div class="note">
+                            <h5>ユーザーインターフェース設計のポイント</h5>
+                            <ul>
+                                <li><strong>メニュー階層の設計</strong>：メインメニューとサブメニューを適切に分け、ユーザーが迷わないように設計</li>
+                                <li><strong>入力検証</strong>：ユーザー入力を適切に検証し、無効な入力にはわかりやすいエラーメッセージを表示</li>
+                                <li><strong>例外ハンドリング</strong>：サービス層から発生する例外を適切に捕捉し、ユーザーフレンドリーなメッセージを表示</li>
+                                <li><strong>状態表示</strong>：処理の結果や現在の状態をわかりやすく表示する</li>
+                                <li><strong>ユーザビリティ</strong>：Enter キーを押して続行するなど、使いやすさに配慮した設計</li>
+                            </ul>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>練習問題 8.6.1: MemberMenu（利用者管理メニュー）の実装</h5>
+                            <p>BookMenuと同様に、利用者管理のためのMemberMenuクラスを実装してください。以下の機能を含める必要があります：</p>
+                            <ol>
+                                <li>すべての利用者を表示</li>
+                                <li>利用者を検索（名前またはメールアドレスで）</li>
+                                <li>新しい利用者を登録</li>
+                                <li>利用者情報を更新</li>
+                                <li>利用者の有効/無効状態を切り替え</li>
+                                <li>現在本を借りている利用者のみを表示</li>
+                            </ol>
+                            <p>適切な入力検証と例外処理を実装し、ユーザビリティを考慮した設計にしてください。</p>
+                        </div>
+                    </section>
+
+                    <section id="testing">
+                        <h3 class="section-title">8.7 システムのテスト</h3>
+                        <p>アプリケーションの品質を確保するために、単体テスト、統合テスト、システムテストなどを実施します。ここではJUnitを使用した単体テストの例を示します。</p>
+
+                        <h4>テスト環境の準備</h4>
+                        <p>テスト用のデータベース環境を準備します。本番環境とは別のテスト用データベースを使用することが推奨されます。</p>
+
+                        <code>-- テスト用データベース作成
+CREATE DATABASE library_management_test;
+
+-- テスト用テーブル作成
+\c library_management_test
+-- create_tables.sqlと同じスクリプトを実行
+
+-- テスト用データの挿入
+-- 最小限のテストデータを準備</code>
+
+                        <h4>テスト用設定ファイル</h4>
+                        <p>テスト環境用の設定ファイルを作成します。src/test/resources/db.propertiesファイルを作成します。</p>
+
+                        <code># テスト用データベース接続設定
+db.url=jdbc:postgresql://localhost:5432/library_management_test
+db.user=postgres
+db.password=password
+db.driver=org.postgresql.Driver</code>
+
+                        <h4>JUnit依存関係の追加</h4>
+                        <p>pom.xmlファイルにJUnit依存関係を追加します。</p>
+
+                        <code>&lt;dependency&gt;
+    &lt;groupId&gt;org.junit.jupiter&lt;/groupId&gt;
+    &lt;artifactId&gt;junit-jupiter-api&lt;/artifactId&gt;
+    &lt;version&gt;5.9.1&lt;/version&gt;
+    &lt;scope&gt;test&lt;/scope&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.junit.jupiter&lt;/groupId&gt;
+    &lt;artifactId&gt;junit-jupiter-engine&lt;/artifactId&gt;
+    &lt;version&gt;5.9.1&lt;/version&gt;
+    &lt;scope&gt;test&lt;/scope&gt;
+&lt;/dependency&gt;</code>
+
+                        <h4>BookDAOのテスト実装</h4>
+                        <p>BookDAOの各メソッドをテストするテストクラスを実装します。</p>
+
+                        <code>package com.example.library.dao;
+
+import com.example.library.dao.impl.BookDAOImpl;
+import com.example.library.model.Book;
+import com.example.library.util.DatabaseConnection;
+
+import org.junit.jupiter.api.*;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class BookDAOTest {
+    
+    private BookDAO bookDAO;
+    
+    @BeforeEach
+    public void setUp() {
+        bookDAO = new BookDAOImpl();
+        
+        // テストデータのセットアップ
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            // 既存のテストデータをクリーンアップ
+            try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM Loans")) {
+                stmt.executeUpdate();
+            }
+            try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM Books")) {
+                stmt.executeUpdate();
+            }
+            
+            // テスト用書籍データの挿入
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "INSERT INTO Books (book_id, title, author, isbn, publication_year, publisher, available) " +
+                    "VALUES (1, 'Test Book 1', 'Test Author 1', '1234567890', 2020, 'Test Publisher', true), " +
+                    "(2, 'Test Book 2', 'Test Author 2', '0987654321', 2021, 'Test Publisher', true), " +
+                    "(3, 'Java Programming', 'Java Author', '1122334455', 2019, 'Java Press', false)")) {
+                stmt.executeUpdate();
+            }
+            
+            // PostgreSQLのシーケンスを更新
+            try (PreparedStatement stmt = conn.prepareStatement("SELECT setval('books_book_id_seq', 3, true)")) {
+                stmt.executeQuery();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            fail("テストデータのセットアップに失敗しました: " + e.getMessage());
+        }
+    }
+    
+    @AfterEach
+    public void tearDown() {
+        // テストデータのクリーンアップ
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM Loans")) {
+                stmt.executeUpdate();
+            }
+            try (PreparedStatement stmt = conn.prepareStatement("DELETE FROM Books")) {
+                stmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    @Test
+    public void testFindById() {
+        // 存在する書籍のテスト
+        Book book = bookDAO.findById(1);
+        assertNotNull(book, "IDが1の書籍が見つかりませんでした");
+        assertEquals("Test Book 1", book.getTitle(), "書籍のタイトルが一致しません");
+        assertEquals("Test Author 1", book.getAuthor(), "書籍の著者が一致しません");
+        
+        // 存在しない書籍のテスト
+        Book nonExistentBook = bookDAO.findById(999);
+        assertNull(nonExistentBook, "存在しないIDの書籍が返されました");
+    }
+    
+    @Test
+    public void testFindAll() {
+        List<Book> books = bookDAO.findAll();
+        assertNotNull(books, "書籍リストがnullでした");
+        assertEquals(3, books.size(), "書籍の数が期待値と一致しません");
+    }
+    
+    @Test
+    public void testFindByTitleOrAuthor() {
+        // タイトルでの検索
+        List<Book> booksByTitle = bookDAO.findByTitleOrAuthor("Test Book");
+        assertEquals(2, booksByTitle.size(), "タイトルでの検索結果数が一致しません");
+        
+        // 著者での検索
+        List<Book> booksByAuthor = bookDAO.findByTitleOrAuthor("Java Author");
+        assertEquals(1, booksByAuthor.size(), "著者での検索結果数が一致しません");
+        
+        // 存在しない検索語
+        List<Book> noResults = bookDAO.findByTitleOrAuthor("NonExistent");
+        assertEquals(0, noResults.size(), "存在しない検索語での結果が返されました");
+    }
+    
+    @Test
+    public void testFindAvailable() {
+        List<Book> availableBooks = bookDAO.findAvailable();
+        assertEquals(2, availableBooks.size(), "利用可能な書籍の数が一致しません");
+        
+        // すべての利用可能な書籍を確認
+        for (Book book : availableBooks) {
+            assertTrue(book.isAvailable(), "利用可能でない書籍が含まれています");
+        }
+    }
+    
+    @Test
+    public void testSave() {
+        Book newBook = new Book("New Test Book", "New Test Author", "5566778899", 2022, "New Publisher", true);
+        int id = bookDAO.save(newBook);
+        
+        assertTrue(id > 0, "書籍の保存に失敗しました");
+        
+        // 保存された書籍を確認
+        Book savedBook = bookDAO.findById(id);
+        assertNotNull(savedBook, "保存された書籍が見つかりませんでした");
+        assertEquals("New Test Book", savedBook.getTitle(), "保存された書籍のタイトルが一致しません");
+    }
+    
+    @Test
+    public void testUpdate() {
+        Book book = bookDAO.findById(1);
+        assertNotNull(book, "IDが1の書籍が見つかりませんでした");
+        
+        // 書籍情報の更新
+        book.setTitle("Updated Title");
+        book.setAuthor("Updated Author");
+        
+        boolean updateResult = bookDAO.update(book);
+        assertTrue(updateResult, "書籍の更新に失敗しました");
+        
+        // 更新された書籍を確認
+        Book updatedBook = bookDAO.findById(1);
+        assertEquals("Updated Title", updatedBook.getTitle(), "更新された書籍のタイトルが一致しません");
+        assertEquals("Updated Author", updatedBook.getAuthor(), "更新された書籍の著者が一致しません");
+    }
+    
+    @Test
+    public void testDelete() {
+        // 書籍を削除
+        boolean deleteResult = bookDAO.delete(2);
+        assertTrue(deleteResult, "書籍の削除に失敗しました");
+        
+        // 削除された書籍が存在しないことを確認
+        Book deletedBook = bookDAO.findById(2);
+        assertNull(deletedBook, "削除された書籍がまだ存在しています");
+        
+        // 書籍の総数が減っていることを確認
+        List<Book> books = bookDAO.findAll();
+        assertEquals(2, books.size(), "書籍の総数が正しく減少していません");
+    }
+    
+    @Test
+    public void testFindByIsbn() {
+        // 存在するISBNでの検索
+        Book book = bookDAO.findByIsbn("1234567890");
+        assertNotNull(book, "ISBNが1234567890の書籍が見つかりませんでした");
+        assertEquals("Test Book 1", book.getTitle(), "ISBNで検索された書籍のタイトルが一致しません");
+        
+        // 存在しないISBNでの検索
+        Book nonExistentBook = bookDAO.findByIsbn("9999999999");
+        assertNull(nonExistentBook, "存在しないISBNの書籍が返されました");
+    }
+}</code>
+
+                        <h4>BookServiceのテスト実装</h4>
+                        <p>BookServiceの各メソッドをテストするテストクラスを実装します。</p>
+
+                        <code>package com.example.library.service;
+
+import com.example.library.model.Book;
+import com.example.library.service.impl.BookServiceImpl;
+
+import org.junit.jupiter.api.*;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class BookServiceTest {
+    
+    private BookService bookService;
+    
+    @BeforeEach
+    public void setUp() {
+        // BookDAOTestでテストデータが設定されていることを前提とする
+        bookService = new BookServiceImpl();
+    }
+    
+    @Test
+    public void testGetBookById() {
+        Book book = bookService.getBookById(1);
+        assertNotNull(book, "IDが1の書籍が見つかりませんでした");
+        assertEquals("Test Book 1", book.getTitle(), "書籍のタイトルが一致しません");
+    }
+    
+    @Test
+    public void testGetAllBooks() {
+        List<Book> books = bookService.getAllBooks();
+        assertNotNull(books, "書籍リストがnullでした");
+        assertFalse(books.isEmpty(), "書籍リストが空でした");
+    }
+    
+    @Test
+    public void testSearchBooks() {
+        // 有効な検索語
+        List<Book> results = bookService.searchBooks("Test");
+        assertFalse(results.isEmpty(), "検索結果が空でした");
+        
+        // 空の検索語
+        List<Book> allBooks = bookService.searchBooks("");
+        assertEquals(bookService.getAllBooks().size(), allBooks.size(),
+                    "空の検索語ですべての書籍が返されるべきです");
+        
+        // nullの検索語
+        List<Book> allBooksNull = bookService.searchBooks(null);
+        assertEquals(bookService.getAllBooks().size(), allBooksNull.size(),
+                    "nullの検索語ですべての書籍が返されるべきです");
+    }
+    
+    @Test
+    public void testGetAvailableBooks() {
+        List<Book> availableBooks = bookService.getAvailableBooks();
+        assertNotNull(availableBooks, "利用可能な書籍リストがnullでした");
+        
+        // すべての利用可能な書籍を確認
+        for (Book book : availableBooks) {
+            assertTrue(book.isAvailable(), "利用可能でない書籍が含まれています");
+        }
+    }
+    
+    @Test
+    public void testAddBook() {
+        Book newBook = new Book("Service Test Book", "Service Test Author", "1231231231", 2023, "Test Publisher", true);
+        int id = bookService.addBook(newBook);
+        
+        assertTrue(id > 0, "書籍の登録に失敗しました");
+        
+        // 登録された書籍を確認
+        Book savedBook = bookService.getBookById(id);
+        assertNotNull(savedBook, "登録された書籍が見つかりませんでした");
+        assertEquals("Service Test Book", savedBook.getTitle(), "登録された書籍のタイトルが一致しません");
+    }
+    
+    @Test
+    public void testAddBookWithInvalidData() {
+        // タイトルがnullの書籍
+        Book invalidBook1 = new Book(null, "Test Author", "1231231231", 2023, "Test Publisher", true);
+        assertThrows(IllegalArgumentException.class, () -> {
+            bookService.addBook(invalidBook1);
+        }, "タイトルがnullの書籍は例外が発生するべきです");
+        
+        // 著者がnullの書籍
+        Book invalidBook2 = new Book("Test Title", null, "1231231231", 2023, "Test Publisher", true);
+        assertThrows(IllegalArgumentException.class, () -> {
+            bookService.addBook(invalidBook2);
+        }, "著者がnullの書籍は例外が発生するべきです");
+    }
+    
+    @Test
+    public void testUpdateBook() {
+        Book book = bookService.getBookById(1);
+        assertNotNull(book, "IDが1の書籍が見つかりませんでした");
+        
+        book.setTitle("Service Updated Title");
+        boolean result = bookService.updateBook(book);
+        
+        assertTrue(result, "書籍の更新に失敗しました");
+        
+        // 更新された書籍を確認
+        Book updatedBook = bookService.getBookById(1);
+        assertEquals("Service Updated Title", updatedBook.getTitle(), "更新された書籍のタイトルが一致しません");
+    }
+    
+    @Test
+    public void testUpdateBookAvailability() {
+        Book book = bookService.getBookById(1);
+        assertNotNull(book, "IDが1の書籍が見つかりませんでした");
+        
+        boolean currentStatus = book.isAvailable();
+        
+        // 利用可能状態を反転
+        boolean result = bookService.updateBookAvailability(1, !currentStatus);
+        assertTrue(result, "書籍の利用可能状態の更新に失敗しました");
+        
+        // 更新された状態を確認
+        Book updatedBook = bookService.getBookById(1);
+        assertEquals(!currentStatus, updatedBook.isAvailable(), "書籍の利用可能状態が正しく更新されていません");
+    }
+    
+    @Test
+    public void testDeleteBook() {
+        // 書籍を削除
+        boolean result = bookService.deleteBook(2);
+        assertTrue(result, "書籍の削除に失敗しました");
+        
+        // 削除された書籍が存在しないことを確認
+        assertNull(bookService.getBookById(2), "削除された書籍がまだ存在しています");
+    }
+    
+    @Test
+    public void testFindBookByIsbn() {
+        Book book = bookService.findBookByIsbn("1234567890");
+        assertNotNull(book, "ISBNが1234567890の書籍が見つかりませんでした");
+        assertEquals("Test Book 1", book.getTitle(), "ISBNで検索された書籍のタイトルが一致しません");
+    }
+    
+    @Test
+    public void testFindBookByIsbnWithInvalidData() {
+        // nullのISBN
+        assertThrows(IllegalArgumentException.class, () -> {
+            bookService.findBookByIsbn(null);
+        }, "ISBNがnullの場合は例外が発生するべきです");
+        
+        // 空のISBN
+        assertThrows(IllegalArgumentException.class, () -> {
+            bookService.findBookByIsbn("");
+        }, "ISBNが空の場合は例外が発生するべきです");
+    }
+}</code>
+
+                        <div class="note">
+                            <h5>テストのポイント</h5>
+                            <ul>
+                                <li><strong>テスト環境の分離</strong>：本番環境とは別のテスト用データベースを使用する</li>
+                                <li><strong>テストデータの管理</strong>：各テスト前に既知の状態にデータをリセットする</li>
+                                <li><strong>テストケースの網羅性</strong>：正常系と異常系の両方をテストする</li>
+                                <li><strong>アサーション</strong>：期待される結果を明確にし、適切なアサーションを使用する</li>
+                                <li><strong>テスト独立性</strong>：各テストは他のテストに依存せず、単独で実行できるようにする</li>
+                            </ul>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>練習問題 8.7.1: LoanServiceのテスト作成</h5>
+                            <p>貸出サービス（LoanService）のテストクラスを作成し、以下のテストケースを実装してください：</p>
+                            <ol>
+                                <li>書籍の貸出処理（正常系）</li>
+                                <li>書籍の貸出処理（存在しない書籍ID）</li>
+                                <li>書籍の貸出処理（貸出中の書籍）</li>
+                                <li>書籍の貸出処理（存在しない利用者ID）</li>
+                                <li>書籍の返却処理（正常系）</li>
+                                <li>書籍の返却処理（存在しない貸出ID）</li>
+                                <li>書籍の返却処理（既に返却済みの貸出）</li>
+                                <li>延滞中の貸出の取得</li>
+                            </ol>
+                            <p>各テストケースでは、適切なテストデータのセットアップと、期待される結果のアサーションを行ってください。</p>
+                        </div>
+                    </section>
+
+                    <section id="deployment">
+                        <h3 class="section-title">8.8 デプロイメントとドキュメント作成</h3>
+                        <p>アプリケーションの開発が完了したら、デプロイの準備とドキュメント作成を行います。</p>
+
+                        <h4>実行可能JARファイルの作成</h4>
+                        <p>Mavenを使用してアプリケーションを実行可能JARファイルにパッケージングします。pom.xmlファイルに以下の設定を追加します。</p>
+
+                        <code>&lt;build&gt;
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+            &lt;artifactId&gt;maven-assembly-plugin&lt;/artifactId&gt;
+            &lt;version&gt;3.3.0&lt;/version&gt;
+            &lt;configuration&gt;
+                &lt;archive&gt;
+                    &lt;manifest&gt;
+                        &lt;mainClass&gt;com.example.library.ui.LibraryUI&lt;/mainClass&gt;
+                    &lt;/manifest&gt;
+                &lt;/archive&gt;
+                &lt;descriptorRefs&gt;
+                    &lt;descriptorRef&gt;jar-with-dependencies&lt;/descriptorRef&gt;
+                &lt;/descriptorRefs&gt;
+            &lt;/configuration&gt;
+            &lt;executions&gt;
+                &lt;execution&gt;
+                    &lt;id&gt;make-assembly&lt;/id&gt;
+                    &lt;phase&gt;package&lt;/phase&gt;
+                    &lt;goals&gt;
+                        &lt;goal&gt;single&lt;/goal&gt;
+                    &lt;/goals&gt;
+                &lt;/execution&gt;
+            &lt;/executions&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
+&lt;/build&gt;</code>
+
+                        <p>以下のコマンドでビルドを実行します：</p>
+
+                        <code>mvn clean package</code>
+
+                        <h4>データベースセットアップスクリプトの準備</h4>
+                        <p>デプロイメント用にデータベースのセットアップスクリプトを準備します。</p>
+
+                        <code>-- デプロイメント用データベースセットアップスクリプト
+
+-- データベース作成
+CREATE DATABASE library_management;
+-- または既存のデータベースを選択
+\c library_management
+
+-- テーブル作成
+-- create_tables.sqlのスクリプトを含める
+
+-- 初期データの投入（オプション）
+-- sample_data.sqlのスクリプトを含める</code>
+
+                        <h4>アプリケーションの実行手順書</h4>
+                        <p>README.mdファイルにアプリケーションの実行手順を記載します。</p>
+
+                        <code># 図書館管理システム
+
+JDBCを使用した図書館管理システムのコンソールアプリケーションです。
+
+## 機能
+
+- 書籍管理：書籍の登録、更新、削除、検索
+- 利用者管理：利用者の登録、更新、検索
+- 貸出管理：書籍の貸出、返却、貸出状況の確認
+- レポート機能：延滞書籍のリスト、利用者の貸出状況など
+
+## 必要条件
+
+- Java 11以上
+- PostgreSQL 12以上
+- Maven（ビルド用）
+
+## セットアップ手順
+
+### 1. データベースのセットアップ
+
+- PostgreSQLをインストールして起動します
+- 以下のSQLスクリプトを実行してデータベースとテーブルを作成します
+  ```
+  psql -U postgres -f sql/create_tables.sql
+  ```
+- （オプション）サンプルデータを挿入するには以下のコマンドを実行します
+  ```
+  psql -U postgres -d library_management -f sql/sample_data.sql
+  ```
+
+### 2. データベース接続設定
+
+src/main/resources/db.propertiesファイルを編集し、データベース接続情報を設定します。
+
+```
+db.url=jdbc:postgresql://localhost:5432/library_management
+db.user=postgres
+db.password=your_password
+db.driver=org.postgresql.Driver
+```
+
+### 3. アプリケーションのビルド
+
+```
+mvn clean package
+```
+
+### 4. アプリケーションの実行
+
+```
+java -jar target/library-management-1.0-SNAPSHOT-jar-with-dependencies.jar
+```
+
+## 使用方法
+
+アプリケーションを起動すると、メインメニューが表示されます。
+数字キーを入力して、各メニュー項目にアクセスできます。
+
+- 1: 書籍管理
+- 2: 利用者管理
+- 3: 貸出管理
+- 4: システム情報
+- 0: 終了
+
+各サブメニューでも同様に数字キーで操作を選択できます。
+
+## 開発者情報
+
+JDBC学習カリキュラム 第8章 総合プロジェクト
+Copyright © 2025 F-Circle All rights reserved.</code>
+
+                        <h4>システム仕様書</h4>
+                        <p>システムの詳細な仕様を記載したドキュメントを作成します。以下は仕様書の目次例です。</p>
+
+                        <div class="example-result">
+                            <h5>図書館管理システム 仕様書</h5>
+                            <ol>
+                                <li>システム概要
+                                    <ul>
+                                        <li>目的</li>
+                                        <li>機能概要</li>
+                                        <li>対象ユーザー</li>
+                                    </ul>
+                                </li>
+                                <li>システム構成
+                                    <ul>
+                                        <li>アーキテクチャ</li>
+                                        <li>コンポーネント構成</li>
+                                        <li>開発環境・言語</li>
+                                    </ul>
+                                </li>
+                                <li>データベース設計
+                                    <ul>
+                                        <li>ER図</li>
+                                        <li>テーブル定義</li>
+                                        <li>索引設計</li>
+                                    </ul>
+                                </li>
+                                <li>機能仕様
+                                    <ul>
+                                        <li>書籍管理機能</li>
+                                        <li>利用者管理機能</li>
+                                        <li>貸出管理機能</li>
+                                        <li>レポート機能</li>
+                                    </ul>
+                                </li>
+                                <li>画面仕様
+                                    <ul>
+                                        <li>メインメニュー</li>
+                                        <li>書籍管理メニュー</li>
+                                        <li>利用者管理メニュー</li>
+                                        <li>貸出管理メニュー</li>
+                                    </ul>
+                                </li>
+                                <li>運用保守
+                                    <ul>
+                                        <li>バックアップ方法</li>
+                                        <li>障害復旧手順</li>
+                                        <li>定期メンテナンス</li>
+                                    </ul>
+                                </li>
+                                <li>付録
+                                    <ul>
+                                        <li>インストール手順</li>
+                                        <li>FAQ</li>
+                                        <li>用語集</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        </div>
+
+                        <h4>今後の拡張ポイント</h4>
+                        <p>システムの将来的な拡張ポイントを検討します。</p>
+
+                        <div class="note">
+                            <h5>拡張候補</h5>
+                            <ul>
+                                <li><strong>Webインターフェース</strong>：コンソールUIからWebUIへの拡張</li>
+                                <li><strong>書籍カテゴリ管理</strong>：カテゴリによる書籍の分類と検索機能</li>
+                                <li><strong>予約システム</strong>：貸出中の書籍に対する予約機能</li>
+                                <li><strong>罰金管理</strong>：延滞に対する罰金計算と管理</li>
+                                <li><strong>バーコード・QRコード対応</strong>：書籍や利用者カードのバーコード/QRコードスキャン機能</li>
+                                <li><strong>統計・分析機能</strong>：貸出傾向の分析や人気書籍のランキング機能</li>
+                                <li><strong>多言語対応</strong>：インターフェースの多言語化</li>
+                                <li><strong>バッチ処理</strong>：延滞通知メール送信などの定期バッチ処理</li>
+                            </ul>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>練習問題 8.8.1: ユーザーマニュアルの作成</h5>
+                            <p>図書館管理システムのエンドユーザー向けマニュアルを作成してください。以下の内容を含める必要があります：</p>
+                            <ol>
+                                <li>システムの基本的な使い方（起動方法、メニュー操作）</li>
+                                <li>書籍管理機能の使用方法（検索、登録、更新、削除）</li>
+                                <li>利用者管理機能の使用方法（検索、登録、更新）</li>
+                                <li>貸出・返却処理の手順</li>
+                                <li>レポート機能の使用方法</li>
+                                <li>よくある質問（FAQ）</li>
+                                <li>トラブルシューティング</li>
+                            </ol>
+                            <p>スクリーンショットや操作の流れ図を含めると、より分かりやすいマニュアルになります。</p>
+                        </div>
+                    </section>
+
+                    <section id="chapter8-quiz">
+                        <h3 class="section-title">8.9 理解度確認テスト</h3>
+                        <div class="quiz-container">
+                            <h4>第8章の理解度チェック</h4>
+                            <p>以下の問題に答えて、第8章の内容の理解度を確認しましょう。</p>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題1:</strong> JDBCを使用したアプリケーション開発において、レイヤー化アーキテクチャの目的として最も適切なものはどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1a" value="a">
+                                    <label class="form-check-label" for="q1a">
+                                        アプリケーションの実行速度を向上させるため
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1b" value="b">
+                                    <label class="form-check-label" for="q1b">
+                                        関心の分離を実現し、コードの保守性と再利用性を高めるため
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1c" value="c">
+                                        <label class="form-check-label" for="q1c">
+                                        JDBCドライバの互換性問題を解決するため
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1d" value="d">
+                                        <label class="form-check-label" for="q1d">
+                                        SQLインジェクション攻撃を防ぐため
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題2:</strong> DAOパターンの主な目的は何ですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2a" value="a">
+                                    <label class="form-check-label" for="q2a">
+                                        データベース接続を高速化すること
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2b" value="b">
+                                    <label class="form-check-label" for="q2b">
+                                        複雑なSQLクエリを自動生成すること
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2c" value="c">
+                                        <label class="form-check-label" for="q2c">
+                                        データストレージの実装詳細をビジネスロジックから分離すること
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2d" value="d">
+                                        <label class="form-check-label" for="q2d">
+                                        オブジェクト間のマッピングを自動化すること
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題3:</strong> 次のうち、トランザクション管理に関する正しい記述はどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3a" value="a">
+                                    <label class="form-check-label" for="q3a">
+                                        JDBCではトランザクション管理は自動的に行われるので、明示的なコードは不要である
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3b" value="b">
+                                    <label class="form-check-label" for="q3b">
+                                        トランザクション管理はデータアクセス層（DAO層）でのみ行うべきである
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3c" value="c">
+                                        <label class="form-check-label" for="q3c">
+                                        複数のDAO操作を含む処理では、ビジネスロジック層でトランザクションを管理するべきである
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3d" value="d">
+                                        <label class="form-check-label" for="q3d">
+                                        トランザクション管理はパフォーマンスを低下させるので、できるだけ使用しないほうが良い
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題4:</strong> 図書館管理システムにおける「書籍の貸出」処理で、どのようなトランザクション管理が必要ですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4a" value="a">
+                                    <label class="form-check-label" for="q4a">
+                                        トランザクション管理は不要で、個別のSQL文を順次実行すれば良い
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4b" value="b">
+                                    <label class="form-check-label" for="q4b">
+                                        貸出情報の登録と書籍の利用可能状態の更新を1つのトランザクションで処理する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4c" value="c">
+                                        <label class="form-check-label" for="q4c">
+                                        トランザクションは自動コミットモードでのみ使用できる
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4d" value="d">
+                                        <label class="form-check-label" for="q4d">
+                                        書籍の利用可能状態の更新のみをトランザクションで処理する
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題5:</strong> JUnitを使用したDAOのテストに関して、正しい記述はどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5a" value="a">
+                                    <label class="form-check-label" for="q5a">
+                                        本番環境のデータベースを直接使用してテストを行うべきである
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5b" value="b">
+                                    <label class="form-check-label" for="q5b">
+                                        SQLクエリの性能のみをテストし、データの整合性テストは不要である
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5c" value="c">
+                                        <label class="form-check-label" for="q5c">
+                                        テストごとにデータベースの状態をリセットし、テスト間の依存関係を排除すべきである
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5d" value="d">
+                                        <label class="form-check-label" for="q5d">
+                                        DAOはデータベースに依存しているため、ユニットテストよりも統合テストのみが有効である
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary mt-3" id="checkAnswers">回答を確認</button>
+                            <div id="quizResults" class="mt-3 d-none">
+                                <div class="alert alert-success">
+                                    <h5>正解:</h5>
+                                    <ol>
+                                        <li>b（関心の分離を実現し、コードの保守性と再利用性を高めるため）</li>
+                                        <li>c（データストレージの実装詳細をビジネスロジックから分離すること）</li>
+                                        <li>c（複数のDAO操作を含む処理では、ビジネスロジック層でトランザクションを管理するべきである）</li>
+                                        <li>b（貸出情報の登録と書籍の利用可能状態の更新を1つのトランザクションで処理する）</li>
+                                        <li>c（テストごとにデータベースの状態をリセットし、テスト間の依存関係を排除すべきである）</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="next-steps">
+                        <h3 class="section-title">次のステップ</h3>
+                        <p>この第8章では、図書館管理システムの開発を通じて、JDBCを使用した実践的なアプリケーション開発の全体像を学びました。以下のスキルを身につけたことを確認しましょう：</p>
+                        <ul>
+                            <li>要件分析からデータベース設計までのプロセス</li>
+                            <li>レイヤー化アーキテクチャに基づくプロジェクト構造の設計と実装</li>
+                            <li>DAOパターンを用いたデータアクセス層の実装</li>
+                            <li>ビジネスロジック層でのトランザクション管理</li>
+                            <li>コンソールUIの実装</li>
+                            <li>JUnitを使用したテスト方法</li>
+                            <li>アプリケーションのデプロイとドキュメント作成</li>
+                        </ul>
+                        <p>これらのスキルは、今後のJava開発プロジェクトにおいても非常に役立つものです。</p>
+                        
+                        <div class="note">
+                            <h5>さらなる学習のための参考資料</h5>
+                            <ul>
+                                <li><strong>リレーショナルデータベース設計の深掘り</strong>：データベース正規化、高度なER図設計などについて学ぶ</li>
+                                <li><strong>高度なJDBC技術</strong>：バッチ処理、メタデータ操作、高度なトランザクション管理などのJDBC応用技術を学ぶ</li>
+                                <li><strong>ORマッピングフレームワーク</strong>：JDBC上に構築されたJPA/Hibernateなどのフレームワークを学ぶ</li>
+                                <li><strong>Webアプリケーション開発</strong>：図書館管理システムをWebアプリケーションに発展させる</li>
+                                <li><strong>デザインパターン</strong>：ソフトウェア開発における様々なデザインパターンを学び、アプリケーション設計に活かす</li>
+                            </ul>
+                        </div>
+                        
+                        <p>JDBCの学習はJavaプログラミングとデータベース管理のスキルを融合させる重要なステップです。これからも実践を重ねながら、スキルを磨いていきましょう。</p>
+                    </section>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4">
+        <div class="container">
+            <p class="mb-0">Copyright © 2025 F-Circle All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 理解度テストの回答確認ボタンの処理
+        document.getElementById('checkAnswers').addEventListener('click', function() {
+            document.getElementById('quizResults').classList.remove('d-none');
+        });
+    </script>
+</body>
+</html>
