@@ -13,26 +13,26 @@ DriverManagerクラスの使用方法、Connection・Statement・ResultSetの基
 ### [3. 基本的なCRUD操作](https://fcircle-biz.github.io/tech_docs/guide/jdbc/jdbc-learning-material-3.html)
 SELECT文によるデータ取得、PreparedStatementを使用したデータ挿入、データの更新と削除の基本操作、そして実践的な住所録管理システムの作成方法を解説します。
 
-### [4. 高度なJDBC操作](https://fcircle-biz.github.io/tech_docs/guide/jdbc/jdbc-learning-material-4.html)
-ストアドプロシージャの呼び出し、大量データの処理（バッチ処理）、メタデータの操作、トランザクション管理の詳細について学びます。
+### [4. 例外処理とリソース管理](https://fcircle-biz.github.io/tech_docs/guide/jdbc/jdbc-learning-material-4.html)
+JDBCにおける例外の種類と処理方法、try-with-resources構文を使用した効率的なリソース管理、コネクションプールの基本概念と実装方法、例外処理を実装した実践的なJDBCプログラムの作成について学びます。
 
-### [5. JDBC応用テクニック](https://fcircle-biz.github.io/tech_docs/guide/jdbc/jdbc-learning-material-5.html)
-BLOBやCLOBなどの大きなデータ型の扱い方、複雑なSQLクエリの実行とマッピング、高度なResultSet操作、データベース固有の機能活用方法を解説します。
+### [5. 高度なJDBC機能](https://fcircle-biz.github.io/tech_docs/guide/jdbc/jdbc-learning-material-5.html)
+バッチ処理によるパフォーマンス最適化、トランザクション管理（commit, rollback）、ストアドプロシージャとファンクションの呼び出し、在庫管理システムを例にしたトランザクション処理の実装について学びます。
 
-### [6. 接続プールとスレッドセーフティ](https://fcircle-biz.github.io/tech_docs/guide/jdbc/jdbc-learning-material-6.html)
-JDBCコネクションプールの概念と実装、マルチスレッド環境でのJDBC利用、HikariCPなどの接続プールライブラリの使用方法について学びます。
+### [6. JDBCとオブジェクト指向設計](https://fcircle-biz.github.io/tech_docs/guide/jdbc/jdbc-learning-material-6.html)
+Data Access Object（DAO）パターンの実装、オブジェクトリレーショナルマッピング（ORM）の基本原理、JDBCを使ったデータベース操作とJavaコレクションの連携手法、実際のECサイトバックエンドでのDAOパターン適用方法について学びます。
 
-### [7. エラーハンドリングとデバッグ](https://fcircle-biz.github.io/tech_docs/guide/jdbc/jdbc-learning-material-7.html)
-SQLExceptionの詳細な処理方法、エラーコードと状態コードの解釈、JDBCのロギングとデバッグ技術、効率的なトラブルシューティング手法を解説します。
+### [7. パフォーマンスとセキュリティ](https://fcircle-biz.github.io/tech_docs/guide/jdbc/jdbc-learning-material-7.html)
+SQLインジェクションとその危険性、PreparedStatementを使用したSQLインジェクション対策、入力検証とエスケープ処理、JDBCアプリケーションのパフォーマンスチューニング手法、コネクションプールの効果的な利用方法について学びます。
 
-### [8. セキュリティ対策](https://fcircle-biz.github.io/tech_docs/guide/jdbc/jdbc-learning-material-8.html)
-SQLインジェクション対策、センシティブデータの保護、データベース認証と権限管理、セキュアなJDBC実装のベストプラクティスを学びます。
+### [8. 総合プロジェクト - 図書館管理システム](https://fcircle-biz.github.io/tech_docs/guide/jdbc/jdbc-learning-material-8.html)
+これまでに学んだJDBCの知識を活用して、実践的な図書館管理システムを構築します。要件分析、データベース設計、レイヤー化アーキテクチャの実装、データアクセス層（DAO）の構築、ビジネスロジック層の実装、UIの作成、テスト、ドキュメント作成までの一連の開発プロセスを学びます。
 
-### [9. パフォーマンスチューニング](https://fcircle-biz.github.io/tech_docs/guide/jdbc/jdbc-learning-material-9.html)
-JDBCアプリケーションの最適化、クエリパフォーマンスの向上、メモリ使用量の最適化、データベース負荷の分散方法について解説します。
+### [9. JDBCリファレンス](https://fcircle-biz.github.io/tech_docs/guide/jdbc/jdbc-learning-material-9.html)
+JDBCの主要クラスとメソッド、JavaとPostgreSQLのデータ型マッピング、一般的なエラーコードと対処法などのリファレンス情報を学びます。実践的なJDBCプログラミングに役立つデバッグとトラブルシューティングのテクニックも紹介します。
 
-### [10. JDBCと他のフレームワークの統合](https://fcircle-biz.github.io/tech_docs/guide/jdbc/jdbc-learning-material-10.html)
-Spring JDBCとの連携、JPAとHibernateとの関係、MyBatisなどの他のORM/SQLマッピングフレームワークとの比較、マイクロサービスでのJDBC利用方法を学びます。
+### [10. データベース固有の設定](https://fcircle-biz.github.io/tech_docs/guide/jdbc/jdbc-learning-material-10.html)
+各データベース管理システム（MySQL、PostgreSQL、Oracle、SQL Server）の接続設定と特有の機能について学びます。データベース固有のJDBC URL形式や接続パラメータ、各データベースの特徴と注意点について解説します。
 
 ## 学習の進め方
 
