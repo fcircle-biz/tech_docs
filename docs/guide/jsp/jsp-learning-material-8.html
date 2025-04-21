@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSP/Servlet初心者向け学習教材 - 第8章: EL（式言語）とJSTL入門</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+        .navbar {
+            background-color: #1565c0;
+        }
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+        .chapter-title {
+            color: #1565c0;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #1565c0;
+            padding-bottom: 0.5rem;
+        }
+        .section-title {
+            color: #1976d2;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+        code {
+            display: block;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .quiz-container {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        .quiz-question {
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        .diagram {
+            max-width: 100%;
+            height: auto;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        .exercise {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        .note {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        #table-of-contents .list-group-item {
+            border: none;
+            padding: 0.5rem 1rem;
+        }
+        #table-of-contents .list-group-item-action {
+            color: #1976d2;
+        }
+        /* 選択された目次項目のスタイル */
+        #table-of-contents .list-group-item-action.active,
+        .list-group-item.active {
+            color: white !important; /* テキストを白色にして青い背景に対してコントラストをつける */
+            background-color: #1976d2;
+            border-color: #1976d2;
+        }
+        .section-nav {
+            padding-left: 1rem;
+        }
+        .inline-code {
+            background-color: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            display: inline;
+        }
+        footer {
+            background-color: #1565c0;
+            color: white;
+            padding: 1rem 0;
+            margin-top: 3rem;
+        }
+        .table-example {
+            width: 100%;
+            margin-bottom: 1rem;
+            border-collapse: collapse;
+        }
+        .table-example th {
+            background-color: #e3f2fd;
+            border: 1px solid #b3e5fc;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .table-example td {
+            border: 1px solid #b3e5fc;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .example-result {
+            background-color: #f1f8e9;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .warning {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+    </style>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#tableOfContents">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">JSP/Servlet初心者向け学習教材</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#introduction">はじめに</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#chapter8">第8章: EL（式言語）とJSTL入門</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <div class="row">
+            <!-- Sidebar - Table of Contents -->
+            <div class="col-lg-3">
+                <div class="sidebar">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">目次</h5>
+                        </div>
+                        <div id="table-of-contents" class="list-group list-group-flush">
+                            <a href="#introduction" class="list-group-item list-group-item-action">はじめに</a>
+                            <a href="#chapter8" class="list-group-item list-group-item-action">第8章: EL（式言語）とJSTL入門</a>
+                            <div class="section-nav">
+                                <a href="#el-intro" class="list-group-item list-group-item-action">8.1 EL（式言語）の基本</a>
+                                <a href="#el-operators" class="list-group-item list-group-item-action">8.2 ELの演算子と使用例</a>
+                                <a href="#jstl-intro" class="list-group-item list-group-item-action">8.3 JSTLの概要とセットアップ</a>
+                                <a href="#jstl-core" class="list-group-item list-group-item-action">8.4 JSTLコアタグライブラリ</a>
+                                <a href="#jstl-fmt" class="list-group-item list-group-item-action">8.5 JSTLフォーマットタグライブラリ</a>
+                                <a href="#el-jstl-combined" class="list-group-item list-group-item-action">8.6 ELとJSTLの組み合わせ</a>
+                                <a href="#chapter8-quiz" class="list-group-item list-group-item-action">8.7 理解度確認テスト</a>
+                            </div>
+                            <a href="#next-steps" class="list-group-item list-group-item-action">次のステップ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <section id="introduction">
+                    <h1 class="display-5 mb-4">JSP/Servlet初心者向け学習教材</h1>
+                    <p class="lead">この第8章では、JSPでの開発を効率化するEL（式言語）とJSTL（JSPスタンダードタグライブラリ）について学習します。これらの技術を使用することで、JSPページでのJavaコードを削減し、よりメンテナンス性の高いWebアプリケーションを開発できるようになります。</p>
+
+                    <div class="note">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>EL（式言語）の基本的な構文と使い方</li>
+                            <li>ELを使用したデータへのアクセス方法</li>
+                            <li>JSTLタグライブラリの概要と設定方法</li>
+                            <li>JSTLによる繰り返し処理と条件分岐</li>
+                            <li>JSTLのフォーマットタグによるデータ表示の整形</li>
+                            <li>ELとJSTLを組み合わせた実践的な使用方法</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="chapter8">
+                    <h2 class="chapter-title">第8章：EL（式言語）とJSTL入門</h2>
+                    <p>JSPでの開発では、ビジネスロジックとプレゼンテーションロジックを分離することが重要です。EL（式言語）とJSTL（JSPスタンダードタグライブラリ）は、JSPページからJavaコードを排除し、より読みやすく保守性の高いコードを実現するための技術です。</p>
+
+                    <section id="el-intro">
+                        <h3 class="section-title">8.1 EL（式言語）の基本</h3>
+                        <p>EL（Expression Language、式言語）は、JSPページ内でJavaコードを記述せずにデータにアクセスするための言語です。主にリクエスト、セッション、アプリケーションなどの各スコープに格納されたオブジェクトへのアクセスを簡略化します。</p>
+
+                        <h4>ELの基本構文</h4>
+                        <p>ELの基本構文は <span class="inline-code">${式}</span> の形式で表されます。この式の部分に、変数名や式を記述します。</p>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 150" width="500" height="150">
+                                <!-- EL構文説明図 -->
+                                <rect x="50" y="50" width="400" height="50" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="250" y="85" text-anchor="middle" font-size="24">${variableName}</text>
+                                
+                                <path d="M90,120 L90,100 L125,100" fill="none" stroke="#1976d2" stroke-width="2" />
+                                <text x="90" y="140" text-anchor="middle" font-size="16">開始記号</text>
+                                
+                                <path d="M370,120 L370,100 L330,100" fill="none" stroke="#1976d2" stroke-width="2" />
+                                <text x="370" y="140" text-anchor="middle" font-size="16">終了記号</text>
+                                
+                                <path d="M250,120 L250,100" fill="none" stroke="#1976d2" stroke-width="2" />
+                                <text x="250" y="140" text-anchor="middle" font-size="16">式または変数</text>
+                            </svg>
+                            <p class="text-center">図8.1: EL式の基本構文</p>
+                        </div>
+
+                        <h4>ELを使用したデータアクセス</h4>
+                        <p>ELを使用すると、様々なスコープ（リクエスト、セッション、アプリケーションなど）に格納されたデータに簡単にアクセスできます。</p>
+
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>説明</th>
+                                    <th>JSPスクリプトレット</th>
+                                    <th>EL式</th>
+                                </tr>
+                                <tr>
+                                    <td>リクエスト属性へのアクセス</td>
+                                    <td><span class="inline-code">&lt;%= request.getAttribute("username") %&gt;</span></td>
+                                    <td><span class="inline-code">${username}</span> または <span class="inline-code">${requestScope.username}</span></td>
+                                </tr>
+                                <tr>
+                                    <td>セッション属性へのアクセス</td>
+                                    <td><span class="inline-code">&lt;%= session.getAttribute("user") %&gt;</span></td>
+                                    <td><span class="inline-code">${sessionScope.user}</span></td>
+                                </tr>
+                                <tr>
+                                    <td>JavaBeansプロパティへのアクセス</td>
+                                    <td><span class="inline-code">&lt;%= ((User)request.getAttribute("user")).getName() %&gt;</span></td>
+                                    <td><span class="inline-code">${user.name}</span></td>
+                                </tr>
+                                <tr>
+                                    <td>リクエストパラメータへのアクセス</td>
+                                    <td><span class="inline-code">&lt;%= request.getParameter("id") %&gt;</span></td>
+                                    <td><span class="inline-code">${param.id}</span></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h4>暗黙的スコープ</h4>
+                        <p>ELでは、スコープを明示的に指定しない場合、以下の順序で変数を検索します：</p>
+                        <ol>
+                            <li>pageScope（ページスコープ）</li>
+                            <li>requestScope（リクエストスコープ）</li>
+                            <li>sessionScope（セッションスコープ）</li>
+                            <li>applicationScope（アプリケーションスコープ）</li>
+                        </ol>
+
+                        <p>例えば、<span class="inline-code">${username}</span> と書いた場合、pageScope → requestScope → sessionScope → applicationScope の順に「username」という名前の属性を探します。</p>
+
+                        <div class="note">
+                            <h5>ELの利点</h5>
+                            <ul>
+                                <li>JSPページにJavaコードを書く必要がなくなり、コードの可読性が向上する</li>
+                                <li>null値の処理が自動的に行われる（nullの場合は空文字列として表示される）</li>
+                                <li>ドット表記（.）やブラケット表記（[]）を使用して、複雑なオブジェクトのプロパティにもアクセス可能</li>
+                                <li>型変換が自動的に行われる</li>
+                            </ul>
+                        </div>
+
+                        <h4>ELの利用例</h4>
+                        <p>以下は、リクエスト属性に設定されたユーザー情報を表示するJSPの例です：</p>
+
+                        <code>&lt;%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;EL式のサンプル&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;ユーザー情報&lt;/h1&gt;
+    &lt;p&gt;ユーザー名: ${user.name}&lt;/p&gt;
+    &lt;p&gt;メールアドレス: ${user.email}&lt;/p&gt;
+    &lt;p&gt;年齢: ${user.age}&lt;/p&gt;
+    
+    &lt;!-- パラメータへのアクセス --&gt;
+    &lt;p&gt;リクエストパラメータ: ${param.id}&lt;/p&gt;
+    
+    &lt;!-- 条件式 --&gt;
+    &lt;p&gt;成人: ${user.age >= 20 ? "はい" : "いいえ"}&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code>
+
+                        <p>対応するServletの例：</p>
+
+                        <code>@WebServlet("/userInfo")
+public class UserInfoServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        // ユーザーオブジェクトの作成
+        User user = new User();
+        user.setName("山田太郎");
+        user.setEmail("yamada@example.com");
+        user.setAge(30);
+        
+        // リクエスト属性に設定
+        request.setAttribute("user", user);
+        
+        // JSPにフォワード
+        request.getRequestDispatcher("/WEB-INF/views/user-info.jsp").forward(request, response);
+    }
+}</code>
+
+                        <p>Userクラスの例：</p>
+
+                        <code>public class User {
+    private String name;
+    private String email;
+    private int age;
+    
+    // getter, setterメソッド
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public String getEmail() {
+        return email;
+    }
+    
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
+    public int getAge() {
+        return age;
+    }
+    
+    public void setAge(int age) {
+        this.age = age;
+    }
+}</code>
+
+                        <div class="exercise">
+                            <h5>演習 8.1.1: ELを使ったデータ表示</h5>
+                            <ol>
+                                <li>Productクラスを作成し、id, name, price, descriptionのプロパティとgetter/setterを実装してください。</li>
+                                <li>ProductListServletを作成し、複数のProduct（商品情報）をリスト化してリクエスト属性に設定してください。</li>
+                                <li>JSPページを作成し、EL式を使って商品情報を表示してください。</li>
+                                <li>商品の価格が1000円以上の場合は「高額商品」、それ以外は「お買い得商品」と表示するように条件式を使ってください。</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="el-operators">
+                        <h3 class="section-title">8.2 ELの演算子と使用例</h3>
+                        <p>ELでは様々な演算子を使用して、式を計算したり条件式を書いたりすることができます。</p>
+
+                        <h4>算術演算子</h4>
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>演算子</th>
+                                    <th>説明</th>
+                                    <th>使用例</th>
+                                    <th>結果（例）</th>
+                                </tr>
+                                <tr>
+                                    <td>+</td>
+                                    <td>加算</td>
+                                    <td><span class="inline-code">${5 + 3}</span></td>
+                                    <td>8</td>
+                                </tr>
+                                <tr>
+                                    <td>-</td>
+                                    <td>減算</td>
+                                    <td><span class="inline-code">${5 - 3}</span></td>
+                                    <td>2</td>
+                                </tr>
+                                <tr>
+                                    <td>*</td>
+                                    <td>乗算</td>
+                                    <td><span class="inline-code">${5 * 3}</span></td>
+                                    <td>15</td>
+                                </tr>
+                                <tr>
+                                    <td>/ または div</td>
+                                    <td>除算</td>
+                                    <td><span class="inline-code">${5 / 2}</span> または <span class="inline-code">${5 div 2}</span></td>
+                                    <td>2.5</td>
+                                </tr>
+                                <tr>
+                                    <td>% または mod</td>
+                                    <td>剰余（モジュロ）</td>
+                                    <td><span class="inline-code">${5 % 2}</span> または <span class="inline-code">${5 mod 2}</span></td>
+                                    <td>1</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h4>論理演算子</h4>
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>演算子</th>
+                                    <th>説明</th>
+                                    <th>使用例</th>
+                                </tr>
+                                <tr>
+                                    <td>&& または and</td>
+                                    <td>論理AND</td>
+                                    <td><span class="inline-code">${user.age > 20 && user.premium}</span> または <span class="inline-code">${user.age > 20 and user.premium}</span></td>
+                                </tr>
+                                <tr>
+                                    <td>|| または or</td>
+                                    <td>論理OR</td>
+                                    <td><span class="inline-code">${user.age > 65 || user.student}</span> または <span class="inline-code">${user.age > 65 or user.student}</span></td>
+                                </tr>
+                                <tr>
+                                    <td>! または not</td>
+                                    <td>論理NOT</td>
+                                    <td><span class="inline-code">${!user.blocked}</span> または <span class="inline-code">${not user.blocked}</span></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h4>比較演算子</h4>
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>演算子</th>
+                                    <th>説明</th>
+                                    <th>使用例</th>
+                                </tr>
+                                <tr>
+                                    <td>== または eq</td>
+                                    <td>等しい</td>
+                                    <td><span class="inline-code">${user.role == 'admin'}</span> または <span class="inline-code">${user.role eq 'admin'}</span></td>
+                                </tr>
+                                <tr>
+                                    <td>!= または ne</td>
+                                    <td>等しくない</td>
+                                    <td><span class="inline-code">${user.status != 'inactive'}</span> または <span class="inline-code">${user.status ne 'inactive'}</span></td>
+                                </tr>
+                                <tr>
+                                    <td>&lt; または lt</td>
+                                    <td>より小さい</td>
+                                    <td><span class="inline-code">${product.price < 1000}</span> または <span class="inline-code">${product.price lt 1000}</span></td>
+                                </tr>
+                                <tr>
+                                    <td>&gt; または gt</td>
+                                    <td>より大きい</td>
+                                    <td><span class="inline-code">${user.age > 20}</span> または <span class="inline-code">${user.age gt 20}</span></td>
+                                </tr>
+                                <tr>
+                                    <td>&lt;= または le</td>
+                                    <td>以下</td>
+                                    <td><span class="inline-code">${product.stock <= 5}</span> または <span class="inline-code">${product.stock le 5}</span></td>
+                                </tr>
+                                <tr>
+                                    <td>&gt;= または ge</td>
+                                    <td>以上</td>
+                                    <td><span class="inline-code">${order.total >= 10000}</span> または <span class="inline-code">${order.total ge 10000}</span></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h4>条件演算子（三項演算子）</h4>
+                        <p>ELでは、条件 ? 真の場合の値 : 偽の場合の値 という形式の三項演算子を使用できます。</p>
+                        <p>例：<span class="inline-code">${user.age >= 20 ? '成人' : '未成年'}</span></p>
+
+                        <h4>空チェック演算子</h4>
+                        <p>ELでは、empty演算子を使って、変数がnull、空文字列、空コレクションかどうかをチェックできます。</p>
+                        <p>例：<span class="inline-code">${empty user.email ? '未設定' : user.email}</span></p>
+
+                        <h4>EL関数</h4>
+                        <p>JSP ELでは、独自の関数も使用できます。JSTLに含まれる関数ライブラリを使うには、以下のようにタグライブラリを宣言します：</p>
+
+                        <code>&lt;%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %&gt;</code>
+
+                        <p>関数の例：</p>
+                        <ul>
+                            <li><span class="inline-code">${fn:length(list)}</span> - コレクションまたは文字列の長さを取得</li>
+                            <li><span class="inline-code">${fn:toUpperCase(str)}</span> - 文字列を大文字に変換</li>
+                            <li><span class="inline-code">${fn:toLowerCase(str)}</span> - 文字列を小文字に変換</li>
+                            <li><span class="inline-code">${fn:substring(str, 0, 10)}</span> - 部分文字列を取得</li>
+                            <li><span class="inline-code">${fn:contains(str, 'search')}</span> - 文字列に特定の部分文字列が含まれるか確認</li>
+                        </ul>
+
+                        <div class="exercise">
+                            <h5>演習 8.2.1: EL演算子の活用</h5>
+                            <ol>
+                                <li>ShoppingCartServletを作成し、商品リストと合計金額をリクエスト属性に設定してください。</li>
+                                <li>JSPページで、ELの算術演算子を使用して商品の合計金額を計算してください。</li>
+                                <li>合計金額が5000円以上なら「送料無料」、それ以外なら「送料500円」と表示する条件分岐をELの三項演算子で実装してください。</li>
+                                <li>商品リストが空の場合は「カートは空です」と表示するよう、empty演算子を使用してください。</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="jstl-intro">
+                        <h3 class="section-title">8.3 JSTLの概要とセットアップ</h3>
+                        <p>JSTL（JSP Standard Tag Library）は、JSPページで共通のタスクを実行するためのタグライブラリのコレクションです。JSTLを使用することで、JSPからJavaコードを排除し、よりメンテナンス性の高いビューを作成できます。</p>
+
+                        <h4>JSTLの主要タグライブラリ</h4>
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>ライブラリ</th>
+                                    <th>プレフィックス</th>
+                                    <th>URI</th>
+                                    <th>機能</th>
+                                </tr>
+                                <tr>
+                                    <td>Core</td>
+                                    <td>c</td>
+                                    <td>http://java.sun.com/jsp/jstl/core</td>
+                                    <td>条件分岐、繰り返し、変数操作など基本的な機能</td>
+                                </tr>
+                                <tr>
+                                    <td>Formatting</td>
+                                    <td>fmt</td>
+                                    <td>http://java.sun.com/jsp/jstl/fmt</td>
+                                    <td>国際化、数値・日付のフォーマット</td>
+                                </tr>
+                                <tr>
+                                    <td>Functions</td>
+                                    <td>fn</td>
+                                    <td>http://java.sun.com/jsp/jstl/functions</td>
+                                    <td>文字列操作関数</td>
+                                </tr>
+                                <tr>
+                                    <td>SQL</td>
+                                    <td>sql</td>
+                                    <td>http://java.sun.com/jsp/jstl/sql</td>
+                                    <td>データベース操作（※直接使用は非推奨）</td>
+                                </tr>
+                                <tr>
+                                    <td>XML</td>
+                                    <td>x</td>
+                                    <td>http://java.sun.com/jsp/jstl/xml</td>
+                                    <td>XML処理</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="note">
+                            <h5>注意: Jakarta EE 9以降のURI</h5>
+                            <p>Jakarta EE 9（Tomcat 10）以降では、URIが変更されています。上記の <code>http://java.sun.com/jsp/jstl/...</code> の代わりに <code>jakarta.tags.xxx</code> というURIを使用します：</p>
+                            <ul>
+                                <li>Core: <code>jakarta.tags.core</code></li>
+                                <li>Formatting: <code>jakarta.tags.fmt</code></li>
+                                <li>Functions: <code>jakarta.tags.functions</code></li>
+                                <li>SQL: <code>jakarta.tags.sql</code></li>
+                                <li>XML: <code>jakarta.tags.xml</code></li>
+                            </ul>
+                        </div>
+
+                        <h4>JSTLのセットアップ</h4>
+                        <p>JSTLを使用するには、まず必要なライブラリをプロジェクトに追加する必要があります。</p>
+
+                        <p><strong>Maven</strong>を使用している場合は、pom.xmlに以下の依存関係を追加します（Jakarta EE 9以降）：</p>
+
+                        <code>&lt;dependency&gt;
+    &lt;groupId&gt;jakarta.servlet.jsp.jstl&lt;/groupId&gt;
+    &lt;artifactId&gt;jakarta.servlet.jsp.jstl-api&lt;/artifactId&gt;
+    &lt;version&gt;2.0.0&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.glassfish.web&lt;/groupId&gt;
+    &lt;artifactId&gt;jakarta.servlet.jsp.jstl&lt;/artifactId&gt;
+    &lt;version&gt;2.0.0&lt;/version&gt;
+&lt;/dependency&gt;</code>
+
+                        <p>または、手動でJARファイルをダウンロードして、プロジェクトのWEB-INF/libディレクトリに配置します。</p>
+
+                        <h4>JSTLタグライブラリの宣言</h4>
+                        <p>JSTLを使用するJSPページでは、使用するタグライブラリを宣言する必要があります。以下は、Coreタグライブラリを宣言する例です：</p>
+
+                        <code>&lt;%@ taglib prefix="c" uri="jakarta.tags.core" %&gt;</code>
+
+                        <p>複数のライブラリを使用する場合：</p>
+
+                        <code>&lt;%@ taglib prefix="c" uri="jakarta.tags.core" %&gt;
+&lt;%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %&gt;
+&lt;%@ taglib prefix="fn" uri="jakarta.tags.functions" %&gt;</code>
+
+                        <div class="exercise">
+                            <h5>演習 8.3.1: JSTLのセットアップ</h5>
+                            <ol>
+                                <li>既存のWebプロジェクトまたは新規プロジェクトにJSTLライブラリを追加してください。</li>
+                                <li>シンプルなJSPページを作成し、JSTLのCoreタグライブラリを宣言してください。</li>
+                                <li><code>&lt;c:out&gt;</code>タグを使用して「Hello, JSTL!」というメッセージを表示してください。</li>
+                                <li>プロジェクトを実行して、JSTLが正しく設定されていることを確認してください。</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="jstl-core">
+                        <h3 class="section-title">8.4 JSTLコアタグライブラリ</h3>
+                        <p>JSTLのコアタグライブラリ（prefix="c"）は、条件分岐や繰り返し処理など、JSPページで頻繁に使用される基本的な機能を提供します。</p>
+
+                        <h4>変数サポートタグ</h4>
+                        <ul>
+                            <li><code>&lt;c:set&gt;</code> - 変数を設定する</li>
+                            <li><code>&lt;c:remove&gt;</code> - 変数を削除する</li>
+                            <li><code>&lt;c:out&gt;</code> - 変数の値をエスケープして出力する</li>
+                        </ul>
+
+                        <div class="example-result">
+                            <p><strong>例：</strong></p>
+                            <code>&lt;c:set var="username" value="山田太郎" scope="request" /&gt;
+名前：&lt;c:out value="${username}" default="ゲスト" /&gt;</code>
+                            <p><strong>結果：</strong> 名前：山田太郎</p>
+                        </div>
+
+                        <h4>条件分岐タグ</h4>
+                        <ul>
+                            <li><code>&lt;c:if&gt;</code> - 単純な条件分岐</li>
+                            <li><code>&lt;c:choose&gt;</code>, <code>&lt;c:when&gt;</code>, <code>&lt;c:otherwise&gt;</code> - 複数の条件を扱う分岐（switch文に相当）</li>
+                        </ul>
+
+                        <div class="example-result">
+                            <p><strong>例（c:if）：</strong></p>
+                            <code>&lt;c:if test="${user.age >= 20}"&gt;
+    &lt;p&gt;成人です。&lt;/p&gt;
+&lt;/c:if&gt;</code>
+
+                            <p><strong>例（c:choose）：</strong></p>
+                            <code>&lt;c:choose&gt;
+    &lt;c:when test="${user.age < 13}"&gt;
+        &lt;p&gt;子供料金：500円&lt;/p&gt;
+    &lt;/c:when&gt;
+    &lt;c:when test="${user.age < 20}"&gt;
+        &lt;p&gt;学生料金：800円&lt;/p&gt;
+    &lt;/c:when&gt;
+    &lt;c:otherwise&gt;
+        &lt;p&gt;大人料金：1,000円&lt;/p&gt;
+    &lt;/c:otherwise&gt;
+&lt;/c:choose&gt;</code>
+                        </div>
+
+                        <h4>繰り返し処理タグ</h4>
+                        <ul>
+                            <li><code>&lt;c:forEach&gt;</code> - コレクションの各要素に対して処理を繰り返す</li>
+                            <li><code>&lt;c:forTokens&gt;</code> - 区切り文字で分割された文字列の各トークンに対して処理を繰り返す</li>
+                        </ul>
+
+                        <div class="example-result">
+                            <p><strong>例（c:forEach・リスト処理）：</strong></p>
+                            <code>&lt;c:forEach var="product" items="${productList}"&gt;
+    &lt;div&gt;
+        &lt;h3&gt;${product.name}&lt;/h3&gt;
+        &lt;p&gt;価格: ${product.price}円&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/c:forEach&gt;</code>
+
+                            <p><strong>例（c:forEach・カウンタ使用）：</strong></p>
+                            <code>&lt;c:forEach var="i" begin="1" end="5"&gt;
+    &lt;p&gt;${i}番目の項目&lt;/p&gt;
+&lt;/c:forEach&gt;</code>
+
+                            <p><strong>例（c:forTokens）：</strong></p>
+                            <code>&lt;c:forTokens var="color" items="赤,青,緑,黄色" delims=","&gt;
+    &lt;p&gt;色: ${color}&lt;/p&gt;
+&lt;/c:forTokens&gt;</code>
+                        </div>
+
+                        <h4>URL関連タグ</h4>
+                        <ul>
+                            <li><code>&lt;c:url&gt;</code> - URLを生成し、必要に応じてセッションIDやパラメータを追加する</li>
+                            <li><code>&lt;c:param&gt;</code> - <code>&lt;c:url&gt;</code>や<code>&lt;c:redirect&gt;</code>内でパラメータを追加する</li>
+                            <li><code>&lt;c:redirect&gt;</code> - 指定したURLにリダイレクトする</li>
+                        </ul>
+
+                        <div class="example-result">
+                            <p><strong>例（c:url・c:param）：</strong></p>
+                            <code>&lt;c:url var="productDetailUrl" value="/product"&gt;
+    &lt;c:param name="id" value="${product.id}" /&gt;
+    &lt;c:param name="category" value="electronics" /&gt;
+&lt;/c:url&gt;
+&lt;a href="${productDetailUrl}"&gt;${product.name}の詳細を見る&lt;/a&gt;</code>
+                        </div>
+
+                        <h4>その他のタグ</h4>
+                        <ul>
+                            <li><code>&lt;c:catch&gt;</code> - タグ内で発生した例外をキャッチする</li>
+                            <li><code>&lt;c:import&gt;</code> - 外部リソースの内容を取り込む</li>
+                        </ul>
+
+                        <div class="exercise">
+                            <h5>演習 8.4.1: JSTLコアタグの活用</h5>
+                            <ol>
+                                <li>ProductListServletを作成（または前の演習のものを再利用）し、商品情報のリストをリクエスト属性に設定してください。</li>
+                                <li>JSPページで、<code>&lt;c:forEach&gt;</code>タグを使用して商品リストをテーブル形式で表示してください。</li>
+                                <li><code>&lt;c:if&gt;</code>または<code>&lt;c:choose&gt;</code>タグを使用して、在庫状況に応じたメッセージを表示してください。</li>
+                                <li><code>&lt;c:url&gt;</code>タグを使用して、商品詳細ページへのリンクを生成してください。</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="jstl-fmt">
+                        <h3 class="section-title">8.5 JSTLフォーマットタグライブラリ</h3>
+                        <p>JSTLのフォーマットタグライブラリ（prefix="fmt"）は、国際化（i18n）、数値・日付・時刻のフォーマットを行うためのタグを提供します。</p>
+
+                        <h4>国際化関連タグ</h4>
+                        <ul>
+                            <li><code>&lt;fmt:setLocale&gt;</code> - 現在のロケールを設定する</li>
+                            <li><code>&lt;fmt:bundle&gt;</code>, <code>&lt;fmt:setBundle&gt;</code> - リソースバンドルを指定する</li>
+                            <li><code>&lt;fmt:message&gt;</code> - リソースバンドルからメッセージを取得する</li>
+                            <li><code>&lt;fmt:param&gt;</code> - <code>&lt;fmt:message&gt;</code>内でパラメータを指定する</li>
+                        </ul>
+
+                        <div class="example-result">
+                            <p><strong>例（国際化メッセージ）：</strong></p>
+                            <code>&lt;fmt:setLocale value="ja_JP" /&gt;
+&lt;fmt:setBundle basename="messages" /&gt;
+&lt;fmt:message key="welcome" /&gt;
+
+&lt;fmt:message key="greeting"&gt;
+    &lt;fmt:param value="${user.name}" /&gt;
+&lt;/fmt:message&gt;</code>
+                        </div>
+
+                        <h4>数値フォーマットタグ</h4>
+                        <ul>
+                            <li><code>&lt;fmt:formatNumber&gt;</code> - 数値をフォーマットする</li>
+                            <li><code>&lt;fmt:parseNumber&gt;</code> - 文字列を数値に変換する</li>
+                        </ul>
+
+                        <div class="example-result">
+                            <p><strong>例（数値フォーマット）：</strong></p>
+                            <code>&lt;fmt:formatNumber value="${product.price}" type="currency" currencySymbol="¥" /&gt;
+&lt;fmt:formatNumber value="${product.discount}" type="percent" /&gt;
+&lt;fmt:formatNumber value="${product.weight}" pattern="#,###.##" /&gt;</code>
+                            <p><strong>結果：</strong><br>
+                            ¥10,000<br>
+                            20%<br>
+                            1,234.56</p>
+                        </div>
+
+                        <h4>日付・時刻フォーマットタグ</h4>
+                        <ul>
+                            <li><code>&lt;fmt:formatDate&gt;</code> - 日付/時刻をフォーマットする</li>
+                            <li><code>&lt;fmt:parseDate&gt;</code> - 文字列を日付に変換する</li>
+                            <li><code>&lt;fmt:timeZone&gt;</code>, <code>&lt;fmt:setTimeZone&gt;</code> - タイムゾーンを設定する</li>
+                        </ul>
+
+                        <div class="example-result">
+                            <p><strong>例（日付フォーマット）：</strong></p>
+                            <code>&lt;fmt:formatDate value="${order.date}" type="date" dateStyle="full" /&gt;
+&lt;fmt:formatDate value="${order.date}" type="both" pattern="yyyy年MM月dd日 HH時mm分" /&gt;
+&lt;fmt:formatDate value="${order.date}" type="time" timeStyle="short" /&gt;</code>
+                            <p><strong>結果：</strong><br>
+                            2025年4月22日火曜日<br>
+                            2025年04月22日 14時30分<br>
+                            14:30</p>
+                        </div>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200" width="600" height="200">
+                                <!-- 日付フォーマットのダイアグラム -->
+                                <rect x="50" y="20" width="500" height="160" fill="#f8f9fa" stroke="#ced4da" stroke-width="2" rx="5" />
+                                
+                                <!-- ヘッダー -->
+                                <rect x="50" y="20" width="500" height="40" fill="#e9ecef" stroke="#ced4da" stroke-width="2" rx="3 3 0 0" />
+                                <text x="300" y="45" text-anchor="middle" font-size="16" font-weight="bold">日付・時刻フォーマットパターン</text>
+                                
+                                <!-- 内容 -->
+                                <text x="80" y="80" font-size="14">y: 年（yy: 24, yyyy: 2024）</text>
+                                <text x="380" y="80" font-size="14">M: 月（MM: 04, MMM: 4月）</text>
+                                <text x="80" y="110" font-size="14">d: 日（dd: 02, d: 2）</text>
+                                <text x="380" y="110" font-size="14">E: 曜日（E: 火, EEEE: 火曜日）</text>
+                                <text x="80" y="140" font-size="14">H: 時（24時間形式, HH: 08）</text>
+                                <text x="380" y="140" font-size="14">h: 時（12時間形式, hh: 08）</text>
+                                <text x="80" y="170" font-size="14">m: 分（mm: 05）</text>
+                                <text x="380" y="170" font-size="14">s: 秒（ss: 09）</text>
+                            </svg>
+                            <p class="text-center">図8.2: 日付・時刻フォーマットパターンの例</p>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>演習 8.5.1: フォーマットタグの活用</h5>
+                            <ol>
+                                <li>OrderServletを作成し、注文情報（注文日、商品名、価格、数量など）をリクエスト属性に設定してください。</li>
+                                <li>JSPページで、<code>&lt;fmt:formatDate&gt;</code>タグを使用して注文日を「yyyy年MM月dd日（E）」形式で表示してください。</li>
+                                <li><code>&lt;fmt:formatNumber&gt;</code>タグを使用して商品価格を通貨形式（¥マークつき）で表示してください。</li>
+                                <li>商品価格と数量から計算した合計金額も、通貨形式で表示してください。</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="el-jstl-combined">
+                        <h3 class="section-title">8.6 ELとJSTLの組み合わせ</h3>
+                        <p>ELとJSTLを組み合わせることで、JSPページからJavaコードを完全に排除し、より保守性の高いビューを作成できます。以下に実践的な例を示します。</p>
+
+                        <h4>ショッピングカートの表示例</h4>
+                        <p>以下は、ELとJSTLを使用してショッピングカートの内容を表示するJSPページの例です：</p>
+
+                        <code>&lt;%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%&gt;
+&lt;%@ taglib prefix="c" uri="jakarta.tags.core" %&gt;
+&lt;%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;ショッピングカート&lt;/title&gt;
+    &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="container mt-4"&gt;
+        &lt;h1&gt;ショッピングカート&lt;/h1&gt;
+        
+        &lt;c:choose&gt;
+            &lt;c:when test="${empty cartItems}"&gt;
+                &lt;div class="alert alert-info"&gt;カートは空です。&lt;/div&gt;
+            &lt;/c:when&gt;
+            &lt;c:otherwise&gt;
+                &lt;table class="table table-striped"&gt;
+                    &lt;thead&gt;
+                        &lt;tr&gt;
+                            &lt;th&gt;商品名&lt;/th&gt;
+                            &lt;th&gt;単価&lt;/th&gt;
+                            &lt;th&gt;数量&lt;/th&gt;
+                            &lt;th&gt;小計&lt;/th&gt;
+                            &lt;th&gt;操作&lt;/th&gt;
+                        &lt;/tr&gt;
+                    &lt;/thead&gt;
+                    &lt;tbody&gt;
+                        &lt;c:forEach var="item" items="${cartItems}"&gt;
+                            &lt;tr&gt;
+                                &lt;td&gt;${item.product.name}&lt;/td&gt;
+                                &lt;td&gt;
+                                    &lt;fmt:formatNumber value="${item.product.price}" type="currency" currencySymbol="¥" maxFractionDigits="0" /&gt;
+                                &lt;/td&gt;
+                                &lt;td&gt;
+                                    &lt;form action="&lt;c:url value='/cart/update' /&gt;" method="post" class="d-flex"&gt;
+                                        &lt;input type="hidden" name="productId" value="${item.product.id}" /&gt;
+                                        &lt;input type="number" name="quantity" value="${item.quantity}" min="1" class="form-control form-control-sm" style="width: 60px;" /&gt;
+                                        &lt;button type="submit" class="btn btn-sm btn-outline-primary ms-2"&gt;更新&lt;/button&gt;
+                                    &lt;/form&gt;
+                                &lt;/td&gt;
+                                &lt;td&gt;
+                                    &lt;fmt:formatNumber value="${item.product.price * item.quantity}" type="currency" currencySymbol="¥" maxFractionDigits="0" /&gt;
+                                &lt;/td&gt;
+                                &lt;td&gt;
+                                    &lt;c:url var="removeUrl" value="/cart/remove"&gt;
+                                        &lt;c:param name="productId" value="${item.product.id}" /&gt;
+                                    &lt;/c:url&gt;
+                                    &lt;a href="${removeUrl}" class="btn btn-sm btn-danger"&gt;削除&lt;/a&gt;
+                                &lt;/td&gt;
+                            &lt;/tr&gt;
+                        &lt;/c:forEach&gt;
+                    &lt;/tbody&gt;
+                    &lt;tfoot&gt;
+                        &lt;tr&gt;
+                            &lt;td colspan="3" class="text-end"&gt;&lt;strong&gt;合計:&lt;/strong&gt;&lt;/td&gt;
+                            &lt;td&gt;
+                                &lt;fmt:formatNumber value="${totalAmount}" type="currency" currencySymbol="¥" maxFractionDigits="0" /&gt;
+                            &lt;/td&gt;
+                            &lt;td&gt;&lt;/td&gt;
+                        &lt;/tr&gt;
+                        &lt;tr&gt;
+                            &lt;td colspan="3" class="text-end"&gt;&lt;strong&gt;送料:&lt;/strong&gt;&lt;/td&gt;
+                            &lt;td&gt;
+                                &lt;c:choose&gt;
+                                    &lt;c:when test="${totalAmount >= 5000}"&gt;
+                                        &lt;span class="text-success"&gt;無料&lt;/span&gt;
+                                    &lt;/c:when&gt;
+                                    &lt;c:otherwise&gt;
+                                        &lt;fmt:formatNumber value="500" type="currency" currencySymbol="¥" maxFractionDigits="0" /&gt;
+                                    &lt;/c:otherwise&gt;
+                                &lt;/c:choose&gt;
+                            &lt;/td&gt;
+                            &lt;td&gt;&lt;/td&gt;
+                        &lt;/tr&gt;
+                        &lt;tr&gt;
+                            &lt;td colspan="3" class="text-end"&gt;&lt;strong&gt;合計金額:&lt;/strong&gt;&lt;/td&gt;
+                            &lt;td&gt;
+                                &lt;strong&gt;
+                                    &lt;fmt:formatNumber value="${totalAmount >= 5000 ? totalAmount : totalAmount + 500}" type="currency" currencySymbol="¥" maxFractionDigits="0" /&gt;
+                                &lt;/strong&gt;
+                            &lt;/td&gt;
+                            &lt;td&gt;&lt;/td&gt;
+                        &lt;/tr&gt;
+                    &lt;/tfoot&gt;
+                &lt;/table&gt;
+                
+                &lt;div class="d-flex justify-content-between mt-3"&gt;
+                    &lt;a href="&lt;c:url value='/products' /&gt;" class="btn btn-outline-primary"&gt;買い物を続ける&lt;/a&gt;
+                    &lt;a href="&lt;c:url value='/checkout' /&gt;" class="btn btn-primary"&gt;レジに進む&lt;/a&gt;
+                &lt;/div&gt;
+            &lt;/c:otherwise&gt;
+        &lt;/c:choose&gt;
+    &lt;/div&gt;
+    
+    &lt;script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code>
+
+                        <h4>対応するServletの例</h4>
+                        <p>以下は、上記JSPページに対応するServletの例です：</p>
+
+                        <code>@WebServlet("/cart")
+public class CartServlet extends HttpServlet {
+    
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        // カートアイテムの取得（実際にはセッションから取得するなど）
+        List&lt;CartItem&gt; cartItems = getCartItems(request);
+        
+        // 合計金額の計算
+        double totalAmount = cartItems.stream()
+                .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
+                .sum();
+        
+        // リクエスト属性に設定
+        request.setAttribute("cartItems", cartItems);
+        request.setAttribute("totalAmount", totalAmount);
+        
+        // JSPにフォワード
+        request.getRequestDispatcher("/WEB-INF/views/cart.jsp").forward(request, response);
+    }
+    
+    private List&lt;CartItem&gt; getCartItems(HttpServletRequest request) {
+        // セッションからカートを取得する処理
+        HttpSession session = request.getSession();
+        @SuppressWarnings("unchecked")
+        List&lt;CartItem&gt; cartItems = (List&lt;CartItem&gt;) session.getAttribute("cart");
+        
+        if (cartItems == null) {
+            cartItems = new ArrayList&lt;&gt;();
+        }
+        
+        return cartItems;
+    }
+}</code>
+
+                        <h4>MVCパターンとEL/JSTLの関係</h4>
+                        <p>ELとJSTLは、MVC（Model-View-Controller）アーキテクチャにおけるViewの部分を担当します。以下はMVCパターンにおけるEL/JSTLの位置付けです：</p>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" width="600" height="300">
+                                <!-- MVCとEL/JSTLの関係図 -->
+                                <rect x="50" y="50" width="150" height="80" fill="#bbdefb" stroke="#1976d2" stroke-width="2" rx="5" />
+                                <text x="125" y="90" text-anchor="middle" font-size="16">Controller</text>
+                                <text x="125" y="110" text-anchor="middle" font-size="14">（Servlet）</text>
+                                
+                                <rect x="50" y="170" width="150" height="80" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5" />
+                                <text x="125" y="210" text-anchor="middle" font-size="16">Model</text>
+                                <text x="125" y="230" text-anchor="middle" font-size="14">（JavaBeans）</text>
+                                
+                                <rect x="400" y="110" width="150" height="80" fill="#ffecb3" stroke="#ffa000" stroke-width="2" rx="5" />
+                                <text x="475" y="150" text-anchor="middle" font-size="16">View</text>
+                                <text x="475" y="170" text-anchor="middle" font-size="14">（JSP + EL + JSTL）</text>
+                                
+                                <!-- 矢印 -->
+                                <line x1="200" y1="90" x2="400" y2="150" fill="none" stroke="#1976d2" stroke-width="2" marker-end="url(#arrow1)" />
+                                <line x1="200" y1="210" x2="400" y2="150" fill="none" stroke="#388e3c" stroke-width="2" marker-end="url(#arrow2)" />
+                                
+                                <defs>
+                                    <marker id="arrow1" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                        <path d="M0,0 L0,6 L9,3 z" fill="#1976d2" />
+                                    </marker>
+                                    <marker id="arrow2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                        <path d="M0,0 L0,6 L9,3 z" fill="#388e3c" />
+                                    </marker>
+                                </defs>
+                                
+                                <!-- 説明テキスト -->
+                                <text x="240" y="80" font-size="12">1. データを設定</text>
+                                <text x="250" y="200" font-size="12">2. データを提供</text>
+                                
+                                <!-- EL/JSTLの説明 -->
+                                <rect x="400" y="230" width="150" height="60" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="1" rx="5" />
+                                <text x="475" y="250" text-anchor="middle" font-size="12">EL: データアクセス</text>
+                                <text x="475" y="270" text-anchor="middle" font-size="12">JSTL: 制御フロー</text>
+                            </svg>
+                            <p class="text-center">図8.3: MVCパターンにおけるEL/JSTLの位置付け</p>
+                        </div>
+
+                        <div class="note">
+                            <h5>EL/JSTLの利点</h5>
+                            <ul>
+                                <li><strong>関心の分離</strong>：ビジネスロジック（Model）、制御フロー（Controller）、表示（View）を明確に分離できる</li>
+                                <li><strong>メンテナンス性の向上</strong>：JSPページからJavaコードを排除することで、デザイナーとプログラマーの分業がしやすくなる</li>
+                                <li><strong>コードの簡素化</strong>：複雑なJavaコードをシンプルなタグに置き換えることで、可読性が向上する</li>
+                                <li><strong>再利用性の向上</strong>：JSTLタグは汎用的に設計されており、異なるページで同じタグを再利用できる</li>
+                            </ul>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>演習 8.6.1: 総合演習 - 商品一覧と詳細表示</h5>
+                            <ol>
+                                <li>以下のクラスを作成してください：
+                                    <ul>
+                                        <li>Product（id, name, price, description, imageUrl, stockQuantityのプロパティ）</li>
+                                        <li>ProductService（商品のリスト取得、特定IDの商品取得のメソッドを持つ）</li>
+                                        <li>ProductListServlet（商品一覧を表示）</li>
+                                        <li>ProductDetailServlet（商品詳細を表示）</li>
+                                    </ul>
+                                </li>
+                                <li>商品一覧ページ（product-list.jsp）を作成し、ELとJSTLを使用して商品のグリッドを表示してください。商品名と価格を表示し、詳細ページへのリンクを追加してください。</li>
+                                <li>商品詳細ページ（product-detail.jsp）を作成し、商品の詳細情報を表示してください。価格は通貨形式で、在庫状況に応じたメッセージを条件分岐で表示してください。</li>
+                                <li>両方のJSPページで、ELとJSTLを活用してJavaスクリプトレットを使用せずに実装してください。</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="chapter8-quiz">
+                        <h3 class="section-title">8.7 理解度確認テスト</h3>
+                        <div class="quiz-container">
+                            <h4>第8章の理解度チェック</h4>
+                            <p>以下の問題に答えて、第8章の内容の理解度を確認しましょう。</p>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題1:</strong> EL式の基本構文として正しいものはどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1a" value="a">
+                                    <label class="form-check-label" for="q1a">
+                                        %{expression}
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1b" value="b">
+                                    <label class="form-check-label" for="q1b">
+                                        #{expression}
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1c" value="c">
+                                        <label class="form-check-label" for="q1c">
+                                        ${expression}
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1d" value="d">
+                                        <label class="form-check-label" for="q1d">
+                                        @{expression}
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題2:</strong> JSTLのコアタグライブラリを使用するために必要なタグライブラリ宣言はどれですか？（Jakarta EE 9以降の場合）</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2a" value="a">
+                                    <label class="form-check-label" for="q2a">
+                                        &lt;%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %&gt;
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2b" value="b">
+                                    <label class="form-check-label" for="q2b">
+                                        &lt;%@ taglib prefix="c" uri="jakarta.tags.core" %&gt;
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2c" value="c">
+                                        <label class="form-check-label" for="q2c">
+                                        &lt;%@ taglib prefix="core" uri="java.sun.com/jstl" %&gt;
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2d" value="d">
+                                        <label class="form-check-label" for="q2d">
+                                        &lt;%@ include prefix="c" uri="jakarta.tags.core" %&gt;
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題3:</strong> 以下のJSTLコードで、変数iの値が5以上の場合に「大きい数字」、そうでない場合に「小さい数字」と表示するために、空欄に入れるべきコードはどれですか？</p>
+                                <code>&lt;c:choose&gt;
+    &lt;c:when test="________"&gt;
+        &lt;p&gt;大きい数字&lt;/p&gt;
+    &lt;/c:when&gt;
+    &lt;c:otherwise&gt;
+        &lt;p&gt;小さい数字&lt;/p&gt;
+    &lt;/c:otherwise&gt;
+&lt;/c:choose&gt;</code>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3a" value="a">
+                                    <label class="form-check-label" for="q3a">
+                                        i >= 5
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3b" value="b">
+                                    <label class="form-check-label" for="q3b">
+                                        ${i >= 5}
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3c" value="c">
+                                        <label class="form-check-label" for="q3c">
+                                        i.value >= 5
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3d" value="d">
+                                        <label class="form-check-label" for="q3d">
+                                        &lt;%= i >= 5 %&gt;
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題4:</strong> 以下のEL式の結果はどうなりますか？</p>
+                                <code>${10 % 3 * 2 + (4 > 3 ? 1 : 0)}</code>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4a" value="a">
+                                    <label class="form-check-label" for="q4a">
+                                        2
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4b" value="b">
+                                    <label class="form-check-label" for="q4b">
+                                        3
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4c" value="c">
+                                        <label class="form-check-label" for="q4c">
+                                        1
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4d" value="d">
+                                        <label class="form-check-label" for="q4d">
+                                        5
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題5:</strong> リスト内のすべての項目を表示するJSTLコードとして正しいものはどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5a" value="a">
+                                    <label class="form-check-label" for="q5a">
+                                        &lt;c:loop items="${itemList}" var="item"&gt;${item}&lt;/c:loop&gt;
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5b" value="b">
+                                    <label class="form-check-label" for="q5b">
+                                        &lt;c:forEach items="${itemList}" var="item"&gt;${item}&lt;/c:forEach&gt;
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5c" value="c">
+                                        <label class="form-check-label" for="q5c">
+                                        &lt;c:for var="item" in="${itemList}"&gt;${item}&lt;/c:for&gt;
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5d" value="d">
+                                        <label class="form-check-label" for="q5d">
+                                        &lt;c:each item="${itemList}"&gt;${item}&lt;/c:each&gt;
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary mt-3" id="checkAnswers">回答を確認</button>
+                            <div id="quizResults" class="mt-3 d-none">
+                                <div class="alert alert-success">
+                                    <h5>正解:</h5>
+                                    <ol>
+                                        <li>c（${expression}）</li>
+                                        <li>b（&lt;%@ taglib prefix="c" uri="jakarta.tags.core" %&gt;）</li>
+                                        <li>b（${i >= 5}）</li>
+                                        <li>d（5 - 計算: 10%3=1, 1*2=2, 4>3 なので 1, 2+1=3）</li>
+                                        <li>b（&lt;c:forEach items="${itemList}" var="item"&gt;${item}&lt;/c:forEach&gt;）</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="next-steps">
+                        <h3 class="section-title">次のステップ</h3>
+                        <p>この章では、EL（式言語）とJSTL（JSPスタンダードタグライブラリ）の基本と使い方について学びました。これらの技術を使いこなすことで、JSPページからJavaコードを排除し、より保守性の高いWebアプリケーションを開発できるようになります。</p>
+                        <p>次の章では、データベース連携の方法について詳しく学んでいきます。ELとJSTLの知識を活用して、データベースから取得したデータをより効率的に表示する方法を習得しましょう。</p>
+                        <div class="note">
+                            <h5>推奨される追加学習</h5>
+                            <ul>
+                                <li><strong>Jakarta Expression Language仕様</strong>：<a href="https://jakarta.ee/specifications/expression-language/" target="_blank">Jakarta Expression Language</a></li>
+                                <li><strong>Jakarta Standard Tag Library仕様</strong>：<a href="https://jakarta.ee/specifications/tags/" target="_blank">Jakarta Standard Tag Library</a></li>
+                                <li><strong>JSTLタグリファレンス</strong>：<a href="https://docs.oracle.com/javaee/5/jstl/1.1/docs/tlddocs/" target="_blank">JSTL 1.1 Tag Reference</a></li>
+                            </ul>
+                        </div>
+                    </section>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4">
+        <div class="container">
+            <p class="mb-0">Copyright © 2025 F-Circle All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 理解度テストの回答確認ボタンの処理
+        document.getElementById('checkAnswers').addEventListener('click', function() {
+            document.getElementById('quizResults').classList.remove('d-none');
+        });
+    </script>
+</body>
+</html>
