@@ -125,7 +125,6 @@ Spring Frameworkを段階的に学習するためのガイドラインです。�
 - [VBA支援AIエージェント](https://fcircle-biz.github.io/tech_docs/prompt/vba-assistant-prompt.html) - Microsoft Office向けVBAプログラミングの専門家として機能するAIアシスタント用プロンプトです。マクロ開発、コード最適化、デバッグ支援など幅広くサポートします。
 
 ### データベース・データ処理支援
-- [JDBCプログラム支援AIエージェント](https://fcircle-biz.github.io/tech_docs/prompt/jdbc-agent-prompt.html) - Java Database Connectivity (JDBC)の専門家として機能するAIアシスタント用プロンプトです。様々なデータベース向けのJDBC実装、接続管理、SQL操作などを支援します。
 - [SQLコーディング支援AIエージェント](https://fcircle-biz.github.io/tech_docs/prompt/sql-assistant-prompt.html) - SQLに特化したエキスパートとして機能するAIアシスタント用プロンプトです。効率的なクエリ設計、パフォーマンス最適化、データベーススキーマ設計などをサポートします。
 - [SASコーディング支援AIエージェント](https://fcircle-biz.github.io/tech_docs/prompt/sas-ai-agent-prompt.html) - SAS(Statistical Analysis System)プログラミングの専門家として機能するAIアシスタント用プロンプトです。データ処理、統計分析、SASマクロ言語など幅広く支援します。
 - [SASデータエンジニアリング支援プロンプト](https://fcircle-biz.github.io/tech_docs/prompt/sas-data-engineering-prompt.html) - SASを使用したデータエンジニアリングに特化したAIアシスタント用プロンプトです。データ統合、変換、品質管理、ビッグデータ処理などの業務を支援します。
