@@ -98,6 +98,11 @@ Java Database Connectivity (JDBC)を段階的に学習するためのガイド�
 
 - [JDBC学習ガイドライン](docs/guide/jdbc/README.md) - JDBCの基礎知識からトランザクション管理、接続プール、パフォーマンスチューニングまでを網羅する10のステップで構成された総合学習ガイド
 
+### JSP/Servlet学習ガイドライン
+JavaServer Pages (JSP)とServletを段階的に学習するためのガイドラインです。Webアプリケーション開発の基礎から実践的なプロジェクト構築までを体系的に学べます。
+
+- [JSP/Servlet学習ガイドライン](docs/guide/jsp/README.md) - JSP/Servletの基礎知識から式言語(EL)、JSTL、MVCアーキテクチャ、データベース連携まで網羅する10のステップで構成された総合学習ガイド
+
 ---
 
 ## AIアシスタント用プロンプト集
