@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring Framework初心者向け学習教材 - 第7章：Spring Securityによる認証・認可</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+        .navbar {
+            background-color: #28a745;
+        }
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+        .chapter-title {
+            color: #28a745;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 0.5rem;
+        }
+        .section-title {
+            color: #218838;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+        code {
+            display: block;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .quiz-container {
+            background-color: #e8f4e8;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        .quiz-question {
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        .diagram {
+            max-width: 100%;
+            height: auto;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        .exercise {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        .note {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        #table-of-contents .list-group-item {
+            border: none;
+            padding: 0.5rem 1rem;
+        }
+        #table-of-contents .list-group-item-action {
+            color: #28a745;
+        }
+        #table-of-contents .list-group-item-action.active,
+        .list-group-item.active {
+            color: white !important;
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .section-nav {
+            padding-left: 1rem;
+        }
+        .inline-code {
+            background-color: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            display: inline;
+        }
+        footer {
+            background-color: #28a745;
+            color: white;
+            padding: 1rem 0;
+            margin-top: 3rem;
+        }
+        .table-example {
+            width: 100%;
+            margin-bottom: 1rem;
+            border-collapse: collapse;
+        }
+        .table-example th {
+            background-color: #e8f4e8;
+            border: 1px solid #c3e6cb;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .table-example td {
+            border: 1px solid #c3e6cb;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .example-result {
+            background-color: #f1f8e9;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .warning {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+    </style>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#tableOfContents">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Spring Framework初心者向け学習教材</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#introduction">はじめに</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#chapter7">第7章: Spring Security</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <div class="row">
+            <!-- Sidebar - Table of Contents -->
+            <div class="col-lg-3">
+                <div class="sidebar">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">目次</h5>
+                        </div>
+                        <div id="table-of-contents" class="list-group list-group-flush">
+                            <a href="#introduction" class="list-group-item list-group-item-action">はじめに</a>
+                            <a href="#chapter7" class="list-group-item list-group-item-action">第7章: Spring Securityによる認証・認可</a>
+                            <div class="section-nav">
+                                <a href="#security-basics" class="list-group-item list-group-item-action">7.1 Spring Securityの基本概念</a>
+                                <a href="#security-setup" class="list-group-item list-group-item-action">7.2 Spring Securityの導入と設定</a>
+                                <a href="#login-logout" class="list-group-item list-group-item-action">7.3 ログイン・ログアウト機能の実装</a>
+                                <a href="#url-access-control" class="list-group-item list-group-item-action">7.4 URLアクセス制御</a>
+                                <a href="#user-management" class="list-group-item list-group-item-action">7.5 ユーザー情報の定義とハッシュ化</a>
+                                <a href="#chapter7-quiz" class="list-group-item list-group-item-action">7.6 理解度確認テスト</a>
+                            </div>
+                            <a href="#next-steps" class="list-group-item list-group-item-action">次のステップ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <section id="introduction">
+                    <h1 class="display-5 mb-4">Spring Framework初心者向け学習教材</h1>
+                    <p class="lead">この教材では、Javaアプリケーションのセキュリティを確保するためのSpring Securityの利用方法を学習します。この第7章では、認証と認可の基本的な実装方法を中心に学びます。</p>
+
+                    <div class="note">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>Spring Securityの基本概念と仕組み</li>
+                            <li>Spring Securityの導入と基本設定</li>
+                            <li>ログイン・ログアウト機能の実装方法</li>
+                            <li>URLアクセス制御とロールベースの権限管理</li>
+                            <li>ユーザー情報の管理とパスワードハッシュ化</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="chapter7">
+                    <h2 class="chapter-title">第7章：Spring Securityによる認証・認可</h2>
+                    <p>Webアプリケーションにおいて、セキュリティは最も重要な要素の一つです。Spring Securityは、Spring Frameworkのセキュリティモジュールで、認証（Authentication）と認可（Authorization）を簡単に実装することができます。この章では、Spring Securityの基本的な使い方と設定方法を学びます。</p>
+
+                    <section id="security-basics">
+                        <h3 class="section-title">7.1 Spring Securityの基本概念</h3>
+                        <p>Spring Securityは、認証と認可を中心としたセキュリティフレームワークで、Webアプリケーションのセキュリティ管理を容易にします。まずは基本的な概念について理解しましょう。</p>
+
+                        <h4>認証と認可</h4>
+                        <p>セキュリティの文脈では、以下の2つの主要な概念があります：</p>
+                        <ul>
+                            <li><strong>認証（Authentication）</strong>：「あなたは誰ですか？」という問いに答えるプロセス。ユーザーIDとパスワードなどの資格情報を確認します。</li>
+                            <li><strong>認可（Authorization）</strong>：「あなたは何をする権限がありますか？」という問いに答えるプロセス。認証済みユーザーがリソースにアクセスできるかどうかを決定します。</li>
+                        </ul>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200" width="600" height="200">
+                                <!-- ユーザー -->
+                                <circle cx="80" cy="100" r="30" fill="#e3f2fd" stroke="#2196f3" stroke-width="2" />
+                                <text x="80" y="105" text-anchor="middle" font-size="14">ユーザー</text>
+                                
+                                <!-- 認証ゲート -->
+                                <rect x="180" y="50" width="100" height="100" fill="#ffecb3" stroke="#ffa000" stroke-width="2" rx="5" />
+                                <text x="230" y="105" text-anchor="middle" font-size="14">認証</text>
+                                
+                                <!-- 認可ゲート -->
+                                <rect x="350" y="50" width="100" height="100" fill="#e8f5e9" stroke="#4caf50" stroke-width="2" rx="5" />
+                                <text x="400" y="105" text-anchor="middle" font-size="14">認可</text>
+                                
+                                <!-- アプリケーション -->
+                                <rect x="520" y="50" width="30" height="100" fill="#f3e5f5" stroke="#9c27b0" stroke-width="2" rx="5" />
+                                <text x="535" y="105" text-anchor="middle" font-size="14" transform="rotate(90 535 105)">リソース</text>
+                                
+                                <!-- 矢印 -->
+                                <line x1="110" y1="100" x2="170" y2="100" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <line x1="290" y1="100" x2="340" y2="100" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <line x1="460" y1="100" x2="510" y2="100" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" />
+                                
+                                <!-- テキスト -->
+                                <text x="140" y="90" text-anchor="middle" font-size="12">資格情報</text>
+                                <text x="140" y="110" text-anchor="middle" font-size="12">(ID/パスワード)</text>
+                                
+                                <text x="315" y="90" text-anchor="middle" font-size="12">認証済み</text>
+                                <text x="315" y="110" text-anchor="middle" font-size="12">ユーザー</text>
+                                
+                                <text x="485" y="90" text-anchor="middle" font-size="12">権限</text>
+                                <text x="485" y="110" text-anchor="middle" font-size="12">チェック</text>
+                                
+                                <defs>
+                                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                        <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+                                    </marker>
+                                </defs>
+                            </svg>
+                            <p class="text-center">図7.1: 認証と認可のフロー</p>
+                        </div>
+
+                        <h4>Spring Securityの主要コンポーネント</h4>
+                        <p>Spring Securityの主要なコンポーネントを理解しましょう：</p>
+
+                        <ul>
+                            <li><strong>SecurityContextHolder</strong>：現在の認証済みユーザーの詳細情報を保持します。</li>
+                            <li><strong>Authentication</strong>：ユーザーの認証情報を表すインターフェース。</li>
+                            <li><strong>UserDetails</strong>：アプリケーションのユーザー情報を表すインターフェース。</li>
+                            <li><strong>UserDetailsService</strong>：ユーザー名からUserDetailsを取得するためのサービス。</li>
+                            <li><strong>GrantedAuthority</strong>：ユーザーに付与された権限（ロール）を表すインターフェース。</li>
+                            <li><strong>AuthenticationProvider</strong>：認証ロジックを実装するプロバイダー。</li>
+                            <li><strong>AuthenticationManager</strong>：認証プロセスを管理するインターフェース。</li>
+                            <li><strong>FilterChain</strong>：認証と認可のためのセキュリティフィルターの連鎖。</li>
+                        </ul>
+
+                        <div class="note">
+                            <h5>Spring Securityのアーキテクチャ</h5>
+                            <p>Spring Securityは、「フィルターチェーン」をベースとしたアーキテクチャを採用しています。HTTPリクエストがアプリケーションに届く前に、複数のフィルターを通過し、各フィルターが異なるセキュリティ機能を提供します。例えば、認証フィルター、CSRFフィルター、セッション管理フィルターなどがあります。</p>
+                        </div>
+                    </section>
+
+                    <section id="security-setup">
+                        <h3 class="section-title">7.2 Spring Securityの導入と設定</h3>
+                        <p>Spring Securityをプロジェクトに導入し、基本的な設定を行う方法を学びましょう。</p>
+
+                        <h4>依存関係の追加</h4>
+                        <p>まず、Spring Securityの依存関係をプロジェクトに追加します。Mavenプロジェクトの場合は、pom.xmlに以下の依存関係を追加します：</p>
+
+                        <code>&lt;dependencies&gt;
+    &lt;!-- Spring Boot Starter Security --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-security&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    
+    &lt;!-- Spring Security Test（テスト用） --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.security&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-security-test&lt;/artifactId&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+    
+    &lt;!-- その他の依存関係 --&gt;
+&lt;/dependencies&gt;</code>
+
+                        <p>Gradleプロジェクトの場合は、build.gradleに以下を追加します：</p>
+
+                        <code>dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.security:spring-security-test'
+    // その他の依存関係
+}</code>
+
+                        <div class="note">
+                            <h5>自動設定</h5>
+                            <p>Spring Boot Starter Securityを追加するだけで、アプリケーションに基本的なセキュリティ設定が自動的に適用されます。デフォルトでは、すべてのエンドポイントが保護され、フォームベースのログインが有効になります。デフォルトのユーザー名は「user」で、パスワードはアプリケーション起動時にコンソールに出力されます。</p>
+                        </div>
+
+                        <h4>基本的なセキュリティ設定</h4>
+                        <p>Spring Securityの基本設定を行うには、SecurityFilterChainを定義するBeanを作成します。以下は、WebSecurityConfigurerAdapterの代わりに使用する最新の方法です：</p>
+
+                        <code>import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests((authorize) -> authorize
+                .requestMatchers("/", "/home", "/css/**", "/js/**", "/images/**").permitAll()
+                .anyRequest().authenticated()
+            )
+            .formLogin((form) -> form
+                .loginPage("/login")
+                .permitAll()
+            )
+            .logout((logout) -> logout
+                .permitAll()
+            );
+            
+        return http.build();
+    }
+}</code>
+
+                        <p>上記の設定では、以下のポイントを定義しています：</p>
+                        <ul>
+                            <li>ホームページ（"/"、"/home"）と静的リソースへのアクセスは認証なしで許可</li>
+                            <li>その他のすべてのURLは認証が必要</li>
+                            <li>カスタムログインページ（"/login"）を設定</li>
+                            <li>ログアウト機能を有効化</li>
+                        </ul>
+
+                        <h4>パスワードエンコーダの設定</h4>
+                        <p>セキュアなパスワード管理のために、パスワードエンコーダを設定する必要があります。BCryptPasswordEncoderを使用するのが一般的です：</p>
+
+                        <code>import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+@Configuration
+public class SecurityConfig {
+
+    // ... 前のコード ...
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}</code>
+
+                        <div class="exercise">
+                            <h5>演習 7.1：基本的なセキュリティ設定</h5>
+                            <p>既存のSpring Bootプロジェクトに、Spring Securityを追加して、以下の要件を満たす設定を作成してください：</p>
+                            <ol>
+                                <li>"/public/**"パスへのアクセスは認証なしで許可</li>
+                                <li>"/admin/**"パスへのアクセスは、"ADMIN"ロールを持つユーザーのみ許可</li>
+                                <li>"/user/**"パスへのアクセスは、"USER"ロールを持つユーザーのみ許可</li>
+                                <li>その他のすべてのパスは認証が必要</li>
+                                <li>BCryptPasswordEncoderを使用するように設定</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="login-logout">
+                        <h3 class="section-title">7.3 ログイン・ログアウト機能の実装</h3>
+                        <p>ユーザー認証の基本となるログインとログアウト機能の実装方法を学びましょう。</p>
+
+                        <h4>カスタムログインページの作成</h4>
+                        <p>デフォルトのログインページを使用する代わりに、カスタムのログインページを作成することができます。まず、ログインページのコントローラーを作成します：</p>
+
+                        <code>import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class LoginController {
+
+    @GetMapping("/login")
+    public String login() {
+        return "login"; // login.htmlテンプレートを返す
+    }
+}</code>
+
+                        <p>次に、Thymeleafを使用してログインページのテンプレート（login.html）を作成します：</p>
+
+                        <code>&lt;!DOCTYPE html&gt;
+&lt;html xmlns:th="http://www.thymeleaf.org"&gt;
+&lt;head&gt;
+    &lt;title&gt;ログイン&lt;/title&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="container mt-5"&gt;
+        &lt;div class="row justify-content-center"&gt;
+            &lt;div class="col-md-6"&gt;
+                &lt;div class="card"&gt;
+                    &lt;div class="card-header bg-primary text-white"&gt;
+                        &lt;h3 class="mb-0"&gt;ログイン&lt;/h3&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-body"&gt;
+                        &lt;div th:if="${param.error}" class="alert alert-danger"&gt;
+                            ユーザー名またはパスワードが正しくありません。
+                        &lt;/div&gt;
+                        &lt;div th:if="${param.logout}" class="alert alert-success"&gt;
+                            ログアウトしました。
+                        &lt;/div&gt;
+                        &lt;form th:action="@{/login}" method="post"&gt;
+                            &lt;div class="mb-3"&gt;
+                                &lt;label for="username" class="form-label"&gt;ユーザー名&lt;/label&gt;
+                                &lt;input type="text" class="form-control" id="username" name="username" required autofocus&gt;
+                            &lt;/div&gt;
+                            &lt;div class="mb-3"&gt;
+                                &lt;label for="password" class="form-label"&gt;パスワード&lt;/label&gt;
+                                &lt;input type="password" class="form-control" id="password" name="password" required&gt;
+                            &lt;/div&gt;
+                            &lt;div class="mb-3 form-check"&gt;
+                                &lt;input type="checkbox" class="form-check-input" id="remember-me" name="remember-me"&gt;
+                                &lt;label class="form-check-label" for="remember-me"&gt;ログイン状態を保持する&lt;/label&gt;
+                            &lt;/div&gt;
+                            &lt;button type="submit" class="btn btn-primary w-100"&gt;ログイン&lt;/button&gt;
+                        &lt;/form&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code>
+
+                        <p>このログインフォームのポイント：</p>
+                        <ul>
+                            <li>フォームのアクションは "/login" で、method は "post"</li>
+                            <li>ユーザー名とパスワードの入力フィールドの name 属性は、それぞれ "username" と "password"</li>
+                            <li>ログインエラーと、ログアウト後のメッセージ表示</li>
+                            <li>"remember-me" 機能の実装</li>
+                        </ul>
+
+                        <h4>ログアウト機能の実装</h4>
+                        <p>Spring Securityは自動的にログアウト機能を提供します。デフォルトでは、"/logout" へのPOSTリクエストでログアウトが実行されます。ログアウトボタンをナビゲーションバーなどに追加するには：</p>
+
+                        <code>&lt;form th:action="@{/logout}" method="post" class="d-inline"&gt;
+    &lt;button type="submit" class="btn btn-link nav-link"&gt;ログアウト&lt;/button&gt;
+&lt;/form&gt;</code>
+
+                        <p>ログアウト設定をカスタマイズする方法：</p>
+
+                        <code>@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        // ... 他の設定 ...
+        .logout((logout) -> logout
+            .logoutUrl("/logout")              // ログアウトURL（デフォルトは"/logout"）
+            .logoutSuccessUrl("/login?logout") // ログアウト成功後のリダイレクト先
+            .invalidateHttpSession(true)       // HTTPセッションを無効化
+            .deleteCookies("JSESSIONID")       // 特定のCookieを削除
+        );
+        
+    return http.build();
+}</code>
+
+                        <h4>Remember Me機能</h4>
+                        <p>"Remember Me"機能を使用すると、ブラウザを閉じた後でもユーザーを記憶し、再訪問時に自動的にログイン状態を復元できます。</p>
+
+                        <code>@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        // ... 他の設定 ...
+        .rememberMe((remember) -> remember
+            .key("uniqueAndSecretKey")        // Cookieを暗号化するためのキー
+            .tokenValiditySeconds(86400)      // トークンの有効期間（秒）、ここでは24時間
+        );
+        
+    return http.build();
+}</code>
+
+                        <div class="warning">
+                            <h5>セキュリティ注意点</h5>
+                            <p>Remember Me機能は便利ですが、セキュリティリスクも伴います。ブラウザの盗難や共有PCの使用時には、不正アクセスのリスクが高まります。高度なセキュリティが必要なアプリケーションでは、この機能の使用を制限するか、有効期間を短く設定することを検討してください。</p>
+                        </div>
+
+                        <h4>現在のユーザー情報の取得</h4>
+                        <p>ログインしたユーザーの情報を取得するには、以下の方法があります：</p>
+
+                        <code>// コントローラーメソッド内
+@GetMapping("/profile")
+public String profile(Model model, Principal principal) {
+    // Principalから現在のユーザー名を取得
+    String username = principal.getName();
+    model.addAttribute("username", username);
+    
+    return "profile";
+}
+
+// または、SecurityContextHolderを使用
+Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+String username = auth.getName();
+Collection&lt;? extends GrantedAuthority&gt; authorities = auth.getAuthorities();</code>
+
+                        <p>Thymeleafテンプレート内でも、Spring Security方言を使って認証情報にアクセスできます：</p>
+
+                        <code>&lt;!-- Spring Security Thymeleaf拡張の依存関係を追加 --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.thymeleaf.extras&lt;/groupId&gt;
+    &lt;artifactId&gt;thymeleaf-extras-springsecurity6&lt;/artifactId&gt;
+&lt;/dependency&gt;
+
+&lt;!-- テンプレート内での使用 --&gt;
+&lt;html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"&gt;
+
+&lt;!-- 認証済みユーザーにのみ表示 --&gt;
+&lt;div sec:authorize="isAuthenticated()"&gt;
+    ようこそ &lt;span sec:authentication="name"&gt;ユーザー&lt;/span&gt; さん
+    &lt;div&gt;あなたの権限: &lt;span sec:authentication="principal.authorities"&gt;権限&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 特定の権限を持つユーザーにのみ表示 --&gt;
+&lt;div sec:authorize="hasRole('ADMIN')"&gt;
+    管理者向けコンテンツ
+&lt;/div&gt;</code>
+
+                        <div class="exercise">
+                            <h5>演習 7.2：ログイン・ログアウト機能の実装</h5>
+                            <p>以下の要件を満たすログイン・ログアウト機能を実装してください：</p>
+                            <ol>
+                                <li>Bootstrap 5を使用したカスタムログインページの作成</li>
+                                <li>ログインエラーメッセージの表示</li>
+                                <li>Remember Me機能の実装（有効期間は1週間）</li>
+                                <li>ナビゲーションバーにログイン状態とログアウトボタンの表示</li>
+                                <li>ログイン成功後は"/dashboard"にリダイレクト</li>
+                                <li>ログアウト後は"/login?logout"にリダイレクト</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="url-access-control">
+                        <h3 class="section-title">7.4 URLアクセス制御</h3>
+                        <p>Spring Securityを使用して、URLへのアクセスを制御し、特定のURLを特定のロールを持つユーザーにのみ許可する方法を学びましょう。</p>
+
+                        <h4>基本的なURL制御</h4>
+                        <p>SecurityFilterChainで特定のURLパターンごとに異なるアクセス条件を設定できます：</p>
+
+                        <code>@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .authorizeHttpRequests((authorize) -> authorize
+            // 誰でもアクセス可能なパス
+            .requestMatchers("/", "/home", "/public/**", "/css/**", "/js/**", "/images/**").permitAll()
+            
+            // 認証済みユーザーのみアクセス可能
+            .requestMatchers("/user/**").authenticated()
+            
+            // 特定のロールを持つユーザーのみアクセス可能
+            .requestMatchers("/admin/**").hasRole("ADMIN")
+            .requestMatchers("/management/**").hasAnyRole("ADMIN", "MANAGER")
+            
+            // 特定の権限を持つユーザーのみアクセス可能
+            .requestMatchers("/api/users/**").hasAuthority("USER_READ")
+            .requestMatchers(HttpMethod.POST, "/api/users").hasAuthority("USER_CREATE")
+            
+            // それ以外のリクエストはすべて認証が必要
+            .anyRequest().authenticated()
+        );
+        
+    return http.build();
+}</code>
+
+                        <p>主なアクセス制御メソッド：</p>
+                        <ul>
+                            <li><strong>permitAll()</strong>：認証なしで誰でもアクセス可能</li>
+                            <li><strong>authenticated()</strong>：認証済みユーザーのみアクセス可能</li>
+                            <li><strong>hasRole("ROLE_NAME")</strong>：特定のロールを持つユーザーのみアクセス可能（"ROLE_"プレフィックスは自動的に追加される）</li>
+                            <li><strong>hasAnyRole("ROLE1", "ROLE2")</strong>：指定したロールのいずれかを持つユーザーのみアクセス可能</li>
+                            <li><strong>hasAuthority("PERMISSION")</strong>：特定の権限を持つユーザーのみアクセス可能</li>
+                            <li><strong>hasAnyAuthority("PERM1", "PERM2")</strong>：指定した権限のいずれかを持つユーザーのみアクセス可能</li>
+                            <li><strong>denyAll()</strong>：すべてのアクセスを拒否</li>
+                        </ul>
+
+                        <div class="note">
+                            <h5>ロールと権限の違い</h5>
+                            <p>Spring Securityでは、「ロール」と「権限」（Authority）は似ていますが、少し異なる概念です：</p>
+                            <ul>
+                                <li><strong>ロール</strong>：ユーザーのグループやタイプを表します（例：ADMIN、USER、MANAGER）。内部的には"ROLE_"プレフィックスが自動的に追加されます。hasRole("ADMIN")は内部的にはhasAuthority("ROLE_ADMIN")として扱われます。</li>
+                                <li><strong>権限</strong>：より細かい粒度の操作権限を表します（例：USER_READ、USER_WRITE）。特定の操作に対する許可を表現するのに適しています。</li>
+                            </ul>
+                        </div>
+
+                        <h4>メソッドレベルのセキュリティ</h4>
+                        <p>特定のメソッドへのアクセスをロールや権限によって制御することもできます。これには、クラスレベルで@EnableMethodSecurityアノテーションを有効にします：</p>
+
+                        <code>import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+
+@Configuration
+@EnableMethodSecurity
+public class SecurityConfig {
+    // 設定...
+}</code>
+
+                        <p>そして、保護したいメソッドに適切なアノテーションを付けます：</p>
+
+                        <code>import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+
+    // "ADMIN"ロールを持つユーザーのみアクセス可能
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping
+    public List&lt;User&gt; getAllUsers() {
+        // 全ユーザーを取得するロジック
+    }
+    
+    // "USER_READ"権限を持つユーザーのみアクセス可能
+    @PreAuthorize("hasAuthority('USER_READ')")
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable Long id) {
+        // 特定のユーザーを取得するロジック
+    }
+    
+    // メソッドの引数を使用した権限チェック
+    @PreAuthorize("hasRole('ADMIN') or @userService.isOwner(authentication.principal, #id)")
+    @PutMapping("/{id}")
+    public User updateUser(@PathVariable Long id, @RequestBody User user) {
+        // ユーザー更新ロジック
+    }
+    
+    // 複数条件の組み合わせ
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('USER_DELETE')")
+    @DeleteMapping("/{id}")
+    public void deleteUser(@PathVariable Long id) {
+        // ユーザー削除ロジック
+    }
+}</code>
+
+                        <p>メソッドレベルのセキュリティで使用できる主なアノテーション：</p>
+                        <ul>
+                            <li><strong>@PreAuthorize</strong>：メソッド実行前にセキュリティチェックを行う</li>
+                            <li><strong>@PostAuthorize</strong>：メソッド実行後にセキュリティチェックを行う（戻り値を使用できる）</li>
+                            <li><strong>@Secured</strong>：指定したロールを持つユーザーのみアクセス可能</li>
+                            <li><strong>@RolesAllowed</strong>：Java EE標準のロールベースアクセス制御アノテーション</li>
+                        </ul>
+
+                        <h4>カスタムセキュリティ表現式</h4>
+                        <p>より複雑なセキュリティ制約を実装するために、カスタムセキュリティ式を定義できます：</p>
+
+                        <code>@Component("userSecurity")
+public class UserSecurity {
+
+    public boolean isOwner(Authentication authentication, Long userId) {
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username);
+        return user != null && user.getId().equals(userId);
+    }
+    
+    public boolean hasUserPermission(Authentication authentication, String permission) {
+        // カスタム権限チェックロジック
+    }
+}</code>
+
+                        <p>このカスタムセキュリティBeanはセキュリティ式で使用できます：</p>
+
+                        <code>@PreAuthorize("@userSecurity.isOwner(authentication, #userId)")
+public User getUserProfile(@PathVariable Long userId) {
+    // ユーザープロフィール取得ロジック
+}</code>
+
+                        <div class="exercise">
+                            <h5>演習 7.3：URLアクセス制御の実装</h5>
+                            <p>以下の要件を満たすURLアクセス制御とメソッドセキュリティを実装してください：</p>
+                            <ol>
+                                <li>以下のURLパターンに対する適切なアクセス制御設定：
+                                    <ul>
+                                        <li>"/public/**" - すべてのユーザーがアクセス可能</li>
+                                        <li>"/api/products" (GET) - 認証されたすべてのユーザーがアクセス可能</li>
+                                        <li>"/api/products" (POST, PUT, DELETE) - "ADMIN"ロールを持つユーザーのみアクセス可能</li>
+                                        <li>"/api/orders/**" - "USER"または"ADMIN"ロールを持つユーザーがアクセス可能</li>
+                                    </ul>
+                                </li>
+                                <li>OrderServiceにメソッドレベルのセキュリティを追加：
+                                    <ul>
+                                        <li>createOrder() - 認証されたすべてのユーザーが実行可能</li>
+                                        <li>cancelOrder(Long orderId) - "ADMIN"ロールを持つユーザー、またはその注文の所有者のみ実行可能</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="user-management">
+                        <h3 class="section-title">7.5 ユーザー情報の定義とハッシュ化</h3>
+                        <p>Spring Securityでユーザー情報を管理し、安全にパスワードを保存する方法を学びましょう。</p>
+
+                        <h4>インメモリユーザー定義</h4>
+                        <p>開発やテスト環境では、インメモリでユーザーを定義する方法が便利です：</p>
+
+                        <code>import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+
+@Configuration
+public class SecurityConfig {
+
+    @Bean
+    public InMemoryUserDetailsManager userDetailsManager(PasswordEncoder passwordEncoder) {
+        UserDetails user = User.builder()
+            .username("user")
+            .password(passwordEncoder.encode("password")) // パスワードはハッシュ化して保存
+            .roles("USER")
+            .build();
+            
+        UserDetails admin = User.builder()
+            .username("admin")
+            .password(passwordEncoder.encode("admin123"))
+            .roles("USER", "ADMIN") // 複数のロールを持つことができる
+            .build();
+            
+        return new InMemoryUserDetailsManager(user, admin);
+    }
+}</code>
+
+                        <div class="warning">
+                            <h5>インメモリユーザー管理の制限</h5>
+                            <p>インメモリユーザー管理は開発やテスト環境には便利ですが、本番環境では使用すべきではありません。アプリケーションが再起動するとユーザー情報が失われ、ユーザー登録機能も実装できません。本番環境ではデータベースを使用してユーザー情報を永続化しましょう。</p>
+                        </div>
+
+                        <h4>データベースユーザー管理</h4>
+                        <p>実際のアプリケーションでは、ユーザー情報をデータベースに保存します。まず、ユーザーエンティティを定義します：</p>
+
+                        <code>import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Table(name = "users")
+public class User {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(unique = true, nullable = false)
+    private String username;
+    
+    @Column(nullable = false)
+    private String password;
+    
+    private String email;
+    private boolean enabled = true;
+    
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set&lt;Role&gt; roles = new HashSet&lt;&gt;();
+    
+    // ゲッター、セッター、コンストラクタ...
+}</code>
+
+                        <p>そして、ロールエンティティを定義します：</p>
+
+                        <code>@Entity
+@Table(name = "roles")
+public class Role {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(unique = true, nullable = false)
+    private String name;
+    
+    // ゲッター、セッター、コンストラクタ...
+}</code>
+
+                        <p>次に、Spring SecurityのUserDetailsServiceインターフェースを実装して、データベースからユーザー情報を取得します：</p>
+
+                        <code>import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
+
+@Service
+public class CustomUserDetailsService implements UserDetailsService {
+
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new UsernameNotFoundException("ユーザーが見つかりません: " + username));
+            
+        return new org.springframework.security.core.userdetails.User(
+            user.getUsername(),
+            user.getPassword(),
+            user.isEnabled(),
+            true, // accountNonExpired
+            true, // credentialsNonExpired
+            true, // accountNonLocked
+            getAuthorities(user)
+        );
+    }
+    
+    private Collection&lt;? extends GrantedAuthority&gt; getAuthorities(User user) {
+        return user.getRoles().stream()
+            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+            .collect(Collectors.toList());
+    }
+}</code>
+
+                        <h4>パスワードハッシュ化</h4>
+                        <p>セキュリティのベストプラクティスとして、パスワードは平文でなくハッシュ化して保存する必要があります。Spring Securityは複数のパスワードエンコーダを提供しています：</p>
+
+                        <ul>
+                            <li><strong>BCryptPasswordEncoder</strong>：BCryptハッシュ関数を使用（推奨）</li>
+                            <li><strong>Pbkdf2PasswordEncoder</strong>：PBKDF2アルゴリズムを使用</li>
+                            <li><strong>SCryptPasswordEncoder</strong>：SCryptハッシュ関数を使用</li>
+                            <li><strong>Argon2PasswordEncoder</strong>：Argon2ハッシュ関数を使用</li>
+                        </ul>
+
+                        <p>ユーザー登録時にパスワードをハッシュ化する例：</p>
+
+                        <code>@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private RoleRepository roleRepository;
+    
+    public User registerNewUser(UserRegistrationDto registrationDto) {
+        // 既存のユーザー名チェック
+        if (userRepository.findByUsername(registrationDto.getUsername()).isPresent()) {
+            throw new UsernameAlreadyExistsException("Username is already taken");
+        }
+        
+        // 新しいユーザーの作成
+        User user = new User();
+        user.setUsername(registrationDto.getUsername());
+        user.setEmail(registrationDto.getEmail());
+        
+        // パスワードのハッシュ化
+        user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
+        
+        // デフォルトロールの設定
+        Role userRole = roleRepository.findByName("USER")
+            .orElseThrow(() -> new RuntimeException("Default role not found"));
+        user.getRoles().add(userRole);
+        
+        // ユーザーの保存
+        return userRepository.save(user);
+    }
+}</code>
+
+                        <div class="note">
+                            <h5>パスワード強度確認</h5>
+                            <p>アプリケーションのセキュリティを強化するために、ユーザー登録時に強力なパスワードを要求するバリデーションルールを実装することを検討してください。一般的なパスワード要件には以下があります：</p>
+                            <ul>
+                                <li>最低8文字以上の長さ</li>
+                                <li>大文字と小文字の両方を含む</li>
+                                <li>少なくとも1つの数字を含む</li>
+                                <li>少なくとも1つの特殊文字を含む</li>
+                                <li>一般的なパスワード（"password", "123456"など）の使用禁止</li>
+                            </ul>
+                        </div>
+
+                        <h4>ユーザー認証フロー</h4>
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" width="600" height="300">
+                                <!-- ログインフォーム -->
+                                <rect x="50" y="50" width="100" height="50" fill="#e3f2fd" stroke="#2196f3" stroke-width="2" rx="5" />
+                                <text x="100" y="80" text-anchor="middle" font-size="12">ログインフォーム</text>
+                                
+                                <!-- AuthenticationManager -->
+                                <rect x="250" y="50" width="140" height="50" fill="#ffecb3" stroke="#ffa000" stroke-width="2" rx="5" />
+                                <text x="320" y="80" text-anchor="middle" font-size="12">AuthenticationManager</text>
+                                
+                                <!-- UserDetailsService -->
+                                <rect x="250" y="150" width="140" height="50" fill="#e8f5e9" stroke="#4caf50" stroke-width="2" rx="5" />
+                                <text x="320" y="180" text-anchor="middle" font-size="12">UserDetailsService</text>
+                                
+                                <!-- PasswordEncoder -->
+                                <rect x="250" y="250" width="140" height="50" fill="#f3e5f5" stroke="#9c27b0" stroke-width="2" rx="5" />
+                                <text x="320" y="280" text-anchor="middle" font-size="12">PasswordEncoder</text>
+                                
+                                <!-- データベース -->
+                                <rect x="490" y="150" width="100" height="50" fill="#fafafa" stroke="#757575" stroke-width="2" rx="5" />
+                                <text x="540" y="180" text-anchor="middle" font-size="12">ユーザーDB</text>
+                                
+                                <!-- 矢印 -->
+                                <line x1="150" y1="75" x2="240" y2="75" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <text x="195" y="65" text-anchor="middle" font-size="10">認証リクエスト</text>
+                                
+                                <line x1="320" y1="100" x2="320" y2="140" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <text x="340" y="120" text-anchor="start" font-size="10">ユーザー検索</text>
+                                
+                                <line x1="320" y1="200" x2="320" y2="240" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <text x="340" y="220" text-anchor="start" font-size="10">パスワード検証</text>
+                                
+                                <line x1="390" y1="175" x2="480" y2="175" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <text x="435" y="165" text-anchor="middle" font-size="10">ユーザー取得</text>
+                                
+                                <defs>
+                                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                        <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+                                    </marker>
+                                </defs>
+                            </svg>
+                            <p class="text-center">図7.2: Spring Securityの認証フロー</p>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>演習 7.4：ユーザー管理とパスワードハッシュ化</h5>
+                            <p>以下の要件を満たすユーザー管理システムを実装してください：</p>
+                            <ol>
+                                <li>ユーザーエンティティとロールエンティティの定義</li>
+                                <li>ユーザー登録機能の実装（パスワードのBCryptハッシュ化を含む）</li>
+                                <li>データベースに基づくCustomUserDetailsServiceの実装</li>
+                                <li>パスワード強度のバリデーション実装：
+                                    <ul>
+                                        <li>最低8文字以上</li>
+                                        <li>大文字・小文字・数字・特殊文字をそれぞれ1つ以上含む</li>
+                                    </ul>
+                                </li>
+                                <li>管理者のみアクセス可能なユーザー管理画面の実装</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="chapter7-quiz">
+                        <h3 class="section-title">7.6 理解度確認テスト</h3>
+                        <div class="quiz-container">
+                            <h4>第7章の理解度チェック</h4>
+                            <p>以下の問題に答えて、Spring Securityに関する理解度を確認しましょう。</p>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題1:</strong> Spring Securityにおける認証と認可の違いとして、正しいものを選んでください。</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1a" value="a">
+                                    <label class="form-check-label" for="q1a">
+                                        認証はユーザーのIDを確認し、認可はパスワードを確認するプロセスである
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1b" value="b">
+                                    <label class="form-check-label" for="q1b">
+                                        認証はユーザーの身元を確認し、認可はそのユーザーの権限を確認するプロセスである
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1c" value="c">
+                                        <label class="form-check-label" for="q1c">
+                                        認証はロールに基づくアクセス制御で、認可はユーザー名とパスワードの検証である
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1d" value="d">
+                                        <label class="form-check-label" for="q1d">
+                                        認証と認可は同じ意味で、Spring Securityでは区別されていない
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題2:</strong> Spring Securityでパスワードを安全に保存するための推奨方法はどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2a" value="a">
+                                    <label class="form-check-label" for="q2a">
+                                        平文でデータベースに保存する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2b" value="b">
+                                    <label class="form-check-label" for="q2b">
+                                        MD5でハッシュ化して保存する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2c" value="c">
+                                        <label class="form-check-label" for="q2c">
+                                        BCryptPasswordEncoderでハッシュ化して保存する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2d" value="d">
+                                        <label class="form-check-label" for="q2d">
+                                        Base64でエンコードして保存する
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題3:</strong> Spring Securityにおいて、以下のコードの意味として正しいものはどれですか？</p>
+                                <code>.requestMatchers("/admin/**").hasRole("ADMIN")</code>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3a" value="a">
+                                    <label class="form-check-label" for="q3a">
+                                        "/admin/"で始まるURLにはADMINロールを持つユーザーのみアクセス可能
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3b" value="b">
+                                    <label class="form-check-label" for="q3b">
+                                        "/admin/"で始まるURLにはすべてのユーザーがアクセス可能
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3c" value="c">
+                                        <label class="form-check-label" for="q3c">
+                                        "/admin/"で始まるURLにはADMIN権限を持つユーザーのみアクセス可能（"ROLE_"プレフィックスなし）
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3d" value="d">
+                                        <label class="form-check-label" for="q3d">
+                                        "/admin/"で始まるURLには認証済みユーザーのみアクセス可能
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題4:</strong> メソッドレベルのセキュリティを有効にするためのアノテーションはどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4a" value="a">
+                                    <label class="form-check-label" for="q4a">
+                                        @EnableWebSecurity
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4b" value="b">
+                                    <label class="form-check-label" for="q4b">
+                                        @EnableMethodSecurity
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4c" value="c">
+                                        <label class="form-check-label" for="q4c">
+                                        @EnableGlobalMethodSecurity
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4d" value="d">
+                                        <label class="form-check-label" for="q4d">
+                                        @EnableSecurityMethods
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題5:</strong> Spring Securityで現在の認証ユーザーの情報を取得する方法として誤っているものはどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5a" value="a">
+                                    <label class="form-check-label" for="q5a">
+                                        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5b" value="b">
+                                    <label class="form-check-label" for="q5b">
+                                        @GetMapping("/profile")
+public String profile(Model model, Principal principal) {
+    String username = principal.getName();
+    // ...
+}
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5c" value="c">
+                                        <label class="form-check-label" for="q5c">
+                                        @GetMapping("/info")
+public String info(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+    String username = userDetails.getUsername();
+    // ...
+}
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5d" value="d">
+                                        <label class="form-check-label" for="q5d">
+                                        UserDetails currentUser = HttpSession.getAttribute("SPRING_SECURITY_USER");
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-success mt-3" id="checkAnswers">回答を確認</button>
+                            <div id="quizResults" class="mt-3 d-none">
+                                <div class="alert alert-success">
+                                    <h5>正解:</h5>
+                                    <ol>
+                                        <li>b（認証はユーザーの身元を確認し、認可はそのユーザーの権限を確認するプロセスである）</li>
+                                        <li>c（BCryptPasswordEncoderでハッシュ化して保存する）</li>
+                                        <li>a（"/admin/"で始まるURLにはADMINロールを持つユーザーのみアクセス可能）</li>
+                                        <li>b（@EnableMethodSecurity）</li>
+                                        <li>d（UserDetails currentUser = HttpSession.getAttribute("SPRING_SECURITY_USER");）</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="next-steps">
+                        <h3 class="section-title">次のステップ</h3>
+                        <p>この章では、Spring Securityの基本的な概念と使い方を学びました。これで基本的なセキュリティ機能を実装する準備ができました。</p>
+                        <p>セキュリティは常に進化するため、最新の脅威とベストプラクティスについて学び続けることが重要です。以下のトピックについてさらに学習することをお勧めします：</p>
+                        <div class="note">
+                            <h5>推奨される追加学習</h5>
+                            <ul>
+                                <li><strong>OAuthとOpenID Connect</strong>：ソーシャルログインやシングルサインオンを実装するための標準プロトコル</li>
+                                <li><strong>JWTトークン認証</strong>：ステートレスなRESTful APIのための認証メカニズム</li>
+                                <li><strong>CSRFとXSS対策</strong>：クロスサイトリクエストフォージェリとクロスサイトスクリプティングへの対策</li>
+                                <li><strong>セキュリティテスト</strong>：アプリケーションのセキュリティ脆弱性をテストする方法</li>
+                                <li><strong>二要素認証</strong>：多層防御を提供するセキュリティの強化策</li>
+                            </ul>
+                        </div>
+                        <p>次の章では、これらのより高度なセキュリティトピックのいくつかを深く掘り下げていきます。</p>
+                        <p>参考になるリソース：</p>
+                        <ul>
+                            <li><a href="https://spring.io/guides/topicals/spring-security-architecture" target="_blank">Spring Securityアーキテクチャガイド</a></li>
+                            <li><a href="https://docs.spring.io/spring-security/reference/" target="_blank">Spring Securityリファレンスドキュメント</a></li>
+                            <li><a href="https://owasp.org/www-project-top-ten/" target="_blank">OWASP Top 10セキュリティリスク</a></li>
+                        </ul>
+                    </section>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4">
+        <div class="container">
+            <p class="mb-0">Copyright © 2025 F-Circle All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 理解度テストの回答確認ボタンの処理
+        document.getElementById('checkAnswers').addEventListener('click', function() {
+            document.getElementById('quizResults').classList.remove('d-none');
+        });
+    </script>
+</body>
+</html>

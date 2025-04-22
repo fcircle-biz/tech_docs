@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring Framework学習教材 - 補足①：Spring Data JPA入門</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+        .navbar {
+            background-color: #28a745;
+        }
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+        .chapter-title {
+            color: #28a745;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 0.5rem;
+        }
+        .section-title {
+            color: #218838;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+        code {
+            display: block;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .quiz-container {
+            background-color: #e8f4e8;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        .quiz-question {
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        .diagram {
+            max-width: 100%;
+            height: auto;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        .exercise {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        .note {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+        #table-of-contents .list-group-item {
+            border: none;
+            padding: 0.5rem 1rem;
+        }
+        #table-of-contents .list-group-item-action {
+            color: #28a745;
+        }
+        #table-of-contents .list-group-item-action.active,
+        .list-group-item.active {
+            color: white !important;
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .section-nav {
+            padding-left: 1rem;
+        }
+        .inline-code {
+            background-color: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            display: inline;
+        }
+        footer {
+            background-color: #28a745;
+            color: white;
+            padding: 1rem 0;
+            margin-top: 3rem;
+        }
+        .table-example {
+            width: 100%;
+            margin-bottom: 1rem;
+            border-collapse: collapse;
+        }
+        .table-example th {
+            background-color: #e8f4e8;
+            border: 1px solid #c3e6cb;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .table-example td {
+            border: 1px solid #c3e6cb;
+            padding: 0.5rem;
+            text-align: center;
+        }
+        .example-result {
+            background-color: #f1f8e9;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .warning {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 1rem;
+            margin: 1.5rem 0;
+        }
+    </style>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#tableOfContents">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Spring Framework学習教材</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#introduction">はじめに</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#chapter12">補足①：Spring Data JPA入門</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <div class="row">
+            <!-- Sidebar - Table of Contents -->
+            <div class="col-lg-3">
+                <div class="sidebar">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">目次</h5>
+                        </div>
+                        <div id="table-of-contents" class="list-group list-group-flush">
+                            <a href="#introduction" class="list-group-item list-group-item-action">はじめに</a>
+                            <a href="#chapter12" class="list-group-item list-group-item-action">補足①：Spring Data JPA入門</a>
+                            <div class="section-nav">
+                                <a href="#jpa-basics" class="list-group-item list-group-item-action">12.1 Spring Data JPAの基本</a>
+                                <a href="#entity-annotations" class="list-group-item list-group-item-action">12.2 エンティティアノテーション</a>
+                                <a href="#relationships" class="list-group-item list-group-item-action">12.3 エンティティ間のリレーションシップ</a>
+                                <a href="#lazy-loading" class="list-group-item list-group-item-action">12.4 遅延読み込みとN+1問題</a>
+                                <a href="#hibernate-benefits" class="list-group-item list-group-item-action">12.5 HibernateとJPAのメリット・注意点</a>
+                                <a href="#jdbc-vs-jpa" class="list-group-item list-group-item-action">12.6 Spring Data JDBCとJPAの使い分け</a>
+                                <a href="#chapter12-quiz" class="list-group-item list-group-item-action">12.7 理解度確認テスト</a>
+                            </div>
+                            <a href="#next-steps" class="list-group-item list-group-item-action">次のステップ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <section id="introduction">
+                    <h1 class="display-5 mb-4">Spring Framework学習教材</h1>
+                    <p class="lead">この教材では、Springフレームワークを使ったデータアクセス技術の一つであるSpring Data JPAについて学習します。第12章では、JPAの基本概念からエンティティの関連付け、パフォーマンスチューニングまでを深く理解します。</p>
+
+                    <div class="note">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>Spring Data JPAの基本概念と設定方法</li>
+                            <li>エンティティの定義と主要アノテーションの使い方</li>
+                            <li>エンティティ間のリレーションシップ（@OneToMany, @ManyToOneなど）</li>
+                            <li>遅延読み込み（Lazy Loading）とN+1問題への対処法</li>
+                            <li>HibernateとJPAのメリットと注意点</li>
+                            <li>Spring Data JDBCとJPAの使い分け基準</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="chapter12">
+                    <h2 class="chapter-title">補足①：Spring Data JPA入門</h2>
+                    <p>Spring Data JPAは、JPAベースのリポジトリを簡単に実装するためのSpringモジュールです。この章では、Spring Data JPAの基本から応用まで、実際のコード例と共に学びます。</p>
+
+                    <section id="jpa-basics">
+                        <h3 class="section-title">12.1 Spring Data JPAの基本</h3>
+                        <p>JPAはJava Persistence APIの略で、Javaアプリケーションでのオブジェクトリレーショナルマッピング（ORM）のための標準仕様です。Spring Data JPAはこれをさらに使いやすくするフレームワークです。</p>
+
+                        <h4>Spring Data JPAの主な特徴</h4>
+                        <ul>
+                            <li>インターフェースのみでリポジトリを定義可能</li>
+                            <li>メソッド名から自動的にクエリを生成</li>
+                            <li>ページング、ソートの簡単な実装</li>
+                            <li>カスタムクエリの柔軟な定義方法</li>
+                            <li>トランザクション管理の簡略化</li>
+                        </ul>
+
+                        <h4>Spring Bootでの基本設定</h4>
+                        <p>Spring BootプロジェクトでSpring Data JPAを使うには、まず依存関係を追加します。</p>
+
+                        <code>// build.gradleの場合
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.postgresql:postgresql'
+    // その他の依存関係
+}
+
+// pom.xmlの場合
+&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.postgresql&lt;/groupId&gt;
+        &lt;artifactId&gt;postgresql&lt;/artifactId&gt;
+        &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;!-- その他の依存関係 --&gt;
+&lt;/dependencies&gt;</code>
+
+                        <p>次に、application.propertiesまたはapplication.ymlでデータベース接続設定を行います。</p>
+
+                        <code># application.properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/mydb
+spring.datasource.username=postgres
+spring.datasource.password=password
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# JPA設定
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect</code>
+
+                        <div class="note">
+                            <h5>spring.jpa.hibernate.ddl-autoの設定値</h5>
+                            <ul>
+                                <li><strong>none</strong>: スキーマの自動生成は行わない</li>
+                                <li><strong>validate</strong>: エンティティとテーブルの整合性を検証するだけ</li>
+                                <li><strong>update</strong>: 既存のテーブルを更新（削除はしない）</li>
+                                <li><strong>create</strong>: 毎回テーブルを削除して作成</li>
+                                <li><strong>create-drop</strong>: アプリ起動時にテーブル作成、終了時に削除</li>
+                            </ul>
+                            <p class="mb-0"><strong>注意</strong>: 本番環境では<span class="inline-code">none</span>または<span class="inline-code">validate</span>を推奨します。</p>
+                        </div>
+
+                        <h4>基本的なCRUD操作</h4>
+                        <p>Spring Data JPAでは、JPAのリポジトリインターフェースを拡張するだけで基本的なCRUD操作を実装できます。</p>
+
+                        <p>まずエンティティクラスを定義します：</p>
+
+                        <code>package com.example.domain;
+
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "users")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
+    
+    @Column(name = "email", nullable = false)
+    private String email;
+    
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+    
+    // コンストラクタ、ゲッター、セッター
+    public User() {}
+    
+    public User(String username, String email) {
+        this.username = username;
+        this.email = email;
+        this.createdAt = LocalDateTime.now();
+    }
+    
+    // ゲッター、セッター
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+    
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+}</code>
+
+                        <p>次に、リポジトリインターフェースを定義します：</p>
+
+                        <code>package com.example.repository;
+
+import com.example.domain.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface UserRepository extends JpaRepository&lt;User, Long&gt; {
+    // メソッド名から自動的にクエリが生成される
+    List&lt;User&gt; findByUsername(String username);
+    
+    User findByEmail(String email);
+    
+    List&lt;User&gt; findByUsernameContaining(String keyword);
+    
+    boolean existsByUsername(String username);
+}</code>
+
+                        <p>実際に使用する例：</p>
+
+                        <code>@Service
+public class UserService {
+    private final UserRepository userRepository;
+    
+    @Autowired
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+    
+    // ユーザー作成
+    public User createUser(String username, String email) {
+        User user = new User(username, email);
+        return userRepository.save(user);
+    }
+    
+    // ユーザー全件取得
+    public List&lt;User&gt; getAllUsers() {
+        return userRepository.findAll();
+    }
+    
+    // IDでユーザー取得
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+    }
+    
+    // ユーザー更新
+    public User updateUser(Long id, String username, String email) {
+        User user = getUserById(id);
+        user.setUsername(username);
+        user.setEmail(email);
+        return userRepository.save(user);
+    }
+    
+    // ユーザー削除
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+    
+    // カスタム検索メソッド
+    public List&lt;User&gt; searchUsersByUsername(String keyword) {
+        return userRepository.findByUsernameContaining(keyword);
+    }
+}</code>
+
+                        <div class="exercise">
+                            <h5>演習 12.1: Spring Data JPAの基本操作</h5>
+                            <p>次の要件に従って、Bookエンティティとそのリポジトリを実装してください：</p>
+                            <ol>
+                                <li>id, title, author, price, publishedDateフィールドを持つBookエンティティを作成</li>
+                                <li>BookRepositoryインターフェースを定義し、次のメソッドを追加：
+                                    <ul>
+                                        <li>著者名で検索するメソッド</li>
+                                        <li>出版日の範囲で検索するメソッド</li>
+                                        <li>特定の価格以下の書籍を検索するメソッド</li>
+                                    </ul>
+                                </li>
+                                <li>サービスクラスに基本的なCRUD操作を実装</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="entity-annotations">
+                        <h3 class="section-title">12.2 エンティティアノテーション</h3>
+                        <p>JPAではエンティティクラスを定義するための様々なアノテーションが用意されています。主要なアノテーションとその使い方を説明します。</p>
+
+                        <h4>基本的なエンティティアノテーション</h4>
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>アノテーション</th>
+                                    <th>説明</th>
+                                    <th>使用例</th>
+                                </tr>
+                                <tr>
+                                    <td>@Entity</td>
+                                    <td>JPAエンティティとしてクラスをマークする</td>
+                                    <td>@Entity<br>public class User { ... }</td>
+                                </tr>
+                                <tr>
+                                    <td>@Table</td>
+                                    <td>マッピングするテーブル名を指定</td>
+                                    <td>@Table(name = "users")</td>
+                                </tr>
+                                <tr>
+                                    <td>@Id</td>
+                                    <td>主キーフィールドを指定</td>
+                                    <td>@Id<br>private Long id;</td>
+                                </tr>
+                                <tr>
+                                    <td>@GeneratedValue</td>
+                                    <td>主キーの生成方法を指定</td>
+                                    <td>@GeneratedValue(strategy = GenerationType.IDENTITY)</td>
+                                </tr>
+                                <tr>
+                                    <td>@Column</td>
+                                    <td>カラム名や制約を指定</td>
+                                    <td>@Column(name = "email", nullable = false)</td>
+                                </tr>
+                                <tr>
+                                    <td>@Transient</td>
+                                    <td>永続化対象外のフィールドを指定</td>
+                                    <td>@Transient<br>private String tempValue;</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h4>フィールドマッピングと変換</h4>
+
+                        <code>@Entity
+public class Product {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(name = "product_name", length = 100, nullable = false)
+    private String name;
+    
+    @Column(precision = 10, scale = 2)
+    private BigDecimal price;
+    
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+    
+    @Column(columnDefinition = "TEXT")
+    private String description;
+    
+    @Transient
+    private BigDecimal discountedPrice; // DB永続化されないフィールド
+    
+    public enum ProductStatus {
+        ACTIVE, DISCONTINUED, OUT_OF_STOCK
+    }
+    
+    // ゲッター、セッター省略
+}</code>
+
+                        <h4>データ検証アノテーション（Bean Validation）</h4>
+                        <p>JPAエンティティではBean Validationアノテーションを組み合わせて使用することが一般的です。</p>
+
+                        <code>@Entity
+public class Customer {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @NotBlank(message = "名前は必須です")
+    @Size(min = 2, max = 100, message = "名前は2〜100文字で指定してください")
+    private String name;
+    
+    @Email(message = "有効なメールアドレスを入力してください")
+    @NotBlank(message = "メールアドレスは必須です")
+    @Column(unique = true)
+    private String email;
+    
+    @Pattern(regexp = "^\\d{10,11}$", message = "電話番号は10桁または11桁の数字で入力してください")
+    private String phoneNumber;
+    
+    @Min(value = 0, message = "年齢は0以上である必要があります")
+    private Integer age;
+    
+    // ゲッター、セッター省略
+}</code>
+
+                        <div class="note">
+                            <h5>Bean Validationを有効にするには</h5>
+                            <p>Bean Validationを使用するには、依存関係を追加し、@Validアノテーションを使用します：</p>
+                            <code>// build.gradle
+implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+// Controller内での使用例
+@PostMapping
+public ResponseEntity&lt;Customer&gt; createCustomer(@Valid @RequestBody Customer customer) {
+    // バリデーションに通過した場合のみ実行される
+    Customer savedCustomer = customerService.save(customer);
+    return ResponseEntity.ok(savedCustomer);
+}</code>
+                        </div>
+
+                        <h4>複合主キーの定義</h4>
+                        <p>複合主キーを持つエンティティは、@IdClassまたは@EmbeddedIdアノテーションを使用して定義します。</p>
+
+                        <p>@IdClassを使用する例：</p>
+
+                        <code>// 複合主キークラス
+public class OrderItemPK implements Serializable {
+    private Long orderId;
+    private Long productId;
+    
+    // コンストラクタ、ゲッター、セッター、equals、hashCode
+    // 省略
+}
+
+// エンティティクラス
+@Entity
+@IdClass(OrderItemPK.class)
+public class OrderItem {
+    @Id
+    private Long orderId;
+    
+    @Id
+    private Long productId;
+    
+    private Integer quantity;
+    private BigDecimal price;
+    
+    // 関連エンティティへの参照
+    @ManyToOne
+    @JoinColumn(name = "order_id", insertable = false, updatable = false)
+    private Order order;
+    
+    @ManyToOne
+    @JoinColumn(name = "product_id", insertable = false, updatable = false)
+    private Product product;
+    
+    // ゲッター、セッター省略
+}</code>
+
+                        <p>@EmbeddedIdを使用する例：</p>
+
+                        <code>// 埋め込み可能な複合主キークラス
+@Embeddable
+public class OrderItemId implements Serializable {
+    private Long orderId;
+    private Long productId;
+    
+    // コンストラクタ、ゲッター、セッター、equals、hashCode
+    // 省略
+}
+
+// エンティティクラス
+@Entity
+public class OrderItem {
+    @EmbeddedId
+    private OrderItemId id;
+    
+    private Integer quantity;
+    private BigDecimal price;
+    
+    // 関連エンティティへの参照
+    @ManyToOne
+    @JoinColumn(name = "order_id", insertable = false, updatable = false)
+    @MapsId("orderId")
+    private Order order;
+    
+    @ManyToOne
+    @JoinColumn(name = "product_id", insertable = false, updatable = false)
+    @MapsId("productId")
+    private Product product;
+    
+    // ゲッター、セッター省略
+}</code>
+
+                        <div class="exercise">
+                            <h5>演習 12.2: 高度なエンティティ定義</h5>
+                            <p>ECサイトの商品管理システムの一部として、以下の要件に従ってエンティティを設計してください：</p>
+                            <ol>
+                                <li>Categoryエンティティを作成し、id、name、descriptionフィールドを定義</li>
+                                <li>Productエンティティに以下の機能を追加：
+                                    <ul>
+                                        <li>商品の状態をENUMで管理（在庫あり、在庫なし、販売終了）</li>
+                                        <li>作成日時と更新日時を自動的に記録する機能</li>
+                                        <li>商品説明をTEXT型で保存</li>
+                                        <li>Bean Validationを使用した入力検証</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="relationships">
+                        <h3 class="section-title">12.3 エンティティ間のリレーションシップ</h3>
+                        <p>JPAでは、データベースのテーブル間のリレーションシップをオブジェクト間の関連として表現できます。主要なリレーションシップアノテーションとその使い方を見ていきましょう。</p>
+
+                        <div class="diagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" width="600" height="300">
+                                <!-- 一対多の関係 -->
+                                <rect x="100" y="100" width="120" height="80" fill="#e8f5e9" stroke="#4caf50" stroke-width="2" rx="5" />
+                                <text x="160" y="140" text-anchor="middle" font-size="14">Department</text>
+                                <text x="160" y="160" text-anchor="middle" font-size="12">@OneToMany</text>
+                                
+                                <rect x="380" y="100" width="120" height="80" fill="#e3f2fd" stroke="#2196f3" stroke-width="2" rx="5" />
+                                <text x="440" y="140" text-anchor="middle" font-size="14">Employee</text>
+                                <text x="440" y="160" text-anchor="middle" font-size="12">@ManyToOne</text>
+                                
+                                <!-- 矢印 -->
+                                <line x1="220" y1="140" x2="380" y2="140" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <text x="300" y="130" text-anchor="middle" font-size="12">1</text>
+                                <text x="300" y="160" text-anchor="middle" font-size="12">*</text>
+                                
+                                <!-- 多対多の関係 -->
+                                <rect x="100" y="220" width="120" height="80" fill="#fff3e0" stroke="#ff9800" stroke-width="2" rx="5" />
+                                <text x="160" y="260" text-anchor="middle" font-size="14">Student</text>
+                                <text x="160" y="280" text-anchor="middle" font-size="12">@ManyToMany</text>
+                                
+                                <rect x="380" y="220" width="120" height="80" fill="#e1f5fe" stroke="#03a9f4" stroke-width="2" rx="5" />
+                                <text x="440" y="260" text-anchor="middle" font-size="14">Course</text>
+                                <text x="440" y="280" text-anchor="middle" font-size="12">@ManyToMany</text>
+                                
+                                <!-- 矢印 -->
+                                <line x1="220" y1="240" x2="380" y2="240" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <line x1="380" y1="280" x2="220" y2="280" stroke="#000" stroke-width="1.5" marker-end="url(#arrow)" />
+                                <text x="300" y="230" text-anchor="middle" font-size="12">*</text>
+                                <text x="300" y="270" text-anchor="middle" font-size="12">*</text>
+                                
+                                <defs>
+                                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                                        <path d="M0,0 L0,6 L9,3 z" fill="#000" />
+                                    </marker>
+                                </defs>
+                                
+                                <!-- タイトル -->
+                                <text x="300" y="40" text-anchor="middle" font-size="16" font-weight="bold">JPAエンティティのリレーションシップ</text>
+                            </svg>
+                            <p class="text-center">図12.1: JPAのエンティティリレーションシップの例</p>
+                        </div>
+
+                        <h4>一対多（@OneToMany / @ManyToOne）</h4>
+                        <p>一対多の関係は、1つのエンティティが複数の別エンティティと関連する場合に使用します。例えば、1つの部門に複数の従業員が所属するケースです。</p>
+
+                        <code>// 親エンティティ
+@Entity
+public class Department {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String name;
+    
+    // 一対多の関係
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List&lt;Employee&gt; employees = new ArrayList&lt;&gt;();
+    
+    // ゲッター、セッター省略
+}
+
+// 子エンティティ
+@Entity
+public class Employee {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String name;
+    
+    // 多対一の関係
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private Department department;
+    
+    // ゲッター、セッター省略
+}</code>
+
+                        <div class="note">
+                            <h5>主要なパラメータ</h5>
+                            <ul>
+                                <li><strong>mappedBy</strong>: 反対側のエンティティのマッピングフィールド名</li>
+                                <li><strong>cascade</strong>: 親エンティティ操作時の子エンティティへの影響（ALL, PERSIST, MERGE, REMOVE, REFRESH, DETACH）</li>
+                                <li><strong>fetch</strong>: データ取得方法（LAZY: 遅延読み込み、EAGER: 即時読み込み）</li>
+                                <li><strong>orphanRemoval</strong>: 親から参照されなくなった子エンティティを削除するかどうか</li>
+                            </ul>
+                        </div>
+
+                        <h4>多対多（@ManyToMany）</h4>
+                        <p>多対多の関係は、両方のエンティティが相互に複数の関連を持つ場合に使用します。例えば、学生が複数の講座を受講し、各講座には複数の学生が登録するケースです。</p>
+
+                        <code>// 多対多の一方
+@Entity
+public class Student {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String name;
+    
+    @ManyToMany
+    @JoinTable(
+        name = "student_course",
+        joinColumns = @JoinColumn(name = "student_id"),
+        inverseJoinColumns = @JoinColumn(name = "course_id")
+    )
+    private Set&lt;Course&gt; courses = new HashSet&lt;&gt;();
+    
+    // ゲッター、セッター省略
+}
+
+// 多対多のもう一方
+@Entity
+public class Course {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String name;
+    
+    @ManyToMany(mappedBy = "courses")
+    private Set&lt;Student&gt; students = new HashSet&lt;&gt;();
+    
+    // ゲッター、セッター省略
+}</code>
+
+                        <h4>一対一（@OneToOne）</h4>
+                        <p>一対一の関係は、1つのエンティティが別の1つのエンティティとのみ関連する場合に使用します。例えば、ユーザーとユーザープロファイルの関係です。</p>
+
+                        <code>// 一対一の一方
+@Entity
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String username;
+    
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private UserProfile profile;
+    
+    // ゲッター、セッター省略
+}
+
+// 一対一のもう一方
+@Entity
+public class UserProfile {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String bio;
+    private String avatarUrl;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", unique = true)
+    private User user;
+    
+    // ゲッター、セッター省略
+}</code>
+
+                        <h4>複雑なリレーションシップの例</h4>
+                        <p>実際のアプリケーションでは、複数の種類のリレーションシップが組み合わさることがあります。</p>
+
+                        <code>@Entity
+public class Order {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private LocalDateTime orderDate;
+    
+    // 多対一の関係（注文と顧客）
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+    
+    // 一対多の関係（注文と注文明細）
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List&lt;OrderItem&gt; orderItems = new ArrayList&lt;&gt;();
+    
+    // 一対一の関係（注文と配送情報）
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private Shipping shipping;
+    
+    // ヘルパーメソッド
+    public void addOrderItem(OrderItem item) {
+        orderItems.add(item);
+        item.setOrder(this);
+    }
+    
+    public void removeOrderItem(OrderItem item) {
+        orderItems.remove(item);
+        item.setOrder(null);
+    }
+    
+    public void setShipping(Shipping shipping) {
+        if (shipping == null) {
+            if (this.shipping != null) {
+                this.shipping.setOrder(null);
+            }
+        } else {
+            shipping.setOrder(this);
+        }
+        this.shipping = shipping;
+    }
+    
+    // その他のゲッター、セッター省略
+}</code>
+
+                        <div class="warning">
+                            <h5>注意点</h5>
+                            <ul>
+                                <li>双方向関連では、関係の両側を常に一貫して更新する必要があります（ヘルパーメソッドを使用）</li>
+                                <li>無限ループを避けるため、toString()、equals()、hashCode()メソッドの実装には注意が必要</li>
+                                <li>fetchタイプは適切に設定し、パフォーマンスとメモリ使用量のバランスを取る</li>
+                                <li>カスケード操作の設定は慎重に行い、意図しないデータ削除を防ぐ</li>
+                            </ul>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>演習 12.3: エンティティリレーションシップの実装</h5>
+                            <p>ブログアプリケーションのデータモデルを設計・実装してください：</p>
+                            <ol>
+                                <li>User（ユーザー）、Post（投稿）、Comment（コメント）、Tag（タグ）のエンティティを作成</li>
+                                <li>以下のリレーションシップを実装：
+                                    <ul>
+                                        <li>ユーザーと投稿の間に一対多の関係（1人のユーザーが複数の投稿を持つ）</li>
+                                        <li>投稿とコメントの間に一対多の関係（1つの投稿に複数のコメントがつく）</li>
+                                        <li>ユーザーとコメントの間に一対多の関係（1人のユーザーが複数のコメントを書く）</li>
+                                        <li>投稿とタグの間に多対多の関係（1つの投稿は複数のタグを持ち、1つのタグは複数の投稿に付けられる）</li>
+                                    </ul>
+                                </li>
+                                <li>適切なcascade、fetch、orphanRemovalの設定を行う</li>
+                                <li>必要なヘルパーメソッドを追加する</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="lazy-loading">
+                        <h3 class="section-title">12.4 遅延読み込みとN+1問題</h3>
+                        <p>JPAのリレーションシップを利用する際、遅延読み込み（Lazy Loading）とそれに伴うN+1問題は重要な考慮事項です。</p>
+
+                        <h4>遅延読み込み（Lazy Loading）とは</h4>
+                        <p>遅延読み込みは、関連するエンティティのデータを実際に必要になるまで読み込まない最適化手法です。対照的に、即時読み込み（Eager Loading）は関連するエンティティを一緒に読み込みます。</p>
+
+                        <code>// 遅延読み込みの例
+@Entity
+public class Department {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String name;
+    
+    @OneToMany(mappedBy = "department", fetch = FetchType.LAZY) // デフォルトは LAZY
+    private List&lt;Employee&gt; employees = new ArrayList&lt;&gt;();
+    
+    // ゲッター、セッター省略
+}
+
+// 即時読み込みの例
+@Entity
+public class Employee {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String name;
+    
+    @ManyToOne(fetch = FetchType.EAGER) // デフォルトは EAGER
+    @JoinColumn(name = "department_id")
+    private Department department;
+    
+    // ゲッター、セッター省略
+}</code>
+
+                        <div class="note">
+                            <h5>リレーションシップのデフォルトのフェッチタイプ</h5>
+                            <ul>
+                                <li><strong>@OneToMany</strong>: LAZY</li>
+                                <li><strong>@ManyToMany</strong>: LAZY</li>
+                                <li><strong>@ManyToOne</strong>: EAGER</li>
+                                <li><strong>@OneToOne</strong>: EAGER</li>
+                            </ul>
+                        </div>
+
+                        <h4>N+1問題とは</h4>
+                        <p>N+1問題は、遅延読み込みのエンティティをコレクションとして取得し、そのコレクション内の各エンティティの関連エンティティにアクセスする場合に発生するパフォーマンス問題です。</p>
+
+                        <code>// N+1問題を引き起こす例
+@Service
+public class DepartmentService {
+    @Autowired
+    private DepartmentRepository departmentRepository;
+    
+    public void printAllEmployeeNames() {
+        List&lt;Department&gt; departments = departmentRepository.findAll(); // 1つのSQLクエリでDepartmentを取得
+        
+        for (Department department : departments) {
+            System.out.println("Department: " + department.getName());
+            
+            // ここで遅延読み込みが発生し、各部門ごとに追加のSQLクエリが実行される
+            for (Employee employee : department.getEmployees()) {
+                System.out.println("- " + employee.getName());
+            }
+        }
+        // 結果: 1 + N個のSQLクエリが実行される（Nは部門の数）
+    }
+}</code>
+
+                        <h4>N+1問題の解決策</h4>
+
+                        <p>1. JOINフェッチを使用する</p>
+
+                        <code>// リポジトリでJOINフェッチを使用
+@Repository
+public interface DepartmentRepository extends JpaRepository&lt;Department, Long&gt; {
+    @Query("SELECT d FROM Department d LEFT JOIN FETCH d.employees")
+    List&lt;Department&gt; findAllWithEmployees();
+}
+
+// サービスでの使用例
+@Service
+public class DepartmentService {
+    @Autowired
+    private DepartmentRepository departmentRepository;
+    
+    public void printAllEmployeeNames() {
+        // 1つのSQLクエリで部門と従業員のデータを一度に取得
+        List&lt;Department&gt; departments = departmentRepository.findAllWithEmployees();
+        
+        for (Department department : departments) {
+            System.out.println("Department: " + department.getName());
+            // これ以上のSQLクエリは実行されない
+            for (Employee employee : department.getEmployees()) {
+                System.out.println("- " + employee.getName());
+            }
+        }
+    }
+}</code>
+
+                        <p>2. EntityGraph（エンティティグラフ）を使用する</p>
+
+                        <code>// リポジトリでEntityGraphを使用
+@Repository
+public interface DepartmentRepository extends JpaRepository&lt;Department, Long&gt; {
+    @EntityGraph(attributePaths = {"employees"})
+    List&lt;Department&gt; findAll();
+    
+    // 特定のメソッドにのみ適用する場合
+    @EntityGraph(attributePaths = {"employees"})
+    List&lt;Department&gt; findByNameContaining(String keyword);
+}
+
+// または、名前付きエンティティグラフを使用
+@Entity
+@NamedEntityGraph(
+    name = "Department.withEmployees",
+    attributeNodes = {
+        @NamedAttributeNode("employees")
+    }
+)
+public class Department {
+    // フィールド定義（略）
+}
+
+@Repository
+public interface DepartmentRepository extends JpaRepository&lt;Department, Long&gt; {
+    @EntityGraph(value = "Department.withEmployees")
+    List&lt;Department&gt; findAll();
+}</code>
+
+                        <p>3. バッチフェッチを使用する（Hibernateの場合）</p>
+
+                        <code>// application.properties でバッチサイズを設定
+spring.jpa.properties.hibernate.default_batch_fetch_size=100
+
+// エンティティのアノテーションでバッチサイズを指定
+@Entity
+public class Department {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    private String name;
+    
+    @OneToMany(mappedBy = "department", fetch = FetchType.LAZY)
+    @BatchSize(size = 50) // このコレクションに対してバッチフェッチを有効化
+    private List&lt;Employee&gt; employees = new ArrayList&lt;&gt;();
+    
+    // ゲッター、セッター省略
+}</code>
+
+                        <h4>その他の最適化とパフォーマンスのヒント</h4>
+                        <ul>
+                            <li>必要なデータだけを取得するDTOプロジェクション</li>
+                            <li>特定のユースケースに合わせたカスタムクエリ</li>
+                            <li>リードオンリートランザクションの活用</li>
+                            <li>ページネーションの適用</li>
+                        </ul>
+
+                        <code>// DTOプロジェクションの例
+public interface EmployeeRepository extends JpaRepository&lt;Employee, Long&gt; {
+    // インターフェースベースのプロジェクション
+    interface EmployeeProjection {
+        Long getId();
+        String getName();
+        
+        // ネストされたプロジェクション
+        interface DepartmentView {
+            String getName();
+        }
+        
+        DepartmentView getDepartment();
+    }
+    
+    List&lt;EmployeeProjection&gt; findByDepartmentId(Long departmentId);
+    
+    // クラスベースのプロジェクション
+    @Query("SELECT new com.example.dto.EmployeeDTO(e.id, e.name, e.department.name) " +
+           "FROM Employee e WHERE e.department.id = :departmentId")
+    List&lt;EmployeeDTO&gt; findEmployeeDTOsByDepartmentId(@Param("departmentId") Long departmentId);
+}</code>
+
+                        <div class="exercise">
+                            <h5>演習 12.4: N+1問題の解決</h5>
+                            <p>以下のエンティティ構造を持つEコマースシステムがあるとします：</p>
+                            <ul>
+                                <li>Order（注文）と OrderItem（注文明細）の間に一対多の関係</li>
+                                <li>OrderItem と Product（商品）の間に多対一の関係</li>
+                            </ul>
+                            <p>次の課題に取り組んでください：</p>
+                            <ol>
+                                <li>特定期間内のすべての注文と、その注文明細、商品情報を一度に取得する効率的なクエリを作成する</li>
+                                <li>各注文の合計金額（注文明細の小計の合計）を含むDTOを設計し、それを取得するクエリを作成する</li>
+                                <li>バッチフェッチとエンティティグラフの両方を使って最適化する方法を実装する</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="hibernate-benefits">
+                        <h3 class="section-title">12.5 HibernateとJPAのメリット・注意点</h3>
+                        <p>Hibernate/JPAを使用する際のメリットと注意すべき点について理解することで、より効果的に活用できます。</p>
+
+                        <h4>HibernateとJPAのメリット</h4>
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>メリット</th>
+                                    <th>説明</th>
+                                </tr>
+                                <tr>
+                                    <td>生産性の向上</td>
+                                    <td>SQL文を手動で書く必要がなく、オブジェクト指向的にデータアクセスできる</td>
+                                </tr>
+                                <tr>
+                                    <td>保守性の向上</td>
+                                    <td>データベース構造の変更がコードに与える影響が少なく、リファクタリングが容易</td>
+                                </tr>
+                                <tr>
+                                    <td>データベース非依存</td>
+                                    <td>データベースが変わっても基本的なコードを修正する必要がない</td>
+                                </tr>
+                                <tr>
+                                    <td>パフォーマンス最適化</td>
+                                    <td>キャッシュ機能、遅延読み込みなどの最適化機能が組み込まれている</td>
+                                </tr>
+                                <tr>
+                                    <td>標準化されたAPI</td>
+                                    <td>JPAは標準規格であり、異なる実装間の移行がしやすい</td>
+                                </tr>
+                                <tr>
+                                    <td>トランザクション管理</td>
+                                    <td>宣言的トランザクションで簡単にACID特性を確保できる</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h4>HibernateとJPAの注意点と対策</h4>
+
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>注意点</th>
+                                    <th>問題点</th>
+                                    <th>対策</th>
+                                </tr>
+                                <tr>
+                                    <td>学習コスト</td>
+                                    <td>JPAとHibernateの概念と機能を習得するのに時間がかかる</td>
+                                    <td>基本的な使用方法から始め、徐々に高度な機能を学ぶ</td>
+                                </tr>
+                                <tr>
+                                    <td>パフォーマンス問題</td>
+                                    <td>適切に設計・最適化しないと、N+1問題などのパフォーマンス問題が発生する</td>
+                                    <td>フェッチ戦略、クエリ最適化、キャッシュを適切に利用する</td>
+                                </tr>
+                                <tr>
+                                    <td>トランザクションの複雑さ</td>
+                                    <td>コネクション管理、エンティティのライフサイクルが複雑で、バグの原因になりやすい</td>
+                                    <td>トランザクション境界を明確にし、セッション管理を理解する</td>
+                                </tr>
+                                <tr>
+                                    <td>遅延読み込みの落とし穴</td>
+                                    <td>トランザクション外での遅延読み込みによるLazyInitializationException</td>
+                                    <td>@Transactionalの適切な使用、Open Session in View、DTOの活用</td>
+                                </tr>
+                                <tr>
+                                    <td>デバッグの難しさ</td>
+                                    <td>生成されるSQLが複雑で、問題の追跡や最適化が難しい</td>
+                                    <td>SQLログの有効化、プロファイリングツールの使用</td>
+                                </tr>
+                                <tr>
+                                    <td>エンティティのカプセル化の破壊</td>
+                                    <td>永続化のためにプライベートフィールドへのアクセスが必要になる</td>
+                                    <td>アクセス戦略を適切に設定、一貫したスタイルでコーディング</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h4>よくある問題と解決策</h4>
+
+                        <p>1. LazyInitializationException</p>
+
+                        <code>// 問題のあるコード
+@Service
+public class DepartmentService {
+    @Autowired
+    private DepartmentRepository departmentRepository;
+    
+    // トランザクションがここで終了
+    public Department getDepartment(Long id) {
+        return departmentRepository.findById(id).orElse(null);
+    }
+}
+
+@RestController
+public class DepartmentController {
+    @Autowired
+    private DepartmentService departmentService;
+    
+    @GetMapping("/departments/{id}")
+    public Department getDepartment(@PathVariable Long id) {
+        Department department = departmentService.getDepartment(id);
+        
+        // トランザクションは終了しているため、ここで遅延読み込みをするとエラー
+        List&lt;Employee&gt; employees = department.getEmployees(); // LazyInitializationException発生
+        return department;
+    }
+}
+
+// 解決策1: サービスレイヤーでトランザクションを開始
+@Service
+public class DepartmentService {
+    @Autowired
+    private DepartmentRepository departmentRepository;
+    
+    @Transactional(readOnly = true) // 読み取り専用トランザクション
+    public Department getDepartment(Long id) {
+        Department department = departmentRepository.findById(id).orElse(null);
+        // 遅延読み込みを強制的に実行（トランザクション内）
+        if (department != null) {
+            department.getEmployees().size();
+        }
+        return department;
+    }
+}
+
+// 解決策2: フェッチジョインを使用
+@Repository
+public interface DepartmentRepository extends JpaRepository&lt;Department, Long&gt; {
+    @Query("SELECT d FROM Department d LEFT JOIN FETCH d.employees WHERE d.id = :id")
+    Optional&lt;Department&gt; findByIdWithEmployees(@Param("id") Long id);
+}
+
+// 解決策3: Open Session in View（application.propertiesで設定）
+spring.jpa.open-in-view=true // デフォルトはtrue</code>
+
+                        <div class="warning">
+                            <h5>Open Session in Viewについての注意</h5>
+                            <p>Open Session in View（OSIV）はビューをレンダリングする間もHibernateセッションを開いたままにする機能です。これにより遅延読み込みの問題は解決しますが、以下のデメリットがあります：</p>
+                            <ul>
+                                <li>データベース接続がビューレンダリング中も保持されるため、接続プールに負荷がかかる</li>
+                                <li>コントローラーやビューでの不適切なデータアクセスを隠蔽してしまう</li>
+                                <li>予期しないN+1問題を引き起こす可能性がある</li>
+                            </ul>
+                            <p>本番環境では<span class="inline-code">spring.jpa.open-in-view=false</span>を設定し、適切なフェッチ戦略とDTOプロジェクションを使用することを推奨します。</p>
+                        </div>
+
+                        <p>2. エンティティの永続化ライフサイクルの管理</p>
+
+                        <code>// エンティティのライフサイクル状態
+// 1. 新規（New/Transient）: 永続化コンテキストに関連付けられていない新しいエンティティ
+User user = new User("john", "john@example.com");
+
+// 2. 管理（Managed）: 永続化コンテキストに関連付けられているエンティティ
+User savedUser = userRepository.save(user); // または entityManager.persist(user);
+
+// 3. 分離（Detached）: 以前は永続化コンテキストに関連付けられていたが、現在は関連付けられていないエンティティ
+// トランザクションが終了すると、すべてのエンティティは「分離」状態になる
+
+// 4. 削除（Removed）: 永続化コンテキストで削除対象としてマークされたエンティティ
+userRepository.delete(user); // または entityManager.remove(user);
+
+// 分離状態のエンティティを再び管理状態にする（マージ）
+User detachedUser = getDetachedUser(); // 分離状態のエンティティを取得
+User mergedUser = userRepository.save(detachedUser); // または entityManager.merge(detachedUser);</code>
+
+                        <p>3. バッチ処理とパフォーマンス最適化</p>
+
+                        <code>// バッチインサートを最適化
+@Configuration
+public class JpaConfig {
+    @Bean
+    public JpaVendorAdapter jpaVendorAdapter() {
+        HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
+        adapter.setDatabase(Database.POSTGRESQL);
+        adapter.setShowSql(true);
+        return adapter;
+    }
+    
+    @Bean
+    public JpaProperties jpaProperties() {
+        JpaProperties properties = new JpaProperties();
+        properties.getProperties().put("hibernate.jdbc.batch_size", "50");
+        properties.getProperties().put("hibernate.order_inserts", "true");
+        properties.getProperties().put("hibernate.order_updates", "true");
+        properties.getProperties().put("hibernate.batch_versioned_data", "true");
+        return properties;
+    }
+}
+
+// バッチ処理の実装例
+@Service
+@Transactional
+public class BatchService {
+    private final EntityManager entityManager;
+    
+    @Autowired
+    public BatchService(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+    
+    public void batchInsert(List&lt;User&gt; users) {
+        for (int i = 0; i < users.size(); i++) {
+            entityManager.persist(users.get(i));
+            
+            // 50件ごとにフラッシュとクリア
+            if (i % 50 == 0 && i > 0) {
+                entityManager.flush();
+                entityManager.clear();
+            }
+        }
+    }
+}</code>
+
+                        <div class="exercise">
+                            <h5>演習 12.5: パフォーマンス最適化</h5>
+                            <p>大量のデータを扱うバッチ処理アプリケーションを最適化する課題に取り組みましょう：</p>
+                            <ol>
+                                <li>10,000件のトランザクションデータを効率的にインポートするバッチ処理を実装</li>
+                                <li>2次キャッシュを活用して頻繁にアクセスされるマスターデータ（商品、カテゴリなど）の読み込みを最適化</li>
+                                <li>大量のデータを効率的に検索・ページングするためのリポジトリメソッドを実装</li>
+                                <li>LazyInitializationExceptionを回避しつつ、Open Session in Viewを無効化する設計を考案</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="jdbc-vs-jpa">
+                        <h3 class="section-title">12.6 Spring Data JDBCとJPAの使い分け</h3>
+                        <p>Spring Data JDBCとSpring Data JPAはどちらもSpringのデータアクセス技術ですが、設計思想や利用シーンが異なります。それぞれの特徴と使い分け基準を理解しましょう。</p>
+
+                        <h4>Spring Data JDBCとJPAの比較</h4>
+                        <div class="table-responsive">
+                            <table class="table-example">
+                                <tr>
+                                    <th>特徴</th>
+                                    <th>Spring Data JDBC</th>
+                                    <th>Spring Data JPA (Hibernate)</th>
+                                </tr>
+                                <tr>
+                                    <td>複雑性</td>
+                                    <td>シンプル（SQLに近い）</td>
+                                    <td>複雑（多機能、抽象度が高い）</td>
+                                </tr>
+                                <tr>
+                                    <td>永続化モデル</td>
+                                    <td>アグリゲートルートモデル</td>
+                                    <td>エンティティグラフモデル</td>
+                                </tr>
+                                <tr>
+                                    <td>キャッシュ</td>
+                                    <td>なし</td>
+                                    <td>1次・2次キャッシュあり</td>
+                                </tr>
+                                <tr>
+                                    <td>遅延読み込み</td>
+                                    <td>サポートなし</td>
+                                    <td>サポートあり</td>
+                                </tr>
+                                <tr>
+                                    <td>リレーションシップ</td>
+                                    <td>一対多のみ簡易サポート</td>
+                                    <td>全てのリレーションシップタイプをサポート</td>
+                                </tr>
+                                <tr>
+                                    <td>SQL生成</td>
+                                    <td>シンプル（予測しやすい）</td>
+                                    <td>複雑（時に非効率なクエリも）</td>
+                                </tr>
+                                <tr>
+                                    <td>学習コスト</td>
+                                    <td>低い</td>
+                                    <td>高い</td>
+                                </tr>
+                                <tr>
+                                    <td>適したユースケース</td>
+                                    <td>シンプルなCRUD、マイクロサービス</td>
+                                    <td>複雑なドメインモデル、大規模アプリケーション</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <h4>Spring Data JDBCの基本例</h4>
+                        <p>Spring Data JDBCはよりシンプルなアプローチを取ります。</p>
+
+                        <code>// Spring Data JDBCでのエンティティ
+@Table("customers")
+public class Customer {
+    @Id
+    private Long id;
+    private String name;
+    private String email;
+    
+    // 一対多の関係（子エンティティはアグリゲートの一部）
+    private List&lt;Address&gt; addresses = new ArrayList&lt;&gt;();
+    
+    // コンストラクタ、ゲッター、セッター省略
+}
+
+@Table("addresses")
+public class Address {
+    @Id
+    private Long id;
+    private String street;
+    private String city;
+    private String zipCode;
+    
+    // Spring Data JDBCでは逆参照が自動的に管理されない
+    // 外部キーフィールドを明示的に定義する必要がある
+    private Long customerId;
+    
+    // コンストラクタ、ゲッター、セッター省略
+}
+
+// リポジトリ
+public interface CustomerRepository extends CrudRepository&lt;Customer, Long&gt; {
+    List&lt;Customer&gt; findByNameContaining(String name);
+}</code>
+
+                        <h4>使い分け基準</h4>
+                        <p>以下の基準を参考に、プロジェクトに適した技術を選択しましょう。</p>
+
+                        <p><strong>Spring Data JDBCが適しているケース：</strong></p>
+                        <ul>
+                            <li>シンプルなドメインモデル（複雑な関係が少ない）</li>
+                            <li>マイクロサービスアーキテクチャ</li>
+                            <li>高いパフォーマンスが必要な処理</li>
+                            <li>SQLの制御とトレーサビリティが重要な場合</li>
+                            <li>学習コストを抑えたい場合</li>
+                            <li>ドメイン駆動設計（DDD）のアグリゲートパターンを採用している場合</li>
+                        </ul>
+
+                        <p><strong>Spring Data JPAが適しているケース：</strong></p>
+                        <ul>
+                            <li>複雑なドメインモデルと多様なリレーションシップ</li>
+                            <li>モノリシックな大規模アプリケーション</li>
+                            <li>キャッシュによるパフォーマンス最適化が必要な場合</li>
+                            <li>データベースベンダーに依存しないコードが必要な場合</li>
+                            <li>既存のJPA/Hibernateのコードベースがある場合</li>
+                            <li>複雑なクエリやフィルタリングが多い場合</li>
+                        </ul>
+
+                        <h4>同じプロジェクト内での併用</h4>
+                        <p>同じプロジェクト内でSpring Data JDBCとJPAを併用することも可能です。用途によって適切な技術を選択することで、両方のメリットを活かせます。</p>
+
+                        <code>// build.gradleでの依存関係の追加
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    // その他の依存関係
+}
+
+// JPAリポジトリの定義
+@Repository
+public interface UserJpaRepository extends JpaRepository&lt;User, Long&gt; {
+    // 複雑なクエリや関連エンティティの取得に使用
+    @EntityGraph(attributePaths = {"roles", "profile"})
+    Optional&lt;User&gt; findByUsername(String username);
+}
+
+// JDBCリポジトリの定義
+@Repository
+public interface ProductJdbcRepository extends CrudRepository&lt;Product, Long&gt; {
+    // 単純なCRUD操作や高パフォーマンスが必要な操作に使用
+    List&lt;Product&gt; findByCategory(String category);
+}
+
+// 併用する場合のサービス例
+@Service
+public class ApplicationService {
+    private final UserJpaRepository userJpaRepository;
+    private final ProductJdbcRepository productJdbcRepository;
+    
+    @Autowired
+    public ApplicationService(
+            UserJpaRepository userJpaRepository,
+            ProductJdbcRepository productJdbcRepository) {
+        this.userJpaRepository = userJpaRepository;
+        this.productJdbcRepository = productJdbcRepository;
+    }
+    
+    @Transactional
+    public void processOrder(String username, Long productId, int quantity) {
+        // 複雑なユーザー情報の取得にはJPAを使用
+        User user = userJpaRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(username));
+        
+        // シンプルな商品情報の取得にはJDBCを使用
+        Product product = productJdbcRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
+        
+        // 処理ロジック（省略）
+    }
+}</code>
+
+                        <div class="note">
+                            <h5>選択のための質問</h5>
+                            <p>技術選択の際に以下の質問を検討すると良いでしょう：</p>
+                            <ol>
+                                <li>どの程度の複雑さのドメインモデルが必要か？</li>
+                                <li>パフォーマンス要件はどのようなものか？</li>
+                                <li>チームのスキルセットと学習コストはどうか？</li>
+                                <li>アプリケーションのスケールはどの程度か？</li>
+                                <li>ドメイン駆動設計を採用しているか？</li>
+                                <li>データベース抽象化の必要性はあるか？</li>
+                            </ol>
+                        </div>
+
+                        <div class="exercise">
+                            <h5>演習 12.6: 併用アプローチの設計</h5>
+                            <p>ECサイトの一部機能を実装するシナリオを考えます：</p>
+                            <ol>
+                                <li>以下の要件に基づいて、Spring Data JPAとSpring Data JDBCを適切に使い分けた設計を行う：
+                                    <ul>
+                                        <li>ユーザー情報、注文履歴、支払い情報は複雑なリレーションシップを持つ</li>
+                                        <li>商品カタログと在庫情報は高頻度で読み取られ、パフォーマンスが重要</li>
+                                        <li>アクセスログや統計情報は大量のデータを効率的に書き込む必要がある</li>
+                                    </ul>
+                                </li>
+                                <li>それぞれのドメインモデルを設計し、適切なリポジトリインターフェースを定義する</li>
+                                <li>JPAとJDBCを併用する際のトランザクション管理について考察する</li>
+                            </ol>
+                        </div>
+                    </section>
+
+                    <section id="chapter12-quiz">
+                        <h3 class="section-title">12.7 理解度確認テスト</h3>
+                        <div class="quiz-container">
+                            <h4>第12章の理解度チェック</h4>
+                            <p>以下の問題に答えて、第12章の内容の理解度を確認しましょう。</p>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題1:</strong> JPAでエンティティのリレーションシップを定義する際、一対多の関係を表すアノテーションの組み合わせとして正しいものはどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1a" value="a">
+                                    <label class="form-check-label" for="q1a">
+                                        @OneToOne と @ManyToOne
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1b" value="b">
+                                    <label class="form-check-label" for="q1b">
+                                        @OneToMany と @ManyToOne
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1c" value="c">
+                                        <label class="form-check-label" for="q1c">
+                                        @OneToMany と @OneToOne
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q1" id="q1d" value="d">
+                                        <label class="form-check-label" for="q1d">
+                                        @ManyToMany と @ManyToOne
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題2:</strong> N+1問題を解決するための方法として適切でないものはどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2a" value="a">
+                                    <label class="form-check-label" for="q2a">
+                                        JOINフェッチクエリを使用する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2b" value="b">
+                                    <label class="form-check-label" for="q2b">
+                                        すべてのリレーションシップでfetch = FetchType.EAGERを設定する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2c" value="c">
+                                        <label class="form-check-label" for="q2c">
+                                        EntityGraphを使用する
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q2" id="q2d" value="d">
+                                        <label class="form-check-label" for="q2d">
+                                        バッチフェッチを設定する
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題3:</strong> Spring Data JPAで遅延読み込み（Lazy Loading）のデフォルト設定として正しいものはどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3a" value="a">
+                                    <label class="form-check-label" for="q3a">
+                                        すべてのリレーションシップでLAZY
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3b" value="b">
+                                    <label class="form-check-label" for="q3b">
+                                        すべてのリレーションシップでEAGER
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3c" value="c">
+                                        <label class="form-check-label" for="q3c">
+                                        @OneToMany、@ManyToManyはLAZY、@ManyToOne、@OneToOneはEAGER
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q3" id="q3d" value="d">
+                                        <label class="form-check-label" for="q3d">
+                                        @OneToMany、@OneToOneはLAZY、@ManyToOne、@ManyToManyはEAGER
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題4:</strong> Spring Data JDBCとSpring Data JPAの違いについて、正しくないものはどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4a" value="a">
+                                    <label class="form-check-label" for="q4a">
+                                        Spring Data JDBCは遅延読み込みをサポートしていない
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4b" value="b">
+                                    <label class="form-check-label" for="q4b">
+                                        Spring Data JPAはキャッシュ機能を持っている
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4c" value="c">
+                                        <label class="form-check-label" for="q4c">
+                                        Spring Data JDBCはすべてのリレーションシップタイプを完全にサポートしている
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q4" id="q4d" value="d">
+                                        <label class="form-check-label" for="q4d">
+                                        Spring Data JPAはSpring Data JDBCより一般的に学習コストが高い
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="quiz-question">
+                                <p><strong>問題5:</strong> spring.jpa.hibernate.ddl-autoの設定で、本番環境で最も推奨される値はどれですか？</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5a" value="a">
+                                    <label class="form-check-label" for="q5a">
+                                        create
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5b" value="b">
+                                    <label class="form-check-label" for="q5b">
+                                        update
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5c" value="c">
+                                        <label class="form-check-label" for="q5c">
+                                        validate または none
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q5" id="q5d" value="d">
+                                        <label class="form-check-label" for="q5d">
+                                        create-drop
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-success mt-3" id="checkAnswers">回答を確認</button>
+                            <div id="quizResults" class="mt-3 d-none">
+                                <div class="alert alert-success">
+                                    <h5>正解:</h5>
+                                    <ol>
+                                        <li>b（@OneToMany と @ManyToOne）</li>
+                                        <li>b（すべてのリレーションシップでfetch = FetchType.EAGERを設定する）</li>
+                                        <li>c（@OneToMany、@ManyToManyはLAZY、@ManyToOne、@OneToOneはEAGER）</li>
+                                        <li>c（Spring Data JDBCはすべてのリレーションシップタイプを完全にサポートしている）</li>
+                                        <li>c（validate または none）</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="next-steps">
+                        <h3 class="section-title">次のステップ</h3>
+                        <p>この章では、Spring Data JPAの基本から応用まで、実際のコード例と共に学習しました。エンティティの定義、リレーションシップの管理、パフォーマンス最適化、Spring Data JDBCとの使い分けなど、重要なトピックをカバーしています。</p>
+                        <p>次のステップとして、以下の学習がおすすめです：</p>
+                        <div class="note">
+                            <h5>推奨される追加学習</h5>
+                            <ul>
+                                <li><strong>クエリDSL</strong>: より型安全なクエリ構築のためのQueryDSLライブラリの活用</li>
+                                <li><strong>Spring Data RESTとHATEOAS</strong>: リポジトリからRESTfulなAPIを自動生成</li>
+                                <li><strong>テスト技術</strong>: @DataJpaTest、テストコンテナを使用したインテグレーションテスト</li>
+                                <li><strong>Hibernateのより高度な機能</strong>: インターセプターや独自のタイプマッピング</li>
+                                <li><strong>JPA仕様の最新バージョン</strong>: Jakarta Persistence 3.1の新機能</li>
+                            </ul>
+                        </div>
+                    </section>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4">
+        <div class="container">
+            <p class="mb-0">Copyright © 2025 F-Circle All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 理解度テストの回答確認ボタンの処理
+        document.getElementById('checkAnswers').addEventListener('click', function() {
+            document.getElementById('quizResults').classList.remove('d-none');
+        });
+    </script>
+</body>
+</html>
