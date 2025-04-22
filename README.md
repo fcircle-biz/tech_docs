@@ -103,6 +103,11 @@ JavaServer Pages (JSP)とServletを段階的に学習するためのガイドラ
 
 - [JSP/Servlet学習ガイドライン](docs/guide/jsp/README.md) - JSP/Servletの基礎知識から式言語(EL)、JSTL、MVCアーキテクチャ、データベース連携まで網羅する10のステップで構成された総合学習ガイド
 
+### Spring Framework学習ガイドライン
+Spring Frameworkを段階的に学習するためのガイドラインです。基本コンセプトからSpring Boot、Spring MVC、Spring Data、Spring Securityまで、実践的なアプリケーション開発に必要な知識を体系的に学べます。
+
+- [Spring Framework学習ガイドライン](docs/guide/spring/README.md) - Spring Frameworkの基礎知識からSpring Boot、Spring MVC、Spring Data JPA、Spring Securityまでを網羅する11のステップで構成された総合学習ガイド
+
 ---
 
 ## AIアシスタント用プロンプト集
