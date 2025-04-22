@@ -5,34 +5,34 @@
 ## 学習コンテンツ
 
 ### [1. 事前準備](https://fcircle-biz.github.io/tech_docs/guide/jsp/jsp-learning-material-1.html)
-JSP/Servletの概要、Webアプリケーション開発の基本概念、JDK 21のインストール方法、Apache Tomcatのセットアップ、IDE環境の設定、Webアプリケーションの基本構造について解説します。
+JSP/Servletの概要、Webアプリケーション開発の基本概念、JDK 21のインストール方法、Apache Tomcatのセットアップ、IDE環境の設定、Webアプリケーションの基本構造について解説します。この章では開発環境の構築に必要な一連の手順とツールの使い方を詳しく説明しています。
 
 ### [2. JSPの基本理解](https://fcircle-biz.github.io/tech_docs/guide/jsp/jsp-learning-material-2.html)
-JSPの基本概念とその役割、JSPがどのように処理されるか、JSPの主要な構文要素、簡単なJSPファイルの作成と実行方法、JSP開発のベストプラクティスについて学びます。
+JSPの基本概念とその役割、JSPがどのように処理されるか、JSPの主要な構文要素、簡単なJSPファイルの作成と実行方法、JSP開発のベストプラクティスについて学びます。JSPとHTMLの関係や、JSPの処理フローについての理解を深めることができます。
 
 ### [3. スクリプトレットと式](https://fcircle-biz.github.io/tech_docs/guide/jsp/jsp-learning-material-3.html)
-JSPの基本的な構文要素であるスクリプトレット（<% %>）、式（<%= %>）、宣言（<%! %>）の使い方、JSPページ内でJavaコードを記述する方法と、動的にコンテンツを生成する方法について学びます。
+JSPの基本的な構文要素であるスクリプトレット（<% %>）、式（<%= %>）、宣言（<%! %>）の使い方、JSPページ内でJavaコードを記述する方法と、動的にコンテンツを生成する方法について学びます。実践的な例を通して、これらの要素の適切な使用方法を修得できます。
 
 ### [4. ディレクティブとインポート](https://fcircle-biz.github.io/tech_docs/guide/jsp/jsp-learning-material-4.html)
-JSPページの動作を制御するpage ディレクティブ、JavaクラスとJSPのインポート機能、コードの再利用を可能にするinclude ディレクティブ、カスタムタグを使用するためのtaglib ディレクティブ、JSPでの例外処理とエラーページの設定について学びます。
+JSPページの動作を制御するpage ディレクティブ、JavaクラスとJSPのインポート機能、コードの再利用を可能にするinclude ディレクティブ、カスタムタグを使用するためのtaglib ディレクティブ、JSPでの例外処理とエラーページの設定について学びます。各種ディレクティブの詳細な属性や効果的な使い方を理解し、より堅牢なJSPアプリケーション開発の基礎を身につけます。
 
-### [5. アクションとJavaBeans](https://fcircle-biz.github.io/tech_docs/guide/jsp/jsp-learning-material-5.html)
-JSPアクションタグ（jsp:useBean, jsp:setProperty, jsp:getProperty）の使用方法、JavaBeansの作成と活用、フォームデータの処理方法、MVCアーキテクチャの基本概念について学びます。
+### [5. リクエストとレスポンスの処理](https://fcircle-biz.github.io/tech_docs/guide/jsp/jsp-learning-material-5.html)
+HTTPリクエストとレスポンスの仕組み、requestオブジェクトからデータを取得する方法、responseオブジェクトを使って出力する方法、GETメソッドとPOSTメソッドの違いと適切な使い分け、フォームデータの処理方法、文字エンコーディングの設定について学びます。実際のWebアプリケーション開発において必須となるリクエスト処理とレスポンス生成の技術を修得します。
 
-### [6. JSP標準タグライブラリ(JSTL)](https://fcircle-biz.github.io/tech_docs/guide/jsp/jsp-learning-material-6.html)
-JSTLの概要と主要なタグライブラリ、Core（c）タグライブラリ、Formatting（fmt）タグライブラリ、Functions（fn）タグライブラリ、SQL（sql）タグライブラリ、JSTLを使用したデータアクセスと表示について学びます。
+### [6. JSPとJavaBeans](https://fcircle-biz.github.io/tech_docs/guide/jsp/jsp-learning-material-6.html)
+JavaBeansの基本概念と特徴、プロパティとアクセサメソッド（getter/setter）の理解、JavaBeansの作成方法、JSPでのJavaBeansの利用（useBeanタグなど）、実践的なJavaBeansの活用パターンについて学びます。MVCアーキテクチャにおけるモデルの役割を担うJavaBeansを活用することで、より整理された保守性の高いWebアプリケーション開発手法を習得します。
 
-### [7. 式言語（EL）](https://fcircle-biz.github.io/tech_docs/guide/jsp/jsp-learning-material-7.html)
-JSP式言語（EL）の基本構文と機能、スコープ内の属性へのアクセス方法、コレクションやJavaBeansのプロパティへのアクセス方法、暗黙オブジェクト（pageContext, param, header など）、演算子と関数の使用方法について学びます。
+### [7. セッションとスコープ](https://fcircle-biz.github.io/tech_docs/guide/jsp/jsp-learning-material-7.html)
+Webアプリケーションにおけるスコープの概念と種類、セッション管理の基本とライフサイクル、セッション属性の設定と取得、ログイン認証の実装方法、セッション管理のセキュリティと最適化について学びます。HTTP通信のステートレス性を克服し、ユーザー状態を管理するための重要な技術を習得します。
 
-### [8. Servletの基礎](https://fcircle-biz.github.io/tech_docs/guide/jsp/jsp-learning-material-8.html)
-Servletの基本概念とライフサイクル、HTTPリクエスト・レスポンスの処理方法、フォームデータの取得と処理、セッション管理、Cookie の使用方法、リダイレクトとフォワードの違いについて学びます。
+### [8. EL（式言語）とJSTL入門](https://fcircle-biz.github.io/tech_docs/guide/jsp/jsp-learning-material-8.html)
+EL（Expression Language）の基本的な構文と使い方、ELを使用したデータへのアクセス方法、JSTLタグライブラリの概要と設定方法、JSTLによる繰り返し処理と条件分岐、JSTLのフォーマットタグによるデータ表示の整形、ELとJSTLを組み合わせた実践的な使用方法を学びます。これらの技術を使用することで、JSPページからJavaコードを排除し、よりメンテナンス性の高いWebアプリケーションを開発できるようになります。
 
-### [9. Servletとデータベース連携](https://fcircle-biz.github.io/tech_docs/guide/jsp/jsp-learning-material-9.html)
-JDBCを使用したデータベース接続、Servletからのデータベースアクセス、トランザクション管理、コネクションプーリング、DAOパターンの実装、データアクセス層の設計と実装について学びます。
+### [9. 簡易Webアプリ開発](https://fcircle-biz.github.io/tech_docs/guide/jsp/jsp-learning-material-9.html)
+MVCデザインパターンの理解と実装方法、JSP、Servlet、JavaBeansの適切な役割分担、フォーム処理の実装方法、データアクセス処理の実装方法、実践的なWebアプリケーション開発の基本フローについて学びます。これまでの章で学んだ個々の技術要素を統合し、実用的なWebアプリケーションを構築する方法を身につけます。
 
-### [10. 総合プロジェクト - シンプルなWebアプリケーション](https://fcircle-biz.github.io/tech_docs/guide/jsp/jsp-learning-material-10.html)
-これまでに学んだJSP/Servletの知識を活用して、実践的なWebアプリケーションを構築します。要件分析、データベース設計、MVCアーキテクチャの実装、セキュリティ対策、テスト、デプロイメントまでの一連の開発プロセスを学びます。
+### [10. 次のステップへのガイド](https://fcircle-biz.github.io/tech_docs/guide/jsp/jsp-learning-material-10.html)
+MVCアーキテクチャパターンの詳細と実装方法、Servletとの効果的な連携とデザインパターンの適用、Spring MVCやJSFなどの現代的なフレームワークへの移行戦略、実務で使えるJSP/Servletのベストプラクティス、将来のJava Web開発のトレンドと学習パスについて学びます。JSP/Servletの基本を習得した後のステップアップのためのガイドを提供します。
 
 ## 学習の進め方
 
