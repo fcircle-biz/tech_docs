@@ -13,25 +13,25 @@
 ### [3. データを登録・更新・削除する](https://fcircle-biz.github.io/tech_docs/guide/sql/sql-learning-material-3.html)
 INSERT、UPDATE、DELETE文によるデータ操作の基本と、WHERE句を使った対象の絞り込み方法を学習し、実際に顧客情報の追加・変更・削除を行います。
 
-### [4. データを取得する](https://fcircle-biz.github.io/tech_docs/guide/sql/sql-learning-material-4.html)
-SELECT文の基本的な使い方、WHERE句での条件指定、ORDER BYによる並べ替え、LIMIT/OFFSETによる取得件数の制限など、データ取得の基本テクニックを学びます。
+### [4. データを検索する](https://fcircle-biz.github.io/tech_docs/guide/sql/sql-learning-material-4.html)
+SELECT文の基本的な使い方、WHERE句での条件指定、ORDER BYによる並べ替え、LIMIT/OFFSETによる取得件数の制限など、データ検索の基本テクニックを学びます。
 
-### [5. 複数テーブルの結合](https://fcircle-biz.github.io/tech_docs/guide/sql/sql-learning-material-5.html)
-INNER JOIN、LEFT JOIN、RIGHT JOINなど各種JOIN操作の意味と使い方を理解し、複数のテーブルからデータを取得する方法を学習します。
+### [5. データの並び替えと重複除去](https://fcircle-biz.github.io/tech_docs/guide/sql/sql-learning-material-5.html)
+ORDER BY句による複数条件での並べ替え、DISTINCTを使った重複除去、CASE文による条件分岐など、より高度なデータ処理方法を学習します。
 
-### [6. 集計関数とグループ化](https://fcircle-biz.github.io/tech_docs/guide/sql/sql-learning-material-6.html)
+### [6. 集計とグループ化](https://fcircle-biz.github.io/tech_docs/guide/sql/sql-learning-material-6.html)
 COUNT、SUM、AVG、MAXなどの集計関数とGROUP BY句を使って、データの集計・分析を行う方法を学びます。また、HAVINGによるグループの絞り込みも解説します。
 
-### [7. サブクエリと高度な検索](https://fcircle-biz.github.io/tech_docs/guide/sql/sql-learning-material-7.html)
-サブクエリの概念と使い方を学び、より複雑な条件での検索や多段階の処理を行う方法を理解します。相関サブクエリやEXISTS句なども解説します。
+### [7. 複数テーブルをつなげて使う（JOIN）](https://fcircle-biz.github.io/tech_docs/guide/sql/sql-learning-material-7.html)
+INNER JOIN、LEFT JOIN、RIGHT JOINなど各種JOIN操作の意味と使い方を理解し、複数のテーブルからデータを取得する方法を学習します。
 
-### [8. ビューとインデックス](https://fcircle-biz.github.io/tech_docs/guide/sql/sql-learning-material-8.html)
-ビューの作成・使用方法とインデックスの概念・作成方法を学び、効率的にデータを管理・アクセスする手法を習得します。
+### [8. サブクエリとビュー](https://fcircle-biz.github.io/tech_docs/guide/sql/sql-learning-material-8.html)
+サブクエリの概念と使い方を学び、より複雑な条件での検索や多段階の処理を行う方法を理解します。また、ビューの作成と活用方法についても解説します。
 
-### [9. トランザクションと同時実行制御](https://fcircle-biz.github.io/tech_docs/guide/sql/sql-learning-material-9.html)
-トランザクションの基本概念、ACID特性、BEGIN/COMMIT/ROLLBACKの使い方、同時実行制御の仕組みについて学習します。
+### [9. よく使う便利な機能](https://fcircle-biz.github.io/tech_docs/guide/sql/sql-learning-material-9.html)
+文字列処理関数、日付処理関数、条件式、トランザクション制御など、実務でよく使用する便利な機能について学習します。
 
-### [10. PostgreSQLの高度な機能](https://fcircle-biz.github.io/tech_docs/guide/sql/sql-learning-material-10.html)
+### [10. PostgreSQL入門](https://fcircle-biz.github.io/tech_docs/guide/sql/sql-learning-material-10.html)
 JSON型、配列型、ウィンドウ関数、共通テーブル式（CTE）など、PostgreSQLの高度な機能を学び、より効率的かつ強力なデータベース操作を習得します。
 
 ## 学習の進め方
@@ -43,5 +43,5 @@ JSON型、配列型、ウィンドウ関数、共通テーブル式（CTE）な�
 
 ## 関連リソース
 
-- [PostgreSQL SQLチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/postgresql-cheatsheet.html) - PostgreSQLの主要なSQL文とコマンドをまとめた参考資料
-- [データベース設計チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/database-design-cheatsheet.html) - 効率的なデータベース設計のためのガイドライン
+- [PostgreSQL SQLチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/postgresql-infographic.html) - PostgreSQLの主要なSQL文とコマンドをまとめた参考資料
+- [SQLチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/sql-cheatsheet.html) - SQL文の基本的な構文をまとめた参考資料
