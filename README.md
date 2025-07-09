@@ -105,7 +105,7 @@
 ### データ分析
 | 技術 | 説明 |
 |------|------|
-| [SAS学習ガイド](docs/guide/data-analytics/sas/) | SAS基本構造とデータ分析技術 |
+| [SAS学習ガイド](docs/guide/data-analytics/sas) | SAS基本構造とデータ分析技術 |
 
 ---
 

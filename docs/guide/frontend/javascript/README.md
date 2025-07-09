@@ -4,31 +4,31 @@
 
 ## 学習コンテンツ
 
-### [第1章：ウォームアップ（開発環境構築）](https://fcircle-biz.github.io/tech_docs/guide/javascript/javascript_chapter1.html)
+### [第1章：ウォームアップ（開発環境構築）](https://fcircle-biz.github.io/tech_docs/guide/frontend/javascript/javascript_chapter1.html)
 JavaScript学習に必要な開発環境のセットアップを行います。VS Code、Node.js、ブラウザ開発者ツールの導入から、文字エンコーディングの設定まで、プログラミングを効率的に学習するための基盤を整えます。
 
-### [第2章：JavaScript基本構文](https://fcircle-biz.github.io/tech_docs/guide/javascript/javascript_chapter2.html)
+### [第2章：JavaScript基本構文](https://fcircle-biz.github.io/tech_docs/guide/frontend/javascript/javascript_chapter2.html)
 変数とデータ型、テンプレートリテラル、演算子、制御構造、関数など、プログラミングの基礎となる概念を体系的に習得します。最後には学習した内容を活用して「数当てゲーム」を作成します。
 
-### [第3章：配列とオブジェクト](https://fcircle-biz.github.io/tech_docs/guide/javascript/javascript_chapter3.html)
+### [第3章：配列とオブジェクト](https://fcircle-biz.github.io/tech_docs/guide/frontend/javascript/javascript_chapter3.html)
 配列の操作方法、オブジェクトの作成と操作、分割代入、モダンJavaScriptの配列メソッド（map、filter、reduce）など、データをより効率的に扱う方法を学習します。
 
-### [第4章：DOM操作とイベント処理](https://fcircle-biz.github.io/tech_docs/guide/javascript/javascript_chapter4.html)
+### [第4章：DOM操作とイベント処理](https://fcircle-biz.github.io/tech_docs/guide/frontend/javascript/javascript_chapter4.html)
 WebページのHTML要素を動的に操作するDOM操作の基礎から、ユーザーインタラクションを処理するイベントハンドリングまで、インタラクティブなWebページ作成の技術を習得します。
 
-### [第5章：非同期処理](https://fcircle-biz.github.io/tech_docs/guide/javascript/javascript_chapter5.html)
+### [第5章：非同期処理](https://fcircle-biz.github.io/tech_docs/guide/frontend/javascript/javascript_chapter5.html)
 Promise、async/await、XMLHttpRequest、Fetch APIなど、非同期プログラミングの基本概念と実装方法を学習します。外部APIとの通信やタイマー処理の実装も含まれます。
 
-### [第6章：モジュールとクラス](https://fcircle-biz.github.io/tech_docs/guide/javascript/javascript_chapter6.html)
+### [第6章：モジュールとクラス](https://fcircle-biz.github.io/tech_docs/guide/frontend/javascript/javascript_chapter6.html)
 ES6のモジュールシステム、クラスベースのオブジェクト指向プログラミング、インポート/エクスポート、継承、静的メソッドなど、大規模なアプリケーション開発に必要な構造化技術を学びます。
 
-### [第7章：Webアプリケーション開発基礎](https://fcircle-biz.github.io/tech_docs/guide/javascript/javascript_chapter7.html)
+### [第7章：Webアプリケーション開発基礎](https://fcircle-biz.github.io/tech_docs/guide/frontend/javascript/javascript_chapter7.html)
 ローカルストレージ、セッションストレージ、Web API、PWA（Progressive Web App）の基礎、レスポンシブデザインなど、実用的なWebアプリケーション開発に必要な技術を習得します。
 
-### [第8章：React/Vue.js入門](https://fcircle-biz.github.io/tech_docs/guide/javascript/javascript_chapter8.html)
+### [第8章：React/Vue.js入門](https://fcircle-biz.github.io/tech_docs/guide/frontend/javascript/javascript_chapter8.html)
 モダンなフロントエンドフレームワークであるReactまたはVue.jsの基礎を学習します。コンポーネント指向開発、状態管理、ルーティングなど、SPA（Single Page Application）開発の基本を習得します。
 
-### [第9章：卒業プロジェクト & 発表](https://fcircle-biz.github.io/tech_docs/guide/javascript/javascript_chapter9.html)
+### [第9章：卒業プロジェクト & 発表](https://fcircle-biz.github.io/tech_docs/guide/frontend/javascript/javascript_chapter9.html)
 これまでに学習した知識を統合して、実用的なWebアプリケーションを作成します。プロジェクトの企画から設計、実装、デプロイ、発表まで、実際の開発現場で必要となるスキルを総合的に身に付けます。
 
 ## 学習の進め方
@@ -56,9 +56,9 @@ ES6のモジュールシステム、クラスベースのオブジェクト指�
 ## 関連リソース
 
 ### チートシート
-- [JavaScript基礎チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/js-cheatsheet.html)
-- [HTML/CSSチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet1/html-css-cheatsheet.html)
-- [Reactチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet2/react-cheatsheet.html)
+- [JavaScript基礎チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/js-cheatsheet.html)
+- [HTML/CSSチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/html-css-cheatsheet.html)
+- [Reactチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/applied/react-cheatsheet.html)
 
 ### AIアシスタント
 - [JavaScript AIアシスタント](https://fcircle-biz.github.io/tech_docs/prompt/js-assistant-prompt.html) - JavaScript開発のエキスパートとして機能するAIアシスタント用プロンプト。モダンなJavaScript、非同期プログラミング、フレームワーク連携など幅広い支援を提供します。
