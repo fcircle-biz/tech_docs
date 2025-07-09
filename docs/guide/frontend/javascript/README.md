@@ -64,6 +64,6 @@ ES6のモジュールシステム、クラスベースのオブジェクト指�
 - [JavaScript AIアシスタント](https://fcircle-biz.github.io/tech_docs/prompt/js-assistant-prompt.html) - JavaScript開発のエキスパートとして機能するAIアシスタント用プロンプト。モダンなJavaScript、非同期プログラミング、フレームワーク連携など幅広い支援を提供します。
 
 ### 他の学習ガイドライン
-- [Java学習ガイドライン](../java/README.md)
-- [SQL学習ガイドライン](../sql/README.md)
-- [Spring Framework学習ガイドライン](../spring/README.md)
+- [Java学習ガイドライン](../java-ecosystem/java/README.md)
+- [SQL学習ガイドライン](../database/sql/README.md)
+- [Spring Framework学習ガイドライン](../java-ecosystem/spring/README.md)

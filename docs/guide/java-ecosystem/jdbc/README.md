@@ -54,4 +54,4 @@ JDBCの主要クラスとメソッド、JavaとPostgreSQLのデータ型マッ�
 - [Java初心者向けのチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/java-cheatsheet.html)
 - [JDBC初心者向けのチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/jdbc-cheatsheet.html)
 - [SQL基礎チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/sql-cheatsheet.html)
-- [PostgreSQL実践ガイド](https://fcircle-biz.github.io/tech_docs/guide/database/postgresql-guide.html)
+- [PostgreSQLチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/postgresql-infographic.html)

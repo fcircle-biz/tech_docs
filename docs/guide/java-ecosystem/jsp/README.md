@@ -55,4 +55,4 @@ MVCアーキテクチャパターンの詳細と実装方法、Servletとの効�
 - [Java初心者向けのチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/java-cheatsheet.html)
 - [HTML/CSSチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/html-css-cheatsheet.html)
 - [SQL基礎チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/sql-cheatsheet.html)
-- [JDBC学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/jdbc/)
+- [JDBC学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/java-ecosystem/jdbc/)
