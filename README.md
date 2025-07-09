@@ -93,6 +93,11 @@
 ### データベース
 
 - **[SQL学習ガイド](docs/guide/database/sql/README.md)** - SQL基本概念からPostgreSQL高度機能まで10ステップ
+- **[PL/SQL学習ガイド](docs/guide/database/plsql/README.md)** - PL/SQL基礎からパフォーマンスチューニングまで10ステップ
+
+### Office・自動化
+
+- **[VBA学習ガイド](docs/guide/office/vba/README.md)** - VBA基礎からExcel自動化まで10ステップ
 
 ### データ分析
 
