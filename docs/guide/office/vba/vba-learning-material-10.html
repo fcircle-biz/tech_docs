@@ -26,7 +26,7 @@
             <a class="navbar-brand" href="#">VBA学習ガイド</a>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="../../../README.md">ホーム</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../../../../README.md">ホーム</a></li>
                     <li class="nav-item"><a class="nav-link" href="README.md">ガイド一覧</a></li>
                 </ul>
             </div>
@@ -87,7 +87,7 @@
                         </ul>
                         
                         <h6>メインプロシージャ:</h6>
-                        <code>Sub 売上レポート自動生成()
+                        <code aria-label="VBAコードサンプル">Sub 売上レポート自動生成()
     On Error GoTo エラー処理
     
     Application.ScreenUpdating = False
@@ -186,7 +186,7 @@ End Sub</code>
                         </ul>
                         
                         <h6>入出庫処理:</h6>
-                        <code>Sub 入出庫処理(商品コード As String, 数量 As Long, 処理区分 As String)
+                        <code aria-label="VBAコードサンプル">Sub 入出庫処理(商品コード As String, 数量 As Long, 処理区分 As String)
     On Error GoTo エラー処理
     
     Dim ws在庫 As Worksheet
@@ -281,7 +281,7 @@ End Sub</code>
                         </ul>
                         
                         <h6>経費申請処理:</h6>
-                        <code>Sub 経費申請処理()
+                        <code aria-label="VBAコードサンプル">Sub 経費申請処理()
     On Error GoTo エラー処理
     
     Dim ws申請 As Worksheet
@@ -369,7 +369,7 @@ End Sub</code>
                         </ul>
                         
                         <h6>ダッシュボード更新:</h6>
-                        <code>Sub ダッシュボード更新()
+                        <code aria-label="VBAコードサンプル">Sub ダッシュボード更新()
     On Error GoTo エラー処理
     
     Application.ScreenUpdating = False
@@ -440,7 +440,7 @@ End Sub</code>
 
                     <div class="exercise-container">
                         <h5>実習 10-1: 一括処理ツール</h5>
-                        <code>Sub 一括ファイル処理()
+                        <code aria-label="VBAコードサンプル">Sub 一括ファイル処理()
     On Error GoTo エラー処理
     
     Dim フォルダパス As String
@@ -527,5 +527,142 @@ End Sub</code>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- 学習進捗管理機能 -->
+    <script>
+        // 学習進捗管理機能
+        function initProgressTracking() {
+            const chapterNumber = getCurrentChapterNumber();
+            const progressKey = 'vba-learning-progress';
+            
+            // 進捗状況を読み込み
+            const progress = JSON.parse(localStorage.getItem(progressKey) || '{}');
+            
+            // 章完了ボタンを追加
+            addCompletionButton(chapterNumber);
+            
+            // 進捗をサイドバーに表示
+            updateProgressDisplay(progress);
+        }
+        
+        function getCurrentChapterNumber() {
+            const title = document.title;
+            const match = title.match(/第(\d+)章/);
+            return match ? parseInt(match[1]) : 1;
+        }
+        
+        function addCompletionButton(chapterNumber) {
+            const mainContent = document.querySelector('main');
+            const existingButton = document.querySelector('.completion-btn');
+            
+            if (!existingButton) {
+                const buttonContainer = document.createElement('div');
+                buttonContainer.className = 'text-center mt-4 mb-4';
+                buttonContainer.innerHTML = `
+                    <button class="btn btn-success completion-btn" onclick="markChapterComplete(${chapterNumber})">
+                        <i class="fas fa-check"></i> この章を完了する
+                    </button>
+                `;
+                
+                const navigationButtons = document.querySelector('.d-flex.justify-content-between.mt-4');
+                if (navigationButtons) {
+                    navigationButtons.parentNode.insertBefore(buttonContainer, navigationButtons);
+                }
+            }
+        }
+        
+        function markChapterComplete(chapterNumber) {
+            const progressKey = 'vba-learning-progress';
+            const progress = JSON.parse(localStorage.getItem(progressKey) || '{}');
+            progress[chapterNumber] = true;
+            localStorage.setItem(progressKey, JSON.stringify(progress));
+            
+            // 完了ボタンを更新
+            const button = document.querySelector('.completion-btn');
+            if (button) {
+                button.innerHTML = '<i class="fas fa-check-circle"></i> 完了済み';
+                button.disabled = true;
+                button.classList.remove('btn-success');
+                button.classList.add('btn-secondary');
+            }
+            
+            updateProgressDisplay(progress);
+            
+            // 完了メッセージを表示
+            showCompletionMessage(chapterNumber);
+        }
+        
+        function updateProgressDisplay(progress) {
+            const sidebar = document.querySelector('.sidebar ul');
+            if (!sidebar) return;
+            
+            const totalChapters = 10;
+            const completedChapters = Object.keys(progress).filter(key => progress[key]).length;
+            
+            // 進捗表示を追加または更新
+            let progressDisplay = document.querySelector('.progress-display');
+            if (!progressDisplay) {
+                progressDisplay = document.createElement('div');
+                progressDisplay.className = 'progress-display mt-3 mb-3';
+                sidebar.parentNode.insertBefore(progressDisplay, sidebar);
+            }
+            
+            progressDisplay.innerHTML = `
+                <h6 class="text-muted">学習進捗</h6>
+                <div class="progress mb-2">
+                    <div class="progress-bar" role="progressbar" style="width: ${(completedChapters / totalChapters) * 100}%">
+                        ${completedChapters}/${totalChapters}
+                    </div>
+                </div>
+                <small class="text-muted">${Math.round((completedChapters / totalChapters) * 100)}% 完了</small>
+            `;
+            
+            // 各章にチェックマークを追加
+            const navLinks = sidebar.querySelectorAll('.nav-link');
+            navLinks.forEach((link, index) => {
+                const chapterNumber = index + 1;
+                const isCompleted = progress[chapterNumber];
+                
+                // 既存のチェックマークを削除
+                const existingCheck = link.querySelector('.completion-check');
+                if (existingCheck) {
+                    existingCheck.remove();
+                }
+                
+                if (isCompleted) {
+                    const checkMark = document.createElement('span');
+                    checkMark.className = 'completion-check text-success ms-2';
+                    checkMark.innerHTML = '<i class="fas fa-check-circle"></i>';
+                    link.appendChild(checkMark);
+                }
+            });
+        }
+        
+        function showCompletionMessage(chapterNumber) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success alert-dismissible fade show';
+            alert.innerHTML = `
+                <strong>おめでとうございます！</strong> 第${chapterNumber}章を完了しました。
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            const mainContent = document.querySelector('main');
+            mainContent.insertBefore(alert, mainContent.firstChild);
+            
+            // 5秒後に自動で閉じる
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+        
+        // ページ読み込み時に初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            initProgressTracking();
+        });
+    </script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </body>
 </html>
