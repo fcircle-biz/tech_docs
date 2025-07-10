@@ -95,6 +95,10 @@
 - **[SQL学習ガイド](docs/guide/database/sql/README.md)** - SQL基本概念からPostgreSQL高度機能まで10ステップ
 - **[PL/SQL学習ガイド](docs/guide/database/plsql/README.md)** - Oracle PL/SQLの基礎から応用まで10ステップ
 
+### Office・自動化
+
+- **[VBA学習ガイド](docs/guide/office/vba/README.md)** - VBA基礎からExcel自動化まで10ステップ
+
 ### データ分析
 
 - **[SAS学習ガイド](docs/guide/data-analytics/sas)** - SAS基本構造とデータ分析技術
