@@ -14,34 +14,45 @@
 
 ## 📚 チートシート
 
-### 基礎技術
+### IT基礎知識
 
-- **[ITパスポート試験](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/it-pass-.html)** - ITパスポート試験の包括的ガイド
-- **[Java](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/java-cheatsheet.html)** - Java入門者向けガイド
-- **[JavaScript](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/js-cheatsheet.html)** - JavaScript基礎解説
-- **[HTML/CSS](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/html-css-cheatsheet.html)** - HTML/CSS基本リファレンス
-- **[SQL](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/sql-cheatsheet.html)** - SQL入門向けリファレンス
-- **[PostgreSQL](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/postgresql-infographic.html)** - PostgreSQL基本操作
-- **[JDBC](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/jdbc-cheatsheet.html)** - JDBC入門ガイド
-- **[JSP](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/jsp-cheatsheet.html)** - JSPガイド
-- **[Spring Boot](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/springboot-cheatsheet.html)** - Spring Bootリファレンス
-- **[フローチャート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/flowchart-cheatsheet.html)** - フローチャート作成ガイド
+- **[ITパスポート試験](https://fcircle-biz.github.io/tech_docs/cheatsheet/it-basics/it-pass-.html)** - ITパスポート試験の包括的ガイド
+- **[フローチャート](https://fcircle-biz.github.io/tech_docs/cheatsheet/it-basics/flowchart-cheatsheet.html)** - フローチャート作成ガイド
 
-### 応用技術
+### プログラム言語
 
-- **[C/C++](https://fcircle-biz.github.io/tech_docs/cheatsheet/applied/cpp-cheatsheet-infographic.html)** - C/C++プログラミング基礎
-- **[C#](https://fcircle-biz.github.io/tech_docs/cheatsheet/applied/csharp-cheatsheet.html)** - C#プログラミング基本
-- **[Python](https://fcircle-biz.github.io/tech_docs/cheatsheet/applied/python-cheatsheet.html)** - Python基本から実践まで
-- **[PHP](https://fcircle-biz.github.io/tech_docs/cheatsheet/applied/php-graphic-recording.html)** - PHP基本解説
-- **[VBA](https://fcircle-biz.github.io/tech_docs/cheatsheet/applied/vba-cheatsheet-infographic.html)** - Excel VBA基本
-- **[React](https://fcircle-biz.github.io/tech_docs/cheatsheet/applied/react-cheatsheet.html)** - React基本から実践まで
-- **[Oracle](https://fcircle-biz.github.io/tech_docs/cheatsheet/applied/oracle-cheatsheet.html)** - Oracleデータベース基本
-- **[PL/SQL](https://fcircle-biz.github.io/tech_docs/cheatsheet/applied/plsql-graphic-recording.html)** - PL/SQLプログラミング
-- **[Linux](https://fcircle-biz.github.io/tech_docs/cheatsheet/applied/linux-cheatsheet-infographic.html)** - Linux基本コマンド
-- **[SAS](https://fcircle-biz.github.io/tech_docs/cheatsheet/applied/sas-cheatsheet.html)** - SAS基本構造
-- **[Streamlit](https://fcircle-biz.github.io/tech_docs/cheatsheet/applied/streamlit-infographic.html)** - Streamlit基本
-- **[Struts](https://fcircle-biz.github.io/tech_docs/cheatsheet/applied/struts-infographic.html)** - Strutsフレームワーク
-- **[MyBatis](https://fcircle-biz.github.io/tech_docs/cheatsheet/applied/mybatis-infographic.html)** - MyBatis基本
+- **[Java](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/java-cheatsheet.html)** - Java入門者向けガイド
+- **[JavaScript](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/js-cheatsheet.html)** - JavaScript基礎解説
+- **[Python](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/python-cheatsheet.html)** - Python基本から実践まで
+- **[C/C++](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/cpp-cheatsheet-infographic.html)** - C/C++プログラミング基礎
+- **[C#](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/csharp-cheatsheet.html)** - C#プログラミング基本
+- **[PHP](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/php-graphic-recording.html)** - PHP基本解説
+- **[VBA](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/vba-cheatsheet-infographic.html)** - Excel VBA基本
+
+### データベース
+
+- **[SQL](https://fcircle-biz.github.io/tech_docs/cheatsheet/databases/sql-cheatsheet.html)** - SQL入門向けリファレンス
+- **[PostgreSQL/JDBC](https://fcircle-biz.github.io/tech_docs/cheatsheet/databases/jdbc-cheatsheet.html)** - JDBC入門ガイド
+- **[Oracle](https://fcircle-biz.github.io/tech_docs/cheatsheet/databases/oracle-cheatsheet.html)** - Oracleデータベース基本
+- **[PL/SQL](https://fcircle-biz.github.io/tech_docs/cheatsheet/databases/plsql-graphic-recording.html)** - PL/SQLプログラミング
+
+### フレームワーク・ライブラリ
+
+- **[Spring Boot](https://fcircle-biz.github.io/tech_docs/cheatsheet/frameworks-libraries/springboot-cheatsheet.html)** - Spring Bootリファレンス
+- **[React](https://fcircle-biz.github.io/tech_docs/cheatsheet/frameworks-libraries/react-cheatsheet.html)** - React基本から実践まで
+- **[Struts](https://fcircle-biz.github.io/tech_docs/cheatsheet/frameworks-libraries/struts-infographic.html)** - Strutsフレームワーク
+- **[MyBatis](https://fcircle-biz.github.io/tech_docs/cheatsheet/frameworks-libraries/mybatis-infographic.html)** - MyBatis基本
+- **[Streamlit](https://fcircle-biz.github.io/tech_docs/cheatsheet/frameworks-libraries/streamlit-infographic.html)** - Streamlit基本
+
+### Web技術
+
+- **[HTML/CSS](https://fcircle-biz.github.io/tech_docs/cheatsheet/web-tech/html-css-cheatsheet.html)** - HTML/CSS基本リファレンス
+- **[JSP](https://fcircle-biz.github.io/tech_docs/cheatsheet/web-tech/jsp-cheatsheet.html)** - JSPガイド
+
+### システム・環境
+
+- **[Linux](https://fcircle-biz.github.io/tech_docs/cheatsheet/systems-environments/linux-cheatsheet-infographic.html)** - Linux基本コマンド
+- **[SAS](https://fcircle-biz.github.io/tech_docs/cheatsheet/systems-environments/sas-cheatsheet.html)** - SAS基本構造
 
 ### AI・機械学習
 
