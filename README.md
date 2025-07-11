@@ -98,6 +98,7 @@
 
 ### フロントエンド
 
+- **[JavaScript完全初心者向け学習ガイド](docs/guide/frontend/javascript-beginner/README.md)** - プログラミング未経験者向けJavaScript入門8章構成カリキュラム
 - **[JavaScript中級学習ガイド](docs/guide/frontend/javascript-intermediate/README.md)** - JavaScript基礎知識から実践的なSPA開発まで9週間完成カリキュラム
 
 ### データベース
