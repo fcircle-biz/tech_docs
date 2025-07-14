@@ -95,6 +95,7 @@
 - **[JDBC学習ガイド](docs/guide/java-ecosystem/jdbc/README.md)** - JDBC基礎からパフォーマンスチューニングまで10ステップ
 - **[JSP/Servlet学習ガイド](docs/guide/java-ecosystem/jsp/README.md)** - JSP/Servlet基礎からMVCアーキテクチャまで10ステップ
 - **[Spring Framework学習ガイド](docs/guide/java-ecosystem/spring/README.md)** - Spring基礎からSecurity機能まで11ステップ
+- **[Struts 1.x学習ガイド](docs/guide/java-ecosystem/struts1/README.md)** - Apache Struts 1.x基礎からデプロイメントまで10章完成カリキュラム
 
 ### フロントエンド
 
@@ -110,10 +111,6 @@
 ### Office・自動化
 
 - **[VBA学習ガイド](docs/guide/office/vba/README.md)** - VBA基礎からExcel自動化まで10ステップ
-
-### データ分析
-
-- **[SAS学習ガイド](docs/guide/data-analytics/sas)** - SAS基本構造とデータ分析技術
 
 ---
 
