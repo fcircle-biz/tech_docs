@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Struts 1.x学習教材 第7章 - セッション管理とセキュリティ</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+        .navbar {
+            background-color: #6d4c41;
+        }
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+        .chapter-title {
+            color: #6d4c41;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #6d4c41;
+            padding-bottom: 0.5rem;
+        }
+        .section-title {
+            color: #8d6e63;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+        code {
+            display: block;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .quiz-container {
+            background-color: #efebe9;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #6d4c41;
+        }
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+        .highlight {
+            background-color: #ffecb3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ffc107;
+        }
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
+        }
+        .nav-link.active {
+            background-color: #6d4c41 !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="README.md">Struts 1.x学習ガイド</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="struts1-learning-material-1.html">第1章: Struts 1.xの基本概念とMVCアーキテクチャ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="struts1-learning-material-2.html">第2章: 環境構築とプロジェクト作成</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="struts1-learning-material-3.html">第3章: ActionクラスとActionForm</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="struts1-learning-material-4.html">第4章: struts-config.xmlの設定と管理</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="struts1-learning-material-5.html">第5章: JSPとの連携とTagライブラリ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="struts1-learning-material-6.html">第6章: バリデーション機能とエラーハンドリング</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="struts1-learning-material-7.html">第7章: セッション管理とセキュリティ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="struts1-learning-material-8.html">第8章: 国際化（i18n）とプロパティファイル</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="struts1-learning-material-9.html">第9章: データベース連携と実践的開発</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="struts1-learning-material-10.html">第10章: デバッグ・テスト・デプロイメント</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第7章: セッション管理とセキュリティ</h1>
+                </div>
+
+                <div id="chapter7">
+                    <h2 class="chapter-title">安全なWebアプリケーションの実装</h2>
+                    
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>HTTPセッションの効果的な活用方法</li>
+                            <li>ログイン認証システムの実装</li>
+                            <li>CSRF（Cross-Site Request Forgery）対策</li>
+                            <li>XSS（Cross-Site Scripting）対策</li>
+                            <li>セキュアなWebアプリケーション開発のベストプラクティス</li>
+                        </ul>
+                    </div>
+
+                    <div class="warning">
+                        <h5>セキュリティの重要性</h5>
+                        <p>
+                            Webアプリケーションのセキュリティは、ユーザーの個人情報やシステムの機密性を守るために極めて重要です。
+                            特にStruts 1.xは古いフレームワークであり、現代的なセキュリティ機能が不足しているため、
+                            開発者自身が適切なセキュリティ対策を実装する必要があります。
+                        </p>
+                    </div>
+
+                    <h3 class="section-title">7.1 HTTPセッション管理の基礎</h3>
+                    <p>
+                        HTTPセッションは、ユーザーの状態を維持するためのサーバーサイドの仕組みです。
+                        Strutsアプリケーションでは、ログイン状態の管理やユーザー固有データの保持に活用します。
+                    </p>
+
+                    <h4>セッションのライフサイクル</h4>
+                    <ul>
+                        <li><strong>作成</strong>: request.getSession(true) で新規セッション作成</li>
+                        <li><strong>利用</strong>: setAttribute/getAttribute でデータ操作</li>
+                        <li><strong>タイムアウト</strong>: 一定時間非アクティブで自動削除</li>
+                        <li><strong>明示的破棄</strong>: session.invalidate() で即座に削除</li>
+                    </ul>
+
+                    <div class="exercise-container">
+                        <h5>実習 7-1: セッション管理の基本実装</h5>
+                        <p>ユーザー情報をセッションに保存・取得する基本的な実装：</p>
+                        <code>package com.example.action;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.struts.action.Action;
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+
+import com.example.bean.User;
+
+/**
+ * セッション管理のユーティリティクラス
+ */
+public class SessionUtil {
+    
+    public static final String USER_KEY = "currentUser";
+    public static final String LOGIN_TIME_KEY = "loginTime";
+    
+    /**
+     * ユーザー情報をセッションに保存
+     */
+    public static void setUser(HttpServletRequest request, User user) {
+        HttpSession session = request.getSession(true);
+        session.setAttribute(USER_KEY, user);
+        session.setAttribute(LOGIN_TIME_KEY, new java.util.Date());
+        
+        // セッションタイムアウトを30分に設定
+        session.setMaxInactiveInterval(30 * 60);
+    }
+    
+    /**
+     * セッションからユーザー情報を取得
+     */
+    public static User getUser(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            return (User) session.getAttribute(USER_KEY);
+        }
+        return null;
+    }
+    
+    /**
+     * ログイン状態をチェック
+     */
+    public static boolean isLoggedIn(HttpServletRequest request) {
+        return getUser(request) != null;
+    }
+    
+    /**
+     * セッション情報をクリア（ログアウト）
+     */
+    public static void clearSession(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+    }
+    
+    /**
+     * セッション情報の詳細を取得
+     */
+    public static String getSessionInfo(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return "セッションなし";
+        }
+        
+        StringBuilder info = new StringBuilder();
+        info.append("セッションID: ").append(session.getId()).append("\n");
+        info.append("作成時刻: ").append(new java.util.Date(session.getCreationTime())).append("\n");
+        info.append("最終アクセス: ").append(new java.util.Date(session.getLastAccessedTime())).append("\n");
+        info.append("タイムアウト: ").append(session.getMaxInactiveInterval()).append("秒\n");
+        
+        return info.toString();
+    }
+}</code>
+                    </div>
+
+                    <h3 class="section-title">7.2 ログイン認証システムの実装</h3>
+                    
+                    <div class="exercise-container">
+                        <h5>実習 7-2: ログインAction の実装</h5>
+                        <code>package com.example.action;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.struts.action.Action;
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessages;
+import org.apache.struts.action.ActionMessage;
+
+import com.example.form.LoginForm;
+import com.example.bean.User;
+import com.example.service.UserService;
+
+/**
+ * ログイン処理を行うAction
+ */
+public class LoginAction extends Action {
+    
+    private UserService userService = new UserService();
+    
+    @Override
+    public ActionForward execute(ActionMapping mapping, ActionForm form,
+            HttpServletRequest request, HttpServletResponse response) throws Exception {
+        
+        LoginForm loginForm = (LoginForm) form;
+        
+        try {
+            // ユーザー認証の実行
+            User user = authenticateUser(loginForm.getUserId(), loginForm.getPassword());
+            
+            if (user != null) {
+                // 認証成功: セッションにユーザー情報を保存
+                SessionUtil.setUser(request, user);
+                
+                // ログイン履歴を記録
+                userService.recordLoginHistory(user.getUserId(), request.getRemoteAddr());
+                
+                // 成功メッセージを設定
+                ActionMessages messages = new ActionMessages();
+                messages.add(ActionMessages.GLOBAL_MESSAGE, 
+                    new ActionMessage("message.login.success", user.getName()));
+                saveMessages(request, messages);
+                
+                // 元々アクセスしようとしていたページがあればそちらへ
+                String originalURL = (String) request.getSession().getAttribute("originalURL");
+                if (originalURL != null) {
+                    request.getSession().removeAttribute("originalURL");
+                    response.sendRedirect(originalURL);
+                    return null;
+                }
+                
+                return mapping.findForward("success");
+                
+            } else {
+                // 認証失敗
+                ActionMessages errors = new ActionMessages();
+                errors.add(ActionMessages.GLOBAL_MESSAGE, 
+                    new ActionMessage("error.login.failed"));
+                saveErrors(request, errors);
+                
+                // ログイン試行回数をカウント（ブルートフォース攻撃対策）
+                incrementLoginAttempt(request, loginForm.getUserId());
+                
+                return mapping.findForward("input");
+            }
+            
+        } catch (Exception e) {
+            // システムエラー
+            System.err.println("ログイン処理でエラーが発生: " + e.getMessage());
+            e.printStackTrace();
+            
+            ActionMessages errors = new ActionMessages();
+            errors.add(ActionMessages.GLOBAL_MESSAGE, 
+                new ActionMessage("error.system.error"));
+            saveErrors(request, errors);
+            
+            return mapping.findForward("error");
+        }
+    }
+    
+    /**
+     * ユーザー認証処理
+     */
+    private User authenticateUser(String userId, String password) {
+        // 入力値のサニタイズ
+        if (userId == null || userId.trim().isEmpty() || 
+            password == null || password.trim().isEmpty()) {
+            return null;
+        }
+        
+        // ログイン試行回数制限チェック
+        if (isAccountLocked(userId)) {
+            return null;
+        }
+        
+        // データベースでユーザー認証
+        User user = userService.findByUserIdAndPassword(userId, password);
+        
+        if (user != null) {
+            // アカウント状態チェック
+            if (!user.isActive()) {
+                return null; // 無効なアカウント
+            }
+            
+            // ログイン試行回数をリセット
+            resetLoginAttempt(userId);
+        }
+        
+        return user;
+    }
+    
+    /**
+     * ログイン試行回数を増加
+     */
+    private void incrementLoginAttempt(HttpServletRequest request, String userId) {
+        // セッションまたはデータベースで試行回数を管理
+        Integer attempts = (Integer) request.getSession().getAttribute("loginAttempts_" + userId);
+        attempts = (attempts == null) ? 1 : attempts + 1;
+        request.getSession().setAttribute("loginAttempts_" + userId, attempts);
+        
+        // 一定回数を超えた場合の処理
+        if (attempts >= 5) {
+            // アカウントロック処理
+            userService.lockAccount(userId);
+        }
+    }
+    
+    /**
+     * アカウントロック状態の確認
+     */
+    private boolean isAccountLocked(String userId) {
+        return userService.isAccountLocked(userId);
+    }
+    
+    /**
+     * ログイン試行回数をリセット
+     */
+    private void resetLoginAttempt(String userId) {
+        userService.resetLoginAttempt(userId);
+    }
+}</code>
+                    </div>
+
+                    <h4>ログアウト処理の実装</h4>
+                    <div class="exercise-container">
+                        <h5>実習 7-3: LogoutAction の実装</h5>
+                        <code>package com.example.action;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.struts.action.Action;
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessages;
+import org.apache.struts.action.ActionMessage;
+
+import com.example.bean.User;
+
+/**
+ * ログアウト処理を行うAction
+ */
+public class LogoutAction extends Action {
+    
+    @Override
+    public ActionForward execute(ActionMapping mapping, ActionForm form,
+            HttpServletRequest request, HttpServletResponse response) throws Exception {
+        
+        // ログアウト前にユーザー情報を取得
+        User user = SessionUtil.getUser(request);
+        
+        if (user != null) {
+            // ログアウト履歴を記録
+            new UserService().recordLogoutHistory(user.getUserId());
+        }
+        
+        // セッションを破棄
+        SessionUtil.clearSession(request);
+        
+        // メッセージを設定
+        ActionMessages messages = new ActionMessages();
+        messages.add(ActionMessages.GLOBAL_MESSAGE, 
+            new ActionMessage("message.logout.success"));
+        saveMessages(request, messages);
+        
+        return mapping.findForward("success");
+    }
+}</code>
+                    </div>
+
+                    <h3 class="section-title">7.3 認証フィルターの実装</h3>
+                    
+                    <div class="exercise-container">
+                        <h5>実習 7-4: 認証チェックフィルター</h5>
+                        <p>ログインが必要なページへのアクセスを制御するフィルター：</p>
+                        <code>package com.example.filter;
+
+import java.io.IOException;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.example.action.SessionUtil;
+
+/**
+ * 認証チェックを行うフィルター
+ */
+public class AuthenticationFilter implements Filter {
+    
+    private String loginPage = "/login.jsp";
+    private String[] excludePatterns;
+    
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        // 認証除外パターンの設定
+        String excludes = filterConfig.getInitParameter("excludePatterns");
+        if (excludes != null) {
+            excludePatterns = excludes.split(",");
+        } else {
+            excludePatterns = new String[]{"/login.do", "/login.jsp", "/css/", "/js/", "/images/"};
+        }
+        
+        String loginPageParam = filterConfig.getInitParameter("loginPage");
+        if (loginPageParam != null) {
+            loginPage = loginPageParam;
+        }
+    }
+    
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, 
+                        FilterChain chain) throws IOException, ServletException {
+        
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        
+        String requestURI = httpRequest.getRequestURI();
+        String contextPath = httpRequest.getContextPath();
+        
+        // 除外パターンチェック
+        if (isExcluded(requestURI, contextPath)) {
+            chain.doFilter(request, response);
+            return;
+        }
+        
+        // ログイン状態チェック
+        if (!SessionUtil.isLoggedIn(httpRequest)) {
+            // 元のURLをセッションに保存（ログイン後のリダイレクト用）
+            String originalURL = httpRequest.getRequestURL().toString();
+            String queryString = httpRequest.getQueryString();
+            if (queryString != null) {
+                originalURL += "?" + queryString;
+            }
+            httpRequest.getSession().setAttribute("originalURL", originalURL);
+            
+            // ログインページにリダイレクト
+            httpResponse.sendRedirect(contextPath + loginPage);
+            return;
+        }
+        
+        // セッションタイムアウトチェック
+        if (isSessionExpired(httpRequest)) {
+            SessionUtil.clearSession(httpRequest);
+            httpResponse.sendRedirect(contextPath + loginPage + "?timeout=true");
+            return;
+        }
+        
+        // 認証OK - 次のフィルターまたはサーブレットへ
+        chain.doFilter(request, response);
+    }
+    
+    /**
+     * 除外パターンの判定
+     */
+    private boolean isExcluded(String requestURI, String contextPath) {
+        String path = requestURI.substring(contextPath.length());
+        
+        for (String pattern : excludePatterns) {
+            if (path.startsWith(pattern.trim())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * セッションタイムアウトチェック
+     */
+    private boolean isSessionExpired(HttpServletRequest request) {
+        // セッションの最終アクセス時刻をチェック
+        long now = System.currentTimeMillis();
+        long lastAccessed = request.getSession().getLastAccessedTime();
+        long maxInactive = request.getSession().getMaxInactiveInterval() * 1000;
+        
+        return (now - lastAccessed) > maxInactive;
+    }
+    
+    @Override
+    public void destroy() {
+        // クリーンアップ処理
+    }
+}</code>
+                    </div>
+
+                    <h4>web.xml でのフィルター設定</h4>
+                    <div class="exercise-container">
+                        <h5>実習 7-5: フィルター設定</h5>
+                        <code>&lt;!-- web.xml でのフィルター設定 --&gt;
+&lt;filter&gt;
+    &lt;filter-name&gt;AuthenticationFilter&lt;/filter-name&gt;
+    &lt;filter-class&gt;com.example.filter.AuthenticationFilter&lt;/filter-class&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;loginPage&lt;/param-name&gt;
+        &lt;param-value&gt;/login.jsp&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;excludePatterns&lt;/param-name&gt;
+        &lt;param-value&gt;/login.do,/login.jsp,/css/,/js/,/images/,/public/&lt;/param-value&gt;
+    &lt;/init-param&gt;
+&lt;/filter&gt;
+
+&lt;filter-mapping&gt;
+    &lt;filter-name&gt;AuthenticationFilter&lt;/filter-name&gt;
+    &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+&lt;/filter-mapping&gt;</code>
+                    </div>
+
+                    <h3 class="section-title">7.4 CSRF（Cross-Site Request Forgery）対策</h3>
+                    <p>CSRF攻撃は、認証済みユーザーの権限を悪用して意図しない操作を実行させる攻撃です：</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 7-6: CSRFトークン実装</h5>
+                        <code>package com.example.security;
+
+import java.security.SecureRandom;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+/**
+ * CSRF対策のトークン管理クラス
+ */
+public class CSRFTokenManager {
+    
+    private static final String CSRF_TOKEN_KEY = "csrfToken";
+    private static final String CSRF_TOKEN_PARAM = "csrfToken";
+    private static final SecureRandom random = new SecureRandom();
+    
+    /**
+     * CSRFトークンを生成してセッションに保存
+     */
+    public static String generateToken(HttpServletRequest request) {
+        String token = generateRandomToken();
+        HttpSession session = request.getSession(true);
+        session.setAttribute(CSRF_TOKEN_KEY, token);
+        return token;
+    }
+    
+    /**
+     * CSRFトークンの検証
+     */
+    public static boolean validateToken(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return false;
+        }
+        
+        String sessionToken = (String) session.getAttribute(CSRF_TOKEN_KEY);
+        String requestToken = request.getParameter(CSRF_TOKEN_PARAM);
+        
+        if (sessionToken == null || requestToken == null) {
+            return false;
+        }
+        
+        return sessionToken.equals(requestToken);
+    }
+    
+    /**
+     * セッションからCSRFトークンを取得
+     */
+    public static String getToken(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            return (String) session.getAttribute(CSRF_TOKEN_KEY);
+        }
+        return null;
+    }
+    
+    /**
+     * ランダムトークンの生成
+     */
+    private static String generateRandomToken() {
+        byte[] bytes = new byte[32];
+        random.nextBytes(bytes);
+        StringBuilder token = new StringBuilder();
+        for (byte b : bytes) {
+            token.append(String.format("%02x", b));
+        }
+        return token.toString();
+    }
+}
+
+/**
+ * CSRF保護が必要なActionの基底クラス
+ */
+public abstract class CSRFProtectedAction extends Action {
+    
+    @Override
+    public ActionForward execute(ActionMapping mapping, ActionForm form,
+            HttpServletRequest request, HttpServletResponse response) throws Exception {
+        
+        // POST/PUT/DELETE などの更新系リクエストでCSRFチェック
+        String method = request.getMethod();
+        if ("POST".equals(method) || "PUT".equals(method) || "DELETE".equals(method)) {
+            if (!CSRFTokenManager.validateToken(request)) {
+                ActionMessages errors = new ActionMessages();
+                errors.add(ActionMessages.GLOBAL_MESSAGE, 
+                    new ActionMessage("error.csrf.invalid"));
+                saveErrors(request, errors);
+                return mapping.findForward("error");
+            }
+        }
+        
+        // サブクラスの処理を実行
+        return executeProtected(mapping, form, request, response);
+    }
+    
+    /**
+     * サブクラスで実装する実際の処理
+     */
+    protected abstract ActionForward executeProtected(ActionMapping mapping, 
+                                                    ActionForm form,
+                                                    HttpServletRequest request, 
+                                                    HttpServletResponse response) throws Exception;
+}</code>
+                    </div>
+
+                    <h4>JSPでのCSRFトークン使用</h4>
+                    <div class="exercise-container">
+                        <h5>実習 7-7: フォームでのCSRFトークン実装</h5>
+                        <code>&lt;!-- JSPページでのCSRFトークン使用 --&gt;
+&lt;%@ page import="com.example.security.CSRFTokenManager" %&gt;
+
+&lt;!-- CSRFトークンの生成 --&gt;
+&lt;% String csrfToken = CSRFTokenManager.generateToken(request); %&gt;
+
+&lt;html:form action="/user/update"&gt;
+    &lt;!-- CSRFトークンをhiddenフィールドで送信 --&gt;
+    &lt;input type="hidden" name="csrfToken" value="&lt;%= csrfToken %&gt;" /&gt;
+    
+    &lt;!-- または --&gt;
+    &lt;html:hidden property="csrfToken" value="&lt;%= csrfToken %&gt;"/&gt;
+    
+    &lt;!-- フォーム要素 --&gt;
+    &lt;html:text property="name"/&gt;
+    &lt;html:submit value="更新"/&gt;
+&lt;/html:form&gt;
+
+&lt;!-- Ajax リクエストでのCSRFトークン使用 --&gt;
+&lt;script type="text/javascript"&gt;
+function updateUser() {
+    var csrfToken = "&lt;%= csrfToken %&gt;";
+    
+    // XMLHttpRequest または jQuery Ajax でトークンを送信
+    $.ajax({
+        url: '/user/update.do',
+        type: 'POST',
+        data: {
+            name: $('#userName').val(),
+            csrfToken: csrfToken
+        },
+        success: function(response) {
+            // 成功処理
+        },
+        error: function() {
+            alert('エラーが発生しました');
+        }
+    });
+}
+&lt;/script&gt;</code>
+                    </div>
+
+                    <h3 class="section-title">7.5 XSS（Cross-Site Scripting）対策</h3>
+                    <p>XSS攻撃は、Webページに悪意のあるスクリプトを注入する攻撃です：</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 7-8: XSS対策の実装</h5>
+                        <code>package com.example.security;
+
+import java.util.regex.Pattern;
+
+/**
+ * XSS対策のためのユーティリティクラス
+ */
+public class XSSProtectionUtil {
+    
+    // 危険なHTMLタグパターン
+    private static final Pattern SCRIPT_PATTERN = Pattern.compile(
+        "&lt;script[^&gt;]*&gt;.*?&lt;/script&gt;", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern JAVASCRIPT_PATTERN = Pattern.compile(
+        "javascript:", Pattern.CASE_INSENSITIVE);
+    private static final Pattern VBSCRIPT_PATTERN = Pattern.compile(
+        "vbscript:", Pattern.CASE_INSENSITIVE);
+    private static final Pattern ONLOAD_PATTERN = Pattern.compile(
+        "onload(.*?)=", Pattern.CASE_INSENSITIVE);
+    private static final Pattern ONERROR_PATTERN = Pattern.compile(
+        "onerror(.*?)=", Pattern.CASE_INSENSITIVE);
+    
+    /**
+     * HTMLエスケープ処理
+     */
+    public static String escapeHtml(String input) {
+        if (input == null) {
+            return null;
+        }
+        
+        return input.replace("&amp;", "&amp;amp;")
+                   .replace("&lt;", "&amp;lt;")
+                   .replace("&gt;", "&amp;gt;")
+                   .replace("\"", "&amp;quot;")
+                   .replace("'", "&amp;#x27;")
+                   .replace("/", "&amp;#x2F;");
+    }
+    
+    /**
+     * 危険なスクリプトタグの除去
+     */
+    public static String sanitizeInput(String input) {
+        if (input == null) {
+            return null;
+        }
+        
+        String sanitized = input;
+        
+        // 危険なパターンを除去
+        sanitized = SCRIPT_PATTERN.matcher(sanitized).replaceAll("");
+        sanitized = JAVASCRIPT_PATTERN.matcher(sanitized).replaceAll("");
+        sanitized = VBSCRIPT_PATTERN.matcher(sanitized).replaceAll("");
+        sanitized = ONLOAD_PATTERN.matcher(sanitized).replaceAll("");
+        sanitized = ONERROR_PATTERN.matcher(sanitized).replaceAll("");
+        
+        return sanitized;
+    }
+    
+    /**
+     * 安全な入力値かどうかをチェック
+     */
+    public static boolean isSafeInput(String input) {
+        if (input == null) {
+            return true;
+        }
+        
+        // 危険なパターンが含まれていないかチェック
+        return !SCRIPT_PATTERN.matcher(input).find() &&
+               !JAVASCRIPT_PATTERN.matcher(input).find() &&
+               !VBSCRIPT_PATTERN.matcher(input).find() &&
+               !ONLOAD_PATTERN.matcher(input).find() &&
+               !ONERROR_PATTERN.matcher(input).find();
+    }
+}
+
+/**
+ * XSS対策を適用するActionForm基底クラス
+ */
+public abstract class SecureActionForm extends ActionForm {
+    
+    /**
+     * フォームプロパティの自動サニタイズ
+     */
+    @Override
+    public void reset(ActionMapping mapping, HttpServletRequest request) {
+        super.reset(mapping, request);
+        sanitizeProperties();
+    }
+    
+    /**
+     * プロパティ値のサニタイズ
+     */
+    protected void sanitizeProperties() {
+        // サブクラスで実装
+        // リフレクションを使って自動的にString プロパティをサニタイズ
+        try {
+            Field[] fields = this.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                if (field.getType() == String.class) {
+                    field.setAccessible(true);
+                    String value = (String) field.get(this);
+                    if (value != null) {
+                        field.set(this, XSSProtectionUtil.sanitizeInput(value));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("プロパティサニタイズエラー: " + e.getMessage());
+        }
+    }
+}</code>
+                    </div>
+
+                    <h4>JSPでの安全な出力</h4>
+                    <div class="exercise-container">
+                        <h5>実習 7-9: JSPでのXSS対策</h5>
+                        <code>&lt;!-- デフォルトではbean:writeはHTMLエスケープされる --&gt;
+&lt;bean:write name="userForm" property="comment"/&gt;
+
+&lt;!-- HTMLを意図的に表示する場合（危険なので慎重に） --&gt;
+&lt;bean:write name="userForm" property="htmlContent" filter="false"/&gt;
+
+&lt;!-- JSのリテラルに値を埋め込む場合のエスケープ --&gt;
+&lt;script type="text/javascript"&gt;
+var userName = "&lt;bean:write name="userForm" property="name" filter="true"/&gt;";
+var message = &lt;%= JSONUtil.toJsonString(userMessage) %&gt;;
+&lt;/script&gt;
+
+&lt;!-- カスタムタグを使ったより安全な出力 --&gt;
+&lt;%@ taglib uri="/WEB-INF/security.tld" prefix="sec" %&gt;
+&lt;sec:escapeHtml value="${userForm.comment}"/&gt;</code>
+                    </div>
+
+                    <h3 class="section-title">7.6 その他のセキュリティ対策</h3>
+                    
+                    <h4>SQLインジェクション対策</h4>
+                    <div class="exercise-container">
+                        <h5>実習 7-10: 安全なDB接続</h5>
+                        <code>// 危険な例（SQLインジェクション脆弱性あり）
+String sql = "SELECT * FROM users WHERE user_id = '" + userId + "' AND password = '" + password + "'";
+Statement stmt = connection.createStatement();
+ResultSet rs = stmt.executeQuery(sql);
+
+// 安全な例（PreparedStatementを使用）
+String sql = "SELECT * FROM users WHERE user_id = ? AND password = ?";
+PreparedStatement pstmt = connection.prepareStatement(sql);
+pstmt.setString(1, userId);
+pstmt.setString(2, hashedPassword);
+ResultSet rs = pstmt.executeQuery();</code>
+                    </div>
+
+                    <h4>セキュリティヘッダーの設定</h4>
+                    <div class="exercise-container">
+                        <h5>実習 7-11: セキュリティヘッダー設定</h5>
+                        <code>package com.example.filter;
+
+/**
+ * セキュリティヘッダーを設定するフィルター
+ */
+public class SecurityHeaderFilter implements Filter {
+    
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, 
+                        FilterChain chain) throws IOException, ServletException {
+        
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        
+        // XSS Protection
+        httpResponse.setHeader("X-XSS-Protection", "1; mode=block");
+        
+        // Content Type Options
+        httpResponse.setHeader("X-Content-Type-Options", "nosniff");
+        
+        // Frame Options
+        httpResponse.setHeader("X-Frame-Options", "DENY");
+        
+        // Content Security Policy
+        httpResponse.setHeader("Content-Security-Policy", 
+            "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'");
+        
+        // HTTPS Strict Transport Security
+        httpResponse.setHeader("Strict-Transport-Security", 
+            "max-age=31536000; includeSubDomains");
+        
+        // Cache Control for sensitive pages
+        httpResponse.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        httpResponse.setHeader("Pragma", "no-cache");
+        httpResponse.setHeader("Expires", "0");
+        
+        chain.doFilter(request, response);
+    }
+}</code>
+                    </div>
+
+                    <div class="warning">
+                        <h5>セキュリティ実装時の注意点</h5>
+                        <ul>
+                            <li><strong>Defense in Depth</strong>: 複数層での防御を実装</li>
+                            <li><strong>最小権限の原則</strong>: 必要最小限の権限のみ付与</li>
+                            <li><strong>入力検証</strong>: クライアントとサーバー両方で実装</li>
+                            <li><strong>ログ記録</strong>: セキュリティイベントの適切な記録</li>
+                            <li><strong>定期的な見直し</strong>: セキュリティ設定の定期的な見直し</li>
+                            <li><strong>最新情報の追跡</strong>: 新しい脆弱性情報への対応</li>
+                        </ul>
+                    </div>
+
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>HTTPセッションの適切な管理方法と、セッションハイジャック攻撃を防ぐための対策を説明してください。</li>
+                            <li>CSRF攻撃の仕組みと、Strutsアプリケーションでの効果的な対策方法を説明してください。</li>
+                            <li>XSS攻撃の種類（反射型、格納型、DOM型）と、それぞれに対するStruts 1.xでの対策を説明してください。</li>
+                            <li>認証フィルターを実装する際に考慮すべき要素を5つ挙げてください。</li>
+                            <li>SQLインジェクション攻撃を防ぐためのコーディング規約と、データベース層での対策を説明してください。</li>
+                        </ol>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="struts1-learning-material-6.html" class="btn btn-secondary">← 前の章</a>
+                        <a href="struts1-learning-material-8.html" class="btn btn-primary">次の章 →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
