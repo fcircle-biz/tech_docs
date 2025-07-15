@@ -5,7 +5,7 @@
 ## 学習コンテンツ
 
 ### [1. SAS基礎とデータステップ](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/sas/sas-learning-material-1.html)
-SASシステムの概要、基本的な操作環境、データステップの基本構文、変数とデータセットの概念について学びます。SAS University Edition のセットアップも解説します。
+SASシステムの概要、基本的な操作環境、データステップの基本構文、変数とデータセットの概念について学びます。SAS OnDemand for Academics のセットアップも解説します。
 
 ### [2. データの読み込みと出力](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/sas/sas-learning-material-2.html)
 外部ファイル（CSV、Excel、テキスト）からのデータ読み込み、データセットの作成・保存、PROC IMPORTとPROC EXPORTの使い方について学習します。
@@ -81,8 +81,8 @@ PROC SGPLOT、PROC SGPANEL、PROC SGRENDERを使用したグラフ作成、ヒ�
 
 ## 開発環境
 
-- **SAS University Edition** (無料版): 学習用途に最適
-- **SAS OnDemand for Academics**: 教育機関向け無料環境
+- **SAS OnDemand for Academics**: 学習用途に最適な教育機関向け無料クラウド環境
+- **SAS University Edition** (無料版): ローカル環境での学習
 - **SAS Viya**: 最新のクラウドベース環境
 - **推奨ブラウザ**: Chrome、Firefox、Safari、Edge
 
