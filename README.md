@@ -112,6 +112,10 @@
 
 - **[VBA学習ガイド](docs/guide/office/vba/README.md)** - VBA基礎からExcel自動化まで10ステップ
 
+### データ分析
+
+- **[SAS学習ガイド](docs/guide/data-analytics/sas/README.md)** - SASによるデータ分析と統計処理の基礎から実践的な応用まで10章完成カリキュラム
+
 ---
 
 ## 🤖 AIアシスタント用プロンプト集
