@@ -5,15 +5,14 @@
 ## 前提条件
 
 ### 必要な環境
-- [Visual Studio Code](https://code.visualstudio.com/) エディタ
-- [COBOL拡張機能](https://marketplace.visualstudio.com/items?itemName=bitlang.cobol) （bitlang.cobol）
-- COBOLコンパイラ（GnuCOBOL推奨）
+- Webブラウザ（Chrome、Firefox、Safari等）
+- [paiza.io](https://paiza.io/ja/projects/new) オンライン実行環境
+- テキストエディタ（任意）
 
 ### 参考リソース
 - [COBOL公式ドキュメント](https://www.ibm.com/docs/en/cobol-zos)
-- [GnuCOBOL公式サイト](https://sourceforge.net/projects/gnucobol/)
+- [paiza.io COBOLプロジェクト](https://paiza.io/ja/projects/new)
 - [COBOLプログラミング入門](https://www.ibm.com/docs/en/cobol-zos/6.3?topic=cobol-introduction)
-- [VSCode COBOL拡張機能ガイド](https://marketplace.visualstudio.com/items?itemName=bitlang.cobol)
 
 ### 前提知識
 - **必須**: コンピュータの基本操作、テキストエディタの使用方法
@@ -53,12 +52,11 @@ IF文、PERFORM文を使った制御構造を学習します。
 
 ## 学習の進め方
 
-1. **環境設定**: VSCodeとCOBOL拡張機能をインストールする
-2. **各章の理論学習**: まず概念と構文を理解する
-3. **VSCodeでの実践**: 提供されたサンプルコードを実際に動かしてみる
-4. **演習問題**: 各章の演習問題を解く
-5. **理解度確認**: 章末のクイズで理解度を確認する
-6. **実践的な課題**: 学んだ内容を応用した課題に取り組む
+1. **各章の理論学習**: まず概念と構文を理解する
+2. **paiza.ioでの実践**: 提供されたサンプルコードを実際に動かしてみる
+3. **演習問題**: 各章の演習問題を解く
+4. **理解度確認**: 章末のクイズで理解度を確認する
+5. **実践的な課題**: 学んだ内容を応用した課題に取り組む
 
 ## 推奨学習期間
 
