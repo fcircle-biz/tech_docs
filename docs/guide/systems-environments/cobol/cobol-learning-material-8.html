@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COBOL学習教材 第8章 - サブプログラムと関数</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; padding-top: 56px; }
+        .navbar { background-color: #2c5aa0; }
+        .sidebar { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; }
+        .chapter-title { color: #2c5aa0; margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #2c5aa0; padding-bottom: 0.5rem; }
+        .section-title { color: #4a90e2; margin-top: 1.2rem; margin-bottom: 0.8rem; }
+        .quiz-container { background-color: #e8f0fe; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #2c5aa0; }
+        .exercise-container { background-color: #f3e5f5; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #9c27b0; }
+        .highlight { background-color: #fff3cd; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #ffc107; }
+        .warning { background-color: #ffebee; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #f44336; }
+        .nav-link.active { background-color: #2c5aa0 !important; color: white !important; }
+        .code-block { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 1rem; font-family: 'Courier New', monospace; margin: 1rem 0; overflow-x: auto; }
+        .info-box { background-color: #e8f0fe; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #2c5aa0; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">COBOL学習教材</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="cobol-learning-material-7.html">第7章</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#chapter8">第8章</a></li>
+                    <li class="nav-item"><a class="nav-link" href="cobol-learning-material-9.html">第9章</a></li>
+                    <li class="nav-item"><a class="nav-link" href="README.html">目次</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item"><a class="nav-link active" href="#chapter8">第8章: サブプログラムと関数</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#section8-1">8.1 サブプログラムの概念</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#section8-2">8.2 PERFORM文による呼び出し</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#section8-3">8.3 パラメータの受け渡し</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#section8-4">8.4 内部関数の活用</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#section8-5">8.5 モジュール化の実践</a></li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第8章: サブプログラムと関数</h1>
+                </div>
+
+                <div id="chapter8">
+                    <h2 class="chapter-title">プログラムのモジュール化と再利用</h2>
+                    
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>サブプログラムの概念と利点を理解する</li>
+                            <li>PERFORM文を使用した段落呼び出しを習得する</li>
+                            <li>パラメータの受け渡し方法を学ぶ</li>
+                            <li>COBOLの内部関数を活用する</li>
+                            <li>モジュール化されたプログラムを作成する</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title" id="section8-1">8.1 サブプログラムの概念</h3>
+                    <p>サブプログラムは、プログラムを小さな部品に分割し、再利用を可能にする仕組みです。</p>
+                    
+                    <h4>サブプログラムの利点</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <h6>コードの再利用</h6>
+                                <p>同じ処理を繰り返し書く必要がない</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <h6>保守性の向上</h6>
+                                <p>バグ修正や改善が一箇所で済む</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <h6>可読性の向上</h6>
+                                <p>プログラムの構造が理解しやすくなる</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-box">
+                                <h6>テストの容易さ</h6>
+                                <p>個々の機能を独立してテストできる</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title" id="section8-2">8.2 PERFORM文による呼び出し</h3>
+                    <p>COBOLでは、PERFORM文を使用して段落を呼び出します。</p>
+
+                    <h4>基本的な段落の定義と呼び出し</h4>
+                    <div class="code-block">       IDENTIFICATION DIVISION.
+       PROGRAM-ID. SUBROUTINE-EXAMPLE.
+       
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 WS-MESSAGE    PIC X(50).
+       01 WS-COUNTER    PIC 9(3) VALUE 0.
+       
+       PROCEDURE DIVISION.
+       MAIN-PARA.
+           DISPLAY "メイン処理開始".
+           
+           PERFORM INIT-PROCESS.
+           PERFORM CALC-PROCESS.
+           PERFORM DISPLAY-RESULT.
+           
+           DISPLAY "メイン処理終了".
+           STOP RUN.
+       
+       INIT-PROCESS.
+           MOVE "初期化完了" TO WS-MESSAGE.
+           DISPLAY WS-MESSAGE.
+       
+       CALC-PROCESS.
+           PERFORM VARYING WS-COUNTER FROM 1 BY 1 
+               UNTIL WS-COUNTER > 5
+               DISPLAY "Counter: " WS-COUNTER
+           END-PERFORM.
+       
+       DISPLAY-RESULT.
+           MOVE "結果表示完了" TO WS-MESSAGE.
+           DISPLAY WS-MESSAGE.</div>
+
+                    <h4>ネストした段落呼び出し</h4>
+                    <div class="code-block">       MAIN-PARA.
+           PERFORM PROCESS-DATA.
+           STOP RUN.
+       
+       PROCESS-DATA.
+           PERFORM INPUT-DATA.
+           PERFORM VALIDATE-DATA.
+           PERFORM CALCULATE-DATA.
+           PERFORM OUTPUT-DATA.
+       
+       INPUT-DATA.
+           DISPLAY "データ入力中...".
+           * データ入力処理
+       
+       VALIDATE-DATA.
+           DISPLAY "データ検証中...".
+           * データ検証処理
+       
+       CALCULATE-DATA.
+           DISPLAY "計算処理中...".
+           * 計算処理
+       
+       OUTPUT-DATA.
+           DISPLAY "結果出力中...".
+           * 出力処理</div>
+
+                    <h3 class="section-title" id="section8-3">8.3 パラメータの受け渡し</h3>
+                    <p>COBOLでは、グローバル変数を使用して段落間でデータを共有します。</p>
+
+                    <h4>グローバル変数を使用したデータ受け渡し</h4>
+                    <div class="code-block">       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 WS-CALC-PARAMS.
+           05 WS-NUM1       PIC 9(5).
+           05 WS-NUM2       PIC 9(5).
+           05 WS-OPERATION  PIC X(1).
+           05 WS-RESULT     PIC S9(7)V9(2).
+       
+       01 WS-ERROR-FLAG    PIC X(1) VALUE "N".
+       
+       PROCEDURE DIVISION.
+       MAIN-PARA.
+           MOVE 150 TO WS-NUM1.
+           MOVE 25 TO WS-NUM2.
+           MOVE "+" TO WS-OPERATION.
+           
+           PERFORM CALCULATE.
+           
+           IF WS-ERROR-FLAG = "N"
+               DISPLAY "Result: " WS-RESULT
+           ELSE
+               DISPLAY "Error occurred"
+           END-IF.
+           
+           STOP RUN.
+       
+       CALCULATE.
+           MOVE "N" TO WS-ERROR-FLAG.
+           
+           EVALUATE WS-OPERATION
+               WHEN "+"
+                   PERFORM ADD-NUMBERS
+               WHEN "-"
+                   PERFORM SUBTRACT-NUMBERS
+               WHEN "*"
+                   PERFORM MULTIPLY-NUMBERS
+               WHEN "/"
+                   PERFORM DIVIDE-NUMBERS
+               WHEN OTHER
+                   MOVE "Y" TO WS-ERROR-FLAG
+           END-EVALUATE.
+       
+       ADD-NUMBERS.
+           ADD WS-NUM1 TO WS-NUM2 GIVING WS-RESULT.
+       
+       SUBTRACT-NUMBERS.
+           SUBTRACT WS-NUM2 FROM WS-NUM1 GIVING WS-RESULT.
+       
+       MULTIPLY-NUMBERS.
+           MULTIPLY WS-NUM1 BY WS-NUM2 GIVING WS-RESULT.
+       
+       DIVIDE-NUMBERS.
+           IF WS-NUM2 = 0
+               MOVE "Y" TO WS-ERROR-FLAG
+           ELSE
+               DIVIDE WS-NUM1 BY WS-NUM2 GIVING WS-RESULT
+           END-IF.</div>
+
+                    <h3 class="section-title" id="section8-4">8.4 内部関数の活用</h3>
+                    <p>COBOLには、様々な内部関数が用意されています。</p>
+
+                    <h4>数値関数</h4>
+                    <div class="code-block">       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 WS-NUMBER     PIC 9(3)V9(2) VALUE 123.45.
+       01 WS-RESULT     PIC 9(5)V9(2).
+       
+       PROCEDURE DIVISION.
+       MAIN-PARA.
+           * 絶対値
+           COMPUTE WS-RESULT = FUNCTION ABS(-25.5).
+           DISPLAY "ABS(-25.5) = " WS-RESULT.
+           
+           * 平方根
+           COMPUTE WS-RESULT = FUNCTION SQRT(WS-NUMBER).
+           DISPLAY "SQRT(" WS-NUMBER ") = " WS-RESULT.
+           
+           * 三角関数
+           COMPUTE WS-RESULT = FUNCTION SIN(1.5708).
+           DISPLAY "SIN(1.5708) = " WS-RESULT.
+           
+           * 自然対数
+           COMPUTE WS-RESULT = FUNCTION LOG(WS-NUMBER).
+           DISPLAY "LOG(" WS-NUMBER ") = " WS-RESULT.
+           
+           STOP RUN.</div>
+
+                    <h4>文字列関数</h4>
+                    <div class="code-block">       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 WS-TEXT       PIC X(30) VALUE "  Hello, World!  ".
+       01 WS-RESULT     PIC X(30).
+       01 WS-LENGTH     PIC 9(3).
+       
+       PROCEDURE DIVISION.
+       MAIN-PARA.
+           * 文字列長
+           COMPUTE WS-LENGTH = FUNCTION LENGTH(WS-TEXT).
+           DISPLAY "LENGTH: " WS-LENGTH.
+           
+           * 左トリム
+           MOVE FUNCTION TRIM(WS-TEXT, LEADING) TO WS-RESULT.
+           DISPLAY "TRIM LEADING: '" WS-RESULT "'".
+           
+           * 右トリム
+           MOVE FUNCTION TRIM(WS-TEXT, TRAILING) TO WS-RESULT.
+           DISPLAY "TRIM TRAILING: '" WS-RESULT "'".
+           
+           * 大文字変換
+           MOVE FUNCTION UPPER-CASE(WS-TEXT) TO WS-RESULT.
+           DISPLAY "UPPER-CASE: " WS-RESULT.
+           
+           * 小文字変換
+           MOVE FUNCTION LOWER-CASE(WS-TEXT) TO WS-RESULT.
+           DISPLAY "LOWER-CASE: " WS-RESULT.
+           
+           STOP RUN.</div>
+
+                    <h3 class="section-title" id="section8-5">8.5 モジュール化の実践</h3>
+                    <p>実用的なモジュール化されたプログラムを作成してみましょう。</p>
+
+                    <h4>学生管理システムの例</h4>
+                    <div class="code-block">       IDENTIFICATION DIVISION.
+       PROGRAM-ID. STUDENT-MANAGEMENT.
+       
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 WS-STUDENT-DATA.
+           05 WS-STUDENT-ID    PIC 9(5).
+           05 WS-STUDENT-NAME  PIC X(20).
+           05 WS-STUDENT-SCORE PIC 9(3).
+       
+       01 WS-GRADE-INFO.
+           05 WS-GRADE         PIC X(1).
+           05 WS-GRADE-POINT   PIC 9V9(2).
+           05 WS-PASS-FLAG     PIC X(1).
+       
+       01 WS-STATISTICS.
+           05 WS-TOTAL-SCORE   PIC 9(5).
+           05 WS-STUDENT-COUNT PIC 9(3).
+           05 WS-AVERAGE       PIC 9(3)V9(2).
+       
+       PROCEDURE DIVISION.
+       MAIN-PARA.
+           DISPLAY "学生管理システム開始".
+           
+           PERFORM PROCESS-STUDENT-DATA.
+           PERFORM DISPLAY-SUMMARY.
+           
+           DISPLAY "学生管理システム終了".
+           STOP RUN.
+       
+       PROCESS-STUDENT-DATA.
+           * サンプルデータで処理をデモンストレーション
+           PERFORM PROCESS-SINGLE-STUDENT
+               VARYING WS-STUDENT-ID FROM 10001 BY 1
+               UNTIL WS-STUDENT-ID > 10003.
+       
+       PROCESS-SINGLE-STUDENT.
+           PERFORM INPUT-STUDENT-DATA.
+           PERFORM VALIDATE-STUDENT-DATA.
+           PERFORM CALCULATE-GRADE.
+           PERFORM UPDATE-STATISTICS.
+           PERFORM DISPLAY-STUDENT-INFO.
+       
+       INPUT-STUDENT-DATA.
+           EVALUATE WS-STUDENT-ID
+               WHEN 10001
+                   MOVE "田中太郎" TO WS-STUDENT-NAME
+                   MOVE 85 TO WS-STUDENT-SCORE
+               WHEN 10002
+                   MOVE "佐藤花子" TO WS-STUDENT-NAME
+                   MOVE 92 TO WS-STUDENT-SCORE
+               WHEN 10003
+                   MOVE "鈴木次郎" TO WS-STUDENT-NAME
+                   MOVE 78 TO WS-STUDENT-SCORE
+               WHEN OTHER
+                   MOVE "未登録" TO WS-STUDENT-NAME
+                   MOVE 0 TO WS-STUDENT-SCORE
+           END-EVALUATE.
+       
+       VALIDATE-STUDENT-DATA.
+           IF WS-STUDENT-SCORE < 0 OR WS-STUDENT-SCORE > 100
+               DISPLAY "エラー: 無効な点数 - " WS-STUDENT-ID
+               MOVE 0 TO WS-STUDENT-SCORE
+           END-IF.
+       
+       CALCULATE-GRADE.
+           EVALUATE WS-STUDENT-SCORE
+               WHEN 90 THRU 100
+                   MOVE "A" TO WS-GRADE
+                   MOVE 4.0 TO WS-GRADE-POINT
+                   MOVE "Y" TO WS-PASS-FLAG
+               WHEN 80 THRU 89
+                   MOVE "B" TO WS-GRADE
+                   MOVE 3.0 TO WS-GRADE-POINT
+                   MOVE "Y" TO WS-PASS-FLAG
+               WHEN 70 THRU 79
+                   MOVE "C" TO WS-GRADE
+                   MOVE 2.0 TO WS-GRADE-POINT
+                   MOVE "Y" TO WS-PASS-FLAG
+               WHEN 60 THRU 69
+                   MOVE "D" TO WS-GRADE
+                   MOVE 1.0 TO WS-GRADE-POINT
+                   MOVE "Y" TO WS-PASS-FLAG
+               WHEN OTHER
+                   MOVE "F" TO WS-GRADE
+                   MOVE 0.0 TO WS-GRADE-POINT
+                   MOVE "N" TO WS-PASS-FLAG
+           END-EVALUATE.
+       
+       UPDATE-STATISTICS.
+           ADD WS-STUDENT-SCORE TO WS-TOTAL-SCORE.
+           ADD 1 TO WS-STUDENT-COUNT.
+       
+       DISPLAY-STUDENT-INFO.
+           DISPLAY "ID: " WS-STUDENT-ID
+                   " Name: " WS-STUDENT-NAME
+                   " Score: " WS-STUDENT-SCORE
+                   " Grade: " WS-GRADE
+                   " GP: " WS-GRADE-POINT
+                   " Pass: " WS-PASS-FLAG.
+       
+       DISPLAY-SUMMARY.
+           IF WS-STUDENT-COUNT > 0
+               COMPUTE WS-AVERAGE = WS-TOTAL-SCORE / WS-STUDENT-COUNT
+               DISPLAY "---統計情報---"
+               DISPLAY "学生数: " WS-STUDENT-COUNT
+               DISPLAY "合計点: " WS-TOTAL-SCORE
+               DISPLAY "平均点: " WS-AVERAGE
+           ELSE
+               DISPLAY "データがありません"
+           END-IF.</div>
+
+                    <div class="exercise-container">
+                        <h5>実習 8-1: サブプログラムの作成</h5>
+                        <p>数値の統計情報を計算するサブプログラムを作成してみましょう。</p>
+                        <h6>課題</h6>
+                        <p>以下の機能を持つサブプログラムを作成してください：</p>
+                        <ul>
+                            <li>数値の入力・初期化</li>
+                            <li>最大値の検索</li>
+                            <li>最小値の検索</li>
+                            <li>平均値の計算</li>
+                            <li>結果の表示</li>
+                        </ul>
+                        <h6>サンプルデータ</h6>
+                        <p>12, 45, 78, 23, 67, 89, 34, 56, 90, 13</p>
+                    </div>
+
+                    <div class="exercise-container">
+                        <h5>実習 8-2: 関数の活用</h5>
+                        <p>COBOLの内部関数を使用した文字列処理プログラムを作成してみましょう。</p>
+                        <h6>課題</h6>
+                        <p>文字列「Hello, World!」に対して以下の処理を実行してください：</p>
+                        <ul>
+                            <li>文字列長の表示</li>
+                            <li>大文字変換</li>
+                            <li>小文字変換</li>
+                            <li>部分文字列の抽出（例：最初の5文字）</li>
+                        </ul>
+                    </div>
+
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>サブプログラムの主な利点を3つ挙げてください。</li>
+                            <li>段落を呼び出すために使用するCOBOLの文は何ですか？</li>
+                            <li>COBOLで段落間でデータを共有する方法は何ですか？</li>
+                            <li>数値の平方根を計算する関数は何ですか？</li>
+                            <li>文字列を大文字に変換する関数は何ですか？</li>
+                            <li>モジュール化の利点を説明してください。</li>
+                        </ol>
+                    </div>
+
+                    <div class="info-box">
+                        <h5>この章のまとめ</h5>
+                        <p>この章では、COBOLにおけるサブプログラムと関数の活用について学習しました。PERFORM文による段落呼び出し、パラメータの受け渡し、内部関数の使用方法を理解し、モジュール化されたプログラムの作成方法を習得しました。次の章では、これまでの学習内容を組み合わせた実践的なプログラム作成について学習します。</p>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="cobol-learning-material-7.html" class="btn btn-secondary">← 前の章</a>
+                        <a href="cobol-learning-material-9.html" class="btn btn-primary">次の章 →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

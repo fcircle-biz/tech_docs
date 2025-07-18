@@ -120,6 +120,10 @@
 
 - **[SAS学習ガイド](docs/guide/data-analytics/sas/README.md)** - SASによるデータ分析と統計処理の基礎から実践的な応用まで10章完成カリキュラム
 
+### システム・環境
+
+- **[COBOL学習ガイド](docs/guide/systems-environments/cobol/README.md)** - COBOL基礎から実践的なビジネスロジックまで10章完成カリキュラム
+
 ---
 
 ## 🤖 AIアシスタント用プロンプト集
