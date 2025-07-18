@@ -6,12 +6,12 @@
 
 ### 必要な環境
 - Webブラウザ（Chrome、Firefox、Safari等）
-- [paiza.io](https://paiza.io/projects/-jMbtp4-_R4a2CKIh5zVNQ) オンライン実行環境
+- [paiza.io](https://paiza.io/ja/projects/new) オンライン実行環境
 - テキストエディタ（任意）
 
 ### 参考リソース
 - [COBOL公式ドキュメント](https://www.ibm.com/docs/en/cobol-zos)
-- [paiza.io COBOLプロジェクト](https://paiza.io/projects/-jMbtp4-_R4a2CKIh5zVNQ)
+- [paiza.io COBOLプロジェクト](https://paiza.io/ja/projects/new)
 - [COBOLプログラミング入門](https://www.ibm.com/docs/en/cobol-zos/6.3?topic=cobol-introduction)
 
 ### 前提知識
