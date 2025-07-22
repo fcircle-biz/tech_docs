@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Struts 1.x超入門 第3章 - データベース接続とDAO設計（Windows + Eclipse対応）</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ベースレイアウト */
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+
+        /* ナビゲーション - Java生態系テーマ */
+        .navbar {
+            background-color: #f57c00;
+        }
+
+        .navbar-brand, .navbar-nav .nav-link {
+            color: white !important;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #fff3e0 !important;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+            background-color: white;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .sidebar .nav-link {
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #fff3e0;
+            color: #f57c00;
+        }
+
+        .sidebar .nav-link.active {
+            background-color: #f57c00 !important;
+            color: white !important;
+        }
+
+        /* タイトル */
+        .chapter-title {
+            color: #f57c00;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #f57c00;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title {
+            color: #ff9800;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* コンテンツボックス */
+        .quiz-container {
+            background-color: #fff3e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #f57c00;
+        }
+
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .highlight {
+            background-color: #ffecb3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
+        }
+
+        /* ナビゲーション */
+        .nav-link.active {
+            background-color: #f57c00 !important;
+            color: white !important;
+        }
+
+        /* コードブロック */
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">Struts 1.x 超入門チュートリアル</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://fcircle-biz.github.io/tech_docs/">ホーム</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">チュートリアル概要</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#section3-1">3.1 PostgreSQL設定</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section3-2">3.2 JDBC接続設定</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section3-3">3.3 DAOパターン実装</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section3-4">3.4 接続プール設定</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section3-5">3.5 トランザクション管理</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#quiz">理解度確認</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第3章: データベース接続とDAO設計（初心者向け）</h1>
+                </div>
+
+                <div id="chapter3">
+                    <!-- 章タイトル -->
+                    <h2 class="chapter-title">PostgreSQL連携とデータアクセス層の実装</h2>
+                    
+                    <div class="highlight">
+                        <h5>👋 初心者の方へ</h5>
+                        <p>この章では、Webアプリが<strong>データベース</strong>とやり取りする方法を学びます。<strong>Windows環境でPostgreSQLをインストール</strong>し、EclipseでJavaコードを書いてデータを保存・取得します。</p>
+                        <p><strong>「データベース」や「DAO」など、難しい単語も丁寧に説明します！</strong></p>
+                    </div>
+                    
+                    <!-- 学習目標（必須） -->
+                    <div class="highlight">
+                        <h5>🎯 この章で学ぶこと</h5>
+                        <ul>
+                            <li><strong>💾 PostgreSQL</strong> - Windowsにデータベースソフトをインストールして設定</li>
+                            <li><strong>📁 データベーステーブル</strong> - ユーザー情報を保存する表を作成</li>
+                            <li><strong>🔗 JDBC接続</strong> - Javaアプリからデータベースにアクセスする方法</li>
+                            <li><strong>🏠 DAOパターン</strong> - データベース操作を整理する方法</li>
+                            <li><strong>🏊 接続プール</strong> - データベース接続を効率的に管理する技術</li>
+                            <li><strong>🔄 トランザクション</strong> - データの一貫性を保つ仕組み</li>
+                        </ul>
+                        <p><em>メモ: 難しい単語がたくさん出てきますが、一つずつ丁寧に説明します！</em></p>
+                    </div>
+
+                    <!-- セクション3.1 -->
+                    <h3 class="section-title" id="section3-1">3.1 💾 WindowsでPostgreSQLをインストールしよう</h3>
+                    <p>データベースって何？どうやってインストールするの？初心者でも安心してWindowsでPostgreSQLをインストールし、アプリ用のテーブルを作ってみましょう！</p>
+                    
+                    <div class="highlight">
+                        <h5>💡 データベースって何？</h5>
+                        <p>データベースは「<strong>デジタルのファイリングキャビネット</strong>」みたいなものです。</p>
+                        <ul>
+                            <li>📁 ユーザー情報、商品情報などを整理して保存</li>
+                            <li>🔍 必要な情報を素早く探して取り出し</li>
+                            <li>🔒 データの一貫性と安全性を保護</li>
+                        </ul>
+                        <p><strong>PostgreSQL</strong>は無料で使える高性能なデータベースソフトです！</p>
+                    </div>
+
+                    <!-- 実習（必須） -->
+                    <div class="exercise-container">
+                        <h5>📋 実習 3-1: WindowsでPostgreSQLをインストールしよう</h5>
+                        <p>初心者でも安心！WindowsでPostgreSQLをインストールして、データベースとテーブルを作成します。</p>
+                        
+                        <h6>🔸 ステップ 1: PostgreSQLのWindowsインストール</h6>
+                        <ol>
+                            <li><a href="https://www.postgresql.org/download/windows/" target="_blank">PostgreSQL公式サイト</a>にアクセス</li>
+                            <li>「<strong>Download the installer</strong>」をクリック</li>
+                            <li><strong>Windows x86-64</strong>の最新版（例: 15.x）をダウンロード</li>
+                            <li>ダウンロードした<code>.exe</code>ファイルをダブルクリックで実行</li>
+                            <li>インストーラーの指示に従ってインストールを進める</li>
+                        </ol>
+                        
+                        <div class="warning">
+                            <h6>⚠️ インストール時の重要な設定</h6>
+                            <ul>
+                                <li><strong>パスワード設定</strong>: postgresユーザーのパスワードを設定します。<strong>必ず覚えておいてください！</strong></li>
+                                <li><strong>ポート番号</strong>: デフォルトの5432のままでOK</li>
+                                <li><strong>ロケール</strong>: 「Japanese, Japan」を選択</li>
+                            </ul>
+                        </div>
+                        
+                        <h6>🔸 ステップ 2: pgAdminでPostgreSQLに接続</h6>
+                        <p>PostgreSQLと一緒にインストールされる<strong>pgAdmin</strong>というグラフィカルツールを使って、データベースを操作します。</p>
+                        <ol>
+                            <li><strong>Windowsメニュー</strong>から「pgAdmin 4」を起動</li>
+                            <li>ブラウザでpgAdminが開きます</li>
+                            <li>左サイドバーの「<strong>Servers</strong>」 → 「<strong>PostgreSQL 15</strong>」をクリック</li>
+                            <li>インストール時に設定した<strong>パスワード</strong>を入力</li>
+                            <li>接続成功！データベース一覧が表示されます</li>
+                        </ol>
+
+                        <h6>🔸 ステップ 3: アプリ用データベースとテーブル作成</h6>
+                        <p>pgAdminでグラフィカルにデータベースとテーブルを作成します。</p>
+                        
+                        <div class="highlight">
+                            <h6>3-1. データベース作成</h6>
+                            <ol>
+                                <li>pgAdminで「<strong>PostgreSQL 15</strong>」 → 「<strong>Databases</strong>」を右クリック</li>
+                                <li>「<strong>Create</strong>」 → 「<strong>Database...</strong>」を選択</li>
+                                <li>データベース名に「<strong>strutsdb</strong>」と入力</li>
+                                <li>「<strong>Save</strong>」をクリック</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="highlight">
+                            <h6>3-2. usersテーブル作成</h6>
+                            <ol>
+                                <li>作成した「<strong>strutsdb</strong>」を展開 → 「<strong>Schemas</strong>」 → 「<strong>public</strong>」</li>
+                                <li>「<strong>Tools</strong>」メニュー → 「<strong>Query Tool</strong>」を選択</li>
+                                <li>以下のSQLをコピーして貼り付け：</li>
+                            </ol>
+                        </div>
+                        
+                        <h6>📄 SQLコード（コピーしてpgAdminに貼り付け）</h6>
+                        <pre><code>-- usersテーブル作成（ユーザー情報を保存する表）
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,              -- 自動採番のID
+    username VARCHAR(50) NOT NULL UNIQUE,    -- ユーザー名（重複不可）
+    email VARCHAR(100) NOT NULL,             -- メールアドレス
+    full_name VARCHAR(100) NOT NULL,         -- 氏名
+    birth_date DATE,                         -- 生年月日
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- 作成日時
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP   -- 更新日時
+);
+
+-- 索引作成（検索を高速化）
+CREATE INDEX idx_users_username ON users(username);
+CREATE INDEX idx_users_email ON users(email);
+
+-- サンプルデータ挿入（テスト用）
+INSERT INTO users (username, email, full_name, birth_date) VALUES
+('admin', 'admin@example.com', '管理者', '1990-01-01'),
+('user01', 'user01@example.com', '田中太郎', '1985-05-15'),
+('user02', 'user02@example.com', '佐藤花子', '1992-08-20');
+
+-- データ確認（作成されたデータを表示）
+SELECT * FROM users;</code></pre>
+                        
+                        <div class="highlight">
+                            <h6>3-3. SQL実行方法</h6>
+                            <ol>
+                                <li>上記SQLをpgAdminのQuery Toolに貼り付け</li>
+                                <li>「<strong>▶️ 実行</strong>」ボタンをクリック（またはF5キー）</li>
+                                <li>エラーがなければ成功！下部にサンプルデータが表示されます</li>
+                            </ol>
+                        </div>
+
+                        <h6>アプリケーション用ユーザー作成</h6>
+                        <pre><code>-- アプリケーション用ユーザー作成
+CREATE USER strutsuser WITH PASSWORD 'password123';
+
+-- 権限付与
+GRANT CONNECT ON DATABASE strutsdb TO strutsuser;
+GRANT USAGE ON SCHEMA public TO strutsuser;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE users TO strutsuser;
+GRANT USAGE, SELECT ON SEQUENCE users_user_id_seq TO strutsuser;</code></pre>
+                    </div>
+
+                    <!-- セクション3.2 -->
+                    <h3 class="section-title" id="section3-2">3.2 JDBC接続設定</h3>
+                    <p>PostgreSQL JDBCドライバーの追加と接続設定を行います。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 3-2: JDBC依存関係追加</h5>
+                        <p>pom.xmlにPostgreSQL JDBCドライバーを追加します。</p>
+                        
+                        <h6>pom.xml 依存関係追加</h6>
+                        <pre><code>&lt;dependencies&gt;
+    &lt;!-- 既存の依存関係... --&gt;
+    
+    &lt;!-- PostgreSQL JDBC ドライバー --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.postgresql&lt;/groupId&gt;
+        &lt;artifactId&gt;postgresql&lt;/artifactId&gt;
+        &lt;version&gt;42.6.0&lt;/version&gt;
+    &lt;/dependency&gt;
+    
+    &lt;!-- Apache Commons DBCP (接続プール) --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.apache.commons&lt;/groupId&gt;
+        &lt;artifactId&gt;commons-dbcp2&lt;/artifactId&gt;
+        &lt;version&gt;2.9.0&lt;/version&gt;
+    &lt;/dependency&gt;
+    
+    &lt;!-- H2 Database (テスト用) --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.h2database&lt;/groupId&gt;
+        &lt;artifactId&gt;h2&lt;/artifactId&gt;
+        &lt;version&gt;2.2.220&lt;/version&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
+
+                        <h6>database.properties作成</h6>
+                        <p>src/main/resources/database.properties:</p>
+                        <pre><code># PostgreSQL本番環境設定
+db.driver=org.postgresql.Driver
+db.url=jdbc:postgresql://localhost:5432/strutsdb
+db.username=strutsuser
+db.password=password123
+
+# 接続プール設定
+db.initialSize=5
+db.maxTotal=20
+db.maxIdle=10
+db.minIdle=5
+db.maxWaitMillis=10000
+
+# H2開発環境設定（コメントアウト）
+#db.driver=org.h2.Driver
+#db.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+#db.username=sa
+#db.password=</code></pre>
+
+                        <h6>DatabaseManager.java実装</h6>
+                        <p>src/main/java/com/example/struts/db/DatabaseManager.java:</p>
+                        <pre><code>package com.example.struts.db;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Properties;
+
+import org.apache.commons.dbcp2.BasicDataSource;
+
+public class DatabaseManager {
+    
+    private static DatabaseManager instance;
+    private BasicDataSource dataSource;
+    
+    private DatabaseManager() {
+        initializeDataSource();
+    }
+    
+    public static synchronized DatabaseManager getInstance() {
+        if (instance == null) {
+            instance = new DatabaseManager();
+        }
+        return instance;
+    }
+    
+    private void initializeDataSource() {
+        try {
+            // プロパティファイル読み込み
+            Properties props = new Properties();
+            InputStream is = getClass().getClassLoader()
+                .getResourceAsStream("database.properties");
+            props.load(is);
+            is.close();
+            
+            // データソース設定
+            dataSource = new BasicDataSource();
+            dataSource.setDriverClassName(props.getProperty("db.driver"));
+            dataSource.setUrl(props.getProperty("db.url"));
+            dataSource.setUsername(props.getProperty("db.username"));
+            dataSource.setPassword(props.getProperty("db.password"));
+            
+            // 接続プール設定
+            dataSource.setInitialSize(
+                Integer.parseInt(props.getProperty("db.initialSize", "5")));
+            dataSource.setMaxTotal(
+                Integer.parseInt(props.getProperty("db.maxTotal", "20")));
+            dataSource.setMaxIdle(
+                Integer.parseInt(props.getProperty("db.maxIdle", "10")));
+            dataSource.setMinIdle(
+                Integer.parseInt(props.getProperty("db.minIdle", "5")));
+            dataSource.setMaxWaitMillis(
+                Long.parseLong(props.getProperty("db.maxWaitMillis", "10000")));
+            
+        } catch (IOException e) {
+            throw new RuntimeException("データベース設定の読み込みに失敗しました", e);
+        }
+    }
+    
+    public Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
+    }
+    
+    public void shutdown() throws SQLException {
+        if (dataSource != null) {
+            dataSource.close();
+        }
+    }
+}</code></pre>
+                    </div>
+
+                    <!-- セクション3.3 -->
+                    <h3 class="section-title" id="section3-3">3.3 DAOパターンの実装</h3>
+                    <p>Data Access Object パターンを使用してデータアクセス層を実装します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 3-3: User エンティティとDAO実装</h5>
+                        <p>ユーザーデータのエンティティクラスとDAOを作成します。</p>
+                        
+                        <h6>User.java エンティティクラス</h6>
+                        <p>src/main/java/com/example/struts/model/User.java:</p>
+                        <pre><code>package com.example.struts.model;
+
+import java.sql.Date;
+import java.sql.Timestamp;
+
+public class User {
+    private int userId;
+    private String username;
+    private String email;
+    private String fullName;
+    private Date birthDate;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
+    
+    // デフォルトコンストラクタ
+    public User() {}
+    
+    // パラメータ付きコンストラクタ
+    public User(String username, String email, String fullName, Date birthDate) {
+        this.username = username;
+        this.email = email;
+        this.fullName = fullName;
+        this.birthDate = birthDate;
+    }
+    
+    // getter/setterメソッド
+    public int getUserId() { return userId; }
+    public void setUserId(int userId) { this.userId = userId; }
+    
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+    
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
+    
+    public Date getBirthDate() { return birthDate; }
+    public void setBirthDate(Date birthDate) { this.birthDate = birthDate; }
+    
+    public Timestamp getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
+    
+    public Timestamp getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Timestamp updatedAt) { this.updatedAt = updatedAt; }
+    
+    @Override
+    public String toString() {
+        return String.format("User{userId=%d, username='%s', email='%s', fullName='%s'}",
+                userId, username, email, fullName);
+    }
+}</code></pre>
+
+                        <h6>UserDAO インターフェース</h6>
+                        <p>src/main/java/com/example/struts/dao/UserDAO.java:</p>
+                        <pre><code>package com.example.struts.dao;
+
+import java.sql.SQLException;
+import java.util.List;
+import com.example.struts.model.User;
+
+public interface UserDAO {
+    
+    /**
+     * ユーザーを登録
+     * @param user 登録するユーザー
+     * @return 登録されたユーザー（IDが設定される）
+     */
+    User insert(User user) throws SQLException;
+    
+    /**
+     * ユーザーIDでユーザーを検索
+     * @param userId ユーザーID
+     * @return 検索されたユーザー、存在しない場合はnull
+     */
+    User findById(int userId) throws SQLException;
+    
+    /**
+     * ユーザー名でユーザーを検索
+     * @param username ユーザー名
+     * @return 検索されたユーザー、存在しない場合はnull
+     */
+    User findByUsername(String username) throws SQLException;
+    
+    /**
+     * 全ユーザーを取得
+     * @return ユーザーのリスト
+     */
+    List&lt;User&gt; findAll() throws SQLException;
+    
+    /**
+     * ユーザー情報を更新
+     * @param user 更新するユーザー
+     * @return 更新が成功した場合true
+     */
+    boolean update(User user) throws SQLException;
+    
+    /**
+     * ユーザーを削除
+     * @param userId 削除するユーザーID
+     * @return 削除が成功した場合true
+     */
+    boolean delete(int userId) throws SQLException;
+    
+    /**
+     * ユーザー数をカウント
+     * @return ユーザー総数
+     */
+    int count() throws SQLException;
+}</code></pre>
+
+                        <h6>UserDAOImpl 実装クラス</h6>
+                        <p>src/main/java/com/example/struts/dao/impl/UserDAOImpl.java:</p>
+                        <pre><code>package com.example.struts.dao.impl;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.example.struts.dao.UserDAO;
+import com.example.struts.db.DatabaseManager;
+import com.example.struts.model.User;
+
+public class UserDAOImpl implements UserDAO {
+    
+    private static final String INSERT_SQL = 
+        "INSERT INTO users (username, email, full_name, birth_date) VALUES (?, ?, ?, ?)";
+    
+    private static final String SELECT_BY_ID_SQL = 
+        "SELECT * FROM users WHERE user_id = ?";
+    
+    private static final String SELECT_BY_USERNAME_SQL = 
+        "SELECT * FROM users WHERE username = ?";
+    
+    private static final String SELECT_ALL_SQL = 
+        "SELECT * FROM users ORDER BY created_at DESC";
+    
+    private static final String UPDATE_SQL = 
+        "UPDATE users SET username = ?, email = ?, full_name = ?, birth_date = ?, " +
+        "updated_at = CURRENT_TIMESTAMP WHERE user_id = ?";
+    
+    private static final String DELETE_SQL = 
+        "DELETE FROM users WHERE user_id = ?";
+    
+    private static final String COUNT_SQL = 
+        "SELECT COUNT(*) FROM users";
+    
+    @Override
+    public User insert(User user) throws SQLException {
+        try (Connection conn = DatabaseManager.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(INSERT_SQL, 
+                     Statement.RETURN_GENERATED_KEYS)) {
+            
+            pstmt.setString(1, user.getUsername());
+            pstmt.setString(2, user.getEmail());
+            pstmt.setString(3, user.getFullName());
+            pstmt.setDate(4, user.getBirthDate());
+            
+            int affectedRows = pstmt.executeUpdate();
+            
+            if (affectedRows &gt; 0) {
+                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        user.setUserId(generatedKeys.getInt(1));
+                        return user;
+                    }
+                }
+            }
+            throw new SQLException("ユーザーの作成に失敗しました");
+        }
+    }
+    
+    @Override
+    public User findById(int userId) throws SQLException {
+        try (Connection conn = DatabaseManager.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(SELECT_BY_ID_SQL)) {
+            
+            pstmt.setInt(1, userId);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToUser(rs);
+                }
+            }
+        }
+        return null;
+    }
+    
+    @Override
+    public User findByUsername(String username) throws SQLException {
+        try (Connection conn = DatabaseManager.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(SELECT_BY_USERNAME_SQL)) {
+            
+            pstmt.setString(1, username);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToUser(rs);
+                }
+            }
+        }
+        return null;
+    }
+    
+    @Override
+    public List&lt;User&gt; findAll() throws SQLException {
+        List&lt;User&gt; users = new ArrayList&lt;&gt;();
+        
+        try (Connection conn = DatabaseManager.getInstance().getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(SELECT_ALL_SQL)) {
+            
+            while (rs.next()) {
+                users.add(mapResultSetToUser(rs));
+            }
+        }
+        return users;
+    }
+    
+    @Override
+    public boolean update(User user) throws SQLException {
+        try (Connection conn = DatabaseManager.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(UPDATE_SQL)) {
+            
+            pstmt.setString(1, user.getUsername());
+            pstmt.setString(2, user.getEmail());
+            pstmt.setString(3, user.getFullName());
+            pstmt.setDate(4, user.getBirthDate());
+            pstmt.setInt(5, user.getUserId());
+            
+            return pstmt.executeUpdate() &gt; 0;
+        }
+    }
+    
+    @Override
+    public boolean delete(int userId) throws SQLException {
+        try (Connection conn = DatabaseManager.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(DELETE_SQL)) {
+            
+            pstmt.setInt(1, userId);
+            return pstmt.executeUpdate() &gt; 0;
+        }
+    }
+    
+    @Override
+    public int count() throws SQLException {
+        try (Connection conn = DatabaseManager.getInstance().getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(COUNT_SQL)) {
+            
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
+    
+    private User mapResultSetToUser(ResultSet rs) throws SQLException {
+        User user = new User();
+        user.setUserId(rs.getInt("user_id"));
+        user.setUsername(rs.getString("username"));
+        user.setEmail(rs.getString("email"));
+        user.setFullName(rs.getString("full_name"));
+        user.setBirthDate(rs.getDate("birth_date"));
+        user.setCreatedAt(rs.getTimestamp("created_at"));
+        user.setUpdatedAt(rs.getTimestamp("updated_at"));
+        return user;
+    }
+}</code></pre>
+                    </div>
+
+                    <!-- セクション3.4 -->
+                    <h3 class="section-title" id="section3-4">3.4 接続プールの設定</h3>
+                    <p>Apache Commons DBCPを使用した接続プールの詳細設定を学習します。</p>
+
+                    <div class="highlight">
+                        <h5>接続プールの利点</h5>
+                        <ul>
+                            <li><strong>パフォーマンス向上</strong>: 接続の作成・破棄のオーバーヘッド削減</li>
+                            <li><strong>リソース管理</strong>: 同時接続数の制御</li>
+                            <li><strong>安定性向上</strong>: 不正な接続の自動検出と回復</li>
+                        </ul>
+                    </div>
+
+                    <!-- セクション3.5 -->
+                    <h3 class="section-title" id="section3-5">3.5 トランザクション管理</h3>
+                    <p>データ整合性を保つためのトランザクション管理機能を実装します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 3-4: トランザクション管理実装</h5>
+                        <p>UserServiceクラスでトランザクション管理を実装します。</p>
+                        
+                        <h6>UserService.java</h6>
+                        <p>src/main/java/com/example/struts/service/UserService.java:</p>
+                        <pre><code>package com.example.struts.service;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+
+import com.example.struts.dao.UserDAO;
+import com.example.struts.dao.impl.UserDAOImpl;
+import com.example.struts.db.DatabaseManager;
+import com.example.struts.model.User;
+
+public class UserService {
+    
+    private UserDAO userDAO = new UserDAOImpl();
+    
+    public boolean authenticate(String username, String password) {
+        try {
+            User user = userDAO.findByUsername(username);
+            // 実際のアプリケーションではパスワードのハッシュ化が必要
+            return user != null && "password".equals(password);
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+    
+    public User createUser(User user) throws SQLException {
+        Connection conn = null;
+        try {
+            conn = DatabaseManager.getInstance().getConnection();
+            conn.setAutoCommit(false);
+            
+            // 重複チェック
+            User existing = userDAO.findByUsername(user.getUsername());
+            if (existing != null) {
+                throw new SQLException("ユーザー名が既に存在します: " + user.getUsername());
+            }
+            
+            // ユーザー作成
+            User createdUser = userDAO.insert(user);
+            
+            // ここで他の関連テーブルの処理も行える
+            // 例: ログテーブルへの記録など
+            
+            conn.commit();
+            return createdUser;
+            
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException rollbackEx) {
+                    e.addSuppressed(rollbackEx);
+                }
+            }
+            throw e;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    // ログ出力
+                }
+            }
+        }
+    }
+    
+    public User getUserById(int userId) throws SQLException {
+        return userDAO.findById(userId);
+    }
+    
+    public User getUserByUsername(String username) throws SQLException {
+        return userDAO.findByUsername(username);
+    }
+    
+    public List&lt;User&gt; getAllUsers() throws SQLException {
+        return userDAO.findAll();
+    }
+    
+    public boolean updateUser(User user) throws SQLException {
+        Connection conn = null;
+        try {
+            conn = DatabaseManager.getInstance().getConnection();
+            conn.setAutoCommit(false);
+            
+            // 既存ユーザーの存在確認
+            User existing = userDAO.findById(user.getUserId());
+            if (existing == null) {
+                throw new SQLException("更新対象のユーザーが存在しません: " + user.getUserId());
+            }
+            
+            // 更新実行
+            boolean result = userDAO.update(user);
+            
+            if (result) {
+                conn.commit();
+                return true;
+            } else {
+                conn.rollback();
+                return false;
+            }
+            
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException rollbackEx) {
+                    e.addSuppressed(rollbackEx);
+                }
+            }
+            throw e;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    // ログ出力
+                }
+            }
+        }
+    }
+    
+    public boolean deleteUser(int userId) throws SQLException {
+        return userDAO.delete(userId);
+    }
+    
+    public int getUserCount() throws SQLException {
+        return userDAO.count();
+    }
+}</code></pre>
+                    </div>
+
+                    <!-- 注意点 -->
+                    <div class="warning">
+                        <h5>⚠️ 重要なポイント</h5>
+                        <ul>
+                            <li>PostgreSQLのSERIAL型は自動的にシーケンスを作成します</li>
+                            <li>接続プールのサイズは環境に応じて調整してください</li>
+                            <li>本番環境では適切なデータベースユーザー権限設定が必要です</li>
+                            <li>トランザクション処理では必ずrollbackとconnection.close()を適切に実装してください</li>
+                            <li>SQLインジェクション対策のためPreparedStatementを使用してください</li>
+                        </ul>
+                    </div>
+
+                    <!-- 理解度確認（必須） -->
+                    <div class="quiz-container" id="quiz">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>PostgreSQLで自動採番を行う際に使用するデータ型は何ですか？</li>
+                            <li>DAOパターンの主な利点は何ですか？</li>
+                            <li>接続プールを使用する主なメリットを2つ挙げてください。</li>
+                            <li>トランザクション管理で必須の処理は何ですか？</li>
+                            <li>SQLインジェクション対策として推奨されるJDBCの機能は何ですか？</li>
+                            <li>PreparedStatementでクエリ結果を取得するメソッドは何ですか？</li>
+                        </ol>
+                        
+                        <details class="mt-3">
+                            <summary>解答を確認</summary>
+                            <ol>
+                                <li>SERIAL</li>
+                                <li>ビジネスロジックとデータアクセスロジックの分離、テスタビリティの向上</li>
+                                <li>パフォーマンス向上（接続の再利用）、リソース管理（同時接続数制御）</li>
+                                <li>commit()、rollback()、connection.close()の適切な実装</li>
+                                <li>PreparedStatement</li>
+                                <li>executeQuery()</li>
+                            </ol>
+                        </details>
+                    </div>
+
+                    <!-- 章間ナビゲーション（必須） -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="step2-struts-config-mvc.html" class="btn btn-secondary">← 前の章: Struts設定とMVC</a>
+                        <a href="step4-user-create-read.html" class="btn btn-primary">次の章: ユーザー管理機能（CREATE, READ） →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // スムーススクロール
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // サイドバーのアクティブリンク更新
+        window.addEventListener('scroll', function() {
+            let current = '';
+            const sections = document.querySelectorAll('h3[id], div[id]');
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
