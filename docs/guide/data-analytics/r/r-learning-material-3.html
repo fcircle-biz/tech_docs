@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R言語学習教材 第3章 - データフレームと基本統計</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; padding-top: 56px; }
+        .navbar { background-color: #0066cc; }
+        .sidebar { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; }
+        .chapter-title { color: #0066cc; margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #0066cc; padding-bottom: 0.5rem; }
+        .section-title { color: #3399ff; margin-top: 1.2rem; margin-bottom: 0.8rem; }
+        .quiz-container { background-color: #e6f2ff; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #0066cc; }
+        .exercise-container { background-color: #f3e5f5; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #9c27b0; }
+        .highlight { background-color: #cce6ff; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #0066cc; }
+        .warning { background-color: #ffebee; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #f44336; }
+        .nav-link.active { background-color: #0066cc !important; color: white !important; }
+        pre { background-color: #f8f9fa; border-radius: 4px; padding: 1rem; border-left: 4px solid #0066cc; }
+        code { background-color: #f8f9fa; padding: 0.2rem 0.4rem; border-radius: 3px; color: #d63384; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../../../index.html"><strong>Tech Docs</strong></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../../guide/index.html">学習ガイド</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../../../cheatsheet/index.html">チートシート</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>R言語学習教材</span>
+                    </h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-1.html">第1章: R言語の基礎とRStudio入門</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-2.html">第2章: データ型と基本操作</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="r-learning-material-3.html">第3章: データフレームと基本統計</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-4.html">第4章: データの読み込みと書き出し</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-5.html">第5章: データの可視化 (ggplot2)</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-6.html">第6章: データの前処理と変換 (dplyr)</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-7.html">第7章: 統計解析の基礎</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-8.html">第8章: 回帰分析</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-9.html">第9章: 時系列データ分析</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-10.html">第10章: レポート作成 (R Markdown)</a></li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第3章: データフレームと基本統計</h1>
+                </div>
+
+                <div id="chapter3">
+                    <h2 class="chapter-title">データフレームでテーブル形式データを操作しよう</h2>
+                    
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>データフレームの概念と構造</li>
+                            <li>データフレームの作成と操作方法</li>
+                            <li>行・列の選択とフィルタリング</li>
+                            <li>記述統計量の計算</li>
+                            <li>組み込みデータセットの活用</li>
+                            <li>基本的なデータ探索手法</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">3.1 データフレームとは</h3>
+                    <p><strong>データフレーム</strong>は、Rにおける最も重要なデータ構造の一つです。
+                    行列のように2次元の構造を持ちますが、各列に異なるデータ型を格納できます。</p>
+                    
+                    <h4>データフレームの特徴</h4>
+                    <ul>
+                        <li>各列は同じ長さのベクトル</li>
+                        <li>列ごとに異なるデータ型が可能</li>
+                        <li>行と列に名前を付けられる</li>
+                        <li>ExcelやCSVファイルと似た構造</li>
+                    </ul>
+
+                    <h4>データフレームの作成</h4>
+                    <pre><code># data.frame()関数でデータフレームを作成
+students <- data.frame(
+  ID = 1:5,
+  Name = c("佐藤", "田中", "鈴木", "高橋", "渡辺"),
+  Age = c(20, 21, 19, 22, 20),
+  Score = c(85, 92, 78, 88, 95),
+  Passed = c(TRUE, TRUE, TRUE, TRUE, TRUE)
+)
+
+# データフレームの確認
+print(students)
+str(students)  # 構造の確認
+dim(students)  # 次元の確認</code></pre>
+
+                    <h3 class="section-title">3.2 データフレームの操作</h3>
+                    
+                    <h4>列の選択</h4>
+                    <pre><code># 列の選択方法
+students$Name           # $記号を使用
+students[["Name"]]      # [[]]を使用
+students[, "Name"]      # [行, 列]形式
+students[, 2]          # 列番号で指定
+
+# 複数列の選択
+students[, c("Name", "Score")]
+students[, c(2, 4)]</code></pre>
+
+                    <h4>行の選択</h4>
+                    <pre><code># 行の選択
+students[1, ]           # 1行目
+students[c(1, 3), ]     # 1行目と3行目
+students[1:3, ]         # 1-3行目
+
+# 条件による行選択
+high_scorers <- students[students$Score >= 90, ]
+young_students <- students[students$Age < 21, ]</code></pre>
+
+                    <div class="exercise-container">
+                        <h5>実習 3-1: データフレームの基本操作</h5>
+                        <p>学生データを作成し、基本的なデータフレーム操作を実践しましょう。</p>
+                        <h6>実行例</h6>
+                        <pre><code># 学生データの作成
+class_data <- data.frame(
+  StudentID = 1:10,
+  Name = c("山田", "佐藤", "田中", "鈴木", "高橋", 
+           "伊藤", "渡辺", "中村", "小林", "加藤"),
+  Math = c(85, 92, 78, 88, 95, 73, 89, 84, 91, 76),
+  English = c(78, 85, 92, 75, 88, 89, 82, 87, 79, 94),
+  Science = c(92, 88, 85, 91, 82, 78, 95, 89, 88, 85)
+)
+
+# データの確認
+head(class_data)
+summary(class_data)
+
+# 数学の点数が90点以上の学生
+math_excellent <- class_data[class_data$Math >= 90, ]
+print(math_excellent)
+
+# 全科目の平均点を計算
+class_data$Average <- (class_data$Math + class_data$English + class_data$Science) / 3
+head(class_data)</code></pre>
+                    </div>
+
+                    <h3 class="section-title">3.3 記述統計量</h3>
+                    <p>データの基本的な性質を理解するために、記述統計量を計算しましょう。</p>
+
+                    <h4>基本統計量</h4>
+                    <pre><code># 組み込みデータセットmtcarsを使用
+data(mtcars)
+
+# 基本統計量
+mean(mtcars$mpg)     # 平均
+median(mtcars$mpg)   # 中央値
+sd(mtcars$mpg)       # 標準偏差
+var(mtcars$mpg)      # 分散
+min(mtcars$mpg)      # 最小値
+max(mtcars$mpg)      # 最大値
+range(mtcars$mpg)    # 範囲（最小値と最大値）
+quantile(mtcars$mpg) # 四分位数</code></pre>
+
+                    <h4>要約統計量</h4>
+                    <pre><code># summary()関数で一括確認
+summary(mtcars)
+
+# 特定の列のみ
+summary(mtcars[, c("mpg", "hp", "wt")])
+
+# sapply()で複数列に同じ関数を適用
+sapply(mtcars[, c("mpg", "hp", "wt")], mean)
+sapply(mtcars[, c("mpg", "hp", "wt")], sd)</code></pre>
+
+                    <h3 class="section-title">3.4 データの探索</h3>
+                    
+                    <h4>データの基本情報</h4>
+                    <pre><code># データフレームの基本情報
+nrow(mtcars)        # 行数
+ncol(mtcars)        # 列数
+dim(mtcars)         # 次元
+names(mtcars)       # 列名
+rownames(mtcars)    # 行名
+head(mtcars, 3)     # 最初の3行
+tail(mtcars, 3)     # 最後の3行</code></pre>
+
+                    <h4>クロス集計</h4>
+                    <pre><code># 分割表の作成
+table(mtcars$cyl)                    # 度数分布
+table(mtcars$cyl, mtcars$gear)       # クロス集計
+prop.table(table(mtcars$cyl))        # 比率</code></pre>
+
+                    <div class="exercise-container">
+                        <h5>実習 3-2: 基本統計量の計算</h5>
+                        <p>mtcarsデータセットを使用して、統計量を計算し、データの特徴を把握しましょう。</p>
+                        <h6>実行例</h6>
+                        <pre><code># mtcarsデータの探索
+data(mtcars)
+
+# 燃費(mpg)の分析
+cat("燃費の統計量:\n")
+cat("平均:", round(mean(mtcars$mpg), 2), "mpg\n")
+cat("中央値:", round(median(mtcars$mpg), 2), "mpg\n")
+cat("標準偏差:", round(sd(mtcars$mpg), 2), "mpg\n")
+
+# 馬力(hp)の分析
+cat("\n馬力の統計量:\n")
+print(summary(mtcars$hp))
+
+# シリンダー数別の燃費平均
+cylinder_mpg <- aggregate(mpg ~ cyl, data = mtcars, FUN = mean)
+print(cylinder_mpg)
+
+# 相関分析
+cat("\n燃費と馬力の相関係数:", 
+    round(cor(mtcars$mpg, mtcars$hp), 3), "\n")</code></pre>
+                    </div>
+
+                    <h3 class="section-title">3.5 データフレームの変更・追加</h3>
+                    
+                    <h4>新しい列の追加</h4>
+                    <pre><code># 新しい列の作成
+mtcars$kpl <- mtcars$mpg * 0.425  # mpgをkm/Lに変換
+mtcars$hp_category <- ifelse(mtcars$hp > 150, "High", "Low")
+
+# 条件による分類
+mtcars$size_class <- cut(mtcars$wt, 
+                        breaks = c(0, 2.5, 3.5, Inf),
+                        labels = c("軽量", "中程度", "重量"))
+table(mtcars$size_class)</code></pre>
+
+                    <h4>行の追加・削除</h4>
+                    <pre><code># 新しい行の追加（例）
+new_car <- data.frame(
+  mpg = 25, cyl = 4, disp = 120, hp = 100, drat = 3.5,
+  wt = 2.5, qsec = 18, vs = 1, am = 1, gear = 4, carb = 2
+)
+mtcars_extended <- rbind(mtcars, new_car)
+
+# 行の削除
+mtcars_filtered <- mtcars[mtcars$mpg > 20, ]  # 燃費20mpg以上のみ</code></pre>
+
+                    <div class="exercise-container">
+                        <h5>実習 3-3: データフレームの加工と分析</h5>
+                        <p>データに新しい列を追加し、グループ別の分析を行いましょう。</p>
+                        <h6>実行例</h6>
+                        <pre><code># アイリスデータセットを使用
+data(iris)
+
+# 花びらの面積を計算
+iris$Petal.Area <- iris$Petal.Length * iris$Petal.Width
+
+# がくの面積を計算
+iris$Sepal.Area <- iris$Sepal.Length * iris$Sepal.Width
+
+# 種別の統計量
+species_summary <- aggregate(
+  cbind(Sepal.Length, Sepal.Width, Petal.Length, Petal.Width) ~ Species,
+  data = iris,
+  FUN = function(x) c(mean = mean(x), sd = sd(x))
+)
+
+print(species_summary)
+
+# 花びらの長さが平均以上の花の割合
+iris$Long.Petal <- iris$Petal.Length > mean(iris$Petal.Length)
+prop.table(table(iris$Species, iris$Long.Petal), margin = 1)</code></pre>
+                    </div>
+
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>データフレームとベクトル・リストの違いを説明してください。</li>
+                            <li>データフレームから特定の条件を満たす行を抽出する方法を2つ書いてください。</li>
+                            <li>記述統計量の中で、データの散らばりを表す指標を3つ挙げてください。</li>
+                            <li>以下のコードの実行結果を予測してください：<br>
+                                <code>df <- data.frame(x = 1:3, y = c("A", "B", "C")); df$z <- df$x * 2; ncol(df)</code></li>
+                            <li>mtcarsデータセットで、燃費が20mpg以上かつシリンダー数が4の車を抽出するコードを書いてください。</li>
+                        </ol>
+                        <details>
+                            <summary>解答例</summary>
+                            <ol>
+                                <li>データフレーム：2次元・異なる型可能、ベクトル：1次元・同じ型のみ、リスト：1次元・異なる型可能</li>
+                                <li>df[df$column > value, ]、subset(df, condition)</li>
+                                <li>標準偏差(sd)、分散(var)、範囲(range)、四分位範囲(IQR)</li>
+                                <li>3（x, y, zの3列）</li>
+                                <li>mtcars[mtcars$mpg >= 20 & mtcars$cyl == 4, ]</li>
+                            </ol>
+                        </details>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="r-learning-material-2.html" class="btn btn-secondary">← 前の章</a>
+                        <a href="r-learning-material-4.html" class="btn btn-primary">次の章 →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
