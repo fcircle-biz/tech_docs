@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R言語学習教材 第7章 - 統計解析の基礎</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; padding-top: 56px; }
+        .navbar { background-color: #0066cc; }
+        .sidebar { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; }
+        .chapter-title { color: #0066cc; margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #0066cc; padding-bottom: 0.5rem; }
+        .section-title { color: #3399ff; margin-top: 1.2rem; margin-bottom: 0.8rem; }
+        .quiz-container { background-color: #e6f2ff; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #0066cc; }
+        .exercise-container { background-color: #f3e5f5; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #9c27b0; }
+        .highlight { background-color: #cce6ff; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #0066cc; }
+        .warning { background-color: #ffebee; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #f44336; }
+        .nav-link.active { background-color: #0066cc !important; color: white !important; }
+        pre { background-color: #f8f9fa; border-radius: 4px; padding: 1rem; border-left: 4px solid #0066cc; }
+        code { background-color: #f8f9fa; padding: 0.2rem 0.4rem; border-radius: 3px; color: #d63384; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../../../index.html"><strong>Tech Docs</strong></a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../../guide/index.html">学習ガイド</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../../../cheatsheet/index.html">チートシート</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading px-3 mt-4 mb-1 text-muted"><span>R言語学習教材</span></h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-1.html">第1章: R言語の基礎とRStudio入門</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-2.html">第2章: データ型と基本操作</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-3.html">第3章: データフレームと基本統計</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-4.html">第4章: データの読み込みと書き出し</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-5.html">第5章: データの可視化 (ggplot2)</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-6.html">第6章: データの前処理と変換 (dplyr)</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="r-learning-material-7.html">第7章: 統計解析の基礎</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-8.html">第8章: 回帰分析</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-9.html">第9章: 時系列データ分析</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-10.html">第10章: レポート作成 (R Markdown)</a></li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第7章: 統計解析の基礎</h1>
+                </div>
+
+                <div id="chapter7">
+                    <h2 class="chapter-title">統計的推論と仮説検定をマスターしよう</h2>
+                    
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>確率分布と正規性の検定</li>
+                            <li>仮説検定の基本概念</li>
+                            <li>t検定、カイ二乗検定、分散分析</li>
+                            <li>相関分析と回帰の基礎</li>
+                            <li>信頼区間の計算と解釈</li>
+                            <li>実際のデータを用いた統計解析実践</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">7.1 記述統計と推測統計</h3>
+                    <p>統計学は大きく記述統計と推測統計に分かれます。Rでは両方の分析を効率的に行えます。</p>
+
+                    <h4>記述統計量の復習</h4>
+                    <pre><code># 基本統計量
+data(mtcars)
+summary(mtcars$mpg)
+
+# より詳細な統計量
+library(psych)
+describe(mtcars$mpg)
+
+# 分散と標準偏差
+var(mtcars$mpg)    # 分散
+sd(mtcars$mpg)     # 標準偏差
+IQR(mtcars$mpg)    # 四分位範囲</code></pre>
+
+                    <h4>正規性の確認</h4>
+                    <pre><code># 正規性の検定
+shapiro.test(mtcars$mpg)  # シャピロ・ウィルク検定
+
+# Q-Qプロット
+qqnorm(mtcars$mpg)
+qqline(mtcars$mpg)
+
+# ヒストグラムでの確認
+hist(mtcars$mpg, breaks = 10, freq = FALSE)
+curve(dnorm(x, mean = mean(mtcars$mpg), sd = sd(mtcars$mpg)), add = TRUE)</code></pre>
+
+                    <div class="exercise-container">
+                        <h5>実習 7-1: データの正規性確認</h5>
+                        <p>複数のデータセットで正規性を確認し、分布の特徴を把握しましょう。</p>
+                        <h6>実行例</h6>
+                        <pre><code>library(ggplot2)
+
+# 複数変数の正規性検定
+variables <- c("mpg", "hp", "wt")
+normality_results <- data.frame(
+  variable = variables,
+  shapiro_p = sapply(variables, function(x) shapiro.test(mtcars[[x]])$p.value),
+  mean = sapply(variables, function(x) mean(mtcars[[x]])),
+  sd = sapply(variables, function(x) sd(mtcars[[x]]))
+)
+
+print(normality_results)
+
+# 正規性の可視化
+ggplot(mtcars, aes(sample = mpg)) + 
+  stat_qq() + 
+  stat_qq_line() +
+  labs(title = "燃費の正規Q-Qプロット")
+
+# 対数変換による正規化の試み
+mtcars$log_hp <- log(mtcars$hp)
+shapiro.test(mtcars$log_hp)</code></pre>
+                    </div>
+
+                    <h3 class="section-title">7.2 仮説検定</h3>
+                    <p>仮説検定は統計的推論の中核となる概念です。帰無仮説と対立仮説を設定し、データから結論を導きます。</p>
+
+                    <h4>t検定</h4>
+                    <pre><code># 一標本t検定: 平均が特定値と等しいかどうか
+t.test(mtcars$mpg, mu = 20)
+
+# 二標本t検定: 2つのグループの平均を比較
+automatic <- mtcars$mpg[mtcars$am == 0]  # オートマチック
+manual <- mtcars$mpg[mtcars$am == 1]     # マニュアル
+t.test(automatic, manual)
+
+# 対応のあるt検定
+# before <- c(10, 12, 13, 15, 16, 17, 18, 20, 21, 23)
+# after <- c(12, 14, 15, 17, 18, 19, 20, 22, 23, 25)
+# t.test(before, after, paired = TRUE)</code></pre>
+
+                    <h4>カイ二乗検定</h4>
+                    <pre><code># 適合度検定
+observed <- c(20, 30, 25, 25)
+expected <- c(25, 25, 25, 25)
+chisq.test(observed, p = expected/sum(expected))
+
+# 独立性の検定
+contingency_table <- table(mtcars$cyl, mtcars$gear)
+chisq.test(contingency_table)</code></pre>
+
+                    <div class="exercise-container">
+                        <h5>実習 7-2: 仮説検定の実践</h5>
+                        <p>実際のデータを使用して様々な仮説検定を実行し、結果を解釈しましょう。</p>
+                        <h6>実行例</h6>
+                        <pre><code># トランスミッション別燃費比較
+library(dplyr)
+mtcars_analysis <- mtcars %>%
+  mutate(transmission = ifelse(am == 0, "オートマチック", "マニュアル"))
+
+# 基本統計量
+transmission_stats <- mtcars_analysis %>%
+  group_by(transmission) %>%
+  summarise(
+    count = n(),
+    mean_mpg = mean(mpg),
+    sd_mpg = sd(mpg),
+    .groups = 'drop'
+  )
+print(transmission_stats)
+
+# t検定
+t_test_result <- t.test(mpg ~ am, data = mtcars)
+print(t_test_result)
+
+# 効果量の計算（Cohen's d）
+library(effsize)
+cohen.d(mtcars$mpg[mtcars$am == 0], mtcars$mpg[mtcars$am == 1])</code></pre>
+                    </div>
+
+                    <h3 class="section-title">7.3 分散分析（ANOVA）</h3>
+                    <p>3つ以上のグループの平均を同時に比較する際に使用します。</p>
+
+                    <h4>一元配置分散分析</h4>
+                    <pre><code># シリンダー数別の燃費分析
+anova_result <- aov(mpg ~ factor(cyl), data = mtcars)
+summary(anova_result)
+
+# 多重比較（Tukey HSD）
+tukey_result <- TukeyHSD(anova_result)
+print(tukey_result)
+plot(tukey_result)</code></pre>
+
+                    <h4>二元配置分散分析</h4>
+                    <pre><code># シリンダー数とトランスミッション方式の交互作用
+two_way_anova <- aov(mpg ~ factor(cyl) * factor(am), data = mtcars)
+summary(two_way_anova)</code></pre>
+
+                    <h3 class="section-title">7.4 相関分析</h3>
+                    <p>変数間の線形関係の強さを測定します。</p>
+
+                    <h4>相関係数の計算</h4>
+                    <pre><code># ピアソン相関
+cor(mtcars$mpg, mtcars$wt)
+cor.test(mtcars$mpg, mtcars$wt)
+
+# スピアマン相関（順位相関）
+cor.test(mtcars$mpg, mtcars$wt, method = "spearman")
+
+# 相関行列
+cor_matrix <- cor(mtcars[, c("mpg", "hp", "wt", "qsec")])
+print(cor_matrix)</code></pre>
+
+                    <h4>相関の可視化</h4>
+                    <pre><code># 相関行列のヒートマップ
+library(corrplot)
+corrplot(cor_matrix, method = "color", type = "upper", 
+         order = "hclust", tl.cex = 0.8, tl.col = "black")</code></pre>
+
+                    <div class="exercise-container">
+                        <h5>実習 7-3: 相関分析と分散分析</h5>
+                        <p>複数変数間の関係性を詳しく分析してみましょう。</p>
+                        <h6>実行例</h6>
+                        <pre><code># アイリスデータでの分析
+data(iris)
+
+# 種類別の分散分析
+sepal_anova <- aov(Sepal.Length ~ Species, data = iris)
+summary(sepal_anova)
+
+# 多重比較
+sepal_tukey <- TukeyHSD(sepal_anova)
+print(sepal_tukey)
+
+# 全変数の相関行列
+iris_numeric <- iris[, 1:4]
+cor_iris <- cor(iris_numeric)
+print(round(cor_iris, 3))
+
+# 種類別の相関分析
+library(dplyr)
+iris_corr_by_species <- iris %>%
+  group_by(Species) %>%
+  summarise(
+    sepal_corr = cor(Sepal.Length, Sepal.Width),
+    petal_corr = cor(Petal.Length, Petal.Width),
+    .groups = 'drop'
+  )
+print(iris_corr_by_species)</code></pre>
+                    </div>
+
+                    <h3 class="section-title">7.5 信頼区間</h3>
+                    <p>推定値の信頼できる範囲を計算します。</p>
+
+                    <h4>平均の信頼区間</h4>
+                    <pre><code># 平均の95%信頼区間
+t.test(mtcars$mpg)$conf.int
+
+# 手動計算
+n <- length(mtcars$mpg)
+mean_mpg <- mean(mtcars$mpg)
+se_mpg <- sd(mtcars$mpg) / sqrt(n)
+t_value <- qt(0.975, df = n-1)
+ci_lower <- mean_mpg - t_value * se_mpg
+ci_upper <- mean_mpg + t_value * se_mpg
+c(ci_lower, ci_upper)</code></pre>
+
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>仮説検定におけるp値の意味を説明してください。</li>
+                            <li>t検定とカイ二乗検定の用途の違いを説明してください。</li>
+                            <li>相関係数が-0.8の場合、どのような関係性を示しますか？</li>
+                            <li>分散分析（ANOVA）を使用する場面を2つ挙げてください。</li>
+                            <li>95%信頼区間とは何か、その解釈方法を説明してください。</li>
+                        </ol>
+                        <details>
+                            <summary>解答例</summary>
+                            <ol>
+                                <li>帰無仮説が正しい場合に、観測されたデータ以上に極端な結果が得られる確率</li>
+                                <li>t検定:量的データの平均比較、カイ二乗検定:質的データの比率・独立性検定</li>
+                                <li>強い負の相関関係（一方が増加すると他方が減少）</li>
+                                <li>3群以上の平均比較、要因の主効果・交互作用の検定</li>
+                                <li>母集団パラメータが含まれる可能性が95%の区間</li>
+                            </ol>
+                        </details>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="r-learning-material-6.html" class="btn btn-secondary">← 前の章</a>
+                        <a href="r-learning-material-8.html" class="btn btn-primary">次の章 →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

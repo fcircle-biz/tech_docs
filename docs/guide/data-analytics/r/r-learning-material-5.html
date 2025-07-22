@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R言語学習教材 第5章 - データの可視化 (ggplot2)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; padding-top: 56px; }
+        .navbar { background-color: #0066cc; }
+        .sidebar { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; }
+        .chapter-title { color: #0066cc; margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #0066cc; padding-bottom: 0.5rem; }
+        .section-title { color: #3399ff; margin-top: 1.2rem; margin-bottom: 0.8rem; }
+        .quiz-container { background-color: #e6f2ff; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #0066cc; }
+        .exercise-container { background-color: #f3e5f5; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #9c27b0; }
+        .highlight { background-color: #cce6ff; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #0066cc; }
+        .warning { background-color: #ffebee; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #f44336; }
+        .nav-link.active { background-color: #0066cc !important; color: white !important; }
+        pre { background-color: #f8f9fa; border-radius: 4px; padding: 1rem; border-left: 4px solid #0066cc; }
+        code { background-color: #f8f9fa; padding: 0.2rem 0.4rem; border-radius: 3px; color: #d63384; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../../../index.html"><strong>Tech Docs</strong></a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../../guide/index.html">学習ガイド</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../../../cheatsheet/index.html">チートシート</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading px-3 mt-4 mb-1 text-muted"><span>R言語学習教材</span></h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-1.html">第1章: R言語の基礎とRStudio入門</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-2.html">第2章: データ型と基本操作</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-3.html">第3章: データフレームと基本統計</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-4.html">第4章: データの読み込みと書き出し</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="r-learning-material-5.html">第5章: データの可視化 (ggplot2)</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-6.html">第6章: データの前処理と変換 (dplyr)</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-7.html">第7章: 統計解析の基礎</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-8.html">第8章: 回帰分析</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-9.html">第9章: 時系列データ分析</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-10.html">第10章: レポート作成 (R Markdown)</a></li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第5章: データの可視化 (ggplot2)</h1>
+                </div>
+
+                <div id="chapter5">
+                    <h2 class="chapter-title">ggplot2で美しいグラフを作成しよう</h2>
+                    
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>ggplot2の基本概念とGrammar of Graphics</li>
+                            <li>散布図、棒グラフ、ヒストグラムの作成</li>
+                            <li>レイヤーとマッピングの理解</li>
+                            <li>色分け、ファセット、テーマの活用</li>
+                            <li>複数グラフの結合と出力</li>
+                            <li>インタラクティブなグラフの基礎</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">5.1 ggplot2の基本概念</h3>
+                    <p><strong>ggplot2</strong>は"Grammar of Graphics"に基づく強力な可視化パッケージです。</p>
+
+                    <h4>基本構造</h4>
+                    <pre><code># ggplot2のインストールと読み込み
+install.packages("ggplot2")
+library(ggplot2)
+
+# 基本的な構造
+ggplot(data = データフレーム) +
+  aes(x = 列名, y = 列名) +
+  geom_point()  # 散布図
+
+# 短縮記法
+ggplot(mtcars, aes(x = wt, y = mpg)) + geom_point()</code></pre>
+
+                    <div class="exercise-container">
+                        <h5>実習 5-1: 基本的な散布図の作成</h5>
+                        <p>mtcarsデータセットを使用して散布図を作成しましょう。</p>
+                        <h6>実行例</h6>
+                        <pre><code>library(ggplot2)
+
+# 基本的な散布図
+p1 <- ggplot(mtcars, aes(x = wt, y = mpg)) + 
+  geom_point() +
+  labs(title = "車重と燃費の関係", 
+       x = "車重 (1000 lbs)", 
+       y = "燃費 (mpg)")
+
+print(p1)
+
+# 色分けを追加
+p2 <- ggplot(mtcars, aes(x = wt, y = mpg, color = factor(cyl))) + 
+  geom_point(size = 3) +
+  labs(title = "シリンダー数別の車重と燃費", 
+       color = "シリンダー数")
+
+print(p2)</code></pre>
+                    </div>
+
+                    <h3 class="section-title">5.2 各種グラフタイプ</h3>
+
+                    <h4>棒グラフ</h4>
+                    <pre><code># 棒グラフ（geom_bar）
+ggplot(mtcars, aes(x = factor(cyl))) + 
+  geom_bar() +
+  labs(title = "シリンダー数別の車数", x = "シリンダー数")
+
+# 棒グラフ（geom_col）- 値を指定
+summary_data <- aggregate(mpg ~ cyl, mtcars, mean)
+ggplot(summary_data, aes(x = factor(cyl), y = mpg)) + 
+  geom_col() +
+  labs(title = "シリンダー数別平均燃費", y = "平均燃費")</code></pre>
+
+                    <h4>ヒストグラム</h4>
+                    <pre><code># ヒストグラム
+ggplot(mtcars, aes(x = mpg)) + 
+  geom_histogram(bins = 15, fill = "skyblue", alpha = 0.7) +
+  labs(title = "燃費の分布", x = "燃費 (mpg)", y = "頻度")</code></pre>
+
+                    <h4>箱ひげ図</h4>
+                    <pre><code># 箱ひげ図
+ggplot(mtcars, aes(x = factor(cyl), y = mpg)) + 
+  geom_boxplot() +
+  labs(title = "シリンダー数別燃費分布", x = "シリンダー数")</code></pre>
+
+                    <h3 class="section-title">5.3 レイヤーとカスタマイズ</h3>
+
+                    <h4>複数のgeomを重ね合わせ</h4>
+                    <pre><code># 散布図 + 回帰直線
+ggplot(mtcars, aes(x = wt, y = mpg)) + 
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "車重と燃費（回帰直線付き）")</code></pre>
+
+                    <h4>ファセット（小画面分割）</h4>
+                    <pre><code># ファセット_ラップ
+ggplot(mtcars, aes(x = wt, y = mpg)) + 
+  geom_point() +
+  facet_wrap(~cyl) +
+  labs(title = "シリンダー数別の車重と燃費")
+
+# ファセット_グリッド
+ggplot(mtcars, aes(x = wt, y = mpg)) + 
+  geom_point() +
+  facet_grid(cyl ~ gear) +
+  labs(title = "シリンダー数×ギア数別の分析")</code></pre>
+
+                    <div class="exercise-container">
+                        <h5>実習 5-2: 複合グラフの作成</h5>
+                        <p>複数の要素を組み合わせた高度なグラフを作成しましょう。</p>
+                        <h6>実行例</h6>
+                        <pre><code>library(ggplot2)
+
+# irisデータセットを使用
+data(iris)
+
+# 複合的な散布図
+complex_plot <- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) + 
+  geom_point(aes(color = Species, shape = Species), size = 3) +
+  geom_smooth(method = "lm", se = TRUE, alpha = 0.2) +
+  facet_wrap(~Species) +
+  labs(title = "アイリスの種類別がく片の関係",
+       subtitle = "がく片の長さと幅の関係（回帰直線と信頼区間付き）",
+       x = "がく片の長さ (cm)", 
+       y = "がく片の幅 (cm)") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+print(complex_plot)</code></pre>
+                    </div>
+
+                    <h3 class="section-title">5.4 テーマとスタイル</h3>
+
+                    <h4>組み込みテーマ</h4>
+                    <pre><code># 様々なテーマ
+p <- ggplot(mtcars, aes(x = wt, y = mpg)) + geom_point()
+
+p + theme_minimal()    # ミニマル
+p + theme_classic()    # クラシック
+p + theme_dark()       # ダーク
+p + theme_void()       # 何もなし</code></pre>
+
+                    <h4>色の設定</h4>
+                    <pre><code># 手動での色設定
+ggplot(mtcars, aes(x = wt, y = mpg, color = factor(cyl))) + 
+  geom_point(size = 3) +
+  scale_color_manual(values = c("red", "blue", "green"))
+
+# ColorBrewerパレット
+ggplot(mtcars, aes(x = wt, y = mpg, color = factor(cyl))) + 
+  geom_point(size = 3) +
+  scale_color_brewer(type = "qual", palette = "Set1")</code></pre>
+
+                    <h3 class="section-title">5.5 グラフの保存と出力</h3>
+
+                    <h4>グラフの保存</h4>
+                    <pre><code># ggsave関数で保存
+p <- ggplot(mtcars, aes(x = wt, y = mpg)) + geom_point()
+ggsave("scatter_plot.png", plot = p, width = 8, height = 6, dpi = 300)
+
+# PDFで保存
+ggsave("scatter_plot.pdf", plot = p, width = 8, height = 6)</code></pre>
+
+                    <div class="exercise-container">
+                        <h5>実習 5-3: publication-readyなグラフ</h5>
+                        <p>論文や報告書に使用できる高品質なグラフを作成しましょう。</p>
+                        <h6>実行例</h6>
+                        <pre><code># 高品質なグラフの作成
+publication_plot <- ggplot(mtcars, aes(x = wt, y = mpg)) + 
+  geom_point(aes(color = factor(cyl), size = hp), alpha = 0.7) +
+  geom_smooth(method = "lm", color = "black", linetype = "dashed") +
+  scale_color_brewer(type = "qual", palette = "Set2") +
+  scale_size_continuous(range = c(2, 6)) +
+  labs(title = "Vehicle Weight vs Fuel Efficiency",
+       subtitle = "Relationship between weight and MPG by cylinder count",
+       x = "Weight (1000 lbs)", 
+       y = "Miles per Gallon",
+       color = "Cylinders",
+       size = "Horsepower",
+       caption = "Data: mtcars dataset") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, hjust = 0.5),
+    plot.subtitle = element_text(size = 12, hjust = 0.5),
+    axis.text = element_text(size = 10),
+    legend.position = "bottom"
+  )
+
+print(publication_plot)
+
+# 高解像度で保存
+ggsave("publication_plot.png", plot = publication_plot, 
+       width = 10, height = 7, dpi = 300)</code></pre>
+                    </div>
+
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>ggplot2の基本的な構造（3つの必須要素）を説明してください。</li>
+                            <li>geom_bar()とgeom_col()の違いを説明してください。</li>
+                            <li>ファセットを使用する利点を2つ挙げてください。</li>
+                            <li>散布図に回帰直線を追加するgeom関数は何ですか？</li>
+                            <li>グラフを高解像度で保存するコードを書いてください。</li>
+                        </ol>
+                        <details>
+                            <summary>解答例</summary>
+                            <ol>
+                                <li>データ（data）、美的マッピング（aes）、幾何オブジェクト（geom）</li>
+                                <li>geom_bar：度数を自動計算、geom_col：指定した値を使用</li>
+                                <li>グループ別比較、パターンの発見、サブグループ分析</li>
+                                <li>geom_smooth()</li>
+                                <li>ggsave("plot.png", width=8, height=6, dpi=300)</li>
+                            </ol>
+                        </details>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="r-learning-material-4.html" class="btn btn-secondary">← 前の章</a>
+                        <a href="r-learning-material-6.html" class="btn btn-primary">次の章 →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
