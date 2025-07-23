@@ -141,6 +141,12 @@
                             <li>永続化ストレージの設定</li>
                             <li>コンテナの管理操作</li>
                         </ul>
+                        
+                        <h6>環境について</h6>
+                        <p>
+                            本章のコマンド例は <strong>Windows環境</strong> に対応しており、PowerShellとCommand Promptの両方で使用できます。
+                            LinuxやmacOSをお使いの場合は、改行記号を適宜読み替えてください。
+                        </p>
                     </div>
 
                     <h3 class="section-title">2.1 Oracle公式Dockerイメージについて</h3>
@@ -166,8 +172,11 @@
                         <code># Oracle Database XE イメージの取得
 docker pull container-registry.oracle.com/database/express:latest
 
-# イメージが正常に取得できたか確認
-docker images | grep oracle</code>
+# イメージが正常に取得できたか確認 (PowerShell)
+docker images | findstr oracle
+
+# イメージが正常に取得できたか確認 (Command Prompt)
+docker images | findstr oracle</code>
                     </div>
 
                     <h3 class="section-title">2.3 Oracle Database XEコンテナの起動</h3>
@@ -175,25 +184,38 @@ docker images | grep oracle</code>
 
                     <div class="exercise-container">
                         <h5>実習 2-2: Oracleコンテナの起動</h5>
-                        <code># Oracle Database XE コンテナを起動
-docker run --name oracle-xe \
-  -p 1521:1521 \
-  -p 5500:5500 \
-  -e ORACLE_PWD=Password123 \
-  -e ORACLE_CHARACTERSET=AL32UTF8 \
-  -v oracle-data:/opt/oracle/oradata \
-  -d \
+                        <code># Oracle Database XE コンテナを起動 (PowerShell)
+docker run --name oracle-xe `
+  -p 1521:1521 `
+  -e ORACLE_PWD=Password123 `
+  -e ORACLE_CHARACTERSET=AL32UTF8 `
+  -v oracle-data:/opt/oracle/oradata `
+  -d `
+  container-registry.oracle.com/database/express:latest
+
+# Oracle Database XE コンテナを起動 (Command Prompt)
+docker run --name oracle-xe ^
+  -p 1521:1521 ^
+  -e ORACLE_PWD=Password123 ^
+  -e ORACLE_CHARACTERSET=AL32UTF8 ^
+  -v oracle-data:/opt/oracle/oradata ^
+  -d ^
   container-registry.oracle.com/database/express:latest</code>
                         
                         <p><strong>パラメータの説明：</strong></p>
                         <ul>
                             <li><code>--name oracle-xe</code>: コンテナ名を指定</li>
                             <li><code>-p 1521:1521</code>: データベース接続ポートをマップ</li>
-                            <li><code>-p 5500:5500</code>: Enterprise Manager Express用ポート</li>
                             <li><code>-e ORACLE_PWD=Password123</code>: SYSユーザーのパスワード設定</li>
                             <li><code>-e ORACLE_CHARACTERSET=AL32UTF8</code>: 文字セット設定</li>
                             <li><code>-v oracle-data:/opt/oracle/oradata</code>: データ永続化</li>
                             <li><code>-d</code>: バックグラウンドで実行</li>
+                        </ul>
+                        
+                        <p><strong>Windows環境での改行記号：</strong></p>
+                        <ul>
+                            <li><strong>PowerShell</strong>: バッククォート <code>`</code> を使用</li>
+                            <li><strong>Command Prompt</strong>: ハット記号 <code>^</code> を使用</li>
                         </ul>
                     </div>
 
@@ -254,22 +276,7 @@ SQL> SELECT USER FROM DUAL;
 SQL> exit;</code>
                     </div>
 
-                    <h3 class="section-title">2.7 Enterprise Manager Expressの利用</h3>
-                    <p>WebブラウザからOracle Enterprise Manager Expressにアクセスできます：</p>
-
-                    <div class="exercise-container">
-                        <h5>実習 2-6: Enterprise Manager Expressへのアクセス</h5>
-                        <ol>
-                            <li>Webブラウザで <code>https://localhost:5500/em</code> にアクセス</li>
-                            <li>コンテナ名: <code>XE</code></li>
-                            <li>ユーザー名: <code>sys</code></li>
-                            <li>パスワード: <code>Password123</code></li>
-                            <li>ロール: <code>SYSDBA</code></li>
-                        </ol>
-                        <p><strong>注意:</strong> SSL証明書の警告が表示される場合は、例外として追加してください。</p>
-                    </div>
-
-                    <h3 class="section-title">2.8 コンテナ管理の基本操作</h3>
+                    <h3 class="section-title">2.7 コンテナ管理の基本操作</h3>
                     <p>日常的に使用するコンテナ管理コマンドを覚えましょう：</p>
 
                     <code># コンテナの停止
@@ -290,19 +297,22 @@ docker volume ls
 # データボリュームの削除
 docker volume rm oracle-data</code>
 
-                    <h3 class="section-title">2.9 データの永続化設定</h3>
+                    <h3 class="section-title">2.8 データの永続化設定</h3>
                     <p>コンテナを削除してもデータが保持されるよう、適切な永続化設定を確認します：</p>
 
                     <div class="exercise-container">
-                        <h5>実習 2-7: データ永続化の確認</h5>
-                        <code># 現在のボリュームマウント状況を確認
-docker inspect oracle-xe | grep -A 10 "Mounts"
+                        <h5>実習 2-6: データ永続化の確認</h5>
+                        <code># 現在のボリュームマウント状況を確認 (PowerShell)
+docker inspect oracle-xe | Select-String -Pattern "Mounts" -Context 0,10
+
+# 現在のボリュームマウント状況を確認 (Command Prompt)
+docker inspect oracle-xe | findstr /C:"Mounts"
 
 # ボリュームの詳細情報を確認
 docker volume inspect oracle-data
 
-# テストデータを作成
-docker exec -it oracle-xe sqlplus learner/learner123@localhost:1521/XE << EOF
+# テストデータを作成 (PowerShell)
+@"
 CREATE TABLE test_persistence (
     id NUMBER,
     message VARCHAR2(100)
@@ -310,10 +320,21 @@ CREATE TABLE test_persistence (
 INSERT INTO test_persistence VALUES (1, 'データ永続化テスト');
 COMMIT;
 EXIT;
-EOF</code>
+"@ | docker exec -i oracle-xe sqlplus learner/learner123@localhost:1521/XE
+
+# テストデータを作成 (Command Prompt)
+echo CREATE TABLE test_persistence ( > temp_sql.txt
+echo     id NUMBER, >> temp_sql.txt
+echo     message VARCHAR2(100) >> temp_sql.txt
+echo ); >> temp_sql.txt
+echo INSERT INTO test_persistence VALUES (1, 'データ永続化テスト'); >> temp_sql.txt
+echo COMMIT; >> temp_sql.txt
+echo EXIT; >> temp_sql.txt
+docker exec -i oracle-xe sqlplus learner/learner123@localhost:1521/XE < temp_sql.txt
+del temp_sql.txt</code>
                     </div>
 
-                    <h3 class="section-title">2.10 トラブルシューティング</h3>
+                    <h3 class="section-title">2.9 トラブルシューティング</h3>
                     <h4>よくある問題と解決方法</h4>
                     
                     <div class="table-responsive">
@@ -356,7 +377,6 @@ EOF</code>
                             <li>Oracle Database XEのDockerコンテナでデータベース接続に使用する標準ポート番号は何番ですか？</li>
                             <li>コンテナを削除してもデータを保持するために使用するDockerの機能は何ですか？</li>
                             <li>SYSユーザーでSQLPlusに接続する際に必要な特別な権限は何ですか？</li>
-                            <li>Enterprise Manager Expressにアクセスするために使用するポート番号は何番ですか？</li>
                         </ol>
                     </div>
 
