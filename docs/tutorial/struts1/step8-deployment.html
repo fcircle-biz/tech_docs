@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Struts 1.x学習教材 第8章 - デプロイメントと運用</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ベースレイアウト */
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+
+        /* ナビゲーション - Java生態系テーマ */
+        .navbar {
+            background-color: #f57c00;
+        }
+
+        .navbar-brand, .navbar-nav .nav-link {
+            color: white !important;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #fff3e0 !important;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+            background-color: white;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .sidebar .nav-link {
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #fff3e0;
+            color: #f57c00;
+        }
+
+        .sidebar .nav-link.active {
+            background-color: #f57c00 !important;
+            color: white !important;
+        }
+
+        /* タイトル */
+        .chapter-title {
+            color: #f57c00;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #f57c00;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title {
+            color: #ff9800;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* コンテンツボックス */
+        .quiz-container {
+            background-color: #fff3e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #f57c00;
+        }
+
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .highlight {
+            background-color: #ffecb3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
+        }
+
+        /* ナビゲーション */
+        .nav-link.active {
+            background-color: #f57c00 !important;
+            color: white !important;
+        }
+
+        /* コードブロック */
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 1rem;
+        }
+
+        .completion-box {
+            background-color: #d1ecf1;
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-left: 4px solid #17a2b8;
+            text-align: center;
+        }
+
+        .completion-box h3 {
+            color: #17a2b8;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">Struts 1.x チュートリアル</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://fcircle-biz.github.io/tech_docs/">ホーム</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">チュートリアル概要</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#section8-1">8.1 WARファイル作成</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section8-2">8.2 Tomcatデプロイ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section8-3">8.3 ログ設定</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section8-4">8.4 パフォーマンス対策</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section8-5">8.5 本番環境対応</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#completion">完了</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#quiz">理解度確認</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第8章: デプロイメントと運用</h1>
+                </div>
+
+                <div id="chapter8">
+                    <!-- 章タイトル -->
+                    <h2 class="chapter-title">アプリケーションのデプロイメントと本番運用</h2>
+                    
+                    <!-- 学習目標（必須） -->
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>MavenによるWARファイルの作成とビルド最適化</li>
+                            <li>Apache TomcatへのWebアプリケーションデプロイ</li>
+                            <li>本番環境向けログ設定とモニタリング</li>
+                            <li>パフォーマンス調整とメモリ管理</li>
+                            <li>本番環境でのセキュリティ設定とベストプラクティス</li>
+                            <li>運用保守のためのツールと監視手法</li>
+                        </ul>
+                    </div>
+
+                    <!-- セクション8.1 -->
+                    <h3 class="section-title" id="section8-1">8.1 WARファイルの作成</h3>
+                    <p>本番デプロイメント用のWARファイルを作成し、ビルドプロセスを最適化します。</p>
+
+                    <!-- 実習（必須） -->
+                    <div class="exercise-container">
+                        <h5>実習 8-1: 本番ビルド設定</h5>
+                        <p>本番環境用のビルド設定とプロファイルを構成します。</p>
+                        
+                        <h6>pom.xml プロファイル設定</h6>
+                        <pre><code>&lt;project&gt;
+    &lt;!-- 既存の設定... --&gt;
+    
+    &lt;!-- プロファイル設定 --&gt;
+    &lt;profiles&gt;
+        &lt;!-- 開発環境用プロファイル --&gt;
+        &lt;profile&gt;
+            &lt;id&gt;development&lt;/id&gt;
+            &lt;activation&gt;
+                &lt;activeByDefault&gt;true&lt;/activeByDefault&gt;
+            &lt;/activation&gt;
+            &lt;properties&gt;
+                &lt;environment&gt;development&lt;/environment&gt;
+                &lt;log.level&gt;DEBUG&lt;/log.level&gt;
+                &lt;db.config&gt;database-dev.properties&lt;/db.config&gt;
+            &lt;/properties&gt;
+        &lt;/profile&gt;
+        
+        &lt;!-- 本番環境用プロファイル --&gt;
+        &lt;profile&gt;
+            &lt;id&gt;production&lt;/id&gt;
+            &lt;properties&gt;
+                &lt;environment&gt;production&lt;/environment&gt;
+                &lt;log.level&gt;INFO&lt;/log.level&gt;
+                &lt;db.config&gt;database-prod.properties&lt;/db.config&gt;
+            &lt;/properties&gt;
+            &lt;build&gt;
+                &lt;plugins&gt;
+                    &lt;!-- CSS/JS最小化 --&gt;
+                    &lt;plugin&gt;
+                        &lt;groupId&gt;com.samaxes.maven&lt;/groupId&gt;
+                        &lt;artifactId&gt;minify-maven-plugin&lt;/artifactId&gt;
+                        &lt;version&gt;1.7.6&lt;/version&gt;
+                        &lt;executions&gt;
+                            &lt;execution&gt;
+                                &lt;id&gt;default-minify&lt;/id&gt;
+                                &lt;configuration&gt;
+                                    &lt;cssSourceDir&gt;css&lt;/cssSourceDir&gt;
+                                    &lt;cssSourceFiles&gt;
+                                        &lt;cssSourceFile&gt;common.css&lt;/cssSourceFile&gt;
+                                    &lt;/cssSourceFiles&gt;
+                                    &lt;jsSourceDir&gt;js&lt;/jsSourceDir&gt;
+                                    &lt;jsSourceFiles&gt;
+                                        &lt;jsSourceFile&gt;common.js&lt;/jsSourceFile&gt;
+                                    &lt;/jsSourceFiles&gt;
+                                &lt;/configuration&gt;
+                                &lt;goals&gt;
+                                    &lt;goal&gt;minify&lt;/goal&gt;
+                                &lt;/goals&gt;
+                            &lt;/execution&gt;
+                        &lt;/executions&gt;
+                    &lt;/plugin&gt;
+                &lt;/plugins&gt;
+            &lt;/build&gt;
+        &lt;/profile&gt;
+    &lt;/profiles&gt;
+    
+    &lt;build&gt;
+        &lt;finalName&gt;struts-tutorial&lt;/finalName&gt;
+        
+        &lt;!-- リソースフィルタリング --&gt;
+        &lt;resources&gt;
+            &lt;resource&gt;
+                &lt;directory&gt;src/main/resources&lt;/directory&gt;
+                &lt;filtering&gt;true&lt;/filtering&gt;
+                &lt;includes&gt;
+                    &lt;include&gt;**/*.properties&lt;/include&gt;
+                    &lt;include&gt;**/*.xml&lt;/include&gt;
+                &lt;/includes&gt;
+            &lt;/resource&gt;
+            &lt;resource&gt;
+                &lt;directory&gt;src/main/resources&lt;/directory&gt;
+                &lt;filtering&gt;false&lt;/filtering&gt;
+                &lt;excludes&gt;
+                    &lt;exclude&gt;**/*.properties&lt;/exclude&gt;
+                    &lt;exclude&gt;**/*.xml&lt;/exclude&gt;
+                &lt;/excludes&gt;
+            &lt;/resource&gt;
+        &lt;/resources&gt;
+        
+        &lt;plugins&gt;
+            &lt;!-- WAR プラグイン設定 --&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-war-plugin&lt;/artifactId&gt;
+                &lt;version&gt;3.2.3&lt;/version&gt;
+                &lt;configuration&gt;
+                    &lt;failOnMissingWebXml&gt;false&lt;/failOnMissingWebXml&gt;
+                    &lt;archive&gt;
+                        &lt;manifest&gt;
+                            &lt;addClasspath&gt;true&lt;/addClasspath&gt;
+                            &lt;classpathPrefix&gt;lib/&lt;/classpathPrefix&gt;
+                        &lt;/manifest&gt;
+                        &lt;manifestEntries&gt;
+                            &lt;Built-By&gt;${user.name}&lt;/Built-By&gt;
+                            &lt;Build-Time&gt;${maven.build.timestamp}&lt;/Build-Time&gt;
+                            &lt;Environment&gt;${environment}&lt;/Environment&gt;
+                        &lt;/manifestEntries&gt;
+                    &lt;/archive&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/project&gt;</code></pre>
+
+                        <h6>本番環境用データベース設定</h6>
+                        <p>src/main/resources/database-prod.properties:</p>
+                        <pre><code># PostgreSQL本番環境設定
+db.driver=org.postgresql.Driver
+db.url=${db.url}
+db.username=${db.username}
+db.password=${db.password}
+
+# 接続プール設定（本番用）
+db.initialSize=10
+db.maxTotal=50
+db.maxIdle=20
+db.minIdle=10
+db.maxWaitMillis=30000
+
+# 接続検証設定
+db.testOnBorrow=true
+db.testWhileIdle=true
+db.validationQuery=SELECT 1
+db.timeBetweenEvictionRunsMillis=30000
+db.minEvictableIdleTimeMillis=60000</code></pre>
+
+                        <h6>ビルドコマンド</h6>
+                        <pre><code># 開発環境用ビルド
+mvn clean package
+
+# 本番環境用ビルド
+mvn clean package -Pproduction \
+    -Ddb.url=jdbc:postgresql://prod-server:5432/strutsdb \
+    -Ddb.username=produser \
+    -Ddb.password=prodpassword
+
+# ビルド結果確認
+ls -la target/
+file target/struts-tutorial.war
+
+# WARファイル内容確認
+unzip -l target/struts-tutorial.war</code></pre>
+                    </div>
+
+                    <!-- セクション8.2 -->
+                    <h3 class="section-title" id="section8-2">8.2 Apache Tomcatへのデプロイ</h3>
+                    <p>Apache TomcatサーバーへのWebアプリケーションデプロイ手順を実践します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 8-2: Tomcatデプロイメント</h5>
+                        <p>本番Tomcat環境へのデプロイ設定と手順を学習します。</p>
+                        
+                        <h6>server.xml 設定（本番用）</h6>
+                        <p>$CATALINA_HOME/conf/server.xml:</p>
+                        <pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;Server port="8005" shutdown="SHUTDOWN"&gt;
+    
+    &lt;Listener className="org.apache.catalina.startup.VersionLoggerListener" /&gt;
+    &lt;Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" /&gt;
+    &lt;Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" /&gt;
+    &lt;Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" /&gt;
+    &lt;Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener" /&gt;
+    
+    &lt;GlobalNamingResources&gt;
+        &lt;!-- PostgreSQL データソース設定 --&gt;
+        &lt;Resource name="jdbc/StrutsDB"
+                  auth="Container"
+                  type="javax.sql.DataSource"
+                  factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+                  driverClassName="org.postgresql.Driver"
+                  url="jdbc:postgresql://localhost:5432/strutsdb"
+                  username="strutsuser"
+                  password="productionpassword"
+                  initialSize="10"
+                  maxActive="50"
+                  maxIdle="20"
+                  minIdle="10"
+                  testOnBorrow="true"
+                  validationQuery="SELECT 1" /&gt;
+    &lt;/GlobalNamingResources&gt;
+    
+    &lt;Service name="Catalina"&gt;
+        
+        &lt;!-- HTTP Connector（本番ではリバースプロキシ経由を推奨） --&gt;
+        &lt;Connector port="8080" protocol="HTTP/1.1"
+                   connectionTimeout="20000"
+                   redirectPort="8443"
+                   maxThreads="200"
+                   minSpareThreads="10"
+                   compression="on"
+                   compressionMinSize="2048"
+                   compressableMimeType="text/html,text/xml,text/plain,text/css,text/javascript,application/javascript" /&gt;
+        
+        &lt;!-- HTTPS Connector (SSL設定) --&gt;
+        &lt;Connector port="8443" protocol="org.apache.coyote.http11.Http11NioProtocol"
+                   maxThreads="150" SSLEnabled="true"&gt;
+            &lt;SSLHostConfig&gt;
+                &lt;Certificate certificateKeystoreFile="conf/localhost-rsa.jks"
+                            type="RSA" /&gt;
+            &lt;/SSLHostConfig&gt;
+        &lt;/Connector&gt;
+        
+        &lt;Engine name="Catalina" defaultHost="localhost"&gt;
+            
+            &lt;Host name="localhost" appBase="webapps"
+                  unpackWARs="true" autoDeploy="false"
+                  deployOnStartup="true"&gt;
+                
+                &lt;!-- アクセスログ設定 --&gt;
+                &lt;Valve className="org.apache.catalina.valves.AccessLogValve"
+                       directory="logs"
+                       prefix="localhost_access_log"
+                       suffix=".txt"
+                       pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b %D" /&gt;
+                
+                &lt;!-- アプリケーション固有設定 --&gt;
+                &lt;Context path="/struts-tutorial" docBase="struts-tutorial.war"&gt;
+                    &lt;ResourceLink name="jdbc/StrutsDB"
+                                  global="jdbc/StrutsDB"
+                                  type="javax.sql.DataSource" /&gt;
+                &lt;/Context&gt;
+                
+            &lt;/Host&gt;
+        &lt;/Engine&gt;
+    &lt;/Service&gt;
+&lt;/Server&gt;</code></pre>
+
+                        <h6>デプロイスクリプト</h6>
+                        <p>deploy.sh:</p>
+                        <pre><code>#!/bin/bash
+
+# 設定
+TOMCAT_HOME="/opt/tomcat"
+APP_NAME="struts-tutorial"
+WAR_FILE="target/${APP_NAME}.war"
+BACKUP_DIR="/opt/backups"
+
+echo "=== Struts Tutorial デプロイメント開始 ==="
+
+# 事前チェック
+if [ ! -f "$WAR_FILE" ]; then
+    echo "ERROR: WARファイルが見つかりません: $WAR_FILE"
+    exit 1
+fi
+
+# バックアップ作成
+if [ -f "$TOMCAT_HOME/webapps/${APP_NAME}.war" ]; then
+    echo "既存アプリケーションのバックアップを作成中..."
+    mkdir -p $BACKUP_DIR
+    cp "$TOMCAT_HOME/webapps/${APP_NAME}.war" \
+       "$BACKUP_DIR/${APP_NAME}_$(date +%Y%m%d_%H%M%S).war"
+fi
+
+# Tomcat停止
+echo "Tomcatを停止中..."
+$TOMCAT_HOME/bin/shutdown.sh
+
+# プロセス完全停止待ち
+sleep 10
+if pgrep -f tomcat &gt; /dev/null; then
+    echo "Tomcatプロセスを強制終了中..."
+    pkill -9 -f tomcat
+fi
+
+# 既存アプリケーション削除
+if [ -d "$TOMCAT_HOME/webapps/$APP_NAME" ]; then
+    echo "既存アプリケーションディレクトリを削除中..."
+    rm -rf "$TOMCAT_HOME/webapps/$APP_NAME"
+fi
+
+if [ -f "$TOMCAT_HOME/webapps/${APP_NAME}.war" ]; then
+    echo "既存WARファイルを削除中..."
+    rm -f "$TOMCAT_HOME/webapps/${APP_NAME}.war"
+fi
+
+# 新しいWARファイルをデプロイ
+echo "新しいWARファイルをデプロイ中..."
+cp "$WAR_FILE" "$TOMCAT_HOME/webapps/"
+
+# 権限設定
+chown tomcat:tomcat "$TOMCAT_HOME/webapps/${APP_NAME}.war"
+chmod 644 "$TOMCAT_HOME/webapps/${APP_NAME}.war"
+
+# Tomcat起動
+echo "Tomcatを起動中..."
+$TOMCAT_HOME/bin/startup.sh
+
+# 起動確認
+echo "アプリケーションの起動を確認中..."
+sleep 30
+
+# ヘルスチェック
+for i in {1..12}; do
+    if curl -f "http://localhost:8080/${APP_NAME}/userList.do" &gt; /dev/null 2&gt;&1; then
+        echo "SUCCESS: アプリケーションが正常に起動しました"
+        break
+    fi
+    
+    if [ $i -eq 12 ]; then
+        echo "ERROR: アプリケーションの起動に失敗しました"
+        exit 1
+    fi
+    
+    echo "起動確認中... ($i/12)"
+    sleep 10
+done
+
+echo "=== デプロイメント完了 ==="</code></pre>
+
+                        <h6>systemdサービス設定</h6>
+                        <p>/etc/systemd/system/tomcat.service:</p>
+                        <pre><code>[Unit]
+Description=Apache Tomcat Web Application Container
+After=network.target
+
+[Service]
+Type=forking
+
+Environment=JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+Environment=CATALINA_PID=/opt/tomcat/temp/tomcat.pid
+Environment=CATALINA_HOME=/opt/tomcat
+Environment=CATALINA_BASE=/opt/tomcat
+Environment='CATALINA_OPTS=-Xms512M -Xmx2048M -server -XX:+UseParallelGC'
+Environment='JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom -Dfile.encoding=UTF-8'
+
+ExecStart=/opt/tomcat/bin/startup.sh
+ExecStop=/opt/tomcat/bin/shutdown.sh
+
+User=tomcat
+Group=tomcat
+UMask=0007
+RestartSec=10
+Restart=always
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+                    </div>
+
+                    <!-- セクション8.3 -->
+                    <h3 class="section-title" id="section8-3">8.3 本番環境ログ設定</h3>
+                    <p>本番環境向けのログ設定とモニタリング機能を実装します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 8-3: 本番ログ設定</h5>
+                        <p>本番環境に適したログ設定を構築します。</p>
+                        
+                        <h6>log4j-production.properties</h6>
+                        <p>src/main/resources/log4j-production.properties:</p>
+                        <pre><code># 本番環境ログ設定
+
+# ルートロガー設定（本番はINFO以上）
+log4j.rootLogger=INFO, file, console
+
+# コンソール出力設定（エラーのみ）
+log4j.appender.console=org.apache.log4j.ConsoleAppender
+log4j.appender.console.Target=System.err
+log4j.appender.console.Threshold=ERROR
+log4j.appender.console.layout=org.apache.log4j.PatternLayout
+log4j.appender.console.layout.ConversionPattern=%d{ISO8601} [%t] %-5p %c - %m%n
+
+# ファイル出力設定（日次ローテーション）
+log4j.appender.file=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.file.File=${catalina.home}/logs/struts-tutorial.log
+log4j.appender.file.DatePattern='.'yyyy-MM-dd
+log4j.appender.file.layout=org.apache.log4j.PatternLayout
+log4j.appender.file.layout.ConversionPattern=%d{ISO8601} [%t] %-5p %c{2} - %m%n
+
+# エラーログ専用設定
+log4j.appender.errorFile=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.errorFile.File=${catalina.home}/logs/struts-tutorial-error.log
+log4j.appender.errorFile.DatePattern='.'yyyy-MM-dd
+log4j.appender.errorFile.Threshold=ERROR
+log4j.appender.errorFile.layout=org.apache.log4j.PatternLayout
+log4j.appender.errorFile.layout.ConversionPattern=%d{ISO8601} [%t] %-5p %c{2} - %m%n
+
+# アクセスログ設定
+log4j.logger.ACCESS=INFO, accessFile
+log4j.additivity.ACCESS=false
+log4j.appender.accessFile=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.accessFile.File=${catalina.home}/logs/struts-tutorial-access.log
+log4j.appender.accessFile.DatePattern='.'yyyy-MM-dd
+log4j.appender.accessFile.layout=org.apache.log4j.PatternLayout
+log4j.appender.accessFile.layout.ConversionPattern=%d{ISO8601} - %m%n
+
+# SQLログ設定（本番では無効化）
+log4j.logger.java.sql=WARN
+
+# アプリケーション固有設定
+log4j.logger.com.example.struts=INFO
+log4j.logger.com.example.struts.action=INFO
+log4j.logger.com.example.struts.dao=WARN
+
+# フレームワークログ設定
+log4j.logger.org.apache.struts=WARN
+log4j.logger.org.apache.commons.dbcp2=WARN
+log4j.logger.org.springframework=WARN
+log4j.logger.org.postgresql=WARN
+
+# パフォーマンスログ設定
+log4j.logger.PERFORMANCE=INFO, performanceFile
+log4j.additivity.PERFORMANCE=false
+log4j.appender.performanceFile=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.performanceFile.File=${catalina.home}/logs/struts-tutorial-performance.log
+log4j.appender.performanceFile.DatePattern='.'yyyy-MM-dd
+log4j.appender.performanceFile.layout=org.apache.log4j.PatternLayout
+log4j.appender.performanceFile.layout.ConversionPattern=%d{ISO8601} - %m%n</code></pre>
+
+                        <h6>ログ管理スクリプト</h6>
+                        <p>log-rotate.sh:</p>
+                        <pre><code>#!/bin/bash
+
+# ログローテーションスクリプト
+LOG_DIR="/opt/tomcat/logs"
+APP_NAME="struts-tutorial"
+RETENTION_DAYS=30
+ARCHIVE_DIR="${LOG_DIR}/archive"
+
+echo "=== ログローテーション開始 ==="
+
+# アーカイブディレクトリ作成
+mkdir -p $ARCHIVE_DIR
+
+# 30日以上古いログファイルを圧縮・アーカイブ
+find $LOG_DIR -name "${APP_NAME}*.log.*" -mtime +7 -not -path "$ARCHIVE_DIR/*" | while read file; do
+    echo "圧縮中: $file"
+    gzip "$file"
+    mv "$file.gz" $ARCHIVE_DIR/
+done
+
+# 保存期間を過ぎたアーカイブファイルを削除
+find $ARCHIVE_DIR -name "${APP_NAME}*.log.*.gz" -mtime +$RETENTION_DAYS -delete
+
+# ディスク使用量確認
+echo "=== ログディスク使用量 ==="
+du -sh $LOG_DIR
+du -sh $ARCHIVE_DIR
+
+echo "=== ログローテーション完了 ==="</code></pre>
+
+                        <h6>ログ監視スクリプト</h6>
+                        <p>log-monitor.sh:</p>
+                        <pre><code>#!/bin/bash
+
+# ログ監視スクリプト
+ERROR_LOG="/opt/tomcat/logs/struts-tutorial-error.log"
+ALERT_EMAIL="admin@example.com"
+TEMP_FILE="/tmp/struts-error-check"
+
+# 前回チェック時からの新しいエラーを抽出
+if [ -f "$TEMP_FILE" ]; then
+    LAST_CHECK=$(cat $TEMP_FILE)
+else
+    LAST_CHECK=$(date -d "1 hour ago" '+%Y-%m-%d %H:%M:%S')
+fi
+
+# 現在時刻を記録
+echo $(date '+%Y-%m-%d %H:%M:%S') > $TEMP_FILE
+
+# 新しいエラーをチェック
+NEW_ERRORS=$(grep -E "ERROR|FATAL" $ERROR_LOG | \
+    awk -v last="$LAST_CHECK" '$0 > last' | wc -l)
+
+if [ $NEW_ERRORS -gt 0 ]; then
+    echo "新しいエラーが $NEW_ERRORS 件検出されました"
+    
+    # エラーの詳細を取得
+    ERROR_DETAILS=$(grep -E "ERROR|FATAL" $ERROR_LOG | \
+        awk -v last="$LAST_CHECK" '$0 > last' | tail -10)
+    
+    # メール通知
+    {
+        echo "Struts Tutorial アプリケーションで新しいエラーが検出されました"
+        echo ""
+        echo "エラー件数: $NEW_ERRORS"
+        echo "検出時刻: $(date)"
+        echo ""
+        echo "最新のエラー（最大10件）:"
+        echo "$ERROR_DETAILS"
+    } | mail -s "Struts Tutorial エラーアラート" $ALERT_EMAIL
+fi</code></pre>
+                    </div>
+
+                    <!-- セクション8.4 -->
+                    <h3 class="section-title" id="section8-4">8.4 パフォーマンス最適化</h3>
+                    <p>本番環境でのパフォーマンス調整とボトルネック対策を実装します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 8-4: パフォーマンス監視・最適化</h5>
+                        <p>アプリケーションのパフォーマンス監視機能を実装します。</p>
+                        
+                        <h6>PerformanceFilter.java</h6>
+                        <p>src/main/java/com/example/struts/filter/PerformanceFilter.java:</p>
+                        <pre><code>package com.example.struts.filter;
+
+import java.io.IOException;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import org.apache.log4j.Logger;
+
+public class PerformanceFilter implements Filter {
+    
+    private static final Logger logger = Logger.getLogger("PERFORMANCE");
+    private static final Logger appLogger = Logger.getLogger(PerformanceFilter.class);
+    
+    // パフォーマンス閾値設定（ミリ秒）
+    private long slowRequestThreshold = 2000;  // 2秒
+    private long verySlowRequestThreshold = 5000;  // 5秒
+    
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        String threshold = filterConfig.getInitParameter("slowRequestThreshold");
+        if (threshold != null) {
+            try {
+                slowRequestThreshold = Long.parseLong(threshold);
+            } catch (NumberFormatException e) {
+                appLogger.warn("Invalid slowRequestThreshold: " + threshold);
+            }
+        }
+    }
+    
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, 
+                        FilterChain chain) throws IOException, ServletException {
+        
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        
+        long startTime = System.currentTimeMillis();
+        String requestURI = httpRequest.getRequestURI();
+        String method = httpRequest.getMethod();
+        String userAgent = httpRequest.getHeader("User-Agent");
+        String remoteAddr = getClientIpAddress(httpRequest);
+        
+        try {
+            // リクエスト処理
+            chain.doFilter(request, response);
+            
+        } finally {
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            int status = httpResponse.getStatus();
+            
+            // パフォーマンスログ出力
+            logPerformance(method, requestURI, status, duration, remoteAddr, userAgent);
+            
+            // 遅いリクエストの警告
+            if (duration >= verySlowRequestThreshold) {
+                appLogger.error(String.format(
+                    "Very slow request detected: %s %s took %dms (client: %s)", 
+                    method, requestURI, duration, remoteAddr));
+            } else if (duration >= slowRequestThreshold) {
+                appLogger.warn(String.format(
+                    "Slow request detected: %s %s took %dms (client: %s)", 
+                    method, requestURI, duration, remoteAddr));
+            }
+        }
+    }
+    
+    private void logPerformance(String method, String uri, int status, long duration,
+                               String clientIp, String userAgent) {
+        StringBuilder logMessage = new StringBuilder();
+        logMessage.append(method).append(" ");
+        logMessage.append(uri).append(" ");
+        logMessage.append(status).append(" ");
+        logMessage.append(duration).append("ms ");
+        logMessage.append(clientIp).append(" ");
+        if (userAgent != null && userAgent.length() > 100) {
+            userAgent = userAgent.substring(0, 100) + "...";
+        }
+        logMessage.append("\"").append(userAgent).append("\"");
+        
+        logger.info(logMessage.toString());
+    }
+    
+    private String getClientIpAddress(HttpServletRequest request) {
+        String xForwardedFor = request.getHeader("X-Forwarded-For");
+        if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
+            return xForwardedFor.split(",")[0].trim();
+        }
+        
+        String xRealIp = request.getHeader("X-Real-IP");
+        if (xRealIp != null && !xRealIp.isEmpty()) {
+            return xRealIp;
+        }
+        
+        return request.getRemoteAddr();
+    }
+    
+    @Override
+    public void destroy() {
+        // クリーンアップ処理
+    }
+}</code></pre>
+
+                        <h6>JVM調整設定</h6>
+                        <p>setenv.sh (Tomcatディレクトリ/bin/setenv.sh):</p>
+                        <pre><code>#!/bin/bash
+
+# JVM設定（本番環境用）
+export JAVA_OPTS="$JAVA_OPTS -server"
+export JAVA_OPTS="$JAVA_OPTS -Xms1024m"
+export JAVA_OPTS="$JAVA_OPTS -Xmx4096m"
+export JAVA_OPTS="$JAVA_OPTS -XX:NewRatio=3"
+export JAVA_OPTS="$JAVA_OPTS -XX:+UseParallelGC"
+export JAVA_OPTS="$JAVA_OPTS -XX:+UseParallelOldGC"
+
+# メモリダンプ設定
+export JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
+export JAVA_OPTS="$JAVA_OPTS -XX:HeapDumpPath=/opt/tomcat/logs/heapdump/"
+
+# GCログ設定
+export JAVA_OPTS="$JAVA_OPTS -XX:+PrintGC"
+export JAVA_OPTS="$JAVA_OPTS -XX:+PrintGCDetails"
+export JAVA_OPTS="$JAVA_OPTS -XX:+PrintGCTimeStamps"
+export JAVA_OPTS="$JAVA_OPTS -Xloggc:/opt/tomcat/logs/gc.log"
+
+# システムプロパティ
+export JAVA_OPTS="$JAVA_OPTS -Djava.awt.headless=true"
+export JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=UTF-8"
+export JAVA_OPTS="$JAVA_OPTS -Djava.security.egd=file:/dev/./urandom"
+
+# アプリケーション固有設定
+export JAVA_OPTS="$JAVA_OPTS -Dspring.profiles.active=production"
+export JAVA_OPTS="$JAVA_OPTS -Dlog4j.configuration=file:$CATALINA_BASE/conf/log4j-production.properties"
+
+# JMX設定（監視用）
+export JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote"
+export JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote.port=9999"
+export JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote.authenticate=false"
+export JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote.ssl=false"
+
+echo "JAVA_OPTS: $JAVA_OPTS"</code></pre>
+                    </div>
+
+                    <!-- セクション8.5 -->
+                    <h3 class="section-title" id="section8-5">8.5 本番環境セキュリティ設定</h3>
+                    <p>本番環境でのセキュリティ強化とベストプラクティスを実装します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 8-5: セキュリティ強化</h5>
+                        <p>本番環境向けセキュリティ設定を適用します。</p>
+                        
+                        <h6>セキュリティフィルター設定</h6>
+                        <p>web.xml セキュリティ設定追加:</p>
+                        <pre><code>&lt;web-app&gt;
+    &lt;!-- 既存の設定... --&gt;
+    
+    &lt;!-- セキュリティフィルター設定 --&gt;
+    &lt;filter&gt;
+        &lt;filter-name&gt;SecurityHeadersFilter&lt;/filter-name&gt;
+        &lt;filter-class&gt;com.example.struts.filter.SecurityHeadersFilter&lt;/filter-class&gt;
+    &lt;/filter&gt;
+    
+    &lt;filter&gt;
+        &lt;filter-name&gt;PerformanceFilter&lt;/filter-name&gt;
+        &lt;filter-class&gt;com.example.struts.filter.PerformanceFilter&lt;/filter-class&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;slowRequestThreshold&lt;/param-name&gt;
+            &lt;param-value&gt;2000&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    &lt;/filter&gt;
+    
+    &lt;filter-mapping&gt;
+        &lt;filter-name&gt;SecurityHeadersFilter&lt;/filter-name&gt;
+        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+    &lt;/filter-mapping&gt;
+    
+    &lt;filter-mapping&gt;
+        &lt;filter-name&gt;PerformanceFilter&lt;/filter-name&gt;
+        &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+    &lt;/filter-mapping&gt;
+    
+    &lt;!-- セキュリティ制約 --&gt;
+    &lt;security-constraint&gt;
+        &lt;web-resource-collection&gt;
+            &lt;web-resource-name&gt;Admin Resources&lt;/web-resource-name&gt;
+            &lt;url-pattern&gt;/admin/*&lt;/url-pattern&gt;
+        &lt;/web-resource-collection&gt;
+        &lt;auth-constraint&gt;
+            &lt;role-name&gt;admin&lt;/role-name&gt;
+        &lt;/auth-constraint&gt;
+    &lt;/security-constraint&gt;
+    
+    &lt;!-- エラーページ設定 --&gt;
+    &lt;error-page&gt;
+        &lt;error-code&gt;404&lt;/error-code&gt;
+        &lt;location&gt;/error404.jsp&lt;/location&gt;
+    &lt;/error-page&gt;
+    
+    &lt;error-page&gt;
+        &lt;error-code&gt;500&lt;/error-code&gt;
+        &lt;location&gt;/error500.jsp&lt;/location&gt;
+    &lt;/error-page&gt;
+    
+    &lt;!-- セッション設定 --&gt;
+    &lt;session-config&gt;
+        &lt;session-timeout&gt;30&lt;/session-timeout&gt;
+        &lt;cookie-config&gt;
+            &lt;http-only&gt;true&lt;/http-only&gt;
+            &lt;secure&gt;true&lt;/secure&gt;
+        &lt;/cookie-config&gt;
+        &lt;tracking-mode&gt;COOKIE&lt;/tracking-mode&gt;
+    &lt;/session-config&gt;
+&lt;/web-app&gt;</code></pre>
+
+                        <h6>セキュリティヘッダーフィルター</h6>
+                        <p>SecurityHeadersFilter.java:</p>
+                        <pre><code>package com.example.struts.filter;
+
+import java.io.IOException;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class SecurityHeadersFilter implements Filter {
+    
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        // 初期化処理
+    }
+    
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response,
+                        FilterChain chain) throws IOException, ServletException {
+        
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        
+        // セキュリティヘッダーの設定
+        httpResponse.setHeader("X-Content-Type-Options", "nosniff");
+        httpResponse.setHeader("X-Frame-Options", "DENY");
+        httpResponse.setHeader("X-XSS-Protection", "1; mode=block");
+        httpResponse.setHeader("Strict-Transport-Security", 
+                               "max-age=31536000; includeSubDomains");
+        httpResponse.setHeader("Content-Security-Policy", 
+                               "default-src 'self'; script-src 'self' 'unsafe-inline'; " +
+                               "style-src 'self' 'unsafe-inline'; img-src 'self' data:");
+        httpResponse.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+        
+        // サーバー情報を隠す
+        httpResponse.setHeader("Server", "WebServer/1.0");
+        
+        chain.doFilter(request, response);
+    }
+    
+    @Override
+    public void destroy() {
+        // クリーンアップ処理
+    }
+}</code></pre>
+
+                        <h6>監視・運用スクリプト</h6>
+                        <p>health-check.sh:</p>
+                        <pre><code>#!/bin/bash
+
+# ヘルスチェックスクリプト
+APP_URL="http://localhost:8080/struts-tutorial"
+LOG_FILE="/opt/tomcat/logs/health-check.log"
+ALERT_EMAIL="admin@example.com"
+
+check_application() {
+    local endpoint=$1
+    local expected_status=$2
+    
+    response=$(curl -s -o /dev/null -w "%{http_code}" "$endpoint")
+    
+    if [ "$response" -eq "$expected_status" ]; then
+        echo "$(date): OK - $endpoint returned $response" >> $LOG_FILE
+        return 0
+    else
+        echo "$(date): ERROR - $endpoint returned $response (expected $expected_status)" >> $LOG_FILE
+        return 1
+    fi
+}
+
+# ヘルスチェック実行
+echo "=== ヘルスチェック開始 $(date) ===" >> $LOG_FILE
+
+failed_checks=0
+
+# アプリケーション基本チェック
+if ! check_application "$APP_URL/userList.do" 200; then
+    ((failed_checks++))
+fi
+
+# データベース接続チェック
+if ! check_application "$APP_URL/userList.do" 200; then
+    ((failed_checks++))
+fi
+
+# 結果判定
+if [ $failed_checks -gt 0 ]; then
+    echo "$(date): ヘルスチェック失敗 ($failed_checks 個の問題)" >> $LOG_FILE
+    
+    # アラート送信
+    {
+        echo "Struts Tutorial アプリケーションのヘルスチェックで問題が検出されました"
+        echo ""
+        echo "失敗したチェック数: $failed_checks"
+        echo "確認時刻: $(date)"
+        echo ""
+        echo "詳細はログを確認してください: $LOG_FILE"
+    } | mail -s "Struts Tutorial ヘルスチェック失敗" $ALERT_EMAIL
+    
+    exit 1
+else
+    echo "$(date): ヘルスチェック正常完了" >> $LOG_FILE
+    exit 0
+fi</code></pre>
+                    </div>
+
+                    <!-- チュートリアル完了 -->
+                    <div class="completion-box" id="completion">
+                        <h3>🎉 Struts 1.x チュートリアル完了！</h3>
+                        <p>お疲れさまでした！このチュートリアルを通じて、以下のスキルを習得されました：</p>
+                        
+                        <div class="row text-start mt-4">
+                            <div class="col-md-6">
+                                <h5>📚 習得したスキル</h5>
+                                <ul>
+                                    <li>Struts 1.x フレームワークの理解</li>
+                                    <li>MVCパターンによるWeb開発</li>
+                                    <li>PostgreSQLを使用したデータベース連携</li>
+                                    <li>CRUDアプリケーションの実装</li>
+                                    <li>セキュリティ対策の基本</li>
+                                    <li>テスト駆動開発</li>
+                                    <li>本番環境デプロイメント</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>🚀 次のステップ</h5>
+                                <ul>
+                                    <li>Spring MVC への移行学習</li>
+                                    <li>Spring Boot による現代的Web開発</li>
+                                    <li>RESTful API 開発</li>
+                                    <li>マイクロサービスアーキテクチャ</li>
+                                    <li>DevOps とCI/CD パイプライン</li>
+                                    <li>クラウドデプロイメント</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h5>📖 関連学習リソース</h5>
+                            <p>
+                                <a href="https://fcircle-biz.github.io/tech_docs/guide/java-ecosystem/spring/README.html" 
+                                   class="btn btn-primary me-2">Spring フレームワーク学習</a>
+                                <a href="https://fcircle-biz.github.io/tech_docs/guide/java-ecosystem/spring-boot/README.html" 
+                                   class="btn btn-success me-2">Spring Boot 入門</a>
+                                <a href="https://fcircle-biz.github.io/tech_docs/" 
+                                   class="btn btn-secondary">他の技術ガイド</a>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 注意点 -->
+                    <div class="warning">
+                        <h5>⚠️ 本番運用時の重要な注意事項</h5>
+                        <ul>
+                            <li>Struts 1.x は既にサポート終了のため、新規開発では使用を避けてください</li>
+                            <li>定期的なセキュリティパッチの適用と脆弱性チェックを実施してください</li>
+                            <li>データベース接続情報などの機密情報は適切に暗号化してください</li>
+                            <li>バックアップとリストア手順を定期的にテストしてください</li>
+                            <li>ログファイルの監視と容量管理を適切に行ってください</li>
+                            <li>パフォーマンス監視と負荷テストを定期的に実施してください</li>
+                        </ul>
+                    </div>
+
+                    <!-- 理解度確認（必須） -->
+                    <div class="quiz-container" id="quiz">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>本番環境用WARファイルを作成するMavenコマンドは何ですか？</li>
+                            <li>Tomcatでデータソースを設定するファイルは何ですか？</li>
+                            <li>本番環境で推奨されるJVMのガベージコレクター設定は何ですか？</li>
+                            <li>セキュリティ強化のためにレスポンスヘッダーに設定すべき項目を3つ挙げてください。</li>
+                            <li>ログローテーションを行う理由は何ですか？</li>
+                            <li>ヘルスチェックで監視すべき主な項目は何ですか？</li>
+                        </ol>
+                        
+                        <details class="mt-3">
+                            <summary>解答を確認</summary>
+                            <ol>
+                                <li>mvn clean package -Pproduction</li>
+                                <li>server.xml または context.xml</li>
+                                <li>-XX:+UseParallelGC または -XX:+UseG1GC</li>
+                                <li>X-Content-Type-Options, X-Frame-Options, X-XSS-Protection</li>
+                                <li>ディスク容量の節約、検索性能の向上、管理の効率化</li>
+                                <li>アプリケーション応答、データベース接続、サーバーリソース</li>
+                            </ol>
+                        </details>
+                    </div>
+
+                    <!-- 章間ナビゲーション（必須） -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="step7-testing-debug.html" class="btn btn-secondary">← 前の章: テストとデバッグ</a>
+                        <a href="index.html" class="btn btn-success">チュートリアル概要に戻る</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // スムーススクロール
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // サイドバーのアクティブリンク更新
+        window.addEventListener('scroll', function() {
+            let current = '';
+            const sections = document.querySelectorAll('h3[id], div[id]');
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
