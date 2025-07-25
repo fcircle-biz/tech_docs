@@ -162,6 +162,9 @@
                             <a class="nav-link" href="#section1-2">1.2 PostgreSQL設定</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="#section1-2-5">1.2.5 PHP拡張有効化</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="#section1-3">1.3 プロジェクト作成</a>
                         </li>
                         <li class="nav-item">
@@ -264,6 +267,109 @@ postgres=#</code></pre>
                                 <li><strong>認証エラー</strong>: pg_hba.confファイルの設定を確認</li>
                                 <li><strong>ポートエラー</strong>: 他のサービスがポート5432を使用していないか確認</li>
                             </ul>
+                        </div>
+                    </div>
+
+                    <!-- セクション1.2.5 -->
+                    <h3 class="section-title" id="section1-2-5">1.2.5 PHPでのPostgreSQL拡張有効化</h3>
+                    <p>PHPからPostgreSQLに接続するため、必要な拡張を有効化します。XAMPPを使用する場合の設定手順を説明します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 1-2-5: php.iniファイルの修正</h5>
+                        <p>PHPのPostgreSQL拡張（pdo_pgsql、pgsql）を有効化し、接続テストを行います。</p>
+                        
+                        <h6>XAMPP環境でのphp.ini修正手順</h6>
+                        <ol>
+                            <li><strong>php.iniファイルの場所確認</strong>: 
+                                <ul>
+                                    <li>XAMPP Control Panel → Apache → Config → PHP (php.ini)</li>
+                                    <li>または、<code>C:\xampp\php\php.ini</code>（Windows）</li>
+                                    <li>または、<code>/Applications/XAMPP/xamppfiles/etc/php.ini</code>（Mac）</li>
+                                </ul>
+                            </li>
+                            <li><strong>php.iniファイルを開く</strong>: テキストエディタでphp.iniを開く</li>
+                            <li><strong>PostgreSQL拡張の有効化</strong>: 以下の行を見つけてコメントアウトを解除</li>
+                        </ol>
+
+                        <h6>有効化すべき拡張</h6>
+                        <pre><code>; 以下の行の先頭の「;」を削除してコメントアウトを解除
+extension=pdo_pgsql
+extension=pgsql
+
+; 既に有効な場合は以下のような記載になっている
+extension=pdo_pgsql
+extension=pgsql</code></pre>
+
+                        <h6>設定確認とApache再起動</h6>
+                        <ol>
+                            <li><strong>ファイル保存</strong>: php.iniファイルを保存</li>
+                            <li><strong>Apache再起動</strong>: XAMPP Control PanelでApacheを再起動</li>
+                            <li><strong>拡張確認</strong>: 以下のPHPコードで拡張が有効かチェック</li>
+                        </ol>
+
+                        <h6>拡張確認用PHPコード</h6>
+                        <p>プロジェクトルートに<code>check_extensions.php</code>を作成：</p>
+                        <pre><code>&lt;?php
+// PostgreSQL拡張の確認
+echo "&lt;h2&gt;PostgreSQL拡張確認&lt;/h2&gt;";
+
+// PDO PostgreSQL拡張
+if (extension_loaded('pdo_pgsql')) {
+    echo "&lt;p style='color: green;'&gt;✓ PDO PostgreSQL拡張: 有効&lt;/p&gt;";
+} else {
+    echo "&lt;p style='color: red;'&gt;✗ PDO PostgreSQL拡張: 無効&lt;/p&gt;";
+}
+
+// PostgreSQL拡張
+if (extension_loaded('pgsql')) {
+    echo "&lt;p style='color: green;'&gt;✓ PostgreSQL拡張: 有効&lt;/p&gt;";
+} else {
+    echo "&lt;p style='color: red;'&gt;✗ PostgreSQL拡張: 無効&lt;/p&gt;";
+}
+
+// 利用可能なPDOドライバー一覧
+echo "&lt;h3&gt;利用可能なPDOドライバー&lt;/h3&gt;";
+echo "&lt;ul&gt;";
+foreach (PDO::getAvailableDrivers() as $driver) {
+    echo "&lt;li&gt;{$driver}&lt;/li&gt;";
+}
+echo "&lt;/ul&gt;";
+
+// 全拡張モジュール表示（開発時のみ）
+if (isset($_GET['show_all'])) {
+    echo "&lt;h3&gt;読み込み済み拡張一覧&lt;/h3&gt;";
+    echo "&lt;pre&gt;";
+    print_r(get_loaded_extensions());
+    echo "&lt;/pre&gt;";
+}
+
+echo "&lt;p&gt;&lt;a href='?show_all=1'&gt;全拡張を表示&lt;/a&gt;&lt;/p&gt;";
+?&gt;</code></pre>
+
+                        <h6>確認手順</h6>
+                        <ol>
+                            <li><strong>ファイル保存</strong>: check_extensions.phpを保存</li>
+                            <li><strong>ブラウザアクセス</strong>: http://localhost/user-management/check_extensions.php</li>
+                            <li><strong>結果確認</strong>: PostgreSQL拡張が有効になっていることを確認</li>
+                        </ol>
+
+                        <div class="warning">
+                            <h6>トラブルシューティング</h6>
+                            <ul>
+                                <li><strong>拡張が見つからない</strong>: XAMPPのバージョンによってはPostgreSQL拡張が含まれていない場合があります</li>
+                                <li><strong>DLLエラー（Windows）</strong>: 必要なDLLファイルが不足している場合、PostgreSQLクライアントをインストール</li>
+                                <li><strong>パスの問題</strong>: システムのPATH環境変数にPostgreSQLのbinディレクトリを追加</li>
+                                <li><strong>権限エラー</strong>: php.iniファイルの編集に管理者権限が必要な場合があります</li>
+                            </ul>
+                        </div>
+
+                        <div class="info">
+                            <h6>代替案：PHP内蔵サーバーの使用</h6>
+                            <p>XAMPPでPostgreSQL拡張の有効化が困難な場合、PHP内蔵サーバーの使用も可能です：</p>
+                            <pre><code># プロジェクトディレクトリで実行
+php -S localhost:8000
+
+# ブラウザで http://localhost:8000 にアクセス</code></pre>
                         </div>
                     </div>
 
