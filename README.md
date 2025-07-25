@@ -130,6 +130,10 @@
 
 ## 📖 チュートリアル
 
+### Web開発
+
+- **[PHP実践チュートリアル](docs/tutorial/php/README.md)** - PHPの基本文法からデータベース連携まで、初心者向けユーザー管理システム開発チュートリアル（6章構成）
+
 ### Java・Web開発
 
 - **[Struts 1.x実践チュートリアル](docs/tutorial/struts1/README.md)** - Apache Struts 1.xフレームワークを使用したWebアプリケーション開発の実践的なチュートリアル（6章構成）
