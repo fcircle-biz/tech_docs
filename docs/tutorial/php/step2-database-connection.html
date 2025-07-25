@@ -257,10 +257,12 @@ CREATE INDEX idx_users_created_at ON users (created_at);</code></pre>
                         <h5>実習 2-2: データベースとテーブルの作成</h5>
                         <p>専用データベースを作成し、usersテーブルを実装します。</p>
                         
-                        <h6>データベース作成手順</h6>
+                        <h6>pgAdminを使用したデータベース作成手順</h6>
                         <ol>
-                            <li><strong>PostgreSQL接続</strong>: psqlまたはpgAdminでPostgreSQLに接続</li>
-                            <li><strong>データベース作成</strong>: 以下のコマンドを実行</li>
+                            <li><strong>pgAdmin起動</strong>: PostgreSQLインストール時に同時にインストールされるpgAdminを起動</li>
+                            <li><strong>サーバー接続</strong>: 左側のサーバーツリーでPostgreSQLサーバーに接続</li>
+                            <li><strong>データベース作成</strong>: Databases を右クリック → Create → Database...</li>
+                            <li><strong>データベース設定</strong>: 以下の設定でデータベースを作成</li>
                         </ol>
 
                         <pre><code>-- データベース作成
@@ -271,12 +273,14 @@ CREATE DATABASE user_management
     LC_COLLATE = 'C'
     LC_CTYPE = 'C'
     TABLESPACE = pg_default
-    CONNECTION LIMIT = -1;</code></pre>
+    CONNECTION LIMIT = -1
+    TEMPLATE = template0;</code></pre>
 
-                        <h6>テーブル作成</h6>
+                        <h6>pgAdminでのテーブル作成</h6>
                         <ol>
-                            <li><strong>データベース選択</strong>: <code>\c user_management</code></li>
-                            <li><strong>SQLファイル作成</strong>: create_tables.sqlファイルを作成</li>
+                            <li><strong>データベース選択</strong>: 作成した user_management データベースを選択</li>
+                            <li><strong>クエリツール起動</strong>: Tools → Query Tool をクリック</li>
+                            <li><strong>SQLファイル作成</strong>: プロジェクトの create_tables.sql ファイルを作成</li>
                         </ol>
 
                         <p>プロジェクトの<code>sql/create_tables.sql</code>として保存：</p>
@@ -311,19 +315,19 @@ INSERT INTO users (username, email, full_name, birth_date) VALUES
 -- 確認用SELECT
 SELECT * FROM users ORDER BY id;</code></pre>
 
-                        <h6>SQLファイル実行</h6>
-                        <pre><code># コマンドラインでの実行
-psql -U postgres -d user_management -f sql/create_tables.sql
-
-# または psql内での実行
-\i sql/create_tables.sql</code></pre>
+                        <h6>pgAdminでのSQLファイル実行</h6>
+                        <ol>
+                            <li><strong>SQLファイル読み込み</strong>: Query Tool で File → Open を選択し、create_tables.sql を開く</li>
+                            <li><strong>SQL実行</strong>: F5キーまたは実行ボタン（▶）をクリック</li>
+                            <li><strong>結果確認</strong>: 下部のメッセージウィンドウで実行結果を確認</li>
+                        </ol>
 
                         <div class="info">
-                            <h6>実行確認方法</h6>
+                            <h6>pgAdminでの実行確認方法</h6>
                             <ul>
-                                <li><strong>テーブル一覧確認</strong>: <code>\dt</code></li>
-                                <li><strong>テーブル構造確認</strong>: <code>\d users</code></li>
-                                <li><strong>データ確認</strong>: <code>SELECT * FROM users;</code></li>
+                                <li><strong>テーブル一覧確認</strong>: 左側のツリーで Schemas → public → Tables を展開</li>
+                                <li><strong>テーブル構造確認</strong>: usersテーブルを右クリック → Properties</li>
+                                <li><strong>データ確認</strong>: usersテーブルを右クリック → View/Edit Data → All Rows</li>
                             </ul>
                         </div>
                     </div>
@@ -336,6 +340,27 @@ psql -U postgres -d user_management -f sql/create_tables.sql
                         <h5>実習 2-3: database.php設定ファイル作成</h5>
                         <p>データベース接続情報を一元管理するための設定ファイルを作成します。</p>
                         
+                        <h6>開発用ユーザーの作成</h6>
+                        <p>セキュリティを考慮して、開発専用のデータベースユーザーを作成します。pgAdminのQuery Toolで以下のSQLを実行：</p>
+                        <pre><code>-- 開発用ユーザー作成
+CREATE USER dev_user WITH PASSWORD 'dev_password';
+
+-- user_managementデータベースへの接続権限付与
+GRANT CONNECT ON DATABASE user_management TO dev_user;
+
+-- publicスキーマへの使用権限付与
+GRANT USAGE ON SCHEMA public TO dev_user;
+
+-- テーブルへの基本権限付与
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO dev_user;
+
+-- シーケンス（SERIAL）への権限付与
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO dev_user;
+
+-- 今後作成されるテーブルへの権限も自動付与
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO dev_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO dev_user;</code></pre>
+
                         <h6>config/database.php作成</h6>
                         <p>プロジェクトの<code>config</code>フォルダに以下の内容で作成：</p>
                         <pre><code>&lt;?php
@@ -348,8 +373,8 @@ psql -U postgres -d user_management -f sql/create_tables.sql
 define('DB_HOST', 'localhost');
 define('DB_PORT', '5432');
 define('DB_NAME', 'user_management');
-define('DB_USER', 'postgres');
-define('DB_PASS', 'your_password_here');  // 実際のパスワードに変更
+define('DB_USER', 'dev_user');          // 開発用ユーザー
+define('DB_PASS', 'dev_password');       // 開発用パスワード
 define('DB_CHARSET', 'utf8');
 
 // PDO接続オプション
@@ -433,10 +458,11 @@ define('DEBUG', true);
                         <div class="warning">
                             <h6>セキュリティに関する注意</h6>
                             <ul>
-                                <li><strong>パスワード管理</strong>: 実際のパスワードに変更し、バージョン管理から除外</li>
+                                <li><strong>専用ユーザー使用</strong>: postgresスーパーユーザーではなく開発専用ユーザーを使用</li>
+                                <li><strong>最小権限の原則</strong>: 必要最小限の権限のみを付与</li>
+                                <li><strong>パスワード管理</strong>: 本番環境では環境変数やシークレット管理システムを使用</li>
                                 <li><strong>エラー表示</strong>: 本番環境ではDEBUGをfalseに設定</li>
                                 <li><strong>ファイル権限</strong>: 設定ファイルの読み取り権限を適切に設定</li>
-                                <li><strong>定数使用</strong>: 直接的な文字列埋め込みを避ける</li>
                             </ul>
                         </div>
                     </div>
@@ -627,7 +653,7 @@ if ($connection_test['status'] === 'success') {
                         <h6>動作確認</h6>
                         <ol>
                             <li><strong>ファイル保存</strong>: database_test.phpを保存</li>
-                            <li><strong>ブラウザアクセス</strong>: http://localhost:8080/user-management/database_test.php</li>
+                            <li><strong>ブラウザアクセス</strong>: http://localhost/user-management/database_test.php</li>
                             <li><strong>接続確認</strong>: データベース接続状態を確認</li>
                             <li><strong>データ表示確認</strong>: テストデータが表示されることを確認</li>
                             <li><strong>検索機能テスト</strong>: 検索フォームでの絞り込み動作を確認</li>
