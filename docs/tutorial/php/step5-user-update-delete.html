@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHP実践チュートリアル 第5章 - ユーザー情報更新・削除機能</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ベースレイアウト */
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+
+        /* ナビゲーション - PHP/JavaScript系テーマ */
+        .navbar {
+            background-color: #ffc107;
+        }
+
+        .navbar-brand, .navbar-nav .nav-link {
+            color: #212529 !important;
+            font-weight: 500;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #495057 !important;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+            background-color: white;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .sidebar .nav-link {
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #fffde7;
+            color: #ffc107;
+        }
+
+        .sidebar .nav-link.active {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+        }
+
+        /* タイトル */
+        .chapter-title {
+            color: #ffc107;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #ffc107;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title {
+            color: #ffca28;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* コンテンツボックス */
+        .quiz-container {
+            background-color: #fffde7;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .highlight {
+            background-color: #ffecb3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ff9800;
+        }
+
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
+        }
+
+        .info {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #2196f3;
+        }
+
+        /* ナビゲーション */
+        .nav-link.active {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+        }
+
+        /* コードブロック */
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">PHP 実践チュートリアル</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://fcircle-biz.github.io/tech_docs/">ホーム</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">チュートリアル概要</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#section5-1">5.1 編集フォーム実装</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section5-2">5.2 UPDATE処理</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section5-3">5.3 削除機能実装</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section5-4">5.4 データ整合性確保</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section5-5">5.5 操作履歴・監査</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#quiz">理解度確認</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第5章: ユーザー情報更新・削除機能</h1>
+                </div>
+
+                <div id="chapter5">
+                    <!-- 章タイトル -->
+                    <h2 class="chapter-title">CRUD操作の完成：UPDATE・DELETE機能の実装</h2>
+                    
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li><strong>UPDATE文</strong>を使用したデータ更新処理</li>
+                            <li><strong>編集フォーム</strong>の実装と既存データの表示</li>
+                            <li><strong>DELETE文</strong>による安全なデータ削除</li>
+                            <li><strong>データ整合性</strong>の確保と制約処理</li>
+                            <li><strong>ユーザビリティ</strong>を考慮した確認ダイアログ</li>
+                        </ul>
+                    </div>
+
+                    <!-- セクション5.1 -->
+                    <h3 class="section-title" id="section5-1">5.1 ユーザー編集フォームの実装</h3>
+                    <p>既存ユーザーデータを読み込み、編集可能なフォームとして表示する機能を実装します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 5-1: ユーザー編集ページの作成</h5>
+                        <p>データの事前読み込みと編集フォームの実装を行います。</p>
+                        
+                        <h6>users/edit.php作成</h6>
+                        <pre><code>&lt;?php
+require_once '../config/database.php';
+require_once '../includes/UserManager.php';
+require_once '../includes/validation.php';
+
+// ユーザーID取得
+$user_id = (int)($_GET['id'] ?? 0);
+
+if ($user_id <= 0) {
+    header('Location: list.php');
+    exit;
+}
+
+// エラーメッセージとフォームデータの初期化
+$errors = [];
+$success_message = '';
+
+try {
+    $userManager = new UserManager();
+    
+    // 既存ユーザーデータ取得
+    $user = $userManager->getUserById($user_id);
+    
+    if (!$user) {
+        header('Location: list.php');
+        exit;
+    }
+    
+    // フォームデータの初期化（既存データで初期化）
+    $form_data = [
+        'username' => $user['username'],
+        'email' => $user['email'],
+        'full_name' => $user['full_name'],
+        'birth_date' => $user['birth_date'] ?? ''
+    ];
+    
+} catch (Exception $e) {
+    error_log("User edit initialization error: " . $e->getMessage());
+    header('Location: list.php');
+    exit;
+}
+
+// POST送信時の処理
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // フォームデータの取得とサニタイズ
+    $form_data['username'] = trim($_POST['username'] ?? '');
+    $form_data['email'] = trim($_POST['email'] ?? '');
+    $form_data['full_name'] = trim($_POST['full_name'] ?? '');
+    $form_data['birth_date'] = trim($_POST['birth_date'] ?? '');
+    
+    // バリデーション実行
+    $errors = UserValidator::validate($form_data);
+    
+    // 重複チェック（自分以外）
+    if (empty($errors)) {
+        try {
+            $duplicates = $userManager->checkDuplicatesExcludingUser($user_id, $form_data['username'], $form_data['email']);
+            if (!empty($duplicates)) {
+                $errors = array_merge($errors, $duplicates);
+            }
+        } catch (Exception $e) {
+            $errors['system'] = 'データベースエラーが発生しました。';
+            error_log("Duplicate check error: " . $e->getMessage());
+        }
+    }
+    
+    // エラーがない場合、データベースを更新
+    if (empty($errors)) {
+        try {
+            $result = $userManager->updateUser($user_id, $form_data);
+            
+            if ($result['success']) {
+                $success_message = $result['message'];
+                // 成功時は最新データを再読み込み
+                $user = $userManager->getUserById($user_id);
+            } else {
+                $errors['system'] = $result['message'];
+            }
+        } catch (Exception $e) {
+            $errors['system'] = 'システムエラーが発生しました。もう一度お試しください。';
+            error_log("User update error: " . $e->getMessage());
+        }
+    }
+}
+?&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;ユーザー編集 - &lt;?php echo htmlspecialchars($user['full_name']); ?&gt;&lt;/title&gt;
+    &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
+    &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;nav class="navbar navbar-expand-lg navbar-warning bg-warning"&gt;
+        &lt;div class="container"&gt;
+            &lt;a class="navbar-brand" href="../index.php"&gt;ユーザー管理システム&lt;/a&gt;
+            &lt;div class="navbar-nav ms-auto"&gt;
+                &lt;a class="nav-link" href="list.php"&gt;ユーザー一覧&lt;/a&gt;
+                &lt;a class="nav-link" href="create.php"&gt;新規登録&lt;/a&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/nav&gt;
+
+    &lt;div class="container mt-4"&gt;
+        &lt;!-- パンくずリスト --&gt;
+        &lt;nav aria-label="breadcrumb"&gt;
+            &lt;ol class="breadcrumb"&gt;
+                &lt;li class="breadcrumb-item"&gt;&lt;a href="../index.php"&gt;ホーム&lt;/a&gt;&lt;/li&gt;
+                &lt;li class="breadcrumb-item"&gt;&lt;a href="list.php"&gt;ユーザー一覧&lt;/a&gt;&lt;/li&gt;
+                &lt;li class="breadcrumb-item"&gt;&lt;a href="detail.php?id=&lt;?php echo $user['id']; ?&gt;"&gt;&lt;?php echo htmlspecialchars($user['full_name']); ?&gt;&lt;/a&gt;&lt;/li&gt;
+                &lt;li class="breadcrumb-item active" aria-current="page"&gt;編集&lt;/li&gt;
+            &lt;/ol&gt;
+        &lt;/nav&gt;
+
+        &lt;div class="row justify-content-center"&gt;
+            &lt;div class="col-md-8 col-lg-6"&gt;
+                &lt;div class="card"&gt;
+                    &lt;div class="card-header bg-warning"&gt;
+                        &lt;h3 class="card-title mb-0"&gt;
+                            &lt;i class="bi bi-pencil"&gt;&lt;/i&gt; ユーザー情報編集
+                        &lt;/h3&gt;
+                        &lt;small class="text-muted"&gt;ユーザーID: &lt;?php echo $user['id']; ?&gt;&lt;/small&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-body"&gt;
+                        &lt;!-- 成功メッセージ --&gt;
+                        &lt;?php if ($success_message): ?&gt;
+                            &lt;div class="alert alert-success alert-dismissible fade show" role="alert"&gt;
+                                &lt;i class="bi bi-check-circle"&gt;&lt;/i&gt; &lt;strong&gt;更新完了！&lt;/strong&gt; &lt;?php echo htmlspecialchars($success_message); ?&gt;
+                                &lt;button type="button" class="btn-close" data-bs-dismiss="alert"&gt;&lt;/button&gt;
+                            &lt;/div&gt;
+                        &lt;?php endif; ?&gt;
+
+                        &lt;!-- システムエラーメッセージ --&gt;
+                        &lt;?php if (isset($errors['system'])): ?&gt;
+                            &lt;div class="alert alert-danger" role="alert"&gt;
+                                &lt;i class="bi bi-exclamation-triangle"&gt;&lt;/i&gt; &lt;?php echo htmlspecialchars($errors['system']); ?&gt;
+                            &lt;/div&gt;
+                        &lt;?php endif; ?&gt;
+
+                        &lt;form method="POST" action="" novalidate&gt;
+                            &lt;!-- ユーザー名 --&gt;
+                            &lt;div class="mb-3"&gt;
+                                &lt;label for="username" class="form-label"&gt;
+                                    ユーザー名 &lt;span class="text-danger"&gt;*&lt;/span&gt;
+                                &lt;/label&gt;
+                                &lt;input type="text" 
+                                       class="form-control &lt;?php echo isset($errors['username']) ? 'is-invalid' : ''; ?&gt;" 
+                                       id="username" 
+                                       name="username" 
+                                       value="&lt;?php echo htmlspecialchars($form_data['username']); ?&gt;"
+                                       required&gt;
+                                &lt;?php if (isset($errors['username'])): ?&gt;
+                                    &lt;div class="invalid-feedback"&gt;
+                                        &lt;?php echo htmlspecialchars($errors['username']); ?&gt;
+                                    &lt;/div&gt;
+                                &lt;?php endif; ?&gt;
+                            &lt;/div&gt;
+
+                            &lt;!-- メールアドレス --&gt;
+                            &lt;div class="mb-3"&gt;
+                                &lt;label for="email" class="form-label"&gt;
+                                    メールアドレス &lt;span class="text-danger"&gt;*&lt;/span&gt;
+                                &lt;/label&gt;
+                                &lt;input type="email" 
+                                       class="form-control &lt;?php echo isset($errors['email']) ? 'is-invalid' : ''; ?&gt;" 
+                                       id="email" 
+                                       name="email" 
+                                       value="&lt;?php echo htmlspecialchars($form_data['email']); ?&gt;"
+                                       required&gt;
+                                &lt;?php if (isset($errors['email'])): ?&gt;
+                                    &lt;div class="invalid-feedback"&gt;
+                                        &lt;?php echo htmlspecialchars($errors['email']); ?&gt;
+                                    &lt;/div&gt;
+                                &lt;?php endif; ?&gt;
+                            &lt;/div&gt;
+
+                            &lt;!-- フルネーム --&gt;
+                            &lt;div class="mb-3"&gt;
+                                &lt;label for="full_name" class="form-label"&gt;
+                                    フルネーム &lt;span class="text-danger"&gt;*&lt;/span&gt;
+                                &lt;/label&gt;
+                                &lt;input type="text" 
+                                       class="form-control &lt;?php echo isset($errors['full_name']) ? 'is-invalid' : ''; ?&gt;" 
+                                       id="full_name" 
+                                       name="full_name" 
+                                       value="&lt;?php echo htmlspecialchars($form_data['full_name']); ?&gt;"
+                                       required&gt;
+                                &lt;?php if (isset($errors['full_name'])): ?&gt;
+                                    &lt;div class="invalid-feedback"&gt;
+                                        &lt;?php echo htmlspecialchars($errors['full_name']); ?&gt;
+                                    &lt;/div&gt;
+                                &lt;?php endif; ?&gt;
+                            &lt;/div&gt;
+
+                            &lt;!-- 生年月日 --&gt;
+                            &lt;div class="mb-3"&gt;
+                                &lt;label for="birth_date" class="form-label"&gt;生年月日（省略可能）&lt;/label&gt;
+                                &lt;input type="date" 
+                                       class="form-control &lt;?php echo isset($errors['birth_date']) ? 'is-invalid' : ''; ?&gt;" 
+                                       id="birth_date" 
+                                       name="birth_date" 
+                                       value="&lt;?php echo htmlspecialchars($form_data['birth_date']); ?&gt;"
+                                       max="&lt;?php echo date('Y-m-d'); ?&gt;"
+                                       min="1900-01-01"&gt;
+                                &lt;?php if (isset($errors['birth_date'])): ?&gt;
+                                    &lt;div class="invalid-feedback"&gt;
+                                        &lt;?php echo htmlspecialchars($errors['birth_date']); ?&gt;
+                                    &lt;/div&gt;
+                                &lt;?php endif; ?&gt;
+                            &lt;/div&gt;
+
+                            &lt;!-- 更新情報表示 --&gt;
+                            &lt;div class="alert alert-info"&gt;
+                                &lt;small&gt;
+                                    &lt;i class="bi bi-info-circle"&gt;&lt;/i&gt; 
+                                    最終更新: &lt;?php echo date('Y年m月d日 H:i', strtotime($user['updated_at'])); ?&gt; 
+                                    &lt;br&gt;
+                                    登録日: &lt;?php echo date('Y年m月d日 H:i', strtotime($user['created_at'])); ?&gt;
+                                &lt;/small&gt;
+                            &lt;/div&gt;
+
+                            &lt;div class="d-grid gap-2"&gt;
+                                &lt;button type="submit" class="btn btn-warning btn-lg"&gt;
+                                    &lt;i class="bi bi-check-lg"&gt;&lt;/i&gt; 変更を保存
+                                &lt;/button&gt;
+                                &lt;div class="btn-group" role="group"&gt;
+                                    &lt;a href="detail.php?id=&lt;?php echo $user['id']; ?&gt;" class="btn btn-outline-primary"&gt;
+                                        &lt;i class="bi bi-eye"&gt;&lt;/i&gt; 詳細表示
+                                    &lt;/a&gt;
+                                    &lt;a href="list.php" class="btn btn-outline-secondary"&gt;
+                                        &lt;i class="bi bi-arrow-left"&gt;&lt;/i&gt; 一覧に戻る
+                                    &lt;/a&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/form&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+                        <h6>UserManagerクラスへの追加メソッド</h6>
+                        <p>以下のメソッドをUserManager.phpに追加：</p>
+                        <pre><code>/**
+ * ユーザー情報更新
+ * @param int $user_id
+ * @param array $user_data
+ * @return array
+ */
+public function updateUser($user_id, $user_data) {
+    try {
+        // トランザクション開始
+        $this->pdo->beginTransaction();
+        
+        // 更新SQL実行
+        $sql = "UPDATE users SET 
+                username = :username,
+                email = :email,
+                full_name = :full_name,
+                birth_date = :birth_date,
+                updated_at = CURRENT_TIMESTAMP
+                WHERE id = :user_id";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $result = $stmt->execute([
+            'username' => $user_data['username'],
+            'email' => $user_data['email'],
+            'full_name' => $user_data['full_name'],
+            'birth_date' => !empty($user_data['birth_date']) ? $user_data['birth_date'] : null,
+            'user_id' => $user_id
+        ]);
+        
+        if ($result && $stmt->rowCount() > 0) {
+            $this->pdo->commit();
+            return [
+                'success' => true,
+                'message' => "ユーザー「{$user_data['full_name']}」の情報を更新しました。"
+            ];
+        } else {
+            $this->pdo->rollBack();
+            return [
+                'success' => false,
+                'message' => '更新するデータがありませんでした。'
+            ];
+        }
+        
+    } catch (PDOException $e) {
+        $this->pdo->rollBack();
+        error_log("User update error: " . $e->getMessage());
+        
+        return [
+            'success' => false,
+            'message' => 'データベースエラーが発生しました。'
+        ];
+    }
+}
+
+/**
+ * 重複チェック（特定ユーザー除外）
+ * @param int $exclude_user_id
+ * @param string $username
+ * @param string $email
+ * @return array
+ */
+public function checkDuplicatesExcludingUser($exclude_user_id, $username, $email) {
+    $duplicates = [];
+    
+    // ユーザー名重複チェック
+    $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM users WHERE username = :username AND id != :user_id");
+    $stmt->execute(['username' => $username, 'user_id' => $exclude_user_id]);
+    if ($stmt->fetchColumn() > 0) {
+        $duplicates['username'] = 'このユーザー名は既に他のユーザーが使用しています。';
+    }
+    
+    // メールアドレス重複チェック
+    $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM users WHERE email = :email AND id != :user_id");
+    $stmt->execute(['email' => $email, 'user_id' => $exclude_user_id]);
+    if ($stmt->fetchColumn() > 0) {
+        $duplicates['email'] = 'このメールアドレスは既に他のユーザーが登録しています。';
+    }
+    
+    return $duplicates;
+}</code></pre>
+
+                        <div class="info">
+                            <h6>編集フォームの設計ポイント</h6>
+                            <ul>
+                                <li><strong>データ事前読み込み</strong>: 既存データをフォームに表示</li>
+                                <li><strong>重複チェック改良</strong>: 自分以外との重複をチェック</li>
+                                <li><strong>更新日時表示</strong>: 最後の変更履歴を表示</li>
+                                <li><strong>ナビゲーション強化</strong>: 詳細画面・一覧への導線</li>
+                                <li><strong>トランザクション</strong>: 更新の原子性を保証</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- セクション5.2 -->
+                    <h3 class="section-title" id="section5-2">5.2 UPDATE処理の最適化と検証</h3>
+                    <p>効率的なUPDATE処理と変更検知機能を実装し、不要な処理を避けます。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 5-2: 差分検知による最適化</h5>
+                        <p>変更されたフィールドのみを更新する効率的なUPDATE処理を実装します。</p>
+                        
+                        <h6>最適化されたUpdateメソッド</h6>
+                        <pre><code>/**
+ * 効率的なユーザー情報更新（差分検知）
+ * @param int $user_id
+ * @param array $new_data
+ * @return array
+ */
+public function updateUserOptimized($user_id, $new_data) {
+    try {
+        // 現在のデータを取得
+        $current_user = $this->getUserById($user_id);
+        if (!$current_user) {
+            return ['success' => false, 'message' => 'ユーザーが見つかりませんでした。'];
+        }
+        
+        // 変更フィールドを検出
+        $changes = [];
+        $update_fields = [];
+        $params = ['user_id' => $user_id];
+        
+        // 各フィールドの変更をチェック
+        if ($current_user['username'] !== $new_data['username']) {
+            $changes['username'] = [
+                'old' => $current_user['username'],
+                'new' => $new_data['username']
+            ];
+            $update_fields[] = 'username = :username';
+            $params['username'] = $new_data['username'];
+        }
+        
+        if ($current_user['email'] !== $new_data['email']) {
+            $changes['email'] = [
+                'old' => $current_user['email'],
+                'new' => $new_data['email']
+            ];
+            $update_fields[] = 'email = :email';
+            $params['email'] = $new_data['email'];
+        }
+        
+        if ($current_user['full_name'] !== $new_data['full_name']) {
+            $changes['full_name'] = [
+                'old' => $current_user['full_name'],
+                'new' => $new_data['full_name']
+            ];
+            $update_fields[] = 'full_name = :full_name';
+            $params['full_name'] = $new_data['full_name'];
+        }
+        
+        $new_birth_date = !empty($new_data['birth_date']) ? $new_data['birth_date'] : null;
+        if ($current_user['birth_date'] !== $new_birth_date) {
+            $changes['birth_date'] = [
+                'old' => $current_user['birth_date'],
+                'new' => $new_birth_date
+            ];
+            $update_fields[] = 'birth_date = :birth_date';
+            $params['birth_date'] = $new_birth_date;
+        }
+        
+        // 変更がない場合
+        if (empty($update_fields)) {
+            return [
+                'success' => true,
+                'message' => '変更はありませんでした。',
+                'changes' => []
+            ];
+        }
+        
+        // 変更ログを記録（オプション）
+        $this->logUserChanges($user_id, $changes);
+        
+        // 動的UPDATE文を構築
+        $sql = "UPDATE users SET " . implode(', ', $update_fields) . ", updated_at = CURRENT_TIMESTAMP WHERE id = :user_id";
+        
+        $this->pdo->beginTransaction();
+        $stmt = $this->pdo->prepare($sql);
+        $result = $stmt->execute($params);
+        
+        if ($result) {
+            $this->pdo->commit();
+            return [
+                'success' => true,
+                'message' => "ユーザー情報を更新しました（" . count($changes) . "項目変更）。",
+                'changes' => $changes
+            ];
+        } else {
+            $this->pdo->rollBack();
+            return ['success' => false, 'message' => '更新に失敗しました。'];
+        }
+        
+    } catch (PDOException $e) {
+        $this->pdo->rollBack();
+        error_log("Optimized user update error: " . $e->getMessage());
+        return ['success' => false, 'message' => 'システムエラーが発生しました。'];
+    }
+}
+
+/**
+ * ユーザー変更ログの記録
+ * @param int $user_id
+ * @param array $changes
+ */
+private function logUserChanges($user_id, $changes) {
+    try {
+        foreach ($changes as $field => $change) {
+            $sql = "INSERT INTO user_change_log (user_id, field_name, old_value, new_value, changed_at) 
+                    VALUES (:user_id, :field_name, :old_value, :new_value, CURRENT_TIMESTAMP)";
+            
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([
+                'user_id' => $user_id,
+                'field_name' => $field,
+                'old_value' => $change['old'],
+                'new_value' => $change['new']
+            ]);
+        }
+    } catch (PDOException $e) {
+        error_log("Change log error: " . $e->getMessage());
+        // ログ記録の失敗は主処理に影響させない
+    }
+}</code></pre>
+
+                        <div class="highlight">
+                            <h6>最適化の効果</h6>
+                            <ul>
+                                <li><strong>効率性</strong>: 変更されたフィールドのみ更新</li>
+                                <li><strong>変更履歴</strong>: 何が変更されたかを記録</li>
+                                <li><strong>動的SQL</strong>: 必要な項目のみのUPDATE文生成</li>
+                                <li><strong>監査ログ</strong>: セキュリティとトレーサビリティ</li>
+                                <li><strong>パフォーマンス</strong>: 無駄な処理の削減</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- セクション5.3 -->
+                    <h3 class="section-title" id="section5-3">5.3 安全なユーザー削除機能の実装</h3>
+                    <p>データ整合性を保ちながら安全にユーザーを削除する機能を実装します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 5-3: ユーザー削除ページの作成</h5>
+                        <p>確認ダイアログと安全な削除処理を実装します。</p>
+                        
+                        <h6>users/delete.php作成</h6>
+                        <pre><code>&lt;?php
+require_once '../config/database.php';
+require_once '../includes/UserManager.php';
+
+// ユーザーID取得
+$user_id = (int)($_GET['id'] ?? 0);
+
+if ($user_id <= 0) {
+    header('Location: list.php');
+    exit;
+}
+
+$success_message = '';
+$error_message = '';
+
+try {
+    $userManager = new UserManager();
+    
+    // 削除対象ユーザー取得
+    $user = $userManager->getUserById($user_id);
+    
+    if (!$user) {
+        header('Location: list.php');
+        exit;
+    }
+    
+} catch (Exception $e) {
+    error_log("User delete initialization error: " . $e->getMessage());
+    header('Location: list.php');
+    exit;
+}
+
+// POST送信時の削除処理
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $confirm = $_POST['confirm'] ?? '';
+    
+    if ($confirm === 'DELETE') {
+        try {
+            $result = $userManager->deleteUser($user_id);
+            
+            if ($result['success']) {
+                // 削除成功時はリダイレクト
+                session_start();
+                $_SESSION['delete_message'] = $result['message'];
+                header('Location: list.php');
+                exit;
+            } else {
+                $error_message = $result['message'];
+            }
+        } catch (Exception $e) {
+            $error_message = 'システムエラーが発生しました。';
+            error_log("User delete error: " . $e->getMessage());
+        }
+    } else {
+        $error_message = '確認文字列が正しくありません。';
+    }
+}
+?&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;ユーザー削除 - &lt;?php echo htmlspecialchars($user['full_name']); ?&gt;&lt;/title&gt;
+    &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
+    &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;nav class="navbar navbar-expand-lg navbar-warning bg-warning"&gt;
+        &lt;div class="container"&gt;
+            &lt;a class="navbar-brand" href="../index.php"&gt;ユーザー管理システム&lt;/a&gt;
+            &lt;div class="navbar-nav ms-auto"&gt;
+                &lt;a class="nav-link" href="list.php"&gt;ユーザー一覧&lt;/a&gt;
+                &lt;a class="nav-link" href="create.php"&gt;新規登録&lt;/a&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/nav&gt;
+
+    &lt;div class="container mt-4"&gt;
+        &lt;div class="row justify-content-center"&gt;
+            &lt;div class="col-md-8 col-lg-6"&gt;
+                &lt;div class="card border-danger"&gt;
+                    &lt;div class="card-header bg-danger text-white"&gt;
+                        &lt;h3 class="card-title mb-0"&gt;
+                            &lt;i class="bi bi-exclamation-triangle"&gt;&lt;/i&gt; ユーザー削除の確認
+                        &lt;/h3&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-body"&gt;
+                        &lt;!-- エラーメッセージ --&gt;
+                        &lt;?php if ($error_message): ?&gt;
+                            &lt;div class="alert alert-danger" role="alert"&gt;
+                                &lt;i class="bi bi-x-circle"&gt;&lt;/i&gt; &lt;?php echo htmlspecialchars($error_message); ?&gt;
+                            &lt;/div&gt;
+                        &lt;?php endif; ?&gt;
+
+                        &lt;div class="alert alert-warning" role="alert"&gt;
+                            &lt;h5&gt;&lt;i class="bi bi-exclamation-triangle"&gt;&lt;/i&gt; 警告&lt;/h5&gt;
+                            &lt;p&gt;以下のユーザーを&lt;strong&gt;完全に削除&lt;/strong&gt;します。この操作は&lt;strong class="text-danger"&gt;元に戻すことができません&lt;/strong&gt;。&lt;/p&gt;
+                        &lt;/div&gt;
+
+                        &lt;!-- 削除対象ユーザー情報 --&gt;
+                        &lt;div class="card mb-4"&gt;
+                            &lt;div class="card-body"&gt;
+                                &lt;div class="d-flex align-items-center"&gt;
+                                    &lt;div class="avatar-circle bg-danger text-white me-3"&gt;
+                                        &lt;?php echo mb_substr($user['full_name'], 0, 1); ?&gt;
+                                    &lt;/div&gt;
+                                    &lt;div&gt;
+                                        &lt;h5 class="mb-1"&gt;&lt;?php echo htmlspecialchars($user['full_name']); ?&gt;&lt;/h5&gt;
+                                        &lt;p class="mb-1"&gt;&lt;strong&gt;ユーザー名:&lt;/strong&gt; &lt;?php echo htmlspecialchars($user['username']); ?&gt;&lt;/p&gt;
+                                        &lt;p class="mb-1"&gt;&lt;strong&gt;メール:&lt;/strong&gt; &lt;?php echo htmlspecialchars($user['email']); ?&gt;&lt;/p&gt;
+                                        &lt;small class="text-muted"&gt;
+                                            登録日: &lt;?php echo date('Y年m月d日', strtotime($user['created_at'])); ?&gt;
+                                        &lt;/small&gt;
+                                    &lt;/div&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+
+                        &lt;form method="POST" action=""&gt;
+                            &lt;div class="mb-3"&gt;
+                                &lt;label for="confirm" class="form-label"&gt;
+                                    削除を実行するには、下の入力欄に &lt;code&gt;DELETE&lt;/code&gt; と入力してください
+                                &lt;/label&gt;
+                                &lt;input type="text" 
+                                       class="form-control" 
+                                       id="confirm" 
+                                       name="confirm" 
+                                       placeholder="DELETE と入力"
+                                       required
+                                       autocomplete="off"&gt;
+                            &lt;/div&gt;
+
+                            &lt;div class="d-grid gap-2"&gt;
+                                &lt;button type="submit" class="btn btn-danger btn-lg" id="deleteButton" disabled&gt;
+                                    &lt;i class="bi bi-trash"&gt;&lt;/i&gt; ユーザーを削除する
+                                &lt;/button&gt;
+                                &lt;div class="btn-group" role="group"&gt;
+                                    &lt;a href="detail.php?id=&lt;?php echo $user['id']; ?&gt;" class="btn btn-outline-primary"&gt;
+                                        &lt;i class="bi bi-eye"&gt;&lt;/i&gt; 詳細表示
+                                    &lt;/a&gt;
+                                    &lt;a href="edit.php?id=&lt;?php echo $user['id']; ?&gt;" class="btn btn-outline-warning"&gt;
+                                        &lt;i class="bi bi-pencil"&gt;&lt;/i&gt; 編集
+                                    &lt;/a&gt;
+                                    &lt;a href="list.php" class="btn btn-outline-secondary"&gt;
+                                        &lt;i class="bi bi-arrow-left"&gt;&lt;/i&gt; 一覧に戻る
+                                    &lt;/a&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/form&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;style&gt;
+    .avatar-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.5em;
+    }
+    &lt;/style&gt;
+
+    &lt;script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"&gt;&lt;/script&gt;
+    &lt;script&gt;
+    // 確認文字列の入力監視
+    document.getElementById('confirm').addEventListener('input', function() {
+        const deleteButton = document.getElementById('deleteButton');
+        if (this.value === 'DELETE') {
+            deleteButton.disabled = false;
+            deleteButton.classList.remove('btn-secondary');
+            deleteButton.classList.add('btn-danger');
+        } else {
+            deleteButton.disabled = true;
+            deleteButton.classList.remove('btn-danger');
+            deleteButton.classList.add('btn-secondary');
+        }
+    });
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+                        <h6>削除機能のUserManagerメソッド</h6>
+                        <pre><code>/**
+ * ユーザー削除
+ * @param int $user_id
+ * @return array
+ */
+public function deleteUser($user_id) {
+    try {
+        // 削除前にユーザー情報を取得（ログ用）
+        $user = $this->getUserById($user_id);
+        if (!$user) {
+            return ['success' => false, 'message' => 'ユーザーが見つかりませんでした。'];
+        }
+        
+        $this->pdo->beginTransaction();
+        
+        // 関連データの削除（変更ログなど）
+        $this->pdo->prepare("DELETE FROM user_change_log WHERE user_id = ?")->execute([$user_id]);
+        
+        // ユーザー削除
+        $stmt = $this->pdo->prepare("DELETE FROM users WHERE id = ?");
+        $result = $stmt->execute([$user_id]);
+        
+        if ($result && $stmt->rowCount() > 0) {
+            // 削除ログを記録
+            $this->logUserDeletion($user);
+            
+            $this->pdo->commit();
+            return [
+                'success' => true,
+                'message' => "ユーザー「{$user['full_name']}」を削除しました。"
+            ];
+        } else {
+            $this->pdo->rollBack();
+            return ['success' => false, 'message' => '削除対象のユーザーが見つかりませんでした。'];
+        }
+        
+    } catch (PDOException $e) {
+        $this->pdo->rollBack();
+        error_log("User deletion error: " . $e->getMessage());
+        return ['success' => false, 'message' => 'データベースエラーが発生しました。'];
+    }
+}
+
+/**
+ * ユーザー削除ログの記録
+ * @param array $user
+ */
+private function logUserDeletion($user) {
+    try {
+        $sql = "INSERT INTO user_deletion_log (deleted_user_id, username, email, full_name, deleted_at, deletion_reason) 
+                VALUES (:user_id, :username, :email, :full_name, CURRENT_TIMESTAMP, :reason)";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'user_id' => $user['id'],
+            'username' => $user['username'],
+            'email' => $user['email'],
+            'full_name' => $user['full_name'],
+            'reason' => 'Manual deletion via admin interface'
+        ]);
+    } catch (PDOException $e) {
+        error_log("Deletion log error: " . $e->getMessage());
+    }
+}</code></pre>
+                    </div>
+
+                    <!-- セクション5.4 -->
+                    <h3 class="section-title" id="section5-4">5.4 データ整合性の確保と制約処理</h3>
+                    <p>外部キー制約や参照整合性を考慮した安全なCRUD処理を実装します。</p>
+
+                    <div class="warning">
+                        <h5>データ整合性に関する重要な考慮事項</h5>
+                        <ul>
+                            <li><strong>外部キー制約</strong>: 関連テーブルとの整合性確保</li>
+                            <li><strong>トランザクション</strong>: 複数テーブル操作の原子性</li>
+                            <li><strong>楽観的排他制御</strong>: 同時更新の競合回避</li>
+                            <li><strong>カスケード削除</strong>: 関連データの自動削除設定</li>
+                            <li><strong>ソフト削除</strong>: 物理削除ではなく論理削除の検討</li>
+                        </ul>
+                    </div>
+
+                    <!-- セクション5.5 -->
+                    <h3 class="section-title" id="section5-5">5.5 操作履歴・監査機能の実装</h3>
+                    <p>ユーザーの操作履歴を記録し、監査可能なシステムを構築します。</p>
+
+                    <div class="info">
+                        <h5>監査ログテーブルの設計例</h5>
+                        <pre><code>-- 変更履歴テーブル
+CREATE TABLE user_change_log (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    field_name VARCHAR(50) NOT NULL,
+    old_value TEXT,
+    new_value TEXT,
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    changed_by VARCHAR(50) -- 将来的な認証機能用
+);
+
+-- 削除履歴テーブル
+CREATE TABLE user_deletion_log (
+    id SERIAL PRIMARY KEY,
+    deleted_user_id INTEGER NOT NULL,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    full_name VARCHAR(100) NOT NULL,
+    deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deletion_reason TEXT,
+    deleted_by VARCHAR(50) -- 将来的な認証機能用
+);</code></pre>
+                    </div>
+
+                    <!-- 理解度確認（必須） -->
+                    <div class="quiz-container" id="quiz">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>データベースのUPDATE文で更新日時を現在時刻に設定するPostgreSQL関数は？</li>
+                            <li>トランザクションを開始するPDOメソッドは？</li>
+                            <li>UPDATE文で影響を受けた行数を取得するPDOメソッドは？</li>
+                            <li>Bootstrap 5で危険な操作を示すボタンのクラスは？</li>
+                            <li>フォーム送信時に確認ダイアログを表示するJavaScriptイベントは？</li>
+                            <li>外部キー制約でCASCADE DELETEを設定する目的は？</li>
+                        </ol>
+                        
+                        <details class="mt-3">
+                            <summary>解答を確認</summary>
+                            <ol>
+                                <li>CURRENT_TIMESTAMP</li>
+                                <li>beginTransaction()</li>
+                                <li>rowCount()</li>
+                                <li>btn-danger</li>
+                                <li>onsubmit</li>
+                                <li>参照されるデータが削除された時に関連データも自動削除する</li>
+                            </ol>
+                        </details>
+                    </div>
+
+                    <!-- 章間ナビゲーション（必須） -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="step4-user-list-detail.html" class="btn btn-secondary">← 前の章: ユーザー一覧・詳細表示機能</a>
+                        <a href="step6-testing-debug.html" class="btn btn-warning">次の章: 動作確認とデバッグ手法 →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // スムーススクロール
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // サイドバーのアクティブリンク更新
+        window.addEventListener('scroll', function() {
+            let current = '';
+            const sections = document.querySelectorAll('h3[id], div[id]');
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHP実践チュートリアル 第4章 - ユーザー一覧・詳細表示機能</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ベースレイアウト */
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+
+        /* ナビゲーション - PHP/JavaScript系テーマ */
+        .navbar {
+            background-color: #ffc107;
+        }
+
+        .navbar-brand, .navbar-nav .nav-link {
+            color: #212529 !important;
+            font-weight: 500;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #495057 !important;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+            background-color: white;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .sidebar .nav-link {
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #fffde7;
+            color: #ffc107;
+        }
+
+        .sidebar .nav-link.active {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+        }
+
+        /* タイトル */
+        .chapter-title {
+            color: #ffc107;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #ffc107;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title {
+            color: #ffca28;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* コンテンツボックス */
+        .quiz-container {
+            background-color: #fffde7;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .highlight {
+            background-color: #ffecb3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ff9800;
+        }
+
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
+        }
+
+        .info {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #2196f3;
+        }
+
+        /* ナビゲーション */
+        .nav-link.active {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+        }
+
+        /* コードブロック */
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">PHP 実践チュートリアル</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://fcircle-bz.github.io/tech_docs/">ホーム</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">チュートリアル概要</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#section4-1">4.1 一覧表示機能</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section4-2">4.2 検索・フィルタ機能</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section4-3">4.3 ページネーション</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section4-4">4.4 詳細表示機能</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section4-5">4.5 UI/UX向上</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#quiz">理解度確認</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第4章: ユーザー一覧・詳細表示機能</h1>
+                </div>
+
+                <div id="chapter4">
+                    <!-- 章タイトル -->
+                    <h2 class="chapter-title">データ表示とナビゲーション機能の実装</h2>
+                    
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li><strong>SELECT文</strong>を使用したデータ取得とレコード表示</li>
+                            <li><strong>Bootstrap 5 Table</strong>による美しい一覧表示</li>
+                            <li><strong>検索・フィルタ機能</strong>の実装（LIKE句活用）</li>
+                            <li><strong>ページネーション</strong>による大量データの分割表示</li>
+                            <li><strong>詳細画面</strong>への遷移とデータ詳細表示</li>
+                        </ul>
+                    </div>
+
+                    <!-- セクション4.1 -->
+                    <h3 class="section-title" id="section4-1">4.1 ユーザー一覧表示機能の実装</h3>
+                    <p>データベースからユーザーデータを取得し、見やすいテーブル形式で一覧表示する機能を実装します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 4-1: 基本的なユーザー一覧ページの作成</h5>
+                        <p>Bootstrap 5を活用した美しいユーザー一覧表示機能を実装します。</p>
+                        
+                        <h6>users/list.php作成</h6>
+                        <pre><code>&lt;?php
+require_once '../config/database.php';
+require_once '../includes/UserManager.php';
+
+// ページネーション設定
+$page = max(1, (int)($_GET['page'] ?? 1));
+$per_page = 10;
+$offset = ($page - 1) * $per_page;
+
+// 検索キーワード
+$search = trim($_GET['search'] ?? '');
+
+try {
+    $userManager = new UserManager();
+    
+    // 検索の有無で処理分岐
+    if (!empty($search)) {
+        $users = $userManager->searchUsers($search);
+        $total_users = count($users);
+        // 検索結果をページネーション用に分割
+        $users = array_slice($users, $offset, $per_page);
+    } else {
+        $users = $userManager->getAllUsers($per_page, $offset);
+        $total_users = $userManager->getUserCount();
+    }
+    
+    // ページネーション計算
+    $total_pages = ceil($total_users / $per_page);
+    
+} catch (Exception $e) {
+    $error_message = 'データの取得中にエラーが発生しました。';
+    error_log("User list error: " . $e->getMessage());
+    $users = [];
+    $total_users = 0;
+    $total_pages = 0;
+}
+?&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;ユーザー一覧 - ユーザー管理システム&lt;/title&gt;
+    &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
+    &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;nav class="navbar navbar-expand-lg navbar-warning bg-warning"&gt;
+        &lt;div class="container"&gt;
+            &lt;a class="navbar-brand" href="../index.php"&gt;ユーザー管理システム&lt;/a&gt;
+            &lt;div class="navbar-nav ms-auto"&gt;
+                &lt;a class="nav-link active" href="list.php"&gt;ユーザー一覧&lt;/a&gt;
+                &lt;a class="nav-link" href="create.php"&gt;新規登録&lt;/a&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/nav&gt;
+
+    &lt;div class="container mt-4"&gt;
+        &lt;!-- ヘッダー部分 --&gt;
+        &lt;div class="row mb-4"&gt;
+            &lt;div class="col-md-6"&gt;
+                &lt;h2&gt;ユーザー一覧&lt;/h2&gt;
+                &lt;p class="text-muted"&gt;登録ユーザー数: &lt;span class="badge bg-warning text-dark"&gt;&lt;?php echo $total_users; ?&gt;&lt;/span&gt;人&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div class="col-md-6 text-end"&gt;
+                &lt;a href="create.php" class="btn btn-warning"&gt;
+                    &lt;i class="bi bi-person-plus"&gt;&lt;/i&gt; 新規ユーザー登録
+                &lt;/a&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;!-- 検索フォーム --&gt;
+        &lt;div class="row mb-4"&gt;
+            &lt;div class="col-md-8"&gt;
+                &lt;form method="GET" class="d-flex"&gt;
+                    &lt;input type="text" 
+                           class="form-control me-2" 
+                           name="search" 
+                           placeholder="名前、メールアドレス、ユーザー名で検索"
+                           value="&lt;?php echo htmlspecialchars($search); ?&gt;"&gt;
+                    &lt;button type="submit" class="btn btn-outline-warning"&gt;
+                        &lt;i class="bi bi-search"&gt;&lt;/i&gt; 検索
+                    &lt;/button&gt;
+                    &lt;?php if (!empty($search)): ?&gt;
+                        &lt;a href="list.php" class="btn btn-outline-secondary ms-2"&gt;
+                            &lt;i class="bi bi-x-circle"&gt;&lt;/i&gt; リセット
+                        &lt;/a&gt;
+                    &lt;?php endif; ?&gt;
+                &lt;/form&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;!-- エラーメッセージ --&gt;
+        &lt;?php if (isset($error_message)): ?&gt;
+            &lt;div class="alert alert-danger" role="alert"&gt;
+                &lt;i class="bi bi-exclamation-triangle"&gt;&lt;/i&gt; &lt;?php echo htmlspecialchars($error_message); ?&gt;
+            &lt;/div&gt;
+        &lt;?php endif; ?&gt;
+
+        &lt;!-- 検索結果メッセージ --&gt;
+        &lt;?php if (!empty($search)): ?&gt;
+            &lt;div class="alert alert-info" role="alert"&gt;
+                「&lt;strong&gt;&lt;?php echo htmlspecialchars($search); ?&gt;&lt;/strong&gt;」の検索結果: &lt;strong&gt;&lt;?php echo $total_users; ?&gt;&lt;/strong&gt;件
+            &lt;/div&gt;
+        &lt;?php endif; ?&gt;
+
+        &lt;!-- ユーザーテーブル --&gt;
+        &lt;div class="card"&gt;
+            &lt;div class="card-body p-0"&gt;
+                &lt;?php if (!empty($users)): ?&gt;
+                    &lt;div class="table-responsive"&gt;
+                        &lt;table class="table table-hover mb-0"&gt;
+                            &lt;thead class="table-warning"&gt;
+                                &lt;tr&gt;
+                                    &lt;th&gt;ID&lt;/th&gt;
+                                    &lt;th&gt;プロフィール&lt;/th&gt;
+                                    &lt;th&gt;メールアドレス&lt;/th&gt;
+                                    &lt;th&gt;生年月日&lt;/th&gt;
+                                    &lt;th&gt;登録日時&lt;/th&gt;
+                                    &lt;th&gt;操作&lt;/th&gt;
+                                &lt;/tr&gt;
+                            &lt;/thead&gt;
+                            &lt;tbody&gt;
+                                &lt;?php foreach ($users as $user): ?&gt;
+                                    &lt;tr&gt;
+                                        &lt;td&gt;
+                                            &lt;span class="badge bg-secondary"&gt;&lt;?php echo $user['id']; ?&gt;&lt;/span&gt;
+                                        &lt;/td&gt;
+                                        &lt;td&gt;
+                                            &lt;div class="d-flex align-items-center"&gt;
+                                                &lt;div class="avatar-circle bg-warning text-dark me-3"&gt;
+                                                    &lt;?php echo mb_substr($user['full_name'], 0, 1); ?&gt;
+                                                &lt;/div&gt;
+                                                &lt;div&gt;
+                                                    &lt;div class="fw-bold"&gt;&lt;?php echo htmlspecialchars($user['full_name']); ?&gt;&lt;/div&gt;
+                                                    &lt;small class="text-muted"&gt;@&lt;?php echo htmlspecialchars($user['username']); ?&gt;&lt;/small&gt;
+                                                &lt;/div&gt;
+                                            &lt;/div&gt;
+                                        &lt;/td&gt;
+                                        &lt;td&gt;&lt;?php echo htmlspecialchars($user['email']); ?&gt;&lt;/td&gt;
+                                        &lt;td&gt;
+                                            &lt;?php 
+                                            if ($user['birth_date']) {
+                                                $birth_date = new DateTime($user['birth_date']);
+                                                $today = new DateTime();
+                                                $age = $today->diff($birth_date)->y;
+                                                echo $birth_date->format('Y/m/d') . "&lt;br&gt;&lt;small class='text-muted'&gt;({$age}歳)&lt;/small&gt;";
+                                            } else {
+                                                echo '&lt;span class="text-muted"&gt;未設定&lt;/span&gt;';
+                                            }
+                                            ?&gt;
+                                        &lt;/td&gt;
+                                        &lt;td&gt;
+                                            &lt;?php 
+                                            $created_at = new DateTime($user['created_at']);
+                                            echo $created_at->format('Y/m/d H:i');
+                                            ?&gt;
+                                        &lt;/td&gt;
+                                        &lt;td&gt;
+                                            &lt;div class="btn-group btn-group-sm" role="group"&gt;
+                                                &lt;a href="detail.php?id=&lt;?php echo $user['id']; ?&gt;" 
+                                                   class="btn btn-outline-primary"
+                                                   title="詳細表示"&gt;
+                                                    &lt;i class="bi bi-eye"&gt;&lt;/i&gt;
+                                                &lt;/a&gt;
+                                                &lt;a href="edit.php?id=&lt;?php echo $user['id']; ?&gt;" 
+                                                   class="btn btn-outline-warning"
+                                                   title="編集"&gt;
+                                                    &lt;i class="bi bi-pencil"&gt;&lt;/i&gt;
+                                                &lt;/a&gt;
+                                                &lt;a href="delete.php?id=&lt;?php echo $user['id']; ?&gt;" 
+                                                   class="btn btn-outline-danger"
+                                                   title="削除"
+                                                   onclick="return confirm('本当に削除しますか？')"&gt;
+                                                    &lt;i class="bi bi-trash"&gt;&lt;/i&gt;
+                                                &lt;/a&gt;
+                                            &lt;/div&gt;
+                                        &lt;/td&gt;
+                                    &lt;/tr&gt;
+                                &lt;?php endforeach; ?&gt;
+                            &lt;/tbody&gt;
+                        &lt;/table&gt;
+                    &lt;/div&gt;
+                &lt;?php else: ?&gt;
+                    &lt;div class="text-center py-5"&gt;
+                        &lt;i class="bi bi-people display-1 text-muted"&gt;&lt;/i&gt;
+                        &lt;h4 class="mt-3 text-muted"&gt;ユーザーが見つかりませんでした&lt;/h4&gt;
+                        &lt;?php if (!empty($search)): ?&gt;
+                            &lt;p&gt;検索条件を変更してお試しください。&lt;/p&gt;
+                            &lt;a href="list.php" class="btn btn-warning"&gt;全ユーザーを表示&lt;/a&gt;
+                        &lt;?php else: ?&gt;
+                            &lt;p&gt;まだユーザーが登録されていません。&lt;/p&gt;
+                            &lt;a href="create.php" class="btn btn-warning"&gt;最初のユーザーを登録&lt;/a&gt;
+                        &lt;?php endif; ?&gt;
+                    &lt;/div&gt;
+                &lt;?php endif; ?&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;!-- ページネーション --&gt;
+        &lt;?php if ($total_pages > 1): ?&gt;
+            &lt;nav aria-label="ページネーション" class="mt-4"&gt;
+                &lt;ul class="pagination justify-content-center"&gt;
+                    &lt;!-- 前のページリンク --&gt;
+                    &lt;?php if ($page > 1): ?&gt;
+                        &lt;li class="page-item"&gt;
+                            &lt;a class="page-link" href="?page=&lt;?php echo $page - 1; ?&gt;&lt;?php echo !empty($search) ? '&amp;search=' . urlencode($search) : ''; ?&gt;"&gt;
+                                &lt;i class="bi bi-chevron-left"&gt;&lt;/i&gt; 前
+                            &lt;/a&gt;
+                        &lt;/li&gt;
+                    &lt;?php endif; ?&gt;
+                    
+                    &lt;!-- ページ番号 --&gt;
+                    &lt;?php
+                    $start_page = max(1, $page - 2);
+                    $end_page = min($total_pages, $page + 2);
+                    
+                    for ($i = $start_page; $i <= $end_page; $i++):
+                    ?&gt;
+                        &lt;li class="page-item &lt;?php echo $i == $page ? 'active' : ''; ?&gt;"&gt;
+                            &lt;a class="page-link" href="?page=&lt;?php echo $i; ?&gt;&lt;?php echo !empty($search) ? '&amp;search=' . urlencode($search) : ''; ?&gt;"&gt;
+                                &lt;?php echo $i; ?&gt;
+                            &lt;/a&gt;
+                        &lt;/li&gt;
+                    &lt;?php endfor; ?&gt;
+                    
+                    &lt;!-- 次のページリンク --&gt;
+                    &lt;?php if ($page < $total_pages): ?&gt;
+                        &lt;li class="page-item"&gt;
+                            &lt;a class="page-link" href="?page=&lt;?php echo $page + 1; ?&gt;&lt;?php echo !empty($search) ? '&amp;search=' . urlencode($search) : ''; ?&gt;"&gt;
+                                次 &lt;i class="bi bi-chevron-right"&gt;&lt;/i&gt;
+                            &lt;/a&gt;
+                        &lt;/li&gt;
+                    &lt;?php endif; ?&gt;
+                &lt;/ul&gt;
+                
+                &lt;div class="text-center text-muted"&gt;
+                    &lt;small&gt;
+                        &lt;?php echo $total_users; ?&gt;件中 &lt;?php echo ($offset + 1); ?&gt;-&lt;?php echo min($offset + $per_page, $total_users); ?&gt;件を表示
+                        （&lt;?php echo $page; ?&gt;/&lt;?php echo $total_pages; ?&gt;ページ）
+                    &lt;/small&gt;
+                &lt;/div&gt;
+            &lt;/nav&gt;
+        &lt;?php endif; ?&gt;
+    &lt;/div&gt;
+
+    &lt;style&gt;
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2em;
+    }
+    &lt;/style&gt;
+
+    &lt;script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+                        <div class="info">
+                            <h6>実装の特徴</h6>
+                            <ul>
+                                <li><strong>アバター表示</strong>: ユーザー名の最初の文字を円形で表示</li>
+                                <li><strong>年齢計算</strong>: 生年月日から現在の年齢を自動算出</li>
+                                <li><strong>Bootstrap Icons</strong>: 美しいアイコンで操作を視覚化</li>
+                                <li><strong>レスポンシブテーブル</strong>: モバイル対応の横スクロール</li>
+                                <li><strong>操作ボタン</strong>: 詳細・編集・削除の明確な分離</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- セクション4.2 -->
+                    <h3 class="section-title" id="section4-2">4.2 高度な検索・フィルタ機能</h3>
+                    <p>複数の検索条件とフィルタリング機能を実装し、ユーザビリティを向上させます。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 4-2: 高度な検索機能の実装</h5>
+                        <p>複数条件での検索とフィルタリング機能を追加実装します。</p>
+                        
+                        <h6>UserManagerクラスの拡張</h6>
+                        <p>以下のメソッドをUserManager.phpに追加：</p>
+                        <pre><code>/**
+ * 高度な検索機能
+ * @param array $criteria 検索条件
+ * @return array
+ */
+public function advancedSearch($criteria) {
+    $where_conditions = [];
+    $params = [];
+    
+    // キーワード検索
+    if (!empty($criteria['keyword'])) {
+        $where_conditions[] = "(full_name LIKE :keyword OR email LIKE :keyword OR username LIKE :keyword)";
+        $params['keyword'] = '%' . $criteria['keyword'] . '%';
+    }
+    
+    // 年齢範囲検索
+    if (!empty($criteria['age_from']) || !empty($criteria['age_to'])) {
+        if (!empty($criteria['age_from'])) {
+            $birth_year_to = date('Y') - (int)$criteria['age_from'];
+            $where_conditions[] = "EXTRACT(YEAR FROM birth_date) <= :birth_year_to";
+            $params['birth_year_to'] = $birth_year_to;
+        }
+        
+        if (!empty($criteria['age_to'])) {
+            $birth_year_from = date('Y') - (int)$criteria['age_to'];
+            $where_conditions[] = "EXTRACT(YEAR FROM birth_date) >= :birth_year_from";
+            $params['birth_year_from'] = $birth_year_from;
+        }
+    }
+    
+    // 登録日範囲検索
+    if (!empty($criteria['date_from'])) {
+        $where_conditions[] = "DATE(created_at) >= :date_from";
+        $params['date_from'] = $criteria['date_from'];
+    }
+    
+    if (!empty($criteria['date_to'])) {
+        $where_conditions[] = "DATE(created_at) <= :date_to";
+        $params['date_to'] = $criteria['date_to'];
+    }
+    
+    // SQL構築
+    $sql = "SELECT id, username, email, full_name, birth_date, created_at FROM users";
+    
+    if (!empty($where_conditions)) {
+        $sql .= " WHERE " . implode(" AND ", $where_conditions);
+    }
+    
+    $sql .= " ORDER BY created_at DESC";
+    
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute($params);
+    
+    return $stmt->fetchAll();
+}
+
+/**
+ * ユーザー統計情報の取得
+ * @return array
+ */
+public function getUserStatistics() {
+    try {
+        // 基本統計
+        $total_users = $this->getUserCount();
+        
+        // 今月の新規登録数
+        $stmt = $this->pdo->query("
+            SELECT COUNT(*) 
+            FROM users 
+            WHERE EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM CURRENT_DATE)
+              AND EXTRACT(MONTH FROM created_at) = EXTRACT(MONTH FROM CURRENT_DATE)
+        ");
+        $monthly_new_users = $stmt->fetchColumn();
+        
+        // 年齢分布
+        $stmt = $this->pdo->query("
+            SELECT 
+                CASE 
+                    WHEN birth_date IS NULL THEN '未設定'
+                    WHEN EXTRACT(YEAR FROM AGE(birth_date)) < 20 THEN '20歳未満'
+                    WHEN EXTRACT(YEAR FROM AGE(birth_date)) < 30 THEN '20-29歳'
+                    WHEN EXTRACT(YEAR FROM AGE(birth_date)) < 40 THEN '30-39歳'
+                    WHEN EXTRACT(YEAR FROM AGE(birth_date)) < 50 THEN '40-49歳'
+                    WHEN EXTRACT(YEAR FROM AGE(birth_date)) < 60 THEN '50-59歳'
+                    ELSE '60歳以上'
+                END as age_group,
+                COUNT(*) as count
+            FROM users 
+            GROUP BY age_group
+            ORDER BY age_group
+        ");
+        $age_distribution = $stmt->fetchAll();
+        
+        return [
+            'total_users' => $total_users,
+            'monthly_new_users' => $monthly_new_users,
+            'age_distribution' => $age_distribution
+        ];
+        
+    } catch (PDOException $e) {
+        error_log("Statistics error: " . $e->getMessage());
+        return [
+            'total_users' => 0,
+            'monthly_new_users' => 0,
+            'age_distribution' => []
+        ];
+    }
+}</code></pre>
+
+                        <div class="highlight">
+                            <h6>高度な検索機能の特徴</h6>
+                            <ul>
+                                <li><strong>複数条件検索</strong>: キーワード、年齢、登録日での絞り込み</li>
+                                <li><strong>年齢計算</strong>: PostgreSQLのEXTRACT関数を活用</li>
+                                <li><strong>日付範囲検索</strong>: 期間指定での検索機能</li>
+                                <li><strong>統計情報</strong>: ダッシュボード用のデータ集計</li>
+                                <li><strong>動的SQL構築</strong>: 条件に応じたクエリ生成</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- セクション4.3 -->
+                    <h3 class="section-title" id="section4-3">4.3 効率的なページネーション実装</h3>
+                    <p>大量データの表示パフォーマンスを向上させるページネーション機能を実装します。</p>
+
+                    <div class="info">
+                        <h5>ページネーションの設計原則</h5>
+                        <ul>
+                            <li><strong>LIMIT/OFFSET</strong>: データベースレベルでの効率的な分割</li>
+                            <li><strong>SEOフレンドリー</strong>: 検索エンジンに優しいURL構造</li>
+                            <li><strong>ユーザビリティ</strong>: 現在位置の明確な表示</li>
+                            <li><strong>パフォーマンス</strong>: 無駄なデータ取得の回避</li>
+                        </ul>
+                    </div>
+
+                    <!-- セクション4.4 -->
+                    <h3 class="section-title" id="section4-4">4.4 ユーザー詳細表示機能</h3>
+                    <p>個別ユーザーの詳細情報を表示する機能を実装し、情報の階層化を実現します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 4-3: ユーザー詳細ページの作成</h5>
+                        <p>プロフィール形式での詳細表示と操作ボタンを実装します。</p>
+                        
+                        <h6>users/detail.php作成</h6>
+                        <pre><code>&lt;?php
+require_once '../config/database.php';
+require_once '../includes/UserManager.php';
+
+// ユーザーID取得
+$user_id = (int)($_GET['id'] ?? 0);
+
+if ($user_id <= 0) {
+    header('Location: list.php');
+    exit;
+}
+
+try {
+    $userManager = new UserManager();
+    $user = $userManager->getUserById($user_id);
+    
+    if (!$user) {
+        $error_message = 'ユーザーが見つかりませんでした。';
+    }
+    
+} catch (Exception $e) {
+    $error_message = 'データの取得中にエラーが発生しました。';
+    error_log("User detail error: " . $e->getMessage());
+}
+?&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;ユーザー詳細 - &lt;?php echo isset($user) ? htmlspecialchars($user['full_name']) : 'ユーザー管理システム'; ?&gt;&lt;/title&gt;
+    &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
+    &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;nav class="navbar navbar-expand-lg navbar-warning bg-warning"&gt;
+        &lt;div class="container"&gt;
+            &lt;a class="navbar-brand" href="../index.php"&gt;ユーザー管理システム&lt;/a&gt;
+            &lt;div class="navbar-nav ms-auto"&gt;
+                &lt;a class="nav-link" href="list.php"&gt;ユーザー一覧&lt;/a&gt;
+                &lt;a class="nav-link" href="create.php"&gt;新規登録&lt;/a&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/nav&gt;
+
+    &lt;div class="container mt-4"&gt;
+        &lt;!-- パンくずリスト --&gt;
+        &lt;nav aria-label="breadcrumb"&gt;
+            &lt;ol class="breadcrumb"&gt;
+                &lt;li class="breadcrumb-item"&gt;&lt;a href="../index.php"&gt;ホーム&lt;/a&gt;&lt;/li&gt;
+                &lt;li class="breadcrumb-item"&gt;&lt;a href="list.php"&gt;ユーザー一覧&lt;/a&gt;&lt;/li&gt;
+                &lt;li class="breadcrumb-item active" aria-current="page"&gt;
+                    &lt;?php echo isset($user) ? htmlspecialchars($user['full_name']) : 'ユーザー詳細'; ?&gt;
+                &lt;/li&gt;
+            &lt;/ol&gt;
+        &lt;/nav&gt;
+
+        &lt;?php if (isset($error_message)): ?&gt;
+            &lt;div class="alert alert-danger" role="alert"&gt;
+                &lt;i class="bi bi-exclamation-triangle"&gt;&lt;/i&gt; &lt;?php echo htmlspecialchars($error_message); ?&gt;
+                &lt;div class="mt-2"&gt;
+                    &lt;a href="list.php" class="btn btn-warning"&gt;ユーザー一覧に戻る&lt;/a&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;?php else: ?&gt;
+            &lt;div class="row"&gt;
+                &lt;!-- プロフィールカード --&gt;
+                &lt;div class="col-md-4 mb-4"&gt;
+                    &lt;div class="card"&gt;
+                        &lt;div class="card-body text-center"&gt;
+                            &lt;!-- アバター --&gt;
+                            &lt;div class="avatar-large bg-warning text-dark mb-3 mx-auto"&gt;
+                                &lt;?php echo mb_substr($user['full_name'], 0, 1); ?&gt;
+                            &lt;/div&gt;
+                            
+                            &lt;h4 class="card-title"&gt;&lt;?php echo htmlspecialchars($user['full_name']); ?&gt;&lt;/h4&gt;
+                            &lt;p class="text-muted"&gt;@&lt;?php echo htmlspecialchars($user['username']); ?&gt;&lt;/p&gt;
+                            
+                            &lt;!-- ステータス情報 --&gt;
+                            &lt;div class="mb-3"&gt;
+                                &lt;span class="badge bg-success"&gt;
+                                    &lt;i class="bi bi-check-circle"&gt;&lt;/i&gt; アクティブ
+                                &lt;/span&gt;
+                            &lt;/div&gt;
+                            
+                            &lt;!-- 操作ボタン --&gt;
+                            &lt;div class="d-grid gap-2"&gt;
+                                &lt;a href="edit.php?id=&lt;?php echo $user['id']; ?&gt;" class="btn btn-warning"&gt;
+                                    &lt;i class="bi bi-pencil"&gt;&lt;/i&gt; 編集
+                                &lt;/a&gt;
+                                &lt;a href="delete.php?id=&lt;?php echo $user['id']; ?&gt;" 
+                                   class="btn btn-outline-danger"
+                                   onclick="return confirm('本当に削除しますか？')"&gt;
+                                    &lt;i class="bi bi-trash"&gt;&lt;/i&gt; 削除
+                                &lt;/a&gt;
+                                &lt;a href="list.php" class="btn btn-outline-secondary"&gt;
+                                    &lt;i class="bi bi-arrow-left"&gt;&lt;/i&gt; 一覧に戻る
+                                &lt;/a&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                
+                &lt;!-- 詳細情報 --&gt;
+                &lt;div class="col-md-8"&gt;
+                    &lt;div class="card"&gt;
+                        &lt;div class="card-header"&gt;
+                            &lt;h5 class="card-title mb-0"&gt;
+                                &lt;i class="bi bi-person-circle"&gt;&lt;/i&gt; ユーザー情報
+                            &lt;/h5&gt;
+                        &lt;/div&gt;
+                        &lt;div class="card-body"&gt;
+                            &lt;div class="row"&gt;
+                                &lt;!-- 基本情報 --&gt;
+                                &lt;div class="col-md-6"&gt;
+                                    &lt;h6&gt;基本情報&lt;/h6&gt;
+                                    &lt;table class="table table-borderless"&gt;
+                                        &lt;tr&gt;
+                                            &lt;th width="30%"&gt;ユーザーID:&lt;/th&gt;
+                                            &lt;td&gt;&lt;span class="badge bg-secondary"&gt;&lt;?php echo $user['id']; ?&gt;&lt;/span&gt;&lt;/td&gt;
+                                        &lt;/tr&gt;
+                                        &lt;tr&gt;
+                                            &lt;th&gt;ユーザー名:&lt;/th&gt;
+                                            &lt;td&gt;&lt;code&gt;&lt;?php echo htmlspecialchars($user['username']); ?&gt;&lt;/code&gt;&lt;/td&gt;
+                                        &lt;/tr&gt;
+                                        &lt;tr&gt;
+                                            &lt;th&gt;フルネーム:&lt;/th&gt;
+                                            &lt;td&gt;&lt;?php echo htmlspecialchars($user['full_name']); ?&gt;&lt;/td&gt;
+                                        &lt;/tr&gt;
+                                        &lt;tr&gt;
+                                            &lt;th&gt;メール:&lt;/th&gt;
+                                            &lt;td&gt;
+                                                &lt;a href="mailto:&lt;?php echo htmlspecialchars($user['email']); ?&gt;"&gt;
+                                                    &lt;?php echo htmlspecialchars($user['email']); ?&gt;
+                                                &lt;/a&gt;
+                                            &lt;/td&gt;
+                                        &lt;/tr&gt;
+                                    &lt;/table&gt;
+                                &lt;/div&gt;
+                                
+                                &lt;!-- 詳細情報 --&gt;
+                                &lt;div class="col-md-6"&gt;
+                                    &lt;h6&gt;詳細情報&lt;/h6&gt;
+                                    &lt;table class="table table-borderless"&gt;
+                                        &lt;tr&gt;
+                                            &lt;th width="30%"&gt;生年月日:&lt;/th&gt;
+                                            &lt;td&gt;
+                                                &lt;?php 
+                                                if ($user['birth_date']) {
+                                                    $birth_date = new DateTime($user['birth_date']);
+                                                    $today = new DateTime();
+                                                    $age = $today->diff($birth_date)->y;
+                                                    echo $birth_date->format('Y年m月d日') . " ({$age}歳)";
+                                                } else {
+                                                    echo '&lt;span class="text-muted"&gt;未設定&lt;/span&gt;';
+                                                }
+                                                ?&gt;
+                                            &lt;/td&gt;
+                                        &lt;/tr&gt;
+                                        &lt;tr&gt;
+                                            &lt;th&gt;登録日時:&lt;/th&gt;
+                                            &lt;td&gt;
+                                                &lt;?php 
+                                                $created_at = new DateTime($user['created_at']);
+                                                echo $created_at->format('Y年m月d日 H:i');
+                                                ?&gt;
+                                            &lt;/td&gt;
+                                        &lt;/tr&gt;
+                                        &lt;tr&gt;
+                                            &lt;th&gt;更新日時:&lt;/th&gt;
+                                            &lt;td&gt;
+                                                &lt;?php 
+                                                $updated_at = new DateTime($user['updated_at']);
+                                                echo $updated_at->format('Y年m月d日 H:i');
+                                                ?&gt;
+                                            &lt;/td&gt;
+                                        &lt;/tr&gt;
+                                        &lt;tr&gt;
+                                            &lt;th&gt;登録期間:&lt;/th&gt;
+                                            &lt;td&gt;
+                                                &lt;?php 
+                                                $now = new DateTime();
+                                                $created = new DateTime($user['created_at']);
+                                                $diff = $now->diff($created);
+                                                echo $diff->days . '日';
+                                                ?&gt;
+                                            &lt;/td&gt;
+                                        &lt;/tr&gt;
+                                    &lt;/table&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;?php endif; ?&gt;
+    &lt;/div&gt;
+
+    &lt;style&gt;
+    .avatar-large {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 3em;
+    }
+    &lt;/style&gt;
+
+    &lt;script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+                        <p>対応するUserManager.phpにgetUserById()メソッドを追加：</p>
+                        <pre><code>/**
+ * ユーザーIDでの詳細取得
+ * @param int $user_id
+ * @return array|false
+ */
+public function getUserById($user_id) {
+    $sql = "SELECT id, username, email, full_name, birth_date, created_at, updated_at 
+            FROM users 
+            WHERE id = :user_id";
+    
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute(['user_id' => $user_id]);
+    
+    return $stmt->fetch();
+}</code></pre>
+
+                        <div class="highlight">
+                            <h6>詳細ページの設計特徴</h6>
+                            <ul>
+                                <li><strong>プロフィール形式</strong>: カード型レイアウトでの情報整理</li>
+                                <li><strong>アバター強調</strong>: 大きなアイコンでの視覚的アピール</li>
+                                <li><strong>パンくずリスト</strong>: ナビゲーション位置の明確化</li>
+                                <li><strong>計算情報</strong>: 年齢、登録期間の自動算出</li>
+                                <li><strong>操作の一元化</strong>: 編集・削除ボタンの配置</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- セクション4.5 -->
+                    <h3 class="section-title" id="section4-5">4.5 UI/UXの向上とアクセシビリティ</h3>
+                    <p>ユーザビリティとアクセシビリティを向上させる実装テクニックを学習します。</p>
+
+                    <div class="highlight">
+                        <h5>UI/UX向上のポイント</h5>
+                        <ul>
+                            <li><strong>ローディング状態</strong>: データ取得中のフィードバック表示</li>
+                            <li><strong>エラーハンドリング</strong>: 分かりやすいエラーメッセージ</li>
+                            <li><strong>空状態</strong>: データが無い場合の適切な表示</li>
+                            <li><strong>確認ダイアログ</strong>: 危険な操作前の確認</li>
+                            <li><strong>アクセシビリティ</strong>: ARIA属性、キーボード操作対応</li>
+                        </ul>
+                    </div>
+
+                    <!-- 理解度確認（必須） -->
+                    <div class="quiz-container" id="quiz">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>データベースから指定件数のレコードを取得するSQL句は？</li>
+                            <li>PostgreSQLで年齢を計算する関数は？</li>
+                            <li>Bootstrap 5でテーブルにホバー効果を付けるクラスは？</li>
+                            <li>ページネーションで現在のページを表すBootstrapクラスは？</li>
+                            <li>日付オブジェクトの差分を計算するPHPメソッドは？</li>
+                            <li>SQLのLIKE句でワイルドカードとして使用する文字は？</li>
+                        </ol>
+                        
+                        <details class="mt-3">
+                            <summary>解答を確認</summary>
+                            <ol>
+                                <li>LIMIT</li>
+                                <li>AGE()またはEXTRACT()</li>
+                                <li>table-hover</li>
+                                <li>active</li>
+                                <li>diff()</li>
+                                <li>%（パーセント記号）</li>
+                            </ol>
+                        </details>
+                    </div>
+
+                    <!-- 章間ナビゲーション（必須） -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="step3-user-registration.html" class="btn btn-secondary">← 前の章: ユーザー登録機能の実装</a>
+                        <a href="step5-user-update-delete.html" class="btn btn-warning">次の章: ユーザー情報更新・削除機能 →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // スムーススクロール
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // サイドバーのアクティブリンク更新
+        window.addEventListener('scroll', function() {
+            let current = '';
+            const sections = document.querySelectorAll('h3[id], div[id]');
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

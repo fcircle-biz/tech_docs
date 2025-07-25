@@ -7,8 +7,7 @@ PHP言語を使用したWebアプリケーション開発の実践的なチュ�
 ### 学習目標
 - PHPによるWebアプリケーション開発の基本手法
 - HTMLフォームとPHPの連携によるデータ処理
-- MySQLを使用したデータベース連携とCRUD操作
-- セッション管理によるユーザー状態の保持
+- PostgreSQLを使用したデータベース連携とCRUD操作
 - セキュリティを意識した開発手法（SQLインジェクション対策等）
 - ブラウザでの動作確認とデバッgging手法
 
@@ -30,9 +29,9 @@ PHP言語を使用したWebアプリケーション開発の実践的なチュ�
 ### 必要なソフトウェア
 - **Webサーバー**: Apache HTTP Server 2.4+ または Nginx
 - **PHP**: PHP 8.0+ （推奨: PHP 8.1以上）
-- **データベース**: MySQL 8.0+ または MariaDB 10.6+
-- **開発環境**: XAMPP、MAMP、Docker、またはローカル開発サーバー
-- **エディタ**: Visual Studio Code、PhpStorm、または任意のテキストエディタ
+- **データベース**: PostgreSQL 12+ または 14+
+- **開発環境**: Eclipse IDE for PHP Developers (All-in-One)
+- **エディタ**: Eclipse IDE（PHP開発機能統合）
 
 ### 推奨する基礎知識
 - HTML5 の基本タグと構造
@@ -44,7 +43,7 @@ PHP言語を使用したWebアプリケーション開発の実践的なチュ�
 ## チュートリアル構成
 
 ### Step 1: [環境構築とPHP基礎](https://fcircle-biz.github.io/tech_docs/tutorial/php/step1-environment-setup.html)
-- 開発環境の構築（XAMPP/MAMP設定）
+- 開発環境の構築（Eclipse IDE for PHP Developers設定）
 - PHPの基本動作確認
 - HTMLフォームとPHPの連携基礎
 - ファイル構成とディレクトリ設計
@@ -52,7 +51,7 @@ PHP言語を使用したWebアプリケーション開発の実践的なチュ�
 **所要時間**: 1時間
 
 ### Step 2: [データベース設計と接続](https://fcircle-biz.github.io/tech_docs/tutorial/php/step2-database-connection.html)
-- MySQLデータベースの作成と設定
+- PostgreSQLデータベースの作成と設定
 - PHPからのデータベース接続（PDO使用）
 - テーブル設計とCREATE文の実行
 - 接続エラーハンドリング
@@ -67,7 +66,7 @@ PHP言語を使用したWebアプリケーション開発の実践的なチュ�
 
 **所要時間**: 2時間
 
-### Step 4: [ユーザー一覧・詳細表示機能](https://fcircle-biz.github.io/tech_docs/tutorial/php/step4-user-list-detail.html)
+### Step 4: [ユーザー一覧・詳細表示機能](https://fcircle-bz.github.io/tech_docs/tutorial/php/step4-user-list-detail.html)
 - データベースからのデータ取得（SELECT）
 - 一覧画面の作成とデータ表示
 - 詳細画面の実装
@@ -75,7 +74,7 @@ PHP言語を使用したWebアプリケーション開発の実践的なチュ�
 
 **所要時間**: 2時間
 
-### Step 5: [ユーザー情報更新・削除機能](https://fcircle-biz.github.io/tech_docs/tutorial/php/step5-user-update-delete.html)
+### Step 5: [ユーザー情報更新・削除機能](https://fcircle-bz.github.io/tech_docs/tutorial/php/step5-user-update-delete.html)
 - 編集フォームの実装
 - UPDATE処理の実装
 - DELETE処理の実装
@@ -83,15 +82,7 @@ PHP言語を使用したWebアプリケーション開発の実践的なチュ�
 
 **所要時間**: 2.5時間
 
-### Step 6: [セッション管理とセキュリティ対策](https://fcircle-bz.github.io/tech_docs/tutorial/php/step6-session-security.html)
-- セッション機能の実装
-- CSRFトークンによる攻撃対策
-- SQLインジェクション対策の強化
-- XSS対策とデータサニタイズ
-
-**所要時間**: 2時間
-
-### Step 7: [動作確認とデバッグ手法](https://fcircle-biz.github.io/tech_docs/tutorial/php/step7-testing-debug.html)
+### Step 6: [動作確認とデバッグ手法](https://fcircle-bz.github.io/tech_docs/tutorial/php/step6-testing-debug.html)
 - ブラウザでの動作確認手順
 - 各機能のテスト手法
 - PHPエラーログの確認方法
@@ -109,28 +100,27 @@ PHP言語を使用したWebアプリケーション開発の実践的なチュ�
 3. **ユーザー詳細** - 特定ユーザーの詳細情報表示
 4. **ユーザー編集** - 既存ユーザー情報の更新
 5. **ユーザー削除** - ユーザー情報の削除
-6. **セッション管理** - ユーザー状態の管理
 
 #### データベース設計
 ```sql
 CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL,
     full_name VARCHAR(100) NOT NULL,
     birth_date DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
 #### 技術スタック
 - **言語**: PHP 8.1+
-- **データベース**: MySQL 8.0+ 
-- **フロントエンド**: HTML5 + CSS3 + 少量のJavaScript
-- **Webサーバー**: Apache HTTP Server（XAMPP/MAMP環境）
+- **データベース**: PostgreSQL 12+ 
+- **フロントエンド**: HTML5 + Bootstrap 5 + 少量のJavaScript
+- **Webサーバー**: Apache HTTP Server（Eclipse統合環境）
 - **データベース接続**: PDO（PHP Data Objects）
-- **セキュリティ**: 生PHPによる実装（CSRFトークン、SQLインジェクション対策）
+- **セキュリティ**: 生PHPによる実装（SQLインジェクション対策）
 
 #### ディレクトリ構成
 ```
@@ -157,23 +147,24 @@ user-management/
 ```
 
 ## 総所要時間
-**約12時間**（個人の習熟度により変動）
+**約10時間**（個人の習熟度により変動）
 
 ## 参考資料とリンク
 
 ### 公式ドキュメント
 - [PHP公式マニュアル](https://www.php.net/manual/ja/)
-- [MySQL公式リファレンス](https://dev.mysql.com/doc/refman/8.0/ja/)
+- [PostgreSQL公式ドキュメント](https://www.postgresql.jp/document/)
 
 ### 関連技術
 - [HTML5 & CSS3 基礎チュートリアル](https://fcircle-biz.github.io/tech_docs/tutorial/html-css/README.html)
-- [MySQL データベース基礎](https://fcircle-biz.github.io/tech_docs/tutorial/mysql/README.html)
-- [XAMPP 環境構築ガイド](https://fcircle-biz.github.io/tech_docs/tutorial/xampp/README.html)
+- [PostgreSQL データベース基礎](https://fcircle-biz.github.io/tech_docs/tutorial/postgresql/README.html)
+- [Bootstrap 5 基礎ガイド](https://fcircle-bz.github.io/tech_docs/tutorial/bootstrap/README.html)
+- [Eclipse IDE for PHP 環境構築ガイド](https://fcircle-bz.github.io/tech_docs/tutorial/eclipse-php/README.html)
 
 ### 学習ガイドライン
-- [PHP 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/web-development/php/README.html)
-- [Web開発基礎 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/web-development/basics/README.html)
-- [データベース設計 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/database/mysql/README.html)
+- [PHP 学習ガイドライン](https://fcircle-bz.github.io/tech_docs/guide/web-development/php/README.html)
+- [Web開発基礎 学習ガイドライン](https://fcircle-bz.github.io/tech_docs/guide/web-development/basics/README.html)
+- [データベース設計 学習ガイドライン](https://fcircle-bz.github.io/tech_docs/guide/database/postgresql/README.html)
 
 ## チュートリアルの進め方
 
@@ -187,7 +178,6 @@ user-management/
 
 - **SQLインジェクション対策**: PDOのプリペアドステートメントを必ず使用
 - **XSS対策**: ユーザー入力データの適切なエスケープ処理
-- **CSRF対策**: フォームにCSRFトークンを実装
 - **入力値検証**: サーバーサイドでの厳密な入力値チェック
 - **パスワード管理**: password_hash()とpassword_verify()の使用（認証機能追加時）
 

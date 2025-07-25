@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHP実践チュートリアル 第3章 - ユーザー登録機能の実装</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ベースレイアウト */
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+
+        /* ナビゲーション - PHP/JavaScript系テーマ */
+        .navbar {
+            background-color: #ffc107;
+        }
+
+        .navbar-brand, .navbar-nav .nav-link {
+            color: #212529 !important;
+            font-weight: 500;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #495057 !important;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+            background-color: white;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .sidebar .nav-link {
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #fffde7;
+            color: #ffc107;
+        }
+
+        .sidebar .nav-link.active {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+        }
+
+        /* タイトル */
+        .chapter-title {
+            color: #ffc107;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #ffc107;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title {
+            color: #ffca28;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* コンテンツボックス */
+        .quiz-container {
+            background-color: #fffde7;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .highlight {
+            background-color: #ffecb3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ff9800;
+        }
+
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
+        }
+
+        .info {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #2196f3;
+        }
+
+        /* ナビゲーション */
+        .nav-link.active {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+        }
+
+        /* コードブロック */
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">PHP 実践チュートリアル</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://fcircle-biz.github.io/tech_docs/">ホーム</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">チュートリアル概要</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#section3-1">3.1 フォーム設計</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section3-2">3.2 入力値検証</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section3-3">3.3 データベース挿入</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section3-4">3.4 エラーハンドリング</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section3-5">3.5 動作確認</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#quiz">理解度確認</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第3章: ユーザー登録機能の実装</h1>
+                </div>
+
+                <div id="chapter3">
+                    <!-- 章タイトル -->
+                    <h2 class="chapter-title">HTMLフォームとPHPによるユーザー登録システム</h2>
+                    
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li><strong>Bootstrap 5</strong>を使用したフォームUIの作成</li>
+                            <li><strong>サーバーサイドバリデーション</strong>の実装手法</li>
+                            <li><strong>PDOプリペアドステートメント</strong>によるINSERT処理</li>
+                            <li><strong>重複チェック</strong>とエラーメッセージ表示</li>
+                            <li><strong>セキュリティを考慮した</strong>データ処理</li>
+                        </ul>
+                    </div>
+
+                    <!-- セクション3.1 -->
+                    <h3 class="section-title" id="section3-1">3.1 ユーザー登録フォームの設計と実装</h3>
+                    <p>Bootstrap 5を使用して使いやすく美しいユーザー登録フォームを作成し、UXとアクセシビリティを向上させます。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 3-1: ユーザー登録フォームページの作成</h5>
+                        <p>包括的なユーザー登録フォームを実装し、適切な入力項目とバリデーションルールを設定します。</p>
+                        
+                        <h6>users/create.php作成</h6>
+                        <p>以下の内容でファイルを作成：</p>
+                        <pre><code>&lt;?php
+require_once '../config/database.php';
+
+// エラーメッセージとフォームデータの初期化
+$errors = [];
+$form_data = [
+    'username' => '',
+    'email' => '',
+    'full_name' => '',
+    'birth_date' => ''
+];
+$success_message = '';
+
+// POST送信時の処理
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // フォームデータの取得とサニタイズ
+    $form_data['username'] = trim($_POST['username'] ?? '');
+    $form_data['email'] = trim($_POST['email'] ?? '');
+    $form_data['full_name'] = trim($_POST['full_name'] ?? '');
+    $form_data['birth_date'] = trim($_POST['birth_date'] ?? '');
+    
+    // バリデーション実行
+    $errors = validateUserData($form_data);
+    
+    // エラーがない場合、データベースに挿入
+    if (empty($errors)) {
+        try {
+            $pdo = getDatabase();
+            
+            // 重複チェック
+            if (isUserExists($pdo, $form_data['username'], $form_data['email'])) {
+                $errors['duplicate'] = 'ユーザー名またはメールアドレスが既に使用されています。';
+            } else {
+                // ユーザー挿入
+                if (insertUser($pdo, $form_data)) {
+                    $success_message = "ユーザー「{$form_data['full_name']}」を正常に登録しました。";
+                    // フォームデータをリセット
+                    $form_data = ['username' => '', 'email' => '', 'full_name' => '', 'birth_date' => ''];
+                }
+            }
+        } catch (Exception $e) {
+            $errors['system'] = 'システムエラーが発生しました。もう一度お試しください。';
+            error_log("User registration error: " . $e->getMessage());
+        }
+    }
+}
+
+/**
+ * ユーザーデータのバリデーション
+ */
+function validateUserData($data) {
+    $errors = [];
+    
+    // ユーザー名のバリデーション
+    if (empty($data['username'])) {
+        $errors['username'] = 'ユーザー名は必須です。';
+    } elseif (strlen($data['username']) < 3 || strlen($data['username']) > 50) {
+        $errors['username'] = 'ユーザー名は3文字以上50文字以下で入力してください。';
+    } elseif (!preg_match('/^[a-zA-Z0-9_]+$/', $data['username'])) {
+        $errors['username'] = 'ユーザー名は英数字とアンダースコアのみ使用できます。';
+    }
+    
+    // メールアドレスのバリデーション
+    if (empty($data['email'])) {
+        $errors['email'] = 'メールアドレスは必須です。';
+    } elseif (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+        $errors['email'] = '正しいメールアドレス形式で入力してください。';
+    } elseif (strlen($data['email']) > 100) {
+        $errors['email'] = 'メールアドレスは100文字以下で入力してください。';
+    }
+    
+    // フルネームのバリデーション
+    if (empty($data['full_name'])) {
+        $errors['full_name'] = 'フルネームは必須です。';
+    } elseif (strlen($data['full_name']) > 100) {
+        $errors['full_name'] = 'フルネームは100文字以下で入力してください。';
+    }
+    
+    // 生年月日のバリデーション（省略可能）
+    if (!empty($data['birth_date'])) {
+        $date = DateTime::createFromFormat('Y-m-d', $data['birth_date']);
+        if (!$date || $date->format('Y-m-d') !== $data['birth_date']) {
+            $errors['birth_date'] = '正しい日付形式（YYYY-MM-DD）で入力してください。';
+        } elseif ($date > new DateTime()) {
+            $errors['birth_date'] = '未来の日付は選択できません。';
+        } elseif ($date < new DateTime('1900-01-01')) {
+            $errors['birth_date'] = '1900年以降の日付を選択してください。';
+        }
+    }
+    
+    return $errors;
+}
+
+/**
+ * ユーザー重複チェック
+ */
+function isUserExists($pdo, $username, $email) {
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE username = :username OR email = :email");
+    $stmt->execute(['username' => $username, 'email' => $email]);
+    return $stmt->fetchColumn() > 0;
+}
+
+/**
+ * ユーザー挿入処理
+ */
+function insertUser($pdo, $data) {
+    $sql = "INSERT INTO users (username, email, full_name, birth_date) VALUES (:username, :email, :full_name, :birth_date)";
+    $stmt = $pdo->prepare($sql);
+    return $stmt->execute([
+        'username' => $data['username'],
+        'email' => $data['email'],
+        'full_name' => $data['full_name'],
+        'birth_date' => !empty($data['birth_date']) ? $data['birth_date'] : null
+    ]);
+}
+?&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;ユーザー登録 - ユーザー管理システム&lt;/title&gt;
+    &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;nav class="navbar navbar-expand-lg navbar-warning bg-warning"&gt;
+        &lt;div class="container"&gt;
+            &lt;a class="navbar-brand" href="../index.php"&gt;ユーザー管理システム&lt;/a&gt;
+            &lt;div class="navbar-nav ms-auto"&gt;
+                &lt;a class="nav-link" href="list.php"&gt;ユーザー一覧&lt;/a&gt;
+                &lt;a class="nav-link active" href="create.php"&gt;新規登録&lt;/a&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/nav&gt;
+
+    &lt;div class="container mt-5"&gt;
+        &lt;div class="row justify-content-center"&gt;
+            &lt;div class="col-md-8 col-lg-6"&gt;
+                &lt;div class="card"&gt;
+                    &lt;div class="card-header bg-warning"&gt;
+                        &lt;h3 class="card-title mb-0"&gt;新規ユーザー登録&lt;/h3&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-body"&gt;
+                        &lt;!-- 成功メッセージ --&gt;
+                        &lt;?php if ($success_message): ?&gt;
+                            &lt;div class="alert alert-success alert-dismissible fade show" role="alert"&gt;
+                                &lt;strong&gt;登録完了！&lt;/strong&gt; &lt;?php echo htmlspecialchars($success_message); ?&gt;
+                                &lt;button type="button" class="btn-close" data-bs-dismiss="alert"&gt;&lt;/button&gt;
+                            &lt;/div&gt;
+                        &lt;?php endif; ?&gt;
+
+                        &lt;!-- システムエラーメッセージ --&gt;
+                        &lt;?php if (isset($errors['system']) || isset($errors['duplicate'])): ?&gt;
+                            &lt;div class="alert alert-danger" role="alert"&gt;
+                                &lt;?php echo htmlspecialchars($errors['system'] ?? $errors['duplicate']); ?&gt;
+                            &lt;/div&gt;
+                        &lt;?php endif; ?&gt;
+
+                        &lt;form method="POST" action="" novalidate&gt;
+                            &lt;!-- ユーザー名 --&gt;
+                            &lt;div class="mb-3"&gt;
+                                &lt;label for="username" class="form-label"&gt;
+                                    ユーザー名 &lt;span class="text-danger"&gt;*&lt;/span&gt;
+                                &lt;/label&gt;
+                                &lt;input type="text" 
+                                       class="form-control &lt;?php echo isset($errors['username']) ? 'is-invalid' : ''; ?&gt;" 
+                                       id="username" 
+                                       name="username" 
+                                       value="&lt;?php echo htmlspecialchars($form_data['username']); ?&gt;"
+                                       placeholder="英数字とアンダースコアのみ（3-50文字）"
+                                       required&gt;
+                                &lt;?php if (isset($errors['username'])): ?&gt;
+                                    &lt;div class="invalid-feedback"&gt;
+                                        &lt;?php echo htmlspecialchars($errors['username']); ?&gt;
+                                    &lt;/div&gt;
+                                &lt;?php endif; ?&gt;
+                                &lt;div class="form-text"&gt;ログイン時に使用します。英数字とアンダースコア（_）のみ使用可能です。&lt;/div&gt;
+                            &lt;/div&gt;
+
+                            &lt;!-- メールアドレス --&gt;
+                            &lt;div class="mb-3"&gt;
+                                &lt;label for="email" class="form-label"&gt;
+                                    メールアドレス &lt;span class="text-danger"&gt;*&lt;/span&gt;
+                                &lt;/label&gt;
+                                &lt;input type="email" 
+                                       class="form-control &lt;?php echo isset($errors['email']) ? 'is-invalid' : ''; ?&gt;" 
+                                       id="email" 
+                                       name="email" 
+                                       value="&lt;?php echo htmlspecialchars($form_data['email']); ?&gt;"
+                                       placeholder="user@example.com"
+                                       required&gt;
+                                &lt;?php if (isset($errors['email'])): ?&gt;
+                                    &lt;div class="invalid-feedback"&gt;
+                                        &lt;?php echo htmlspecialchars($errors['email']); ?&gt;
+                                    &lt;/div&gt;
+                                &lt;?php endif; ?&gt;
+                            &lt;/div&gt;
+
+                            &lt;!-- フルネーム --&gt;
+                            &lt;div class="mb-3"&gt;
+                                &lt;label for="full_name" class="form-label"&gt;
+                                    フルネーム &lt;span class="text-danger"&gt;*&lt;/span&gt;
+                                &lt;/label&gt;
+                                &lt;input type="text" 
+                                       class="form-control &lt;?php echo isset($errors['full_name']) ? 'is-invalid' : ''; ?&gt;" 
+                                       id="full_name" 
+                                       name="full_name" 
+                                       value="&lt;?php echo htmlspecialchars($form_data['full_name']); ?&gt;"
+                                       placeholder="山田 太郎"
+                                       required&gt;
+                                &lt;?php if (isset($errors['full_name'])): ?&gt;
+                                    &lt;div class="invalid-feedback"&gt;
+                                        &lt;?php echo htmlspecialchars($errors['full_name']); ?&gt;
+                                    &lt;/div&gt;
+                                &lt;?php endif; ?&gt;
+                                &lt;div class="form-text"&gt;表示名として使用されます。&lt;/div&gt;
+                            &lt;/div&gt;
+
+                            &lt;!-- 生年月日 --&gt;
+                            &lt;div class="mb-3"&gt;
+                                &lt;label for="birth_date" class="form-label"&gt;生年月日（省略可能）&lt;/label&gt;
+                                &lt;input type="date" 
+                                       class="form-control &lt;?php echo isset($errors['birth_date']) ? 'is-invalid' : ''; ?&gt;" 
+                                       id="birth_date" 
+                                       name="birth_date" 
+                                       value="&lt;?php echo htmlspecialchars($form_data['birth_date']); ?&gt;"
+                                       max="&lt;?php echo date('Y-m-d'); ?&gt;"
+                                       min="1900-01-01"&gt;
+                                &lt;?php if (isset($errors['birth_date'])): ?&gt;
+                                    &lt;div class="invalid-feedback"&gt;
+                                        &lt;?php echo htmlspecialchars($errors['birth_date']); ?&gt;
+                                    &lt;/div&gt;
+                                &lt;?php endif; ?&gt;
+                            &lt;/div&gt;
+
+                            &lt;div class="d-grid gap-2"&gt;
+                                &lt;button type="submit" class="btn btn-warning btn-lg"&gt;
+                                    ユーザーを登録する
+                                &lt;/button&gt;
+                                &lt;a href="list.php" class="btn btn-outline-secondary"&gt;
+                                    ユーザー一覧に戻る
+                                &lt;/a&gt;
+                            &lt;/div&gt;
+                        &lt;/form&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+                        <div class="info">
+                            <h6>フォーム設計のポイント</h6>
+                            <ul>
+                                <li><strong>Bootstrap 5クラス</strong>: form-control、is-invalid等を活用</li>
+                                <li><strong>必須項目マーク</strong>: 赤いアスタリスク（*）で明示</li>
+                                <li><strong>プレースホルダー</strong>: 入力例を示してUXを向上</li>
+                                <li><strong>HTML5バリデーション</strong>: required、type属性等</li>
+                                <li><strong>日付制限</strong>: max、min属性で適切な範囲を設定</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- セクション3.2 -->
+                    <h3 class="section-title" id="section3-2">3.2 包括的な入力値検証システム</h3>
+                    <p>クライアントサイドとサーバーサイドの両方でのバリデーションを実装し、データの整合性とセキュリティを確保します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 3-2: バリデーション機能の強化</h5>
+                        <p>より堅牢なバリデーションシステムとエラーメッセージ表示を実装します。</p>
+                        
+                        <h6>includes/validation.php作成</h6>
+                        <p>バリデーション処理を共通化するためのファイルを作成：</p>
+                        <pre><code>&lt;?php
+/**
+ * バリデーション共通クラス
+ */
+class UserValidator {
+    
+    /**
+     * ユーザーデータの包括的なバリデーション
+     * @param array $data フォームデータ
+     * @return array エラー配列
+     */
+    public static function validate($data) {
+        $errors = [];
+        
+        // ユーザー名バリデーション
+        $username_errors = self::validateUsername($data['username'] ?? '');
+        if (!empty($username_errors)) {
+            $errors['username'] = $username_errors;
+        }
+        
+        // メールアドレスバリデーション
+        $email_errors = self::validateEmail($data['email'] ?? '');
+        if (!empty($email_errors)) {
+            $errors['email'] = $email_errors;
+        }
+        
+        // フルネームバリデーション
+        $fullname_errors = self::validateFullName($data['full_name'] ?? '');
+        if (!empty($fullname_errors)) {
+            $errors['full_name'] = $fullname_errors;
+        }
+        
+        // 生年月日バリデーション（省略可能）
+        if (!empty($data['birth_date'])) {
+            $birthdate_errors = self::validateBirthDate($data['birth_date']);
+            if (!empty($birthdate_errors)) {
+                $errors['birth_date'] = $birthdate_errors;
+            }
+        }
+        
+        return $errors;
+    }
+    
+    /**
+     * ユーザー名のバリデーション
+     */
+    private static function validateUsername($username) {
+        $username = trim($username);
+        
+        if (empty($username)) {
+            return 'ユーザー名は必須です。';
+        }
+        
+        if (strlen($username) < 3) {
+            return 'ユーザー名は3文字以上で入力してください。';
+        }
+        
+        if (strlen($username) > 50) {
+            return 'ユーザー名は50文字以下で入力してください。';
+        }
+        
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $username)) {
+            return 'ユーザー名は英数字とアンダースコア(_)のみ使用できます。';
+        }
+        
+        // 予約語チェック
+        $reserved_words = ['admin', 'root', 'system', 'user', 'test', 'guest'];
+        if (in_array(strtolower($username), $reserved_words)) {
+            return 'このユーザー名は予約されているため使用できません。';
+        }
+        
+        return '';
+    }
+    
+    /**
+     * メールアドレスのバリデーション
+     */
+    private static function validateEmail($email) {
+        $email = trim($email);
+        
+        if (empty($email)) {
+            return 'メールアドレスは必須です。';
+        }
+        
+        if (strlen($email) > 100) {
+            return 'メールアドレスは100文字以下で入力してください。';
+        }
+        
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return '正しいメールアドレス形式で入力してください。';
+        }
+        
+        // 危険なドメインのブラックリスト（例）
+        $blocked_domains = ['tempmail.com', '10minutemail.com'];
+        $domain = substr(strrchr($email, "@"), 1);
+        if (in_array(strtolower($domain), $blocked_domains)) {
+            return 'このメールドメインは使用できません。';
+        }
+        
+        return '';
+    }
+    
+    /**
+     * フルネームのバリデーション
+     */
+    private static function validateFullName($full_name) {
+        $full_name = trim($full_name);
+        
+        if (empty($full_name)) {
+            return 'フルネームは必須です。';
+        }
+        
+        if (strlen($full_name) > 100) {
+            return 'フルネームは100文字以下で入力してください。';
+        }
+        
+        // 特殊文字のチェック（基本的な記号のみ許可）
+        if (preg_match('/[<>"\']/', $full_name)) {
+            return 'フルネームに使用できない文字が含まれています。';
+        }
+        
+        return '';
+    }
+    
+    /**
+     * 生年月日のバリデーション
+     */
+    private static function validateBirthDate($birth_date) {
+        $birth_date = trim($birth_date);
+        
+        // 日付形式チェック
+        $date = DateTime::createFromFormat('Y-m-d', $birth_date);
+        if (!$date || $date->format('Y-m-d') !== $birth_date) {
+            return '正しい日付形式（YYYY-MM-DD）で入力してください。';
+        }
+        
+        // 未来日チェック
+        $today = new DateTime();
+        if ($date > $today) {
+            return '未来の日付は選択できません。';
+        }
+        
+        // 過去日制限チェック
+        $min_date = new DateTime('1900-01-01');
+        if ($date < $min_date) {
+            return '1900年以降の日付を選択してください。';
+        }
+        
+        // 年齢制限チェック（例：150歳以上は無効）
+        $age = $today->diff($date)->y;
+        if ($age > 150) {
+            return '現実的な生年月日を入力してください。';
+        }
+        
+        return '';
+    }
+    
+    /**
+     * CSRF対策トークン生成
+     */
+    public static function generateCsrfToken() {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        $token = bin2hex(random_bytes(32));
+        $_SESSION['csrf_token'] = $token;
+        return $token;
+    }
+    
+    /**
+     * CSRFトークン検証
+     */
+    public static function validateCsrfToken($token) {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        return isset($_SESSION['csrf_token']) && 
+               hash_equals($_SESSION['csrf_token'], $token);
+    }
+}
+?&gt;</code></pre>
+
+                        <div class="highlight">
+                            <h6>バリデーションの特徴</h6>
+                            <ul>
+                                <li><strong>多層防御</strong>: クライアントサイド + サーバーサイド</li>
+                                <li><strong>詳細なエラーメッセージ</strong>: ユーザーにとって分かりやすい説明</li>
+                                <li><strong>セキュリティ重視</strong>: 予約語、危険文字のチェック</li>
+                                <li><strong>現実的な制限</strong>: 年齢、日付の妥当性確認</li>
+                                <li><strong>CSRF対策</strong>: トークンベースの保護</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- セクション3.3 -->
+                    <h3 class="section-title" id="section3-3">3.3 安全なデータベース挿入処理</h3>
+                    <p>PDOプリペアドステートメントを使用した安全なINSERT処理と、重複チェック機能を実装します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 3-3: ユーザーデータ挿入クラスの作成</h5>
+                        <p>データベース操作を担当するUserManagerクラスを作成し、安全性と再利用性を向上させます。</p>
+                        
+                        <h6>includes/UserManager.php作成</h6>
+                        <pre><code>&lt;?php
+require_once 'config/database.php';
+
+/**
+ * ユーザー管理クラス
+ * データベースでのユーザーCRUD操作を担当
+ */
+class UserManager {
+    private $pdo;
+    
+    public function __construct() {
+        $this->pdo = getDatabase();
+    }
+    
+    /**
+     * 新規ユーザー登録
+     * @param array $user_data ユーザーデータ
+     * @return array 結果情報
+     */
+    public function createUser($user_data) {
+        try {
+            // トランザクション開始
+            $this->pdo->beginTransaction();
+            
+            // 重複チェック
+            if ($this->isUserExists($user_data['username'], $user_data['email'])) {
+                $this->pdo->rollBack();
+                return [
+                    'success' => false,
+                    'message' => 'ユーザー名またはメールアドレスが既に使用されています。'
+                ];
+            }
+            
+            // ユーザー挿入
+            $sql = "INSERT INTO users (username, email, full_name, birth_date, created_at, updated_at) 
+                    VALUES (:username, :email, :full_name, :birth_date, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+            
+            $stmt = $this->pdo->prepare($sql);
+            $result = $stmt->execute([
+                'username' => $user_data['username'],
+                'email' => $user_data['email'],
+                'full_name' => $user_data['full_name'],
+                'birth_date' => !empty($user_data['birth_date']) ? $user_data['birth_date'] : null
+            ]);
+            
+            if ($result) {
+                $user_id = $this->pdo->lastInsertId();
+                $this->pdo->commit();
+                
+                return [
+                    'success' => true,
+                    'message' => "ユーザー「{$user_data['full_name']}」を正常に登録しました。",
+                    'user_id' => $user_id
+                ];
+            } else {
+                $this->pdo->rollBack();
+                return [
+                    'success' => false,
+                    'message' => 'ユーザー登録に失敗しました。'
+                ];
+            }
+            
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            error_log("User creation error: " . $e->getMessage());
+            
+            return [
+                'success' => false,
+                'message' => 'データベースエラーが発生しました。しばらく時間をおいてお試しください。'
+            ];
+        }
+    }
+    
+    /**
+     * ユーザー重複チェック
+     * @param string $username
+     * @param string $email
+     * @return bool
+     */
+    public function isUserExists($username, $email) {
+        $sql = "SELECT COUNT(*) FROM users WHERE username = :username OR email = :email";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['username' => $username, 'email' => $email]);
+        return $stmt->fetchColumn() > 0;
+    }
+    
+    /**
+     * 個別重複チェック（詳細なエラーメッセージ用）
+     * @param string $username
+     * @param string $email
+     * @return array
+     */
+    public function checkDuplicates($username, $email) {
+        $duplicates = [];
+        
+        // ユーザー名重複チェック
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM users WHERE username = :username");
+        $stmt->execute(['username' => $username]);
+        if ($stmt->fetchColumn() > 0) {
+            $duplicates['username'] = 'このユーザー名は既に使用されています。';
+        }
+        
+        // メールアドレス重複チェック
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM users WHERE email = :email");
+        $stmt->execute(['email' => $email]);
+        if ($stmt->fetchColumn() > 0) {
+            $duplicates['email'] = 'このメールアドレスは既に登録されています。';
+        }
+        
+        return $duplicates;
+    }
+    
+    /**
+     * 全ユーザー取得
+     * @param int $limit
+     * @param int $offset
+     * @return array
+     */
+    public function getAllUsers($limit = 50, $offset = 0) {
+        $sql = "SELECT id, username, email, full_name, birth_date, created_at 
+                FROM users 
+                ORDER BY created_at DESC 
+                LIMIT :limit OFFSET :offset";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchAll();
+    }
+    
+    /**
+     * ユーザー検索
+     * @param string $keyword
+     * @return array
+     */
+    public function searchUsers($keyword) {
+        $sql = "SELECT id, username, email, full_name, birth_date, created_at 
+                FROM users 
+                WHERE full_name LIKE :keyword 
+                   OR email LIKE :keyword 
+                   OR username LIKE :keyword
+                ORDER BY created_at DESC";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['keyword' => '%' . $keyword . '%']);
+        
+        return $stmt->fetchAll();
+    }
+    
+    /**
+     * ユーザー数カウント
+     * @return int
+     */
+    public function getUserCount() {
+        $stmt = $this->pdo->query("SELECT COUNT(*) FROM users");
+        return $stmt->fetchColumn();
+    }
+}
+?&gt;</code></pre>
+
+                        <div class="warning">
+                            <h6>セキュリティ上の重要なポイント</h6>
+                            <ul>
+                                <li><strong>プリペアドステートメント</strong>: SQLインジェクション攻撃を防止</li>
+                                <li><strong>トランザクション</strong>: データ整合性を保証</li>
+                                <li><strong>エラーログ記録</strong>: セキュリティインシデントの追跡</li>
+                                <li><strong>詳細エラーの隠蔽</strong>: 攻撃者への情報漏洩を防止</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- セクション3.4 -->
+                    <h3 class="section-title" id="section3-4">3.4 エラーハンドリングとユーザビリティ向上</h3>
+                    <p>適切なエラーメッセージ表示とユーザーフレンドリーなインターフェースを実装します。</p>
+
+                    <div class="info">
+                        <h5>エラーハンドリングのベストプラクティス</h5>
+                        <ul>
+                            <li><strong>明確なエラーメッセージ</strong>: ユーザーが理解しやすい説明</li>
+                            <li><strong>フィールド個別エラー表示</strong>: 問題のある項目を特定</li>
+                            <li><strong>成功フィードバック</strong>: 操作完了の明確な通知</li>
+                            <li><strong>フォーム状態保持</strong>: エラー時の入力値維持</li>
+                            <li><strong>視覚的なフィードバック</strong>: Bootstrap 5のis-invalidクラス活用</li>
+                        </ul>
+                    </div>
+
+                    <!-- セクション3.5 -->
+                    <h3 class="section-title" id="section3-5">3.5 総合的な動作確認とテスト</h3>
+                    <p>実装した機能の包括的なテストを行い、正常系・異常系の動作を確認します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 3-4: 機能テストの実施</h5>
+                        <p>作成したユーザー登録機能の総合的なテストを実施します。</p>
+                        
+                        <h6>テスト項目</h6>
+                        <div class="highlight">
+                            <h6>正常系テスト</h6>
+                            <ol>
+                                <li><strong>基本登録</strong>: 必須項目のみでの登録</li>
+                                <li><strong>完全登録</strong>: 全項目入力での登録</li>
+                                <li><strong>日本語名前</strong>: 日本語フルネームでの登録</li>
+                                <li><strong>特殊文字ユーザー名</strong>: アンダースコア含みでの登録</li>
+                            </ol>
+                        </div>
+
+                        <div class="warning">
+                            <h6>異常系テスト</h6>
+                            <ol>
+                                <li><strong>必須項目未入力</strong>: 各必須項目の空欄テスト</li>
+                                <li><strong>文字数制限超過</strong>: 各項目の上限値超過テスト</li>
+                                <li><strong>不正な文字</strong>: 使用不可文字の入力テスト</li>
+                                <li><strong>重複データ</strong>: 既存ユーザー名・メールでの登録試行</li>
+                                <li><strong>不正な日付</strong>: 未来日・形式不正日付の入力</li>
+                                <li><strong>メール形式エラー</strong>: 不正なメールアドレス形式</li>
+                            </ol>
+                        </div>
+
+                        <h6>確認ポイント</h6>
+                        <ul>
+                            <li>適切なエラーメッセージの表示</li>
+                            <li>フォーム状態の保持</li>
+                            <li>視覚的フィードバックの動作</li>
+                            <li>データベースへの正確な挿入</li>
+                            <li>成功時のメッセージ表示</li>
+                        </ul>
+                    </div>
+
+                    <!-- 理解度確認（必須） -->
+                    <div class="quiz-container" id="quiz">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>PHPでPOSTデータを安全に取得し、空白を除去する関数の組み合わせは？</li>
+                            <li>メールアドレスの形式を検証するPHP関数は？</li>
+                            <li>SQLインジェクション攻撃を防ぐPDOの機能は？</li>
+                            <li>Bootstrap 5でフォーム入力エラーを示すCSSクラスは？</li>
+                            <li>データベースでトランザクションを開始するPDOメソッドは？</li>
+                            <li>挿入されたレコードのIDを取得するPDOメソッドは？</li>
+                        </ol>
+                        
+                        <details class="mt-3">
+                            <summary>解答を確認</summary>
+                            <ol>
+                                <li>trim($_POST['field_name'] ?? '')</li>
+                                <li>filter_var($email, FILTER_VALIDATE_EMAIL)</li>
+                                <li>プリペアドステートメント（prepare()とexecute()）</li>
+                                <li>is-invalid</li>
+                                <li>beginTransaction()</li>
+                                <li>lastInsertId()</li>
+                            </ol>
+                        </details>
+                    </div>
+
+                    <!-- 章間ナビゲーション（必須） -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="step2-database-connection.html" class="btn btn-secondary">← 前の章: データベース設計と接続</a>
+                        <a href="step4-user-list-detail.html" class="btn btn-warning">次の章: ユーザー一覧・詳細表示機能 →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // スムーススクロール
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // サイドバーのアクティブリンク更新
+        window.addEventListener('scroll', function() {
+            let current = '';
+            const sections = document.querySelectorAll('h3[id], div[id]');
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
