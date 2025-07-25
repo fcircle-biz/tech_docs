@@ -5,101 +5,105 @@ PHP言語を使用したWebアプリケーション開発の実践的なチュ�
 ## チュートリアル概要
 
 ### 学習目標
-- PHPによるWebアプリケーション開発の基本手法
+- PHPの基本文法と構文の習得
 - HTMLフォームとPHPの連携によるデータ処理
 - PostgreSQLを使用したデータベース連携とCRUD操作
 - セキュリティを意識した開発手法（SQLインジェクション対策等）
-- ブラウザでの動作確認とデバッgging手法
+- ブラウザでの動作確認とテスト手法
 
 ### 対象読者
 - プログラミング初心者・超初心者
-- HTMLとCSSの基本を理解している方
+- HTMLの基本を理解している方
 - Webアプリケーション開発を学びたい方
-- PHPの基本文法を学習中または学習済みの方
+- PHPの基本文法を学習したい方
 - データベース連携Webアプリを作りたい方
 
 ### 特徴
-- フレームワークを使わない生PHP中心の構成
-- 実際の開発現場で使用される基本パターンの習得
-- セキュリティを意識したコーディング手法
-- 段階的に機能を追加する実践的なアプローチ
+- **初心者向けに最適化**: 複雑な機能を排除し、基本的な機能に集中
+- **段階的学習**: 各章でPHP言語理解度クイズによる習熟度確認
+- **実践重視**: 実際に動作するユーザー管理システムを構築
+- **セキュリティ基礎**: SQLインジェクション・XSS対策の基本を学習
 
 ## 前提条件・環境要件
 
 ### 必要なソフトウェア
-- **Webサーバー**: Apache HTTP Server 2.4+ または Nginx
+- **Webサーバー**: Apache HTTP Server（XAMPPに含まれる）
 - **PHP**: PHP 8.0+ （推奨: PHP 8.1以上）
-- **データベース**: PostgreSQL 12+ または 14+
-- **開発環境**: Eclipse IDE for PHP Developers (All-in-One)
-- **エディタ**: Eclipse IDE（PHP開発機能統合）
+- **データベース**: PostgreSQL 12+
+- **開発環境**: Eclipse IDE for PHP Developers
+- **統合環境**: XAMPP（開発環境として推奨）
 
 ### 推奨する基礎知識
-- HTML5 の基本タグと構造
-- CSS の基本的なスタイリング
-- PHP の基本文法（変数、配列、条件分岐、ループ）
+- HTML の基本タグと構造
 - HTTP の基本概念（GET、POST リクエスト）
-- SQL の基本的なCRUD操作
+- 基本的なコンピュータ操作（ファイル作成・編集等）
 
 ## チュートリアル構成
 
 ### Step 1: [環境構築とPHP基礎](https://fcircle-biz.github.io/tech_docs/tutorial/php/step1-environment-setup.html)
-- 開発環境の構築（Eclipse IDE for PHP Developers設定）
-- PHPの基本動作確認
-- HTMLフォームとPHPの連携基礎
-- ファイル構成とディレクトリ設計
+- Eclipse IDE for PHP Developersの設定
+- XAMPPとPostgreSQLの環境構築
+- PHPの基本構文（変数、出力、配列）
+- プロジェクトディレクトリ構成の作成
 
-**所要時間**: 1時間
+**所要時間**: 1.5時間  
+**習得内容**: PHP基本構文、開始タグ、コメント、変数宣言
 
 ### Step 2: [データベース設計と接続](https://fcircle-biz.github.io/tech_docs/tutorial/php/step2-database-connection.html)
-- PostgreSQLデータベースの作成と設定
+- PostgreSQLデータベースの作成
 - PHPからのデータベース接続（PDO使用）
-- テーブル設計とCREATE文の実行
-- 接続エラーハンドリング
+- UserDAOクラスの基本実装
+- 例外処理とエラーハンドリング
 
-**所要時間**: 1.5時間
+**所要時間**: 2時間  
+**習得内容**: PDOクラス、try-catch文、クラス定義、require_once
 
 ### Step 3: [ユーザー登録機能の実装](https://fcircle-biz.github.io/tech_docs/tutorial/php/step3-user-registration.html)
 - ユーザー登録フォームの作成
-- フォームデータの受信と検証
+- POSTデータの処理とバリデーション
 - データベースへのINSERT処理
-- 入力値検証とエラーメッセージ表示
+- フォーム処理の基本パターン
 
-**所要時間**: 2時間
+**所要時間**: 2時間  
+**習得内容**: $_POST、trim()、if文、連想配列、header()、htmlspecialchars()
 
-### Step 4: [ユーザー一覧・詳細表示機能](https://fcircle-bz.github.io/tech_docs/tutorial/php/step4-user-list-detail.html)
+### Step 4: [ユーザー一覧・詳細表示機能](https://fcircle-biz.github.io/tech_docs/tutorial/php/step4-user-list-detail.html)
 - データベースからのデータ取得（SELECT）
-- 一覧画面の作成とデータ表示
+- 一覧画面の基本実装
 - 詳細画面の実装
-- ページ間のナビゲーション
+- 基本的な検索機能
 
-**所要時間**: 2時間
+**所要時間**: 2時間  
+**習得内容**: $_GET、foreach文、アロー演算子、型キャスト、empty()、count()
 
-### Step 5: [ユーザー情報更新・削除機能](https://fcircle-bz.github.io/tech_docs/tutorial/php/step5-user-update-delete.html)
+### Step 5: [ユーザー情報更新・削除機能](https://fcircle-biz.github.io/tech_docs/tutorial/php/step5-user-update-delete.html)
+- UserDAOクラスの拡張（update/deleteメソッド）
 - 編集フォームの実装
-- UPDATE処理の実装
-- DELETE処理の実装
-- 確認ダイアログとユーザビリティ向上
+- UPDATE・DELETE処理の実装
+- 確認ダイアログと安全な削除処理
 
-**所要時間**: 2.5時間
+**所要時間**: 2.5時間  
+**習得内容**: $_SERVER、条件分岐、論理演算子、PDOメソッド、オブジェクト操作
 
-### Step 6: [動作確認とデバッグ手法](https://fcircle-bz.github.io/tech_docs/tutorial/php/step6-testing-debug.html)
+### Step 6: [ブラウザでの動作確認](https://fcircle-biz.github.io/tech_docs/tutorial/php/step6-testing-debug.html)
 - ブラウザでの動作確認手順
-- 各機能のテスト手法
-- PHPエラーログの確認方法
-- デバッグ技術とトラブルシューティング
+- 各機能のテスト方法
+- 基本的なエラー対処法
+- デバッグの基本技術
 
-**所要時間**: 1時間
+**所要時間**: 1時間  
+**習得内容**: error_log()、isset()とempty()の違い、var_dump()、デバッグ関数
 
 ## 作成するアプリケーション概要
 
-### アプリケーション名: Simple User Management System (PHP版)
+### アプリケーション名: Simple User Management System
 
 #### 主な機能
 1. **ユーザー登録** - 新規ユーザーの情報を登録
-2. **ユーザー一覧** - 登録されたユーザーの一覧表示
+2. **ユーザー一覧** - 登録されたユーザーの一覧表示・検索
 3. **ユーザー詳細** - 特定ユーザーの詳細情報表示
 4. **ユーザー編集** - 既存ユーザー情報の更新
-5. **ユーザー削除** - ユーザー情報の削除
+5. **ユーザー削除** - ユーザー情報の安全な削除
 
 #### データベース設計
 ```sql
@@ -115,39 +119,55 @@ CREATE TABLE users (
 ```
 
 #### 技術スタック
-- **言語**: PHP 8.1+
-- **データベース**: PostgreSQL 12+ 
-- **フロントエンド**: HTML5 + Bootstrap 5 + 少量のJavaScript
-- **Webサーバー**: Apache HTTP Server（Eclipse統合環境）
+- **言語**: PHP 8.1+（生PHP、フレームワーク不使用）
+- **データベース**: PostgreSQL 12+
+- **フロントエンド**: HTML5 + Bootstrap 5
+- **Webサーバー**: Apache HTTP Server（XAMPP）
 - **データベース接続**: PDO（PHP Data Objects）
-- **セキュリティ**: 生PHPによる実装（SQLインジェクション対策）
+- **セキュリティ**: プリペアドステートメント、HTMLエスケープ
 
 #### ディレクトリ構成
 ```
-user-management/
-├── index.php              # トップページ
-├── config/
-│   └── database.php       # データベース設定
-├── includes/
-│   ├── header.php         # 共通ヘッダー
-│   └── footer.php         # 共通フッター
-├── users/
-│   ├── list.php           # ユーザー一覧
-│   ├── detail.php         # ユーザー詳細
-│   ├── create.php         # ユーザー登録
-│   ├── edit.php           # ユーザー編集
-│   └── delete.php         # ユーザー削除
-├── assets/
-│   ├── css/
-│   │   └── style.css      # スタイルシート
-│   └── js/
-│       └── script.js      # JavaScript
-└── sql/
-    └── create_tables.sql  # テーブル作成SQL
+user-management
+│  check_extensions.php
+│  DatabaseTest.php
+│  form_test.php
+│  index.php
+│
+├─config
+│      database.php
+│
+├─includes
+│      UserDAO.php
+│      UserValidator.php
+│
+└─users
+        create.php
+        delete.php
+        detail.php
+        edit.php
+        list.php
 ```
 
 ## 総所要時間
-**約10時間**（個人の習熟度により変動）
+**約11時間**（個人の習熟度により変動）
+
+## 学習の特徴
+
+### PHP言語理解度クイズ
+各章の末尾にPHP言語の基本文法や関数に特化したクイズを配置：
+- **Step 1**: PHP基本構文（タグ、コメント、変数、出力関数）
+- **Step 2**: クラスとデータベース基礎（PDO、try-catch、メソッド）
+- **Step 3**: フォーム処理基礎（$_POST、trim()、条件分岐）
+- **Step 4**: 配列とループ処理（$_GET、foreach、型変換）
+- **Step 5**: 条件分岐と論理演算（$_SERVER、if-else、論理演算子）
+- **Step 6**: デバッグと関数理解（error_log()、var_dump()、isset/empty）
+
+### 初心者向け最適化
+- **複雑な機能を除外**: アバター表示、年齢計算、高度な検索機能などを排除
+- **基本機能に集中**: CRUD操作の基本パターンに特化
+- **段階的な理解**: 各章で前章の復習を含む構成
+- **実践的な学習**: 実際に動作するシステムを段階的に構築
 
 ## 参考資料とリンク
 
@@ -156,45 +176,39 @@ user-management/
 - [PostgreSQL公式ドキュメント](https://www.postgresql.jp/document/)
 
 ### 関連技術
-- [HTML5 & CSS3 基礎チュートリアル](https://fcircle-biz.github.io/tech_docs/tutorial/html-css/README.html)
-- [PostgreSQL データベース基礎](https://fcircle-biz.github.io/tech_docs/tutorial/postgresql/README.html)
-- [Bootstrap 5 基礎ガイド](https://fcircle-bz.github.io/tech_docs/tutorial/bootstrap/README.html)
-- [Eclipse IDE for PHP 環境構築ガイド](https://fcircle-bz.github.io/tech_docs/tutorial/eclipse-php/README.html)
-
-### 学習ガイドライン
-- [PHP 学習ガイドライン](https://fcircle-bz.github.io/tech_docs/guide/web-development/php/README.html)
-- [Web開発基礎 学習ガイドライン](https://fcircle-bz.github.io/tech_docs/guide/web-development/basics/README.html)
-- [データベース設計 学習ガイドライン](https://fcircle-bz.github.io/tech_docs/guide/database/postgresql/README.html)
+- [Bootstrap 5 公式ドキュメント](https://getbootstrap.jp/)
+- [HTML5 & CSS3 基礎リファレンス](https://developer.mozilla.org/ja/docs/Web)
 
 ## チュートリアルの進め方
 
-1. **環境準備**: 開発環境の構築と動作確認
-2. **段階実装**: 各ステップを順次実装し動作確認
-3. **コードレビュー**: 実装したコードの品質と安全性確認
-4. **動作確認**: ブラウザでの機能テストの実施
-5. **成果確認**: 各章の課題と振り返り
+1. **環境準備**: XAMPP、PostgreSQL、Eclipse IDEの設定
+2. **段階実装**: 各ステップを順次実装し、必ず動作確認
+3. **クイズ挑戦**: 各章のPHP言語理解度クイズで習熟度確認
+4. **動作テスト**: ブラウザでの機能テストの実施
+5. **コード理解**: 実装したコードの動作原理を理解
 
 ## セキュリティに関する注意事項
 
-- **SQLインジェクション対策**: PDOのプリペアドステートメントを必ず使用
-- **XSS対策**: ユーザー入力データの適切なエスケープ処理
-- **入力値検証**: サーバーサイドでの厳密な入力値チェック
-- **パスワード管理**: password_hash()とpassword_verify()の使用（認証機能追加時）
+- **SQLインジェクション対策**: PDOのプリペアドステートメントを使用
+- **XSS対策**: htmlspecialchars()による出力エスケープ
+- **入力値検証**: サーバーサイドでの適切な入力値チェック
+- **エラーハンドリング**: 適切な例外処理とエラーメッセージ
 
 ## 学習のポイント
 
 ### 初心者向けアドバイス
-- 各ステップで必ず動作確認を行う
-- エラーメッセージをよく読み、原因を理解する
-- コピー&ペーストに頼らず、コードを理解しながら入力する
-- 小さな変更でも頻繁にテストする習慣をつける
+- **動作確認を頻繁に**: 各機能実装後は必ずブラウザで確認
+- **エラーを恐れない**: エラーメッセージから学習する姿勢
+- **コードを理解**: コピー&ペーストでなく、動作原理を理解
+- **小さく始める**: 一度に多くを実装せず、段階的に進める
 
 ### 発展的な学習
-- このチュートリアル完了後は以下の学習を推奨：
-  - フレームワーク（Laravel、Symfony）の学習
-  - オブジェクト指向プログラミングの深化
-  - API開発（RESTful API）
-  - フロントエンドフレームワーク（Vue.js、React）との連携
+このチュートリアル完了後の推奨学習：
+- **フレームワーク**: Laravel、CodeIgniterの学習
+- **オブジェクト指向**: クラス設計とデザインパターン
+- **API開発**: RESTful APIとJSON処理
+- **セキュリティ**: より高度なセキュリティ対策
+- **パフォーマンス**: クエリ最適化とキャッシュ
 
 ## サポート
 

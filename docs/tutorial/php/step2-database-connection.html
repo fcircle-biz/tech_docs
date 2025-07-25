@@ -168,9 +168,6 @@
                             <a class="nav-link" href="#section2-4">2.4 PDO接続実装</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#section2-5">2.5 接続テスト</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link" href="#quiz">理解度確認</a>
                         </li>
                     </ul>
@@ -367,23 +364,16 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO de
 /**
  * データベース接続設定
  * PostgreSQL用PDO接続設定
+ * 初心者向けに名前空間を使わずシンプルに実装
  */
 
 // データベース接続設定
-define('DB_HOST', 'localhost');
-define('DB_PORT', '5432');
-define('DB_NAME', 'user_management');
-define('DB_USER', 'dev_user');          // 開発用ユーザー
-define('DB_PASS', 'dev_password');       // 開発用パスワード
-define('DB_CHARSET', 'utf8');
-
-// PDO接続オプション
-$pdo_options = [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,        // 例外モードを有効化
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,   // 連想配列でフェッチ
-    PDO::ATTR_EMULATE_PREPARES => false,                // プリペアドステートメントのエミュレーション無効
-    PDO::ATTR_STRINGIFY_FETCHES => false                // 数値は数値型で取得
-];
+defined('DB_HOST') || define('DB_HOST', 'localhost');
+defined('DB_PORT') || define('DB_PORT', '5432');
+defined('DB_NAME') || define('DB_NAME', 'user_management');
+defined('DB_USER') || define('DB_USER', 'dev_user');          // 開発用ユーザー
+defined('DB_PASS') || define('DB_PASS', 'dev_password');       // 開発用パスワード
+defined('DB_CHARSET') || define('DB_CHARSET', 'UTF8');
 
 /**
  * データベース接続を取得する関数
@@ -391,32 +381,40 @@ $pdo_options = [
  * @throws PDOException 接続エラー時
  */
 function getDatabase() {
-    global $pdo_options;
+    // PDO接続オプション
+    $pdo_options = [
+        \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,        // 例外モードを有効化
+        \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,   // 連想配列でフェッチ
+        \PDO::ATTR_EMULATE_PREPARES => false,                // プリペアドステートメントのエミュレーション無効
+        \PDO::ATTR_STRINGIFY_FETCHES => false                // 数値は数値型で取得
+    ];
     
     try {
         // PostgreSQL用DSN文字列作成
         $dsn = sprintf(
-            'pgsql:host=%s;port=%s;dbname=%s;charset=%s',
+            'pgsql:host=%s;port=%s;dbname=%s',
             DB_HOST,
             DB_PORT,
-            DB_NAME,
-            DB_CHARSET
+            DB_NAME
         );
         
         // PDO接続オブジェクト作成
-        $pdo = new PDO($dsn, DB_USER, DB_PASS, $pdo_options);
+        $pdo = new \PDO($dsn, DB_USER, DB_PASS, $pdo_options);
+        
+        // PostgreSQLでUTF-8を設定（接続後）
+        $pdo->exec("SET NAMES 'UTF8'");
         
         return $pdo;
         
-    } catch (PDOException $e) {
+    } catch (\PDOException $e) {
         // 接続エラーログ記録（本番環境では詳細な情報を隠す）
         error_log("Database connection error: " . $e->getMessage());
         
         // 開発環境でのみ詳細エラー表示
         if (defined('DEBUG') && DEBUG === true) {
-            throw new PDOException("データベース接続エラー: " . $e->getMessage());
+            throw new \PDOException("データベース接続エラー: " . $e->getMessage());
         } else {
-            throw new PDOException("データベース接続エラーが発生しました。");
+            throw new \PDOException("データベース接続エラーが発生しました。");
         }
     }
 }
@@ -452,7 +450,7 @@ function testDatabaseConnection() {
 }
 
 // デバッグモード設定（開発時のみtrue）
-define('DEBUG', true);
+defined('DEBUG') || define('DEBUG', true);
 ?&gt;</code></pre>
 
                         <div class="warning">
@@ -475,18 +473,18 @@ define('DEBUG', true);
                         <h5>実習 2-4: PDO基本操作の実装</h5>
                         <p>データベース接続からデータ取得まで、PDOの基本的な使用方法を実装します。</p>
                         
-                        <h6>database_test.php作成</h6>
+                        <h6>DatabaseTest.php作成</h6>
                         <p>プロジェクトルートに以下の内容で作成：</p>
                         <pre><code>&lt;?php
 // データベース設定読み込み
 require_once 'config/database.php';
 
 // データベース操作テスト用クラス
-class DatabaseTester {
+class DatabaseTest {
     private $pdo;
     
     public function __construct() {
-        $this->pdo = getDatabase();
+        $this->pdo = getDatabase(); // シンプルな関数呼び出し
     }
     
     /**
@@ -497,7 +495,7 @@ class DatabaseTester {
             $stmt = $this->pdo->query("SELECT * FROM users ORDER BY id");
             return $stmt->fetchAll();
         } catch (PDOException $e) {
-            throw new Exception("ユーザー取得エラー: " . $e->getMessage());
+            throw new PDOException("ユーザー取得エラー: " . $e->getMessage());
         }
     }
     
@@ -507,11 +505,11 @@ class DatabaseTester {
     public function searchUsers($keyword) {
         try {
             $sql = "SELECT * FROM users WHERE full_name LIKE :keyword OR email LIKE :keyword ORDER BY id";
-            $stmt = $this->pdo-&gt;prepare($sql);
-            $stmt-&gt;execute(['keyword' =&gt; '%' . $keyword . '%']);
-            return $stmt-&gt;fetchAll();
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['keyword' => '%' . $keyword . '%']);
+            return $stmt->fetchAll();
         } catch (PDOException $e) {
-            throw new Exception("ユーザー検索エラー: " . $e->getMessage());
+            throw new PDOException("ユーザー検索エラー: " . $e->getMessage());
         }
     }
     
@@ -524,7 +522,7 @@ class DatabaseTester {
             $result = $stmt->fetch();
             return $result['user_count'];
         } catch (PDOException $e) {
-            throw new Exception("ユーザー数取得エラー: " . $e->getMessage());
+            throw new PDOException("ユーザー数取得エラー: " . $e->getMessage());
         }
     }
 }
@@ -532,20 +530,23 @@ class DatabaseTester {
 // テスト実行
 $search_keyword = $_GET['search'] ?? '';
 $connection_test = testDatabaseConnection();
+$error_message = '';
+$users = [];
+$result_message = '';
 
 if ($connection_test['status'] === 'success') {
     try {
-        $tester = new DatabaseTester();
+        $tester = new DatabaseTest();
         $user_count = $tester->getUserCount();
         
         if ($search_keyword) {
             $users = $tester->searchUsers($search_keyword);
-            $result_message = "検索結果: '{$search_keyword}' で {count($users)} 件見つかりました";
+            $result_message = "検索結果: '{$search_keyword}' で " . count($users) . " 件見つかりました";
         } else {
             $users = $tester->getAllUsers();
             $result_message = "全ユーザー: {$user_count} 件";
         }
-    } catch (Exception $e) {
+    } catch (PDOException $e) {
         $error_message = $e->getMessage();
         $users = [];
     }
@@ -652,59 +653,35 @@ if ($connection_test['status'] === 'success') {
 
                         <h6>動作確認</h6>
                         <ol>
-                            <li><strong>ファイル保存</strong>: database_test.phpを保存</li>
-                            <li><strong>ブラウザアクセス</strong>: http://localhost/user-management/database_test.php</li>
+                            <li><strong>ファイル保存</strong>: DatabaseTest.phpを保存</li>
+                            <li><strong>ブラウザアクセス</strong>: http://localhost/user-management/DatabaseTest.php</li>
                             <li><strong>接続確認</strong>: データベース接続状態を確認</li>
                             <li><strong>データ表示確認</strong>: テストデータが表示されることを確認</li>
                             <li><strong>検索機能テスト</strong>: 検索フォームでの絞り込み動作を確認</li>
                         </ol>
                     </div>
 
-                    <!-- セクション2.5 -->
-                    <h3 class="section-title" id="section2-5">2.5 エラーハンドリングとセキュリティ対策</h3>
-                    <p>データベース操作における適切なエラーハンドリングとセキュリティ対策を実装します。</p>
-
-                    <div class="highlight">
-                        <h5>PDO使用時のセキュリティポイント</h5>
-                        <ul>
-                            <li><strong>プリペアドステートメント</strong>: SQLインジェクション攻撃を防止</li>
-                            <li><strong>例外処理</strong>: PDOExceptionの適切なキャッチと処理</li>
-                            <li><strong>エラー情報の隠蔽</strong>: 本番環境での詳細エラー非表示</li>
-                            <li><strong>接続設定の外部化</strong>: 認証情報のハードコード回避</li>
-                        </ul>
-                    </div>
-
-                    <div class="warning">
-                        <h5>本番環境での注意事項</h5>
-                        <ul>
-                            <li><strong>DEBUG設定</strong>: 必ずfalseに設定</li>
-                            <li><strong>エラーログ</strong>: error_log()による適切なログ記録</li>
-                            <li><strong>接続プール</strong>: 大量アクセス時の接続数制限</li>
-                            <li><strong>SSL接続</strong>: 本番環境でのSSL暗号化通信</li>
-                        </ul>
-                    </div>
-
                     <!-- 理解度確認（必須） -->
                     <div class="quiz-container" id="quiz">
                         <h5>理解度確認クイズ</h5>
                         <ol>
-                            <li>PostgreSQLで自動増分のプライマリキーを作成するデータ型は？</li>
+                            <li>PHPでデータベースに接続する際に使用するクラスは？</li>
+                            <li>PHPでtry-catch文を使う目的は？</li>
                             <li>PDOでプリペアドステートメントを作成するメソッドは？</li>
-                            <li>PDOの例外モードを有効化するオプション定数は？</li>
-                            <li>SQLインジェクション攻撃を防ぐPDOの主要機能は？</li>
-                            <li>PostgreSQL接続用のDSN文字列の先頭部分は？</li>
-                            <li>連想配列でデータを取得するPDOフェッチモードは？</li>
+                            <li>PHPでSQLクエリの結果を配列として取得するメソッドは？</li>
+                            <li>PHPでクラスを定義する際に使用するキーワードは？</li>
+                            <li>PHPでrequire_onceの役割は？</li>
                         </ol>
                         
                         <details class="mt-3">
                             <summary>解答を確認</summary>
                             <ol>
-                                <li>SERIAL</li>
+                                <li>PDO</li>
+                                <li>例外処理（エラーハンドリング）</li>
                                 <li>prepare()</li>
-                                <li>PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION</li>
-                                <li>プリペアドステートメント</li>
-                                <li>pgsql:</li>
-                                <li>PDO::FETCH_ASSOC</li>
+                                <li>fetchAll()</li>
+                                <li>class</li>
+                                <li>ファイルを一度だけインクルードする</li>
                             </ol>
                         </details>
                     </div>

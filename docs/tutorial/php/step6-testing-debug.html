@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PHP実践チュートリアル 第6章 - 動作確認とデバッグ手法</title>
+    <title>PHP実践チュートリアル 第6章 - ブラウザでの動作確認</title>
     
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -121,6 +121,23 @@
             border-left: 4px solid #4caf50;
         }
 
+        /* チェックリスト */
+        .checklist {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid #6c757d;
+        }
+
+        .checklist li {
+            margin-bottom: 0.5rem;
+        }
+
+        .checklist input[type="checkbox"] {
+            margin-right: 0.5rem;
+        }
+
         /* ナビゲーション */
         .nav-link.active {
             background-color: #ffc107 !important;
@@ -164,19 +181,13 @@
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href="#section6-1">6.1 統合テスト実行</a>
+                            <a class="nav-link active" href="#section6-1">6.1 ブラウザでの動作確認</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#section6-2">6.2 エラーログ分析</a>
+                            <a class="nav-link" href="#section6-2">6.2 機能テスト手順</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#section6-3">6.3 パフォーマンス測定</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#section6-4">6.4 セキュリティ確認</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#section6-5">6.5 デバッグ技法</a>
+                            <a class="nav-link" href="#section6-3">6.3 エラー確認</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#quiz">理解度確認</a>
@@ -188,877 +199,187 @@
             <!-- メインコンテンツ -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">第6章: 動作確認とデバッグ手法</h1>
+                    <h1 class="h2">第6章: ブラウザでの動作確認</h1>
                 </div>
 
                 <div id="chapter6">
                     <!-- 章タイトル -->
-                    <h2 class="chapter-title">アプリケーション動作確認とデバッグ技法</h2>
+                    <h2 class="chapter-title">アプリケーション動作確認</h2>
                     
                     <div class="highlight">
                         <h5>この章で学ぶこと</h5>
                         <ul>
-                            <li><strong>統合テスト</strong>の実行と確認手法</li>
-                            <li><strong>エラーログ</strong>の分析と活用方法</li>
-                            <li><strong>パフォーマンス測定</strong>とボトルネック発見</li>
-                            <li><strong>セキュリティ確認</strong>と脆弱性チェック</li>
-                            <li><strong>Eclipse IDEデバッグ機能</strong>の活用</li>
+                            <li><strong>ブラウザでの動作確認</strong>手順</li>
+                            <li><strong>機能テスト</strong>の実施方法</li>
+                            <li><strong>基本的なエラー</strong>の確認と対処</li>
+                            <li><strong>アプリケーション完成度</strong>の確認</li>
                         </ul>
                     </div>
 
                     <!-- セクション6.1 -->
-                    <h3 class="section-title" id="section6-1">6.1 システム全体の統合テスト</h3>
-                    <p>開発したユーザー管理システムの全機能を通しでテストし、データの整合性と機能の動作を確認します。</p>
+                    <h3 class="section-title" id="section6-1">6.1 ブラウザでのアクセス確認</h3>
+                    <p>開発したユーザー管理システムをブラウザで確認し、正常に動作することを確認します。</p>
 
                     <div class="exercise-container">
-                        <h5>実習 6-1: 統合テストスクリプトの作成</h5>
-                        <p>全ての機能をシーケンシャルにテストするスクリプトを作成し、データベースの状態変化を確認します。</p>
+                        <h5>実習 6-1: アプリケーションの起動確認</h5>
+                        <p>XAMPPのApacheとPostgreSQLが起動していることを確認し、ブラウザでアプリケーションにアクセスします。</p>
                         
-                        <h6>test_integration.php作成</h6>
-                        <p>プロジェクトルートに以下の内容で作成：</p>
-                        <pre><code>&lt;?php
-// 統合テストスクリプト
-require_once 'config/database.php';
-
-class IntegrationTester {
-    private $pdo;
-    private $test_results = [];
-    
-    public function __construct() {
-        $this->pdo = getDatabase();
-    }
-    
-    /**
-     * 全テスト実行
-     */
-    public function runAllTests() {
-        echo "&lt;h3&gt;統合テスト開始&lt;/h3&gt;\n";
-        
-        $this->testDatabaseConnection();
-        $this->testUserRegistration();
-        $this->testUserListing();
-        $this->testUserUpdate();
-        $this->testUserDeletion();
-        $this->testSearchFunctionality();
-        
-        $this->displayResults();
-    }
-    
-    /**
-     * データベース接続テスト
-     */
-    private function testDatabaseConnection() {
-        try {
-            $stmt = $this->pdo->query("SELECT COUNT(*) as count FROM users");
-            $result = $stmt->fetch();
-            $this->addResult('データベース接続', true, "ユーザー数: {$result['count']}");
-        } catch (Exception $e) {
-            $this->addResult('データベース接続', false, $e->getMessage());
-        }
-    }
-    
-    /**
-     * ユーザー登録テست
-     */
-    private function testUserRegistration() {
-        try {
-            // テストユーザーデータ
-            $test_username = 'test_user_' . date('YmdHis');
-            $test_email = $test_username . '@test.example.com';
-            
-            $sql = "INSERT INTO users (username, email, full_name, birth_date) VALUES (?, ?, ?, ?)";
-            $stmt = $this->pdo->prepare($sql);
-            $result = $stmt->execute([
-                $test_username,
-                $test_email,
-                'テストユーザー統合',
-                '1990-01-01'
-            ]);
-            
-            if ($result) {
-                $this->test_user_id = $this->pdo->lastInsertId();
-                $this->addResult('ユーザー登録', true, "ID: {$this->test_user_id}");
-            } else {
-                $this->addResult('ユーザー登録', false, '登録失敗');
-            }
-        } catch (Exception $e) {
-            $this->addResult('ユーザー登録', false, $e->getMessage());
-        }
-    }
-    
-    /**
-     * ユーザー一覧取得テスト
-     */
-    private function testUserListing() {
-        try {
-            $stmt = $this->pdo->query("SELECT * FROM users ORDER BY id DESC LIMIT 5");
-            $users = $stmt->fetchAll();
-            
-            if (count($users) > 0) {
-                $this->addResult('ユーザー一覧', true, count($users) . "件取得");
-            } else {
-                $this->addResult('ユーザー一覧', false, 'データなし');
-            }
-        } catch (Exception $e) {
-            $this->addResult('ユーザー一覧', false, $e->getMessage());
-        }
-    }
-    
-    /**
-     * ユーザー更新テスト
-     */
-    private function testUserUpdate() {
-        if (!isset($this->test_user_id)) {
-            $this->addResult('ユーザー更新', false, 'テストユーザーなし');
-            return;
-        }
-        
-        try {
-            $sql = "UPDATE users SET full_name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
-            $stmt = $this->pdo->prepare($sql);
-            $result = $stmt->execute(['更新テストユーザー', $this->test_user_id]);
-            
-            if ($result && $stmt->rowCount() > 0) {
-                $this->addResult('ユーザー更新', true, "ID: {$this->test_user_id}");
-            } else {
-                $this->addResult('ユーザー更新', false, '更新されず');
-            }
-        } catch (Exception $e) {
-            $this->addResult('ユーザー更新', false, $e->getMessage());
-        }
-    }
-    
-    /**
-     * 検索機能テスト
-     */
-    private function testSearchFunctionality() {
-        try {
-            $sql = "SELECT * FROM users WHERE full_name LIKE ? OR email LIKE ?";
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute(['%テスト%', '%test%']);
-            $results = $stmt->fetchAll();
-            
-            $this->addResult('検索機能', true, count($results) . "件ヒット");
-        } catch (Exception $e) {
-            $this->addResult('検索機能', false, $e->getMessage());
-        }
-    }
-    
-    /**
-     * ユーザー削除テスト
-     */
-    private function testUserDeletion() {
-        if (!isset($this->test_user_id)) {
-            $this->addResult('ユーザー削除', false, 'テストユーザーなし');
-            return;
-        }
-        
-        try {
-            $sql = "DELETE FROM users WHERE id = ?";
-            $stmt = $this->pdo->prepare($sql);
-            $result = $stmt->execute([$this->test_user_id]);
-            
-            if ($result && $stmt->rowCount() > 0) {
-                $this->addResult('ユーザー削除', true, "ID: {$this->test_user_id}");
-            } else {
-                $this->addResult('ユーザー削除', false, '削除されず');
-            }
-        } catch (Exception $e) {
-            $this->addResult('ユーザー削除', false, $e->getMessage());
-        }
-    }
-    
-    /**
-     * テスト結果追加
-     */
-    private function addResult($test_name, $success, $message) {
-        $this->test_results[] = [
-            'name' => $test_name,
-            'success' => $success,
-            'message' => $message,
-            'time' => microtime(true)
-        ];
-    }
-    
-    /**
-     * テスト結果表示
-     */
-    private function displayResults() {
-        $total = count($this->test_results);
-        $passed = array_filter($this->test_results, function($r) { return $r['success']; });
-        $pass_count = count($passed);
-        
-        echo "&lt;div class=\"mt-4\"&gt;";
-        echo "&lt;h4&gt;テスト結果: {$pass_count}/{$total} 通過&lt;/h4&gt;";
-        
-        foreach ($this->test_results as $result) {
-            $status_class = $result['success'] ? 'success' : 'danger';
-            $status_text = $result['success'] ? '✓ 成功' : '✗ 失敗';
-            
-            echo "&lt;div class=\"alert alert-{$status_class}\"&gt;";
-            echo "&lt;strong&gt;{$result['name']}&lt;/strong&gt;: {$status_text} - {$result['message']}";
-            echo "&lt;/div&gt;";
-        }
-        echo "&lt;/div&gt;";
-    }
-}
-
-// テスト実行
-$tester = new IntegrationTester();
-?&gt;
-&lt;!DOCTYPE html&gt;
-&lt;html lang="ja"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-    &lt;title&gt;統合テスト&lt;/title&gt;
-    &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;div class="container mt-5"&gt;
-        &lt;div class="card"&gt;
-            &lt;div class="card-header bg-warning"&gt;
-                &lt;h3 class="card-title mb-0"&gt;ユーザー管理システム 統合テスト&lt;/h3&gt;
-            &lt;/div&gt;
-            &lt;div class="card-body"&gt;
-                &lt;?php $tester->runAllTests(); ?&gt;
-                
-                &lt;hr&gt;
-                &lt;div class="d-flex gap-2"&gt;
-                    &lt;a href="users/list.php" class="btn btn-primary"&gt;ユーザー一覧&lt;/a&gt;
-                    &lt;a href="users/create.php" class="btn btn-success"&gt;新規登録&lt;/a&gt;
-                    &lt;a href="index.php" class="btn btn-secondary"&gt;トップページ&lt;/a&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
-    &lt;/div&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-
-                        <h6>実行確認</h6>
+                        <h6>手順</h6>
                         <ol>
-                            <li><strong>ファイル保存</strong>: test_integration.phpを保存</li>
-                            <li><strong>ブラウザアクセス</strong>: http://localhost/user-management/test_integration.php</li>
-                            <li><strong>テスト結果確認</strong>: 全ての機能が正常に動作することを確認</li>
+                            <li><strong>XAMPPコントロールパネル</strong>でApacheが<span class="text-success">緑色（起動中）</span>であることを確認</li>
+                            <li><strong>PostgreSQL</strong>サービスが起動していることを確認</li>
+                            <li><strong>ブラウザ</strong>で以下のURLにアクセス：<br>
+                                <code>http://localhost/user-management/users/list.php</code>
+                            </li>
+                            <li>ユーザー管理システムの一覧ページが表示されることを確認</li>
                         </ol>
-                    </div>
-
-                    <!-- セクション6.2 -->
-                    <h3 class="section-title" id="section6-2">6.2 エラーログの分析と活用</h3>
-                    <p>PHPエラーログの設定と分析方法を学習し、問題の早期発見と解決に活用します。</p>
-
-                    <div class="exercise-container">
-                        <h5>実習 6-2: エラーログ監視システムの構築</h5>
-                        <p>エラーログの設定とリアルタイム監視機能を実装します。</p>
-                        
-                        <h6>error_monitor.php作成</h6>
-                        <pre><code>&lt;?php
-/**
- * エラーログ監視システム
- */
-
-class ErrorMonitor {
-    private $log_file;
-    private $max_lines = 100;
-    
-    public function __construct() {
-        // PHPエラーログファイルのパス
-        $this->log_file = ini_get('error_log') ?: '/tmp/php_errors.log';
-        
-        // カスタムエラーハンドラー設定
-        set_error_handler([$this, 'customErrorHandler']);
-        set_exception_handler([$this, 'customExceptionHandler']);
-    }
-    
-    /**
-     * カスタムエラーハンドラー
-     */
-    public function customErrorHandler($severity, $message, $file, $line) {
-        $error_types = [
-            E_ERROR => 'ERROR',
-            E_WARNING => 'WARNING',
-            E_PARSE => 'PARSE',
-            E_NOTICE => 'NOTICE'
-        ];
-        
-        $type = $error_types[$severity] ?? 'UNKNOWN';
-        $log_message = "[{$type}] {$message} in {$file} on line {$line}";
-        
-        error_log($log_message);
-        return true;
-    }
-    
-    /**
-     * カスタム例外ハンドラー
-     */
-    public function customExceptionHandler($exception) {
-        $log_message = "[EXCEPTION] " . $exception->getMessage() . 
-                      " in " . $exception->getFile() . 
-                      " on line " . $exception->getLine();
-        
-        error_log($log_message);
-    }
-    
-    /**
-     * エラーログ読み取り
-     */
-    public function getRecentErrors() {
-        if (!file_exists($this->log_file)) {
-            return ["エラーログファイルが見つかりません: {$this->log_file}"];
-        }
-        
-        $lines = file($this->log_file, FILE_IGNORE_NEW_LINES);
-        if ($lines === false) {
-            return ["エラーログを読み取れません"];
-        }
-        
-        return array_slice($lines, -$this->max_lines);
-    }
-    
-    /**
-     * エラー統計取得
-     */
-    public function getErrorStats() {
-        $errors = $this->getRecentErrors();
-        $stats = [
-            'total' => count($errors),
-            'errors' => 0,
-            'warnings' => 0,
-            'notices' => 0,
-            'exceptions' => 0
-        ];
-        
-        foreach ($errors as $error) {
-            if (strpos($error, '[ERROR]') !== false) $stats['errors']++;
-            elseif (strpos($error, '[WARNING]') !== false) $stats['warnings']++;
-            elseif (strpos($error, '[NOTICE]') !== false) $stats['notices']++;
-            elseif (strpos($error, '[EXCEPTION]') !== false) $stats['exceptions']++;
-        }
-        
-        return $stats;
-    }
-    
-    /**
-     * テストエラー発生
-     */
-    public function generateTestErrors() {
-        // 意図的なWarning
-        $undefined_var = $non_existent_variable;
-        
-        // 意図的なNotice  
-        echo $undefined_array['key'];
-        
-        // 意図的なException
-        try {
-            throw new Exception("テスト例外です");
-        } catch (Exception $e) {
-            $this->customExceptionHandler($e);
-        }
-    }
-}
-
-$monitor = new ErrorMonitor();
-
-// テストエラー生成（GET パラメータで制御）
-if (isset($_GET['generate_errors'])) {
-    $monitor->generateTestErrors();
-}
-
-$recent_errors = $monitor->getRecentErrors();
-$error_stats = $monitor->getErrorStats();
-?&gt;
-&lt;!DOCTYPE html&gt;
-&lt;html lang="ja"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-    &lt;title&gt;エラーログ監視&lt;/title&gt;
-    &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
-    &lt;style&gt;
-        .error-log {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            max-height: 400px;
-            overflow-y: auto;
-            font-family: monospace;
-            font-size: 0.9em;
-        }
-        .error-line {
-            padding: 2px 8px;
-            border-bottom: 1px solid #eee;
-        }
-        .error-line.error { background-color: #ffebee; }
-        .error-line.warning { background-color: #fff3e0; }
-        .error-line.notice { background-color: #e3f2fd; }
-        .error-line.exception { background-color: #f3e5f5; }
-    &lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;div class="container mt-5"&gt;
-        &lt;div class="row"&gt;
-            &lt;div class="col-12"&gt;
-                &lt;div class="card"&gt;
-                    &lt;div class="card-header bg-warning d-flex justify-content-between align-items-center"&gt;
-                        &lt;h3 class="card-title mb-0"&gt;エラーログ監視システム&lt;/h3&gt;
-                        &lt;div&gt;
-                            &lt;a href="?generate_errors=1" class="btn btn-sm btn-danger"&gt;テストエラー生成&lt;/a&gt;
-                            &lt;a href="?" class="btn btn-sm btn-secondary"&gt;更新&lt;/a&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;
-                    &lt;div class="card-body"&gt;
-                        &lt;!-- エラー統計 --&gt;
-                        &lt;div class="row mb-4"&gt;
-                            &lt;div class="col-md-3"&gt;
-                                &lt;div class="card bg-light"&gt;
-                                    &lt;div class="card-body text-center"&gt;
-                                        &lt;h5 class="text-info"&gt;&lt;?php echo $error_stats['total']; ?&gt;&lt;/h5&gt;
-                                        &lt;small&gt;総ログ数&lt;/small&gt;
-                                    &lt;/div&gt;
-                                &lt;/div&gt;
-                            &lt;/div&gt;
-                            &lt;div class="col-md-3"&gt;
-                                &lt;div class="card bg-light"&gt;
-                                    &lt;div class="card-body text-center"&gt;
-                                        &lt;h5 class="text-danger"&gt;&lt;?php echo $error_stats['errors']; ?&gt;&lt;/h5&gt;
-                                        &lt;small&gt;エラー&lt;/small&gt;
-                                    &lt;/div&gt;
-                                &lt;/div&gt;
-                            &lt;/div&gt;
-                            &lt;div class="col-md-3"&gt;
-                                &lt;div class="card bg-light"&gt;
-                                    &lt;div class="card-body text-center"&gt;
-                                        &lt;h5 class="text-warning"&gt;&lt;?php echo $error_stats['warnings']; ?&gt;&lt;/h5&gt;
-                                        &lt;small&gt;警告&lt;/small&gt;
-                                    &lt;/div&gt;
-                                &lt;/div&gt;
-                            &lt;/div&gt;
-                            &lt;div class="col-md-3"&gt;
-                                &lt;div class="card bg-light"&gt;
-                                    &lt;div class="card-body text-center"&gt;
-                                        &lt;h5 class="text-primary"&gt;&lt;?php echo $error_stats['notices']; ?&gt;&lt;/h5&gt;
-                                        &lt;small&gt;通知&lt;/small&gt;
-                                    &lt;/div&gt;
-                                &lt;/div&gt;
-                            &lt;/div&gt;
-                        &lt;/div&gt;
-                        
-                        &lt;!-- エラーログ表示 --&gt;
-                        &lt;h5&gt;最新エラーログ（最大100件）&lt;/h5&gt;
-                        &lt;div class="error-log"&gt;
-                            &lt;?php if (empty($recent_errors)): ?&gt;
-                                &lt;div class="text-center p-3 text-muted"&gt;エラーログはありません&lt;/div&gt;
-                            &lt;?php else: ?&gt;
-                                &lt;?php foreach (array_reverse($recent_errors) as $error): ?&gt;
-                                    &lt;?php
-                                    $class = '';
-                                    if (strpos($error, '[ERROR]') !== false) $class = 'error';
-                                    elseif (strpos($error, '[WARNING]') !== false) $class = 'warning';
-                                    elseif (strpos($error, '[NOTICE]') !== false) $class = 'notice';
-                                    elseif (strpos($error, '[EXCEPTION]') !== false) $class = 'exception';
-                                    ?&gt;
-                                    &lt;div class="error-line &lt;?php echo $class; ?&gt;"&gt;
-                                        &lt;?php echo htmlspecialchars($error); ?&gt;
-                                    &lt;/div&gt;
-                                &lt;?php endforeach; ?&gt;
-                            &lt;?php endif; ?&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
-    &lt;/div&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
 
                         <div class="info">
-                            <h6>エラーログ設定のポイント</h6>
+                            <h6>アクセスできない場合の対処法</h6>
                             <ul>
-                                <li><strong>php.ini設定</strong>: log_errors = On, error_log = ファイルパス</li>
-                                <li><strong>カスタムハンドラー</strong>: set_error_handler()でより詳細な情報収集</li>
-                                <li><strong>例外ハンドラー</strong>: set_exception_handler()で未捕捉例外をログ記録</li>
-                                <li><strong>ログローテーション</strong>: ファイルサイズ制限と古いログの削除</li>
+                                <li><strong>Apache未起動</strong>: XAMPPコントロールパネルでApacheを開始</li>
+                                <li><strong>フォルダがない</strong>: htdocs内にuser-managementフォルダがあるか確認</li>
+                                <li><strong>ファイルがない</strong>: index.phpファイルが存在するか確認</li>
+                                <li><strong>データベース接続エラー</strong>: PostgreSQLが起動しているか確認</li>
                             </ul>
                         </div>
                     </div>
 
-                    <!-- セクション6.3 -->
-                    <h3 class="section-title" id="section6-3">6.3 パフォーマンス測定とプロファイリング</h3>
-                    <p>アプリケーションの実行時間やメモリ使用量を測定し、パフォーマンスボトルネックを特定します。</p>
+                    <!-- セクション6.2 -->
+                    <h3 class="section-title" id="section6-2">6.2 全機能の動作テスト</h3>
+                    <p>ユーザー管理システムの各機能を順番にテストし、正常に動作することを確認します。</p>
 
                     <div class="exercise-container">
-                        <h5>実習 6-3: パフォーマンス測定ツールの作成</h5>
-                        <p>実行時間、メモリ使用量、データベースクエリ実行時間を測定するツールを実装します。</p>
+                        <h5>実習 6-2: 機能テストの実行</h5>
+                        <p>以下のチェックリストに従って、全ての機能をテストしてください。</p>
                         
-                        <h6>performance_monitor.php作成</h6>
-                        <pre><code>&lt;?php
-/**
- * パフォーマンス測定ツール
- */
-require_once 'config/database.php';
+                        <div class="checklist">
+                            <h6>📝 機能テストチェックリスト</h6>
+                            <p>以下の項目を順番に実行し、問題がないかチェックしてください：</p>
+                            
+                            <h6>1. ユーザー登録機能</h6>
+                            <ul style="list-style: none;">
+                                <li><input type="checkbox"> トップページから「新規登録」リンクをクリック</li>
+                                <li><input type="checkbox"> ユーザー名、メールアドレス、フルネーム、生年月日を入力</li>
+                                <li><input type="checkbox"> 「登録する」ボタンをクリック</li>
+                                <li><input type="checkbox"> 「ユーザーを登録しました」メッセージが表示される</li>
+                            </ul>
 
-class PerformanceMonitor {
-    private $start_time;
-    private $start_memory;
-    private $benchmarks = [];
-    
-    public function __construct() {
-        $this->start_time = microtime(true);
-        $this->start_memory = memory_get_usage(true);
-    }
-    
-    /**
-     * ベンチマーク開始
-     */
-    public function startBenchmark($name) {
-        $this->benchmarks[$name] = [
-            'start_time' => microtime(true),
-            'start_memory' => memory_get_usage(true)
-        ];
-    }
-    
-    /**
-     * ベンチマーク終了
-     */
-    public function endBenchmark($name) {
-        if (!isset($this->benchmarks[$name])) {
-            return null;
-        }
-        
-        $end_time = microtime(true);
-        $end_memory = memory_get_usage(true);
-        
-        $this->benchmarks[$name]['end_time'] = $end_time;
-        $this->benchmarks[$name]['end_memory'] = $end_memory;
-        $this->benchmarks[$name]['execution_time'] = $end_time - $this->benchmarks[$name]['start_time'];
-        $this->benchmarks[$name]['memory_used'] = $end_memory - $this->benchmarks[$name]['start_memory'];
-        
-        return $this->benchmarks[$name];
-    }
-    
-    /**
-     * データベースクエリ性能テスト
-     */
-    public function testDatabasePerformance() {
-        $pdo = getDatabase();
-        $results = [];
-        
-        // 1. 全件取得テスト
-        $this->startBenchmark('select_all');
-        $stmt = $pdo->query("SELECT * FROM users");
-        $all_users = $stmt->fetchAll();
-        $this->endBenchmark('select_all');
-        $results['select_all'] = $this->benchmarks['select_all'];
-        $results['select_all']['count'] = count($all_users);
-        
-        // 2. COUNT クエリテスト
-        $this->startBenchmark('count_query');
-        $stmt = $pdo->query("SELECT COUNT(*) as count FROM users");
-        $count_result = $stmt->fetch();
-        $this->endBenchmark('count_query');
-        $results['count_query'] = $this->benchmarks['count_query'];
-        $results['count_query']['result'] = $count_result['count'];
-        
-        // 3. 検索クエリテスト
-        $this->startBenchmark('search_query');
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE full_name LIKE ? OR email LIKE ?");
-        $stmt->execute(['%テスト%', '%test%']);
-        $search_results = $stmt->fetchAll();
-        $this->endBenchmark('search_query');
-        $results['search_query'] = $this->benchmarks['search_query'];
-        $results['search_query']['count'] = count($search_results);
-        
-        // 4. 複雑な検索テスト
-        $this->startBenchmark('complex_query');
-        $stmt = $pdo->prepare("
-            SELECT *, 
-                   EXTRACT(YEAR FROM AGE(birth_date)) as age,
-                   EXTRACT(DAY FROM (CURRENT_TIMESTAMP - created_at)) as days_since_registration
-            FROM users 
-            WHERE birth_date IS NOT NULL 
-            ORDER BY created_at DESC 
-            LIMIT 10
-        ");
-        $stmt->execute();
-        $complex_results = $stmt->fetchAll();
-        $this->endBenchmark('complex_query');
-        $results['complex_query'] = $this->benchmarks['complex_query'];
-        $results['complex_query']['count'] = count($complex_results);
-        
-        return $results;
-    }
-    
-    /**
-     * 大量データ処理テスト
-     */
-    public function testLargeDataProcessing() {
-        $this->startBenchmark('large_data_processing');
-        
-        // 大量の配列データを作成・処理
-        $large_array = range(1, 10000);
-        $processed_array = array_map(function($n) {
-            return $n * $n + sqrt($n);
-        }, $large_array);
-        
-        // 文字列処理
-        $large_string = str_repeat("テストデータ", 1000);
-        $processed_string = mb_strtoupper($large_string);
-        
-        $this->endBenchmark('large_data_processing');
-        
-        return [
-            'array_size' => count($processed_array),
-            'string_length' => mb_strlen($processed_string),
-            'benchmark' => $this->benchmarks['large_data_processing']
-        ];
-    }
-    
-    /**
-     * システム情報取得
-     */
-    public function getSystemInfo() {
-        return [
-            'php_version' => phpversion(),
-            'memory_limit' => ini_get('memory_limit'),
-            'max_execution_time' => ini_get('max_execution_time'),
-            'current_memory_usage' => $this->formatBytes(memory_get_usage(true)),
-            'peak_memory_usage' => $this->formatBytes(memory_get_peak_usage(true)),
-            'total_execution_time' => number_format((microtime(true) - $this->start_time) * 1000, 2) . 'ms'
-        ];
-    }
-    
-    /**
-     * バイト数を読みやすい形式に変換
-     */
-    private function formatBytes($bytes) {
-        $units = ['B', 'KB', 'MB', 'GB'];
-        for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
-            $bytes /= 1024;
-        }
-        return round($bytes, 2) . ' ' . $units[$i];
-    }
-    
-    /**
-     * 実行時間を読みやすい形式に変換
-     */
-    private function formatTime($seconds) {
-        if ($seconds < 0.001) {
-            return number_format($seconds * 1000000, 2) . 'μs';
-        } elseif ($seconds < 1) {
-            return number_format($seconds * 1000, 2) . 'ms';
-        } else {
-            return number_format($seconds, 3) . 's';
-        }
-    }
-}
+                            <h6>2. ユーザー一覧機能</h6>
+                            <ul style="list-style: none;">
+                                <li><input type="checkbox"> トップページから「ユーザー一覧」リンクをクリック</li>
+                                <li><input type="checkbox"> 登録したユーザーがテーブルに表示される</li>
+                                <li><input type="checkbox"> ユーザー名、メール、フルネーム、登録日が正しく表示される</li>
+                                <li><input type="checkbox"> 「詳細」ボタンが各行に表示される</li>
+                            </ul>
 
-$monitor = new PerformanceMonitor();
+                            <h6>3. ユーザー詳細機能</h6>
+                            <ul style="list-style: none;">
+                                <li><input type="checkbox"> 一覧から「詳細」ボタンをクリック</li>
+                                <li><input type="checkbox"> ユーザーの詳細情報が表示される</li>
+                                <li><input type="checkbox"> 「編集」と「削除」ボタンが表示される</li>
+                                <li><input type="checkbox"> 「一覧に戻る」ボタンで一覧ページに戻れる</li>
+                            </ul>
 
-// テスト実行
-$db_performance = $monitor->testDatabasePerformance();
-$data_processing = $monitor->testLargeDataProcessing();
-$system_info = $monitor->getSystemInfo();
-?&gt;
-&lt;!DOCTYPE html&gt;
-&lt;html lang="ja"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-    &lt;title&gt;パフォーマンス測定&lt;/title&gt;
-    &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;div class="container mt-5"&gt;
-        &lt;div class="row"&gt;
-            &lt;div class="col-12"&gt;
-                &lt;div class="card"&gt;
-                    &lt;div class="card-header bg-warning"&gt;
-                        &lt;h3 class="card-title mb-0"&gt;パフォーマンス測定結果&lt;/h3&gt;
-                    &lt;/div&gt;
-                    &lt;div class="card-body"&gt;
-                        &lt;!-- システム情報 --&gt;
-                        &lt;h5&gt;システム情報&lt;/h5&gt;
-                        &lt;div class="row mb-4"&gt;
-                            &lt;?php foreach ($system_info as $key =&gt; $value): ?&gt;
-                                &lt;div class="col-md-4 mb-2"&gt;
-                                    &lt;div class="card bg-light"&gt;
-                                        &lt;div class="card-body text-center"&gt;
-                                            &lt;h6&gt;&lt;?php echo $value; ?&gt;&lt;/h6&gt;
-                                            &lt;small&gt;&lt;?php echo str_replace('_', ' ', ucfirst($key)); ?&gt;&lt;/small&gt;
-                                        &lt;/div&gt;
-                                    &lt;/div&gt;
-                                &lt;/div&gt;
-                            &lt;?php endforeach; ?&gt;
-                        &lt;/div&gt;
-                        
-                        &lt;!-- データベース性能 --&gt;
-                        &lt;h5&gt;データベースクエリ性能&lt;/h5&gt;
-                        &lt;div class="table-responsive mb-4"&gt;
-                            &lt;table class="table table-striped"&gt;
-                                &lt;thead&gt;
-                                    &lt;tr&gt;
-                                        &lt;th&gt;テスト名&lt;/th&gt;
-                                        &lt;th&gt;実行時間&lt;/th&gt;
-                                        &lt;th&gt;メモリ使用量&lt;/th&gt;
-                                        &lt;th&gt;結果件数&lt;/th&gt;
-                                    &lt;/tr&gt;
-                                &lt;/thead&gt;
-                                &lt;tbody&gt;
-                                    &lt;?php foreach ($db_performance as $test_name =&gt; $result): ?&gt;
-                                        &lt;tr&gt;
-                                            &lt;td&gt;&lt;strong&gt;&lt;?php echo str_replace('_', ' ', ucfirst($test_name)); ?&gt;&lt;/strong&gt;&lt;/td&gt;
-                                            &lt;td&gt;&lt;?php echo $monitor-&gt;formatTime($result['execution_time']); ?&gt;&lt;/td&gt;
-                                            &lt;td&gt;&lt;?php echo $monitor-&gt;formatBytes($result['memory_used']); ?&gt;&lt;/td&gt;
-                                            &lt;td&gt;&lt;?php echo $result['count'] ?? $result['result'] ?? '-'; ?&gt;&lt;/td&gt;
-                                        &lt;/tr&gt;
-                                    &lt;?php endforeach; ?&gt;
-                                &lt;/tbody&gt;
-                            &lt;/table&gt;
-                        &lt;/div&gt;
-                        
-                        &lt;!-- データ処理性能 --&gt;
-                        &lt;h5&gt;大量データ処理性能&lt;/h5&gt;
-                        &lt;div class="row"&gt;
-                            &lt;div class="col-md-4"&gt;
-                                &lt;div class="card bg-light"&gt;
-                                    &lt;div class="card-body text-center"&gt;
-                                        &lt;h6&gt;&lt;?php echo $monitor-&gt;formatTime($data_processing['benchmark']['execution_time']); ?&gt;&lt;/h6&gt;
-                                        &lt;small&gt;実行時間&lt;/small&gt;
-                                    &lt;/div&gt;
-                                &lt;/div&gt;
-                            &lt;/div&gt;
-                            &lt;div class="col-md-4"&gt;
-                                &lt;div class="card bg-light"&gt;
-                                    &lt;div class="card-body text-center"&gt;
-                                        &lt;h6&gt;&lt;?php echo $monitor-&gt;formatBytes($data_processing['benchmark']['memory_used']); ?&gt;&lt;/h6&gt;
-                                        &lt;small&gt;メモリ使用量&lt;/small&gt;
-                                    &lt;/div&gt;
-                                &lt;/div&gt;
-                            &lt;/div&gt;
-                            &lt;div class="col-md-4"&gt;
-                                &lt;div class="card bg-light"&gt;
-                                    &lt;div class="card-body text-center"&gt;
-                                        &lt;h6&gt;&lt;?php echo number_format($data_processing['array_size']); ?&gt;&lt;/h6&gt;
-                                        &lt;small&gt;処理データ数&lt;/small&gt;
-                                    &lt;/div&gt;
-                                &lt;/div&gt;
-                            &lt;/div&gt;
-                        &lt;/div&gt;
-                        
-                        &lt;hr&gt;
-                        &lt;div class="d-flex gap-2"&gt;
-                            &lt;a href="?" class="btn btn-warning"&gt;再測定&lt;/a&gt;
-                            &lt;a href="error_monitor.php" class="btn btn-info"&gt;エラーログ監視&lt;/a&gt;
-                            &lt;a href="test_integration.php" class="btn btn-success"&gt;統合テスト&lt;/a&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
-    &lt;/div&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-                    </div>
+                            <h6>4. ユーザー編集機能</h6>
+                            <ul style="list-style: none;">
+                                <li><input type="checkbox"> 詳細ページから「編集」ボタンをクリック</li>
+                                <li><input type="checkbox"> 現在の情報がフォームに入力済みで表示される</li>
+                                <li><input type="checkbox"> 情報を変更して「更新する」ボタンをクリック</li>
+                                <li><input type="checkbox"> 「ユーザー情報を更新しました」メッセージが表示される</li>
+                            </ul>
 
-                    <!-- セクション6.4 -->
-                    <h3 class="section-title" id="section6-4">6.4 セキュリティ確認とコード診断</h3>
-                    <p>開発したアプリケーションのセキュリティホールや脆弱性を検出し、対策を確認します。</p>
-
-                    <div class="exercise-container">
-                        <h5>実習 6-4: セキュリティチェックツールの実装</h5>
-                        <p>SQLインジェクション、XSS、CSRF等の脆弱性をチェックするツールを作成します。</p>
-                        
-                        <div class="warning">
-                            <h6>セキュリティチェック項目</h6>
-                            <ul>
-                                <li><strong>SQLインジェクション対策</strong>: プリペアドステートメントの使用確認</li>
-                                <li><strong>XSS対策</strong>: htmlspecialchars()による出力エスケープ確認</li>
-                                <li><strong>CSRF対策</strong>: トークン検証機能の実装確認</li>
-                                <li><strong>入力値検証</strong>: バリデーション処理の確認</li>
-                                <li><strong>パスワードセキュリティ</strong>: ハッシュ化の実装確認</li>
+                            <h6>5. ユーザー削除機能</h6>
+                            <ul style="list-style: none;">
+                                <li><input type="checkbox"> 詳細ページから「削除」ボタンをクリック</li>
+                                <li><input type="checkbox"> 削除確認ページが表示される</li>
+                                <li><input type="checkbox"> 削除対象のユーザー情報が表示される</li>
+                                <li><input type="checkbox"> 「削除する」ボタンをクリックし、確認ダイアログで「OK」</li>
+                                <li><input type="checkbox"> 一覧ページに戻り、ユーザーが削除されている</li>
                             </ul>
                         </div>
 
                         <div class="success">
-                            <h6>このチュートリアルで実装済みのセキュリティ対策</h6>
-                            <ul>
-                                <li>✓ <strong>PDOプリペアドステートメント</strong>でSQLインジェクション対策</li>
-                                <li>✓ <strong>htmlspecialchars()</strong>でXSS対策</li>
-                                <li>✓ <strong>入力値バリデーション</strong>でデータ整合性確保</li>
-                                <li>✓ <strong>エラーハンドリング</strong>で情報漏洩防止</li>
-                            </ul>
+                            <h6>✅ 全てのチェックが完了した場合</h6>
+                            <p>おめでとうございます！ユーザー管理システムが正常に動作しています。</p>
                         </div>
                     </div>
 
-                    <!-- セクション6.5 -->
-                    <h3 class="section-title" id="section6-5">6.5 Eclipse IDEを活用したデバッグ技法</h3>
-                    <p>Eclipse IDEの強力なデバッグ機能を活用して、効率的な問題解決を行います。</p>
+                    <!-- セクション6.3 -->
+                    <h3 class="section-title" id="section6-3">6.3 基本的なエラー確認</h3>
+                    <p>よくあるエラーとその対処法を確認し、問題が発生した際の解決方法を学習します。</p>
 
                     <div class="exercise-container">
-                        <h5>実習 6-5: Eclipse PHPデバッガーの活用</h5>
-                        <p>Eclipse IDEのブレークポイント、ステップ実行、変数監視機能を活用したデバッグ手法を習得します。</p>
+                        <h5>実習 6-3: エラー確認と対処</h5>
+                        <p>以下のエラーが発生した場合の対処法を確認してください。</p>
                         
-                        <h6>デバッグ設定手順</h6>
-                        <ol>
-                            <li><strong>Xdebugの有効化</strong>: php.iniでXdebug拡張を有効にする</li>
-                            <li><strong>デバッグ設定</strong>: Eclipse のPHP Debug設定を確認</li>
-                            <li><strong>ブレークポイント設定</strong>: デバッグしたい行をダブルクリック</li>
-                            <li><strong>デバッグ実行</strong>: Run → Debug As → PHP Web Page</li>
-                        </ol>
+                        <h6>よくあるエラーと対処法</h6>
 
-                        <div class="info">
-                            <h6>効果的なデバッグテクニック</h6>
-                            <ul>
-                                <li><strong>条件付きブレークポイント</strong>: 特定の条件でのみ停止</li>
-                                <li><strong>変数ウォッチ</strong>: 変数の値をリアルタイム監視</li>
-                                <li><strong>ステップイン/アウト</strong>: 関数呼び出しを詳細に追跡</li>
-                                <li><strong>コールスタック確認</strong>: 実行経路の履歴を確認</li>
-                            </ul>
+                        <div class="warning">
+                            <h6>🚫 「データベースに接続できません」エラー</h6>
+                            <p><strong>原因</strong>: PostgreSQLサービスが停止している</p>
+                            <p><strong>対処法</strong>:</p>
+                            <ol>
+                                <li>PostgreSQLサービスを起動する</li>
+                                <li>config/database.phpの接続情報を確認する</li>
+                                <li>データベース名、ユーザー名、パスワードが正しいか確認</li>
+                            </ol>
                         </div>
 
-                        <h6>代替デバッグ方法</h6>
-                        <p>Xdebugが利用できない場合の手動デバッグ手法：</p>
-                        <pre><code>&lt;?php
-// 1. var_dump()による変数内容確認
-var_dump($variable);
+                        <div class="warning">
+                            <h6>🚫 「ページが見つかりません」エラー</h6>
+                            <p><strong>原因</strong>: ファイルパスが間違っている</p>
+                            <p><strong>対処法</strong>:</p>
+                            <ol>
+                                <li>URLが正しいか確認（http://localhost/user-management/users/...）</li>
+                                <li>ファイルが正しい場所に保存されているか確認</li>
+                                <li>Apacheが起動しているか確認</li>
+                            </ol>
+                        </div>
 
-// 2. print_r()による配列・オブジェクト表示
-print_r($array);
+                        <div class="warning">
+                            <h6>🚫 「テーブルが見つかりません」エラー</h6>
+                            <p><strong>原因</strong>: データベーステーブルが作成されていない</p>
+                            <p><strong>対処法</strong>:</p>
+                            <ol>
+                                <li>pgAdminでデータベースに接続</li>
+                                <li>usersテーブルが存在するか確認</li>
+                                <li>存在しない場合は、step2のSQL文を実行してテーブルを作成</li>
+                            </ol>
+                        </div>
 
-// 3. error_log()によるログ出力
-error_log("Debug: " . print_r($data, true));
-
-// 4. 実行時間計測
-$start = microtime(true);
-// 処理
-$end = microtime(true);
-echo "実行時間: " . ($end - $start) . "秒";
-
-// 5. メモリ使用量確認
-echo "メモリ使用量: " . memory_get_usage(true) . " bytes";
-?&gt;</code></pre>
+                        <div class="info">
+                            <h6>💡 エラー確認のコツ</h6>
+                            <ul>
+                                <li><strong>ブラウザの開発者ツール</strong>（F12キー）でエラー詳細を確認</li>
+                                <li><strong>PHPエラーメッセージ</strong>を注意深く読む</li>
+                                <li><strong>手順を一つずつ</strong>確認して、どの段階でエラーが発生するかを特定</li>
+                                <li><strong>設定ファイル</strong>（database.php等）の内容を確認</li>
+                            </ul>
+                        </div>
                     </div>
 
                     <!-- 理解度確認（必須） -->
                     <div class="quiz-container" id="quiz">
                         <h5>理解度確認クイズ</h5>
                         <ol>
-                            <li>統合テストで確認すべき主要な項目を3つ挙げてください。</li>
-                            <li>PHPでカスタムエラーハンドラーを設定する関数は？</li>
-                            <li>パフォーマンス測定で重要な2つの指標は？</li>
-                            <li>SQLインジェクション対策として最も効果的な方法は？</li>
-                            <li>XSS対策で出力時に使用するPHP関数は？</li>
-                            <li>Eclipse IDEでブレークポイントを設定する方法は？</li>
+                            <li>PHPでエラーメッセージをログに出力する関数は？</li>
+                            <li>PHPでisset()関数とempty()関数の違いは？</li>
+                            <li>PHPでvar_dump()関数の用途は？</li>
+                            <li>PHPでexitとdieの違いは？</li>
+                            <li>PHPでmicrotime()関数の用途は？</li>
+                            <li>PHPでmemory_get_usage()関数の用途は？</li>
                         </ol>
                         
                         <details class="mt-3">
                             <summary>解答を確認</summary>
                             <ol>
-                                <li>データベース接続、CRUD操作、エラーハンドリング</li>
-                                <li>set_error_handler()</li>
-                                <li>実行時間、メモリ使用量</li>
-                                <li>プリペアドステートメントの使用</li>
-                                <li>htmlspecialchars()</li>
-                                <li>対象行をダブルクリック</li>
+                                <li>error_log()</li>
+                                <li>isset()は変数が定義されているかチェック、empty()は空かどうかチェック</li>
+                                <li>変数の内容とデータ型を詳細に出力</li>
+                                <li>機能的には同じ（処理を終了する）</li>
+                                <li>現在時刻をマイクロ秒まで取得</li>
+                                <li>現在のメモリ使用量を取得</li>
                             </ol>
                         </details>
                     </div>
@@ -1067,14 +388,24 @@ echo "メモリ使用量: " . memory_get_usage(true) . " bytes";
                         <h5>🎉 PHP実践チュートリアル完了！</h5>
                         <p>お疲れさまでした！このチュートリアルを通じて、以下のスキルを習得しました：</p>
                         <ul>
-                            <li>Eclipse IDE for PHP Developersによる開発環境構築</li>
-                            <li>PostgreSQLデータベースとPDOによる安全な接続</li>
-                            <li>ユーザー管理システムの実装（CRUD操作）</li>
-                            <li>セキュリティ対策（SQLインジェクション、XSS防止）</li>
-                            <li>エラーハンドリングとデバッグ技法</li>
-                            <li>パフォーマンス測定と最適化</li>
+                            <li><strong>環境構築</strong>: XAMPPとPostgreSQLによる開発環境</li>
+                            <li><strong>データベース接続</strong>: PDOによる安全な接続</li>
+                            <li><strong>ユーザー登録機能</strong>: フォーム処理とバリデーション</li>
+                            <li><strong>ユーザー一覧・詳細機能</strong>: データの表示と検索</li>
+                            <li><strong>ユーザー更新・削除機能</strong>: データの編集と削除</li>
+                            <li><strong>動作確認</strong>: ブラウザでのテスト手法</li>
                         </ul>
-                        <p>これらの基礎知識を活用して、さらに高度なWebアプリケーション開発に挑戦してください！</p>
+                        <p>これらの基礎知識を活用して、さらなるWebアプリケーション開発に挑戦してください！</p>
+                        
+                        <div class="mt-3">
+                            <h6>次のステップ</h6>
+                            <ul>
+                                <li>画像アップロード機能の追加</li>
+                                <li>ユーザー認証（ログイン・ログアウト）機能</li>
+                                <li>より高度な検索・フィルタ機能</li>
+                                <li>レスポンシブデザインの改善</li>
+                            </ul>
+                        </div>
                     </div>
 
                     <!-- 章間ナビゲーション（必須） -->
@@ -1124,6 +455,31 @@ echo "メモリ使用量: " . memory_get_usage(true) . " bytes";
                     link.classList.add('active');
                 }
             });
+        });
+
+        // チェックリストの進捗管理
+        const checkboxes = document.querySelectorAll('.checklist input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const totalCheckboxes = checkboxes.length;
+                const checkedCheckboxes = document.querySelectorAll('.checklist input[type="checkbox"]:checked').length;
+                const progress = Math.round((checkedCheckboxes / totalCheckboxes) * 100);
+                
+                // 進捗をローカルストレージに保存（任意）
+                localStorage.setItem('testProgress', JSON.stringify({
+                    checked: checkedCheckboxes,
+                    total: totalCheckboxes,
+                    progress: progress
+                }));
+            });
+        });
+
+        // ページ読み込み時に進捗を復元（任意）
+        window.addEventListener('load', function() {
+            const savedProgress = localStorage.getItem('testProgress');
+            if (savedProgress) {
+                // 必要に応じて進捗を復元する処理をここに追加
+            }
         });
     </script>
 </body>
