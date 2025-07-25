@@ -241,20 +241,20 @@
 
                     <div class="highlight">
                         <h5>Strutsリクエスト処理フロー</h5>
-                        <p>ログイン処理を例としたHTTPリクエスト処理の詳細フローです：</p>
+                        <p>ユーザー管理機能を例としたHTTPリクエスト処理の詳細フローです：</p>
                         <ol>
                             <li><strong>HTTPリクエスト送信</strong><br>
-                                <em>クライアントから「/login.do」URLリクエストがサーバーに送信</em></li>
+                                <em>クライアントから「/userList.do」URLリクエストがサーバーに送信</em></li>
                             <li><strong>ActionServletによる受信</strong><br>
                                 <em>フロントコントローラーパターンによるリクエスト受信</em></li>
                             <li><strong>設定ファイル参照</strong><br>
                                 <em>struts-config.xmlからURL-Actionマッピング情報を取得</em></li>
                             <li><strong>データバインディング</strong><br>
-                                <em>リクエストパラメータをActionFormオブジェクトに自動マッピング</em></li>
+                                <em>リクエストパラメータをActionFormオブジェクトに自動マッピング（該当する場合）</em></li>
                             <li><strong>ビジネスロジック実行</strong><br>
-                                <em>Actionクラスのexecuteメソッドで認証処理を実行</em></li>
+                                <em>Actionクラスのexecuteメソッドでユーザー一覧取得処理を実行</em></li>
                             <li><strong>フォワード先決定</strong><br>
-                                <em>ActionForwardによる遷移先JSPの決定（success/failure）</em></li>
+                                <em>ActionForwardによる遷移先JSPの決定（success/error）</em></li>
                             <li><strong>レスポンス生成</strong><br>
                                 <em>JSPテンプレートエンジンによるHTML生成とクライアント送信</em></li>
                         </ol>
@@ -269,8 +269,8 @@
                         <h5>設定ファイルの役割</h5>
                         <p>struts-config.xmlは<strong>フロントコントローラーパターン</strong>における設定情報の一元管理を担います。</p>
                         <ul>
-                            <li><code>/login.do</code> → <code>LoginAction</code>クラスへのディスパッチ設定</li>
                             <li><code>/userList.do</code> → <code>UserListAction</code>クラスへのマッピング設定</li>
+                            <li><code>/userForm.do</code> → <code>UserFormAction</code>クラスへのディスパッチ設定</li>
                         </ul>
                         <p>XML形式による宣言的設定により、プログラムコードを変更することなく制御フローを管理できます。</p>
                     </div>
@@ -298,8 +298,6 @@
     
     &lt;!-- フォームBean定義 --&gt;
     &lt;form-beans&gt;
-        &lt;form-bean name="loginForm" 
-                   type="com.example.struts.form.LoginForm"/&gt;
         &lt;form-bean name="userForm"
                    type="com.example.struts.form.UserForm"/&gt;
     &lt;/form-beans&gt;
@@ -312,28 +310,11 @@
     &lt;/global-exceptions&gt;
 
     &lt;global-forwards&gt;
-        &lt;forward name="login" path="/pages/login.jsp"/&gt;
-        &lt;forward name="home" path="/pages/home.jsp"/&gt;
         &lt;forward name="error" path="/pages/error.jsp"/&gt;
     &lt;/global-forwards&gt;
 
     &lt;!-- アクションマッピング --&gt;
     &lt;action-mappings&gt;
-        &lt;!-- ログインフォーム表示 --&gt;
-        &lt;action path="/loginForm"
-                forward="/pages/login.jsp"/&gt;
-        
-        &lt;!-- ログイン処理 --&gt;
-        &lt;action path="/login"
-                type="com.example.struts.action.LoginAction"
-                name="loginForm"
-                scope="request"
-                validate="true"
-                input="/pages/login.jsp"&gt;
-            &lt;forward name="success" path="/pages/home.jsp"/&gt;
-            &lt;forward name="failure" path="/pages/login.jsp"/&gt;
-        &lt;/action&gt;
-        
         &lt;!-- ユーザー一覧 --&gt;
         &lt;action path="/userList"
                 type="com.example.struts.action.UserListAction"
@@ -401,8 +382,8 @@
                     </div>
 
                     <div class="exercise-container">
-                        <h5>実習 2-2: LoginActionクラスの実装</h5>
-                        <p>認証処理を担当するLoginActionクラスを実装し、エンタープライズ開発における標準的なAction実装パターンを学習します。</p>
+                        <h5>実習 2-2: UserListActionクラスの実装</h5>
+                        <p>ユーザー一覧表示を担当するUserListActionクラスを実装し、エンタープライズ開発における標準的なAction実装パターンを学習します。</p>
                         
                         <h6>クラス作成手順</h6>
                         <ol>
@@ -410,17 +391,18 @@
                             <li>「<strong>New</strong>」 → 「<strong>Package</strong>」を選択</li>
                             <li>パッケージ名に「<strong>com.example.struts.action</strong>」と入力 → 「Finish」</li>
                             <li>作成されたパッケージを右クリック → 「<strong>New</strong>」 → 「<strong>Class</strong>」</li>
-                            <li>クラス名に「<strong>LoginAction</strong>」と入力 → 「Finish」</li>
+                            <li>クラス名に「<strong>UserListAction</strong>」と入力 → 「Finish」</li>
                             <li>作成されたファイルの中身を<strong>全て消して</strong>、以下を貼り付け：</li>
                         </ol>
                         
-                        <h6>LoginAction.java実装</h6>
-                        <p><em>以下のコードをLoginAction.javaに実装してください：</em></p>
+                        <h6>UserListAction.java実装</h6>
+                        <p><em>以下のコードをUserListAction.javaに実装してください：</em></p>
                         <pre><code>package com.example.struts.action;
+
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
@@ -429,10 +411,10 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 
-import com.example.struts.form.LoginForm;
+import com.example.struts.model.User;
 import com.example.struts.service.UserService;
 
-public class LoginAction extends Action {
+public class UserListAction extends Action {
     
     private UserService userService = new UserService();
     
@@ -442,44 +424,24 @@ public class LoginAction extends Action {
                                 HttpServletRequest request,
                                 HttpServletResponse response) {
         
-        // ActionFormのキャスト
-        LoginForm loginForm = (LoginForm) form;
-        
-        // フォームからデータを取得
-        String username = loginForm.getUsername();
-        String password = loginForm.getPassword();
-        
         try {
-            // ユーザー認証処理
-            if (userService.authenticate(username, password)) {
-                // 認証成功時
-                HttpSession session = request.getSession();
-                session.setAttribute("username", username);
-                
-                // 成功メッセージ設定
-                ActionMessages messages = new ActionMessages();
-                messages.add(ActionMessages.GLOBAL_MESSAGE,
-                    new ActionMessage("login.success", username));
-                saveMessages(request, messages);
-                
-                return mapping.findForward("success");
-            } else {
-                // 認証失敗時
-                ActionMessages errors = new ActionMessages();
-                errors.add(ActionMessages.GLOBAL_MESSAGE,
-                    new ActionMessage("login.error.invalid"));
-                saveErrors(request, errors);
-                
-                return mapping.findForward("failure");
-            }
+            // ユーザー一覧取得処理
+            List<User> userList = userService.getAllUsers();
+            
+            // リクエストスコープにユーザー一覧を設定
+            request.setAttribute("userList", userList);
+            
+            // 成功時のフォワード
+            return mapping.findForward("success");
+            
         } catch (Exception e) {
             // システムエラー
             ActionMessages errors = new ActionMessages();
             errors.add(ActionMessages.GLOBAL_MESSAGE,
-                new ActionMessage("login.error.system"));
+                new ActionMessage("user.list.error.system"));
             saveErrors(request, errors);
             
-            return mapping.findForward("failure");
+            return mapping.findForward("error");
         }
     }
 }</code></pre>
@@ -489,10 +451,10 @@ public class LoginAction extends Action {
                             <ol>
                                 <li><strong>クラス設計</strong>: <code>org.apache.struts.action.Action</code>の継承</li>
                                 <li><strong>エントリーポイント</strong>: <code>execute</code>メソッドのオーバーライド</li>
-                                <li><strong>データ取得</strong>: ActionFormからの入力データ抽出</li>
-                                <li><strong>ビジネスロジック</strong>: サービス層との連携による処理実行</li>
+                                <li><strong>データ取得</strong>: サービス層からのビジネスデータ取得</li>
+                                <li><strong>スコープ設定</strong>: requestスコープへのデータ格納</li>
                                 <li><strong>フロー制御</strong>: ActionForwardによる遷移先制御</li>
-                                <li><strong>例外処理</strong>: 適切なエラーハンドリングとログ出力</li>
+                                <li><strong>例外処理</strong>: 適切なエラーハンドリングとメッセージ表示</li>
                             </ol>
                         </div>
                         
@@ -500,7 +462,7 @@ public class LoginAction extends Action {
                             <h6>コンパイル時の注意点</h6>
                             <ul>
                                 <li><strong>import文の解決</strong>: Eclipse IDEのクイックフィックス機能を活用</li>
-                                <li><strong>依存クラス</strong>: UserServiceクラスは後の章で実装予定</li>
+                                <li><strong>依存クラス</strong>: UserServiceクラス、Userモデルクラスは後の章で実装予定</li>
                             </ul>
                         </div>
                     </div>
@@ -519,182 +481,14 @@ public class LoginAction extends Action {
                         <p><strong>実例:</strong> ログインフォームでは、ユーザー認証情報（ユーザー名、パスワード）を包含します。</p>
                     </div>
 
-                    <div class="exercise-container">
-                        <h5>実習 2-3: LoginFormクラスの実装</h5>
-                        <p>認証フォームのデータバインディングとバリデーションを担当するActionFormクラスを実装し、エンタープライズ開発における標準的なフォーム処理パターンを学習します。</p>
-                        
-                        <h6>LoginForm.java</h6>
-                        <pre><code>package com.example.struts.form;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionErrors;
-import org.apache.struts.action.ActionMessage;
-
-public class LoginForm extends ActionForm {
-    
-    private String username;
-    private String password;
-    private boolean rememberMe;
-    
-    // getter/setterメソッド
-    public String getUsername() {
-        return username;
-    }
-    
-    public void setUsername(String username) {
-        this.username = username;
-    }
-    
-    public String getPassword() {
-        return password;
-    }
-    
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    
-    public boolean isRememberMe() {
-        return rememberMe;
-    }
-    
-    public void setRememberMe(boolean rememberMe) {
-        this.rememberMe = rememberMe;
-    }
-    
-    // バリデーション
-    @Override
-    public ActionErrors validate(ActionMapping mapping,
-                                HttpServletRequest request) {
-        
-        ActionErrors errors = new ActionErrors();
-        
-        // ユーザー名の検証
-        if (username == null || username.trim().isEmpty()) {
-            errors.add("username", 
-                new ActionMessage("error.username.required"));
-        } else if (username.length() &lt; 3 || username.length() &gt; 20) {
-            errors.add("username",
-                new ActionMessage("error.username.length"));
-        }
-        
-        // パスワードの検証
-        if (password == null || password.trim().isEmpty()) {
-            errors.add("password",
-                new ActionMessage("error.password.required"));
-        } else if (password.length() &lt; 6) {
-            errors.add("password",
-                new ActionMessage("error.password.minlength"));
-        }
-        
-        return errors;
-    }
-    
-    // フォームのリセット
-    @Override
-    public void reset(ActionMapping mapping,
-                     HttpServletRequest request) {
-        username = "";
-        password = "";
-        rememberMe = false;
-    }
-}</code></pre>
-
-                        <h6>ActionFormの標準メソッド</h6>
-                        <ul>
-                            <li><strong>validate()</strong>: サーバーサイドバリデーションの実装</li>
-                            <li><strong>reset()</strong>: フォームフィールドの初期化処理</li>
-                            <li><strong>getter/setter</strong>: JavaBean仕様に基づくプロパティアクセス</li>
-                        </ul>
-                    </div>
 
                     <!-- セクション2.5 -->
                     <h3 class="section-title" id="section2-5">2.5 JSPビューとStrutsタグライブラリ</h3>
                     <p>Strutsフレームワークが提供するタグライブラリを活用したJSPビューの実装手法を学習します。プレゼンテーション層におけるフォーム処理、エラー表示、国際化対応の標準的な実装パターンを習得します。</p>
 
-                    <div class="exercise-container">
-                        <h5>実習 2-4: login.jspテンプレートの実装</h5>
-                        <p>Strutsタグライブラリを活用した認証フォームのJSPテンプレートを実装し、エンタープライズ開発におけるプレゼンテーション層の標準的な構成手法を学習します。</p>
-                        
-                        <h6>login.jsp作成</h6>
-                        <p>src/main/webapp/login.jsp:</p>
-                        <pre><code>&lt;%@ page contentType="text/html; charset=UTF-8" %&gt;
-&lt;%@ taglib uri="http://struts.apache.org/tags-html" prefix="html" %&gt;
-&lt;%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean" %&gt;
-
-&lt;html lang="ja"&gt;
-&lt;head&gt;
-    &lt;title&gt;&lt;bean:message key="login.title"/&gt;&lt;/title&gt;
-    &lt;style&gt;
-        body { font-family: Arial, sans-serif; margin: 50px; }
-        .form-container { max-width: 400px; margin: 0 auto; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; }
-        input[type="text"], input[type="password"] { 
-            width: 100%; padding: 8px; border: 1px solid #ccc; 
-        }
-        .error { color: red; font-size: 12px; }
-        .message { color: green; font-weight: bold; }
-        .submit-btn { 
-            background-color: #f57c00; color: white; 
-            padding: 10px 20px; border: none; cursor: pointer;
-        }
-    &lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;div class="form-container"&gt;
-        &lt;h2&gt;&lt;bean:message key="login.title"/&gt;&lt;/h2&gt;
-        
-        &lt;!-- エラーメッセージ表示 --&gt;
-        &lt;html:errors/&gt;
-        
-        &lt;!-- 成功メッセージ表示 --&gt;
-        &lt;html:messages id="message" message="true"&gt;
-            &lt;div class="message"&gt;
-                &lt;bean:write name="message"/&gt;
-            &lt;/div&gt;
-        &lt;/html:messages&gt;
-        
-        &lt;!-- ログインフォーム --&gt;
-        &lt;html:form action="/login"&gt;
-            &lt;div class="form-group"&gt;
-                &lt;label for="username"&gt;
-                    &lt;bean:message key="login.username"/&gt;:
-                &lt;/label&gt;
-                &lt;html:text property="username" styleId="username"/&gt;
-                &lt;div style="color: red; font-size: 0.9em;"&gt;
-                    &lt;html:errors property="username"/&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
-            
-            &lt;div class="form-group"&gt;
-                &lt;label for="password"&gt;
-                    &lt;bean:message key="login.password"/&gt;:
-                &lt;/label&gt;
-                &lt;html:password property="password" styleId="password"/&gt;
-                &lt;div style="color: red; font-size: 0.9em;"&gt;
-                    &lt;html:errors property="password"/&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
-            
-            &lt;div class="form-group"&gt;
-                &lt;html:checkbox property="rememberMe"/&gt;
-                &lt;bean:message key="login.remember.me"/&gt;
-            &lt;/div&gt;
-            
-            &lt;div class="form-group"&gt;
-                &lt;html:submit style="background-color: #007bff; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;"&gt;
-                    &lt;bean:message key="login.submit"/&gt;
-                &lt;/html:submit&gt;
-            &lt;/div&gt;
-        &lt;/html:form&gt;
-    &lt;/div&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-
+                    <div class="highlight">
                         <h6>Strutsタグライブラリの主要コンポーネント</h6>
+                        <p>JSPビューでは、以下のStrutsタグライブラリを使用してActionFormとの連携を行います：</p>
                         <ul>
                             <li><strong>&lt;html:form&gt;</strong>: ActionFormと連携したフォーム要素</li>
                             <li><strong>&lt;html:text&gt;</strong>: テキスト入力フィールドとデータバインディング</li>
@@ -703,6 +497,7 @@ public class LoginForm extends ActionForm {
                             <li><strong>&lt;html:errors&gt;</strong>: バリデーションエラーの表示制御</li>
                             <li><strong>&lt;bean:message&gt;</strong>: 国際化メッセージリソースの参照</li>
                         </ul>
+                    </div>
 
                         <h6>MessageResources.properties作成</h6>
                         <div class="highlight">
@@ -712,21 +507,20 @@ public class LoginForm extends ActionForm {
                             <p><strong>使用方法:</strong> .propertiesファイルを右クリック → 「プログラムから開く」 → 「Limyプロパティエディタ」を選択</p>
                         </div>
                         <p>src/main/resources/MessageResources.properties:</p>
-                        <pre><code># ログイン画面
-login.title=ログイン
-login.username=ユーザー名
-login.password=パスワード
-login.remember.me=ログイン状態を記憶する
-login.submit=ログイン
-login.success=ようこそ、{0}さん
-login.error.invalid=ユーザー名またはパスワードが間違っています
-login.error.system=システムエラーが発生しました
+                        <pre><code># ユーザー管理関連メッセージ
+user.create.success=ユーザー「{0}」を登録しました
+user.create.error.system=システムエラーが発生しました。しばらく時間をおいてお試しください
+user.list.error.system=ユーザー一覧の取得に失敗しました
 
-# エラーメッセージ
+# バリデーションメッセージ
 error.username.required=ユーザー名を入力してください
 error.username.length=ユーザー名は3文字以上20文字以下で入力してください
-error.password.required=パスワードを入力してください
-error.password.minlength=パスワードは6文字以上で入力してください</code></pre>
+error.username.format=ユーザー名は英数字とアンダースコアのみ使用可能です
+error.email.required=メールアドレスを入力してください
+error.email.format=正しいメールアドレスの形式で入力してください
+error.fullname.required=フルネームを入力してください
+error.fullname.length=フルネームは100文字以下で入力してください
+error.birthdate.format=生年月日はYYYY-MM-DD形式で入力してください</code></pre>
                     </div>
 
                     <!-- 注意点 -->
