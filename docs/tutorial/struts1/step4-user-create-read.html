@@ -242,7 +242,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionErrors;
-import org.apache.struts.action.ActionError;
+import org.apache.struts.action.ActionMessage;
 
 public class UserForm extends ActionForm {
     
@@ -281,38 +281,38 @@ public class UserForm extends ActionForm {
         // ユーザー名の検証
         if (username == null || username.trim().isEmpty()) {
             errors.add("username", 
-                new ActionError("error.username.required"));
+                new ActionMessage("error.username.required"));
         } else if (username.length() &lt; 3 || username.length() &gt; 20) {
             errors.add("username",
-                new ActionError("error.username.length"));
+                new ActionMessage("error.username.length"));
         } else if (!username.matches("^[a-zA-Z0-9_]+$")) {
             errors.add("username",
-                new ActionError("error.username.format"));
+                new ActionMessage("error.username.format"));
         }
         
         // メールアドレスの検証
         if (email == null || email.trim().isEmpty()) {
             errors.add("email",
-                new ActionError("error.email.required"));
+                new ActionMessage("error.email.required"));
         } else if (!email.matches("^[\\w\\.-]+@[\\w\\.-]+\\.[a-zA-Z]{2,}$")) {
             errors.add("email",
-                new ActionError("error.email.format"));
+                new ActionMessage("error.email.format"));
         }
         
         // フルネームの検証
         if (fullName == null || fullName.trim().isEmpty()) {
             errors.add("fullName",
-                new ActionError("error.fullname.required"));
+                new ActionMessage("error.fullname.required"));
         } else if (fullName.length() &gt; 100) {
             errors.add("fullName",
-                new ActionError("error.fullname.length"));
+                new ActionMessage("error.fullname.length"));
         }
         
         // 生年月日の検証（省略可能）
         if (birthDate != null && !birthDate.trim().isEmpty()) {
             if (!birthDate.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
                 errors.add("birthDate",
-                    new ActionError("error.birthdate.format"));
+                    new ActionMessage("error.birthdate.format"));
             }
         }
         
@@ -429,34 +429,38 @@ public class UserForm extends ActionForm {
         &lt;html:form action="/userCreate"&gt;
             &lt;div class="form-group"&gt;
                 &lt;label for="username"&gt;ユーザー名 *&lt;/label&gt;
-                &lt;html:text property="username" styleId="username" 
-                          placeholder="3-20文字の英数字とアンダースコア"/&gt;
-                &lt;html:errors property="username" styleClass="error"/&gt;
+                &lt;html:text property="username" styleId="username"/&gt;
+                &lt;div style="color: red; font-size: 0.9em;"&gt;
+                    &lt;html:errors property="username"/&gt;
+                &lt;/div&gt;
             &lt;/div&gt;
             
             &lt;div class="form-group"&gt;
                 &lt;label for="email"&gt;メールアドレス *&lt;/label&gt;
-                &lt;html:text property="email" styleId="email"
-                          placeholder="例: user@example.com"/&gt;
-                &lt;html:errors property="email" styleClass="error"/&gt;
+                &lt;html:text property="email" styleId="email"/&gt;
+                &lt;div style="color: red; font-size: 0.9em;"&gt;
+                    &lt;html:errors property="email"/&gt;
+                &lt;/div&gt;
             &lt;/div&gt;
             
             &lt;div class="form-group"&gt;
                 &lt;label for="fullName"&gt;フルネーム *&lt;/label&gt;
-                &lt;html:text property="fullName" styleId="fullName"
-                          placeholder="例: 田中太郎"/&gt;
-                &lt;html:errors property="fullName" styleClass="error"/&gt;
+                &lt;html:text property="fullName" styleId="fullName"/&gt;
+                &lt;div style="color: red; font-size: 0.9em;"&gt;
+                    &lt;html:errors property="fullName"/&gt;
+                &lt;/div&gt;
             &lt;/div&gt;
             
             &lt;div class="form-group"&gt;
                 &lt;label for="birthDate"&gt;生年月日（任意）&lt;/label&gt;
-                &lt;html:text property="birthDate" styleId="birthDate"
-                          placeholder="YYYY-MM-DD 形式"/&gt;
-                &lt;html:errors property="birthDate" styleClass="error"/&gt;
+                &lt;html:text property="birthDate" styleId="birthDate"/&gt;
+                &lt;div style="color: red; font-size: 0.9em;"&gt;
+                    &lt;html:errors property="birthDate"/&gt;
+                &lt;/div&gt;
             &lt;/div&gt;
             
             &lt;div class="form-group"&gt;
-                &lt;html:submit styleClass="submit-btn"&gt;登録&lt;/html:submit&gt;
+                &lt;html:submit style="background-color: #007bff; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;"&gt;登録&lt;/html:submit&gt;
                 &lt;a href="userList.do" class="cancel-btn"&gt;キャンセル&lt;/a&gt;
             &lt;/div&gt;
         &lt;/html:form&gt;
@@ -763,8 +767,9 @@ public class UserListAction extends Action {
         &lt;/html:messages&gt;
         
         &lt;!-- エラーメッセージ表示 --&gt;
-        &lt;html:errors property="org.apache.struts.action.GLOBAL_MESSAGE" 
-                    styleClass="error"/&gt;
+        &lt;div style="color: red; font-size: 0.9em;"&gt;
+            &lt;html:errors property="org.apache.struts.action.GLOBAL_MESSAGE"/&gt;
+        &lt;/div&gt;
         
         &lt;!-- ユーザー一覧テーブル --&gt;
         &lt;logic:notEmpty name="userList"&gt;
@@ -830,40 +835,74 @@ public class UserListAction extends Action {
                         <h5>実習 4-4: struts-config.xml更新</h5>
                         <p>新しく作成したActionマッピングを追加します。</p>
                         
-                        <h6>struts-config.xml 追加設定</h6>
-                        <pre><code>&lt;!-- 既存のform-beans要素に追加 --&gt;
-&lt;form-beans&gt;
-    &lt;form-bean name="userForm" 
-               type="com.example.struts.form.UserForm"/&gt;
-&lt;/form-beans&gt;
+                        <div class="warning">
+                            <h6>⚠️ 重要な設定上の注意</h6>
+                            <p><strong>ForwardConfigエラー対策:</strong> step2で作成した基本設定と重複を避けるため、<strong>struts-config.xml を完全に以下の内容で置き換え</strong>してください。追加ではなく、全体の置き換えが必要です。</p>
+                        </div>
+                        
+                        <h6>struts-config.xml 完全版設定</h6>
+                        <pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE struts-config PUBLIC
+  "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+  "http://struts.apache.org/dtds/struts-config_1_3.dtd"&gt;
 
-&lt;!-- 既存のaction-mappings要素に追加 --&gt;
-&lt;action-mappings&gt;
-    &lt;!-- ユーザー登録フォーム表示 --&gt;
-    &lt;action path="/userForm"
-            type="com.example.struts.action.UserFormAction"&gt;
-        &lt;forward name="success" path="/userForm.jsp"/&gt;
-    &lt;/action&gt;
+&lt;struts-config&gt;
     
-    &lt;!-- ユーザー登録処理 --&gt;
-    &lt;action path="/userCreate"
-            type="com.example.struts.action.UserCreateAction"
-            name="userForm"
-            scope="request"
-            validate="true"
-            input="/userForm.jsp"&gt;
-        &lt;forward name="success" path="/userList.do" redirect="true"/&gt;
-    &lt;/action&gt;
-    
-    &lt;!-- ユーザー一覧表示 --&gt;
-    &lt;action path="/userList"
-            type="com.example.struts.action.UserListAction"&gt;
-        &lt;forward name="success" path="/userList.jsp"/&gt;
-        &lt;forward name="error" path="/error.jsp"/&gt;
-    &lt;/action&gt;
-&lt;/action-mappings&gt;</code></pre>
+    &lt;!-- フォームBean定義 --&gt;
+    &lt;form-beans&gt;
+        &lt;form-bean name="userForm"
+                   type="com.example.struts.form.UserForm"/&gt;
+    &lt;/form-beans&gt;
 
-                        <h6>ApplicationResources.properties 追加</h6>
+    &lt;!-- グローバル設定 --&gt;
+    &lt;global-exceptions&gt;
+        &lt;exception key="global.error.system"
+                   type="java.lang.Exception"
+                   path="/pages/error.jsp"/&gt;
+    &lt;/global-exceptions&gt;
+
+    &lt;global-forwards&gt;
+        &lt;forward name="error" path="/pages/error.jsp"/&gt;
+    &lt;/global-forwards&gt;
+
+    &lt;!-- アクションマッピング --&gt;
+    &lt;action-mappings&gt;
+        &lt;!-- ユーザー登録フォーム表示 --&gt;
+        &lt;action path="/userForm"
+                type="com.example.struts.action.UserFormAction"
+                name="userForm"
+                scope="request"
+                validate="false"&gt;
+            &lt;forward name="success" path="/pages/userForm.jsp"/&gt;
+        &lt;/action&gt;
+        
+        &lt;!-- ユーザー登録処理 --&gt;
+        &lt;action path="/userCreate"
+                type="com.example.struts.action.UserCreateAction"
+                name="userForm"
+                scope="request"
+                validate="true"
+                input="/pages/userForm.jsp"&gt;
+            &lt;forward name="success" path="/userList.do" redirect="true"/&gt;
+        &lt;/action&gt;
+        
+        &lt;!-- ユーザー一覧表示 --&gt;
+        &lt;action path="/userList"
+                type="com.example.struts.action.UserListAction"&gt;
+            &lt;forward name="success" path="/pages/userList.jsp"/&gt;
+            &lt;forward name="error" path="/pages/error.jsp"/&gt;
+        &lt;/action&gt;
+    &lt;/action-mappings&gt;
+
+    &lt;!-- メッセージリソース --&gt;
+    &lt;message-resources parameter="MessageResources"/&gt;
+    
+&lt;/struts-config&gt;</code></pre>
+
+                        <h6>MessageResources.properties 追加</h6>
+                        <div class="highlight">
+                            <p><strong>💡 編集方法:</strong> EclipseのLimyプロパティエディタを使用して以下の内容を追加してください。日本語文字が自動的にUnicodeエスケープ形式に変換されます。</p>
+                        </div>
                         <pre><code># ユーザー管理関連メッセージ
 user.create.success=ユーザー「{0}」を登録しました
 user.create.error.system=システムエラーが発生しました。しばらく時間をおいてお試しください
@@ -951,6 +990,38 @@ error.birthdate.format=生年月日はYYYY-MM-DD形式で入力してくださ�
             &lt;html:errors/&gt;
             &lt;p&gt;申し訳ございません。システムエラーが発生しました。&lt;br&gt;
             しばらく時間をおいてから再度お試しください。&lt;/p&gt;
+            
+            &lt;%-- 例外の詳細情報を表示（開発環境用） --%&gt;
+            &lt;% if (exception != null) { %&gt;
+                &lt;div style="margin-top: 30px; padding: 20px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; text-align: left;"&gt;
+                    &lt;h4 style="color: #dc3545; margin-bottom: 15px;"&gt;🔧 開発者向け詳細情報&lt;/h4&gt;
+                    
+                    &lt;div style="margin-bottom: 15px;"&gt;
+                        &lt;strong&gt;例外クラス:&lt;/strong&gt; &lt;%= exception.getClass().getName() %&gt;
+                    &lt;/div&gt;
+                    
+                    &lt;div style="margin-bottom: 15px;"&gt;
+                        &lt;strong&gt;エラーメッセージ:&lt;/strong&gt;
+                        &lt;div style="background-color: #fff3cd; padding: 10px; border-radius: 4px; border-left: 4px solid #ffc107;"&gt;
+                            &lt;%= exception.getMessage() != null ? exception.getMessage() : "メッセージがありません" %&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    
+                    &lt;div&gt;
+                        &lt;strong&gt;スタックトレース:&lt;/strong&gt;
+                        &lt;pre style="background-color: #f8f9fa; padding: 15px; border: 1px solid #dee2e6; border-radius: 4px; overflow-x: auto; font-size: 12px; max-height: 300px; overflow-y: auto;"&gt;&lt;%
+                            java.io.StringWriter sw = new java.io.StringWriter();
+                            java.io.PrintWriter pw = new java.io.PrintWriter(sw);
+                            exception.printStackTrace(pw);
+                            out.print(sw.toString());
+                        %&gt;&lt;/pre&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;% } else { %&gt;
+                &lt;div style="margin-top: 20px; padding: 15px; background-color: #d1ecf1; border: 1px solid #bee5eb; border-radius: 4px;"&gt;
+                    &lt;strong&gt;ℹ️ 情報:&lt;/strong&gt; 例外オブジェクトが見つかりません。
+                &lt;/div&gt;
+            &lt;% } %&gt;
         &lt;/div&gt;
         
         &lt;div&gt;

@@ -165,10 +165,18 @@
                         
                         <h6>基本的なブラウザテスト手順</h6>
                         <ol>
-                            <li><strong>アプリケーションの起動</strong>:
+                            <li><strong>アプリケーションの起動確認</strong>:
                                 <ul>
                                     <li>EclipseでプロジェクトをTomcatサーバーで実行</li>
-                                    <li>ブラウザで <code>http://localhost:8080/struts-learning/</code> にアクセス</li>
+                                    <li>Tomcatの起動ログを確認（Console画面で "Server startup" を確認）</li>
+                                    <li>プロジェクト名を確認（通常、Eclipseのプロジェクト名がコンテキストパスになる）</li>
+                                </ul>
+                            </li>
+                            <li><strong>アクセス方法</strong>:
+                                <ul>
+                                    <li><strong>推奨</strong>: 直接アクションにアクセス <code>http://localhost:8080/[プロジェクト名]/userList.do</code></li>
+                                    <li>または: <code>http://localhost:8080/[プロジェクト名]/index.jsp</code></li>
+                                    <li>⚠️ <code>http://localhost:8080/[プロジェクト名]/</code> では404エラーになる場合があります</li>
                                 </ul>
                             </li>
                             <li><strong>ユーザー登録機能の確認</strong>:
@@ -201,7 +209,45 @@
                         </ol>
 
                         <div class="warning">
-                            <h6>テスト実行時の注意点</h6>
+                            <h6>500エラー（Internal Server Error）の対処法</h6>
+                            <p><strong>「HTTPステータス 500 – Internal Server Error」</strong>が表示される場合の解決方法：</p>
+                            <ul>
+                                <li><strong>Struts 1.x タグライブラリの属性エラー</strong>:
+                                    <ul>
+                                        <li>エラー例: <code>&lt;html:errors styleClass="error"/&gt;</code></li>
+                                        <li>修正: <code>&lt;div style="color: red; font-size: 0.9em;"&gt;&lt;html:errors/&gt;&lt;/div&gt;</code></li>
+                                        <li>理由: Struts 1.xでは<code>styleClass</code>や<code>style</code>属性は使用できません。divでラップしてスタイルを適用</li>
+                                    </ul>
+                                </li>
+                                <li><strong>JSPコンパイルエラー</strong>: Tomcatのlogディレクトリでcatalina.outファイルを確認</li>
+                                <li><strong>Actionクラスのエラー</strong>: try-catch文でエラーハンドリングを実装</li>
+                                <li><strong>データベース接続エラー</strong>: データベースサーバーの起動状態を確認</li>
+                                <li><strong>バリデーションエラーメッセージが表示されない</strong>:
+                                    <ul>
+                                        <li>現象: userForm.jspで必須項目（メールアドレス、フルネーム等）が未入力でもエラーメッセージが表示されない</li>
+                                        <li>原因1: フォーム送信先のアクション設定でvalidate="false"になっている</li>
+                                        <li>原因2: MessageResources.propertiesにエラーメッセージキーが定義されていない</li>
+                                        <li>原因3: JSPでのエラーメッセージ表示タグが適切に配置されていない</li>
+                                        <li>修正1: <code>&lt;action path="/userCreate" ... validate="true"&gt;</code>を確認</li>
+                                        <li>修正2: MessageResources.propertiesに<code>error.email.required=メールアドレスを入力してください</code>等を追加</li>
+                                        <li>修正3: JSPの各入力項目下に<code>&lt;div style="color: red;"&gt;&lt;html:errors property="email"/&gt;&lt;/div&gt;</code>を配置</li>
+                                        <li>修正4: UserFormクラスのvalidate()メソッドで適切なActionErrorsを返すことを確認</li>
+                                    </ul>
+                                </li>
+                                <li><strong>ForwardConfigエラー（path cannot be null）</strong>:
+                                    <ul>
+                                        <li>エラー例: <code>java.lang.IllegalArgumentException: The path of an ForwardConfig cannot be null</code></li>
+                                        <li>原因1: struts-config.xmlのaction要素でname属性やscope属性が不足</li>
+                                        <li>原因2: <strong>設定の重複</strong> - 複数のaction-mappings要素が存在し、設定が競合</li>
+                                        <li>修正1: <code>&lt;action path="/userForm" type="..." name="userForm" scope="request"&gt;</code></li>
+                                        <li>修正2: <strong>struts-config.xmlを完全版で置き換え</strong> - 追加ではなく全体を置き換える</li>
+                                        <li>修正3: <strong>フォーム表示アクションにvalidate="false"を追加</strong> - フォーム表示時はバリデーション不要</li>
+                                        <li>理由: ActionFormを使用するActionではname属性とscope属性の指定が必須。また、重複した設定は最後のものが有効になり、不完全な設定で上書きされる可能性がある。フォーム表示アクション（/userForm, /userEdit）はバリデーション不要のためvalidate="false"を設定</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            
+                            <h6>その他の注意点</h6>
                             <ul>
                                 <li>データベースに接続されていることを確認</li>
                                 <li>Tomcatサーバーが正常に起動していることを確認</li>
