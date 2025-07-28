@@ -159,6 +159,9 @@
                             <a class="nav-link" href="#section1-4">1.4 Hello Worldアプリ</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="#section1-5">1.5 文字エンコーディング設定</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="#quiz">理解度確認</a>
                         </li>
                     </ul>
@@ -490,6 +493,126 @@
                         </div>
                     </div>
 
+                    <!-- セクション1.5 -->
+                    <h3 class="section-title" id="section1-5">1.5 日本語対応のための文字エンコーディング設定</h3>
+                    <p>日本語を含むWebアプリケーションでは、文字化けを防ぐために文字エンコーディングフィルターの設定が必要です。この設定を行わないと、フォーム入力時に全角文字（ひらがな、カタカナ、漢字）が正しく表示されません。</p>
+
+                    <div class="highlight">
+                        <h5>文字化けが発生する理由</h5>
+                        <ul>
+                            <li><strong>HTTP リクエスト</strong>: ブラウザからサーバーへの送信時の文字エンコーディングが不統一</li>
+                            <li><strong>サーバー側処理</strong>: Tomcatのデフォルト文字エンコーディング（ISO-8859-1）がマルチバイト文字に対応していない</li>
+                            <li><strong>データベース連携</strong>: データベースとの文字エンコーディング不整合</li>
+                        </ul>
+                        <p>これらの問題を解決するため、<strong>文字エンコーディングフィルター</strong>をweb.xmlに設定します。</p>
+                    </div>
+
+                    <div class="exercise-container">
+                        <h5>実習 1-5: 文字エンコーディングフィルターの追加</h5>
+                        <p>web.xmlに文字エンコーディングフィルターを追加し、日本語の文字化けを防止します。</p>
+                        
+                        <h6>🔸 ステップ 1: web.xmlファイルの編集</h6>
+                        <ol>
+                            <li><strong>Project Explorer</strong>で「struts-tutorial」→「src」→「main」→「webapp」→「WEB-INF」</li>
+                            <li><strong>web.xml</strong>をダブルクリックで開く</li>
+                            <li>既存の内容を確認し、以下の設定を追加します</li>
+                        </ol>
+                        
+                        <h6>web.xml 文字エンコーディングフィルター設定</h6>
+                        <p><em>以下の設定をweb.xmlの&lt;web-app&gt;要素内に追加してください：</em></p>
+                        <pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+         http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0"&gt;
+
+    &lt;display-name&gt;Struts Tutorial Application&lt;/display-name&gt;
+
+    &lt;!-- 文字エンコーディングフィルター --&gt;
+    &lt;filter&gt;
+        &lt;filter-name&gt;CharacterEncodingFilter&lt;/filter-name&gt;
+        &lt;filter-class&gt;org.apache.catalina.filters.SetCharacterEncodingFilter&lt;/filter-class&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;encoding&lt;/param-name&gt;
+            &lt;param-value&gt;UTF-8&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;ignore&lt;/param-name&gt;
+            &lt;param-value&gt;false&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    &lt;/filter&gt;
+    
+    &lt;filter-mapping&gt;
+        &lt;filter-name&gt;CharacterEncodingFilter&lt;/filter-name&gt;
+        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+    &lt;/filter-mapping&gt;
+
+    &lt;!-- Struts ActionServlet --&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;action&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;org.apache.struts.action.ActionServlet&lt;/servlet-class&gt;
+        &lt;init-param&gt;
+            &lt;param-name&gt;config&lt;/param-name&gt;
+            &lt;param-value&gt;/WEB-INF/struts-config.xml&lt;/param-value&gt;
+        &lt;/init-param&gt;
+        &lt;load-on-startup&gt;2&lt;/load-on-startup&gt;
+    &lt;/servlet&gt;
+
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;action&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;*.do&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+
+    &lt;welcome-file-list&gt;
+        &lt;welcome-file&gt;index.jsp&lt;/welcome-file&gt;
+    &lt;/welcome-file-list&gt;
+
+&lt;/web-app&gt;</code></pre>
+
+                        <h6>🔸 ステップ 2: 設定内容の確認</h6>
+                        <div class="highlight">
+                            <h6>設定要素の詳細説明</h6>
+                            <ul>
+                                <li><strong>filter-class</strong>: Tomcat提供の標準文字エンコーディングフィルター</li>
+                                <li><strong>encoding パラメータ</strong>: UTF-8エンコーディングを強制設定</li>
+                                <li><strong>ignore パラメータ</strong>: falseに設定することで、既にエンコーディングが設定されていても強制的にUTF-8を適用</li>
+                                <li><strong>url-pattern</strong>: 全てのリクエスト（/*）に対してフィルターを適用</li>
+                            </ul>
+                        </div>
+
+                        <h6>🔸 ステップ 3: 動作確認</h6>
+                        <ol>
+                            <li><strong>ファイル保存</strong>: Ctrl+Sでweb.xmlを保存</li>
+                            <li><strong>サーバー再起動</strong>: Tomcatサーバーを停止して再起動</li>
+                            <li><strong>日本語入力テスト</strong>: 
+                                <ul>
+                                    <li>Welcome.jspで日本語文字が正しく表示されることを確認</li>
+                                    <li>後の章で実装するフォームで日本語入力が文字化けしないことを確認</li>
+                                </ul>
+                            </li>
+                        </ol>
+
+                        <div class="warning">
+                            <h6>⚠️ 重要な注意事項</h6>
+                            <ul>
+                                <li><strong>フィルター順序</strong>: 文字エンコーディングフィルターは他のフィルターより前に配置する必要があります</li>
+                                <li><strong>JSPファイルの文字エンコーディング</strong>: JSPファイルの先頭に<code>&lt;%@ page contentType="text/html; charset=UTF-8" %&gt;</code>を必ず記述</li>
+                                <li><strong>データベース設定</strong>: PostgreSQLでもUTF-8エンコーディングを使用することを確認</li>
+                                <li><strong>IDE設定</strong>: Eclipseのワークスペース文字エンコーディングもUTF-8に設定することを推奨</li>
+                            </ul>
+                        </div>
+
+                        <h6>🔸 ステップ 4: Eclipse文字エンコーディング設定（推奨）</h6>
+                        <p>Eclipseの文字エンコーディングもUTF-8に統一することで、開発効率が向上します：</p>
+                        <ol>
+                            <li>「ウィンドウ」→「設定」を開く</li>
+                            <li>「一般」→「ワークスペース」を選択</li>
+                            <li>「テキスト・ファイル・エンコード」で「その他」を選択し「UTF-8」を指定</li>
+                            <li>「適用して閉じる」をクリック</li>
+                        </ol>
+                    </div>
+
                     <!-- 注意点 -->
                     <div class="warning">
                         <h5>開発環境に関する重要な注意事項</h5>
@@ -511,6 +634,7 @@
                             <li>Struts 1.xアプリケーションで使用される標準的なURLパターンを答えてください。</li>
                             <li>Eclipse IDEでWARファイルインポートを実行する手順を簡潔に説明してください。</li>
                             <li>Strutsアプリケーションの動作確認でアクセスすべきURLと、その意味を説明してください。</li>
+                            <li>日本語Webアプリケーションで文字化けを防ぐために必要な設定は何ですか？</li>
                         </ol>
                         
                         <details class="mt-3">
@@ -521,6 +645,7 @@
                                 <li>*.doパターン（ActionServletへのマッピング）</li>
                                 <li>ファイルメニュー → インポート → Web → WARファイルを選択</li>
                                 <li>http://localhost:8080/struts-tutorial/Welcome.do - Welcomeアクションの実行でMVCフローを確認</li>
+                                <li>web.xmlに文字エンコーディングフィルター（SetCharacterEncodingFilter）を設定し、UTF-8エンコーディングを強制適用</li>
                             </ol>
                         </details>
                     </div>
