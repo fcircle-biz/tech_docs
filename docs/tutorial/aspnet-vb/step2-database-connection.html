@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASP.NET(VB) 実践チュートリアル Step 2 - データベース設計と接続</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ベースレイアウト */
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+
+        /* ナビゲーション - ASP.NET系テーマ */
+        .navbar {
+            background-color: #1976d2;
+        }
+
+        .navbar-brand, .navbar-nav .nav-link {
+            color: white !important;
+            font-weight: 500;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #bbdefb !important;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+            background-color: white;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .sidebar .nav-link {
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .sidebar .nav-link.active {
+            background-color: #1976d2 !important;
+            color: white !important;
+        }
+
+        /* タイトル */
+        .chapter-title {
+            color: #1976d2;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #1976d2;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title {
+            color: #42a5f5;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* コンテンツボックス */
+        .quiz-container {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #1976d2;
+        }
+
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .highlight {
+            background-color: #ffecb3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
+        }
+
+        .info {
+            background-color: #e8f5e8;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #4caf50;
+        }
+
+        /* コードブロック */
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        .step-number {
+            background-color: #1976d2;
+            color: white;
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">ASP.NET VB チュートリアル</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="README.md">チュートリアルTOP</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        チュートリアル目次
+                    </h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="step1-environment-setup.html">Step 1: 環境構築とASP.NET基礎</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="step2-database-connection.html">Step 2: データベース設計と接続</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step3-user-registration.html">Step 3: ユーザー登録機能</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step4-user-list-detail.html">Step 4: ユーザー一覧・詳細表示</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step5-user-update-delete.html">Step 5: ユーザー更新・削除</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step6-testing-debug.html">Step 6: 動作確認とデバッグ</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Step 2: データベース設計と接続</h1>
+                    <div class="badge bg-primary">所要時間: 2.5時間</div>
+                </div>
+
+                <div id="step2">
+                    <h2 class="chapter-title">SQL Serverデータベースの構築とADO.NET接続</h2>
+                    
+                    <!-- 学習目標 -->
+                    <div class="highlight">
+                        <h5>このステップで学ぶこと</h5>
+                        <ul>
+                            <li>Docker SQL Serverコンテナの詳細設定と管理</li>
+                            <li>SSMS(日本語版)による効率的なデータベース操作</li>
+                            <li>ユーザー管理システム用のデータベースとテーブル設計</li>
+                            <li>ADO.NETによるデータベース接続（SqlConnection、SqlCommand）</li>
+                            <li>VB.NETでのデータアクセスクラス（DAO）の実装</li>
+                            <li>例外処理とエラーハンドリングのベストプラクティス</li>
+                            <li>接続文字列の管理とWeb.config設定</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">2.1 SQL Serverコンテナの詳細設定</h3>
+                    <p>Step 1で起動したSQL Serverコンテナを本格運用向けに設定し、永続化とセキュリティを強化します。</p>
+                    
+                    <h4><span class="step-number">1</span>データ永続化のためのボリューム設定</h4>
+                    <p>コンテナを削除してもデータが消失しないよう、Dockerボリュームを設定します。</p>
+                    <pre><code># 既存コンテナの停止・削除
+docker stop sqlserver2019
+docker rm sqlserver2019
+
+# 永続化ボリューム付きでSQL Serverを起動
+docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=YourPassword123!" `
+   -p 1433:1433 --name sqlserver2019 `
+   -v sqlserver_data:/var/opt/mssql `
+   -d mcr.microsoft.com/mssql/server:2019-latest
+
+# ボリュームの確認
+docker volume ls
+docker volume inspect sqlserver_data</code></pre>
+
+                    <h4><span class="step-number">2</span>接続テストとコンテナ管理</h4>
+                    <pre><code># コンテナの状態確認
+docker ps -a
+
+# ログの確認
+docker logs sqlserver2019
+
+# コンテナ内でSQL Serverの状態確認
+docker exec -it sqlserver2019 /opt/mssql-tools/bin/sqlcmd `
+   -S localhost -U SA -P "YourPassword123!" `
+   -Q "SELECT @@VERSION;"
+
+# メモリ使用量の確認
+docker stats sqlserver2019</code></pre>
+
+                    <div class="info">
+                        <h6>💡 Docker管理のポイント</h6>
+                        <ul>
+                            <li><strong>自動起動設定:</strong> <code>--restart unless-stopped</code> オプションでPC再起動時も自動起動</li>
+                            <li><strong>メモリ制限:</strong> <code>--memory=2g</code> でメモリ使用量を制限</li>
+                            <li><strong>バックアップ:</strong> 定期的にボリュームのバックアップを作成</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">2.2 SSMSによるデータベース設計</h3>
+                    <p>SQL Server Management Studio (SSMS) 日本語版を使用して、ユーザー管理システム用のデータベースを設計・作成します。</p>
+
+                    <h4><span class="step-number">1</span>データベースの作成</h4>
+                    <ol>
+                        <li>SSMSを起動し、SQL Serverに接続</li>
+                        <li>オブジェクトエクスプローラーで「データベース」を右クリック</li>
+                        <li>「新しいデータベース」を選択</li>
+                        <li>データベース名: <code>UserManagementDB</code></li>
+                        <li>設定を確認して「OK」をクリック</li>
+                    </ol>
+
+                    <h4><span class="step-number">2</span>usersテーブルの作成</h4>
+                    <p>新しいクエリウィンドウで以下のSQLを実行:</p>
+                    <pre><code>USE UserManagementDB;
+GO
+
+-- usersテーブルの作成
+CREATE TABLE users (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    username NVARCHAR(50) NOT NULL UNIQUE,
+    email NVARCHAR(100) NOT NULL,
+    full_name NVARCHAR(100) NOT NULL,
+    birth_date DATE,
+    created_at DATETIME2 DEFAULT GETDATE(),
+    updated_at DATETIME2 DEFAULT GETDATE()
+);
+
+-- インデックスの作成（パフォーマンス向上）
+CREATE INDEX IX_users_username ON users(username);
+CREATE INDEX IX_users_email ON users(email);
+
+-- テーブル構造の確認
+SELECT 
+    COLUMN_NAME,
+    DATA_TYPE,
+    CHARACTER_MAXIMUM_LENGTH,
+    IS_NULLABLE,
+    COLUMN_DEFAULT
+FROM INFORMATION_SCHEMA.COLUMNS 
+WHERE TABLE_NAME = 'users' 
+ORDER BY ORDINAL_POSITION;</code></pre>
+
+                    <h4><span class="step-number">3</span>サンプルデータの挿入</h4>
+                    <pre><code>-- テスト用サンプルデータの挿入
+INSERT INTO users (username, email, full_name, birth_date) VALUES
+('taro_tanaka', 'taro@example.com', '田中太郎', '1990-05-15'),
+('hanako_sato', 'hanako@example.com', '佐藤花子', '1985-08-22'),
+('jiro_suzuki', 'jiro@example.com', '鈴木次郎', '1992-12-03'),
+('yuki_takahashi', 'yuki@example.com', '高橋雪', '1988-03-18'),
+('ichiro_yamada', 'ichiro@example.com', '山田一郎', '1995-11-30');
+
+-- データの確認
+SELECT id, username, email, full_name, birth_date, 
+       created_at, updated_at 
+FROM users 
+ORDER BY created_at;</code></pre>
+
+                    <!-- 実習1 -->
+                    <div class="exercise-container">
+                        <h5>実習 2-1: データベース接続設定ファイルの作成</h5>
+                        <p>ASP.NETアプリケーションからSQL Serverに接続するための設定ファイルを作成します。</p>
+                        
+                        <h6>手順</h6>
+                        <ol>
+                            <li>Visual StudioでUserManagementAppプロジェクトを開く</li>
+                            <li>App_Codeフォルダを作成（存在しない場合）</li>
+                            <li>DatabaseConfig.vbファイルを作成</li>
+                            <li>Web.configに接続文字列を追加</li>
+                        </ol>
+                        
+                        <h6>App_Code/DatabaseConfig.vb</h6>
+                        <pre><code>Imports System.Configuration
+Imports System.Data.SqlClient
+
+''' &lt;summary&gt;
+''' データベース接続に関する設定を管理するクラス
+''' &lt;/summary&gt;
+Public Class DatabaseConfig
+    
+    ''' &lt;summary&gt;
+    ''' 接続文字列を取得する
+    ''' &lt;/summary&gt;
+    ''' &lt;returns&gt;SQL Server接続文字列&lt;/returns&gt;
+    Public Shared Function GetConnectionString() As String
+        Try
+            ' Web.configから接続文字列を取得
+            Dim connectionString As String = ConfigurationManager.ConnectionStrings("DefaultConnection").ConnectionString
+            
+            If String.IsNullOrEmpty(connectionString) Then
+                Throw New InvalidOperationException("接続文字列が設定されていません。Web.configを確認してください。")
+            End If
+            
+            Return connectionString
+            
+        Catch ex As Exception
+            ' ログ出力（実際の実装では適切なログ出力を行う）
+            System.Diagnostics.Debug.WriteLine($"接続文字列取得エラー: {ex.Message}")
+            Throw New Exception("データベース接続設定の取得に失敗しました。", ex)
+        End Try
+    End Function
+    
+    ''' &lt;summary&gt;
+    ''' データベース接続のテスト
+    ''' &lt;/summary&gt;
+    ''' &lt;returns&gt;接続テスト結果（True: 成功, False: 失敗）&lt;/returns&gt;
+    Public Shared Function TestConnection() As Boolean
+        Try
+            Using connection As New SqlConnection(GetConnectionString())
+                connection.Open()
+                
+                ' 簡単なクエリでテスト
+                Using command As New SqlCommand("SELECT 1", connection)
+                    Dim result As Object = command.ExecuteScalar()
+                    Return result IsNot Nothing AndAlso CInt(result) = 1
+                End Using
+            End Using
+            
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"接続テストエラー: {ex.Message}")
+            Return False
+        End Try
+    End Function
+    
+    ''' &lt;summary&gt;
+    ''' データベースの存在確認
+    ''' &lt;/summary&gt;
+    ''' &lt;param name="databaseName"&gt;確認するデータベース名&lt;/param&gt;
+    ''' &lt;returns&gt;存在確認結果&lt;/returns&gt;
+    Public Shared Function DatabaseExists(databaseName As String) As Boolean
+        Try
+            Using connection As New SqlConnection(GetConnectionString())
+                connection.Open()
+                
+                Dim query As String = "SELECT COUNT(*) FROM sys.databases WHERE name = @DatabaseName"
+                Using command As New SqlCommand(query, connection)
+                    command.Parameters.AddWithValue("@DatabaseName", databaseName)
+                    
+                    Dim count As Integer = CInt(command.ExecuteScalar())
+                    Return count > 0
+                End Using
+            End Using
+            
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"データベース存在確認エラー: {ex.Message}")
+            Return False
+        End Try
+    End Function
+    
+    ''' &lt;summary&gt;
+    ''' テーブルの存在確認
+    ''' &lt;/summary&gt;
+    ''' &lt;param name="tableName"&gt;確認するテーブル名&lt;/param&gt;
+    ''' &lt;returns&gt;存在確認結果&lt;/returns&gt;
+    Public Shared Function TableExists(tableName As String) As Boolean
+        Try
+            Using connection As New SqlConnection(GetConnectionString())
+                connection.Open()
+                
+                Dim query As String = "SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = @TableName"
+                Using command As New SqlCommand(query, connection)
+                    command.Parameters.AddWithValue("@TableName", tableName)
+                    
+                    Dim count As Integer = CInt(command.ExecuteScalar())
+                    Return count > 0
+                End Using
+            End Using
+            
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"テーブル存在確認エラー: {ex.Message}")
+            Return False
+        End Try
+    End Function
+End Class</code></pre>
+                        
+                        <h6>Web.config (接続文字列の追加)</h6>
+                        <pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;configuration&gt;
+  &lt;connectionStrings&gt;
+    &lt;add name="DefaultConnection" 
+         connectionString="Server=localhost,1433;Database=UserManagementDB;User Id=sa;Password=YourPassword123!;TrustServerCertificate=True;" 
+         providerName="System.Data.SqlClient" /&gt;
+  &lt;/connectionStrings&gt;
+  
+  &lt;appSettings&gt;
+    &lt;add key="DatabaseConnectionTimeout" value="30" /&gt;
+    &lt;add key="EnableDatabaseLogging" value="true" /&gt;
+  &lt;/appSettings&gt;
+
+  &lt;system.web&gt;
+    &lt;compilation debug="true" targetFramework="4.8" /&gt;
+    &lt;httpRuntime targetFramework="4.8" /&gt;
+  &lt;/system.web&gt;
+&lt;/configuration&gt;</code></pre>
+                        
+                        <h6>期待される結果</h6>
+                        <ul>
+                            <li>DatabaseConfig.vbが正常にコンパイルされる</li>
+                            <li>Web.configの接続文字列が正しく設定される</li>
+                            <li>TestConnection()メソッドがTrueを返す</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">2.3 UserDAOクラスの実装</h3>
+                    <p>データアクセスオブジェクト（DAO）パターンを使用して、ユーザーデータの操作を行うクラスを実装します。</p>
+
+                    <!-- 実習2 -->
+                    <div class="exercise-container">
+                        <h5>実習 2-2: UserDAOクラスの基本実装</h5>
+                        <p>データベースのusersテーブルに対するCRUD操作を行うDAOクラスを実装します。</p>
+                        
+                        <h6>App_Code/UserDAO.vb</h6>
+                        <pre><code>Imports System.Data.SqlClient
+Imports System.Data
+
+''' &lt;summary&gt;
+''' ユーザー情報を表すデータクラス
+''' &lt;/summary&gt;
+Public Class User
+    Public Property Id As Integer
+    Public Property Username As String
+    Public Property Email As String
+    Public Property FullName As String
+    Public Property BirthDate As Date?
+    Public Property CreatedAt As DateTime
+    Public Property UpdatedAt As DateTime
+    
+    ''' &lt;summary&gt;
+    ''' デフォルトコンストラクタ
+    ''' &lt;/summary&gt;
+    Public Sub New()
+        ' 初期値設定
+        Id = 0
+        Username = ""
+        Email = ""
+        FullName = ""
+        BirthDate = Nothing
+        CreatedAt = DateTime.Now
+        UpdatedAt = DateTime.Now
+    End Sub
+    
+    ''' &lt;summary&gt;
+    ''' パラメータ付きコンストラクタ
+    ''' &lt;/summary&gt;
+    Public Sub New(username As String, email As String, fullName As String, Optional birthDate As Date? = Nothing)
+        Me.New()
+        Me.Username = username
+        Me.Email = email
+        Me.FullName = fullName
+        Me.BirthDate = birthDate
+    End Sub
+    
+    ''' &lt;summary&gt;
+    ''' オブジェクトの文字列表現
+    ''' &lt;/summary&gt;
+    Public Overrides Function ToString() As String
+        Return $"{Id}: {FullName} ({Username})"
+    End Function
+End Class
+
+''' &lt;summary&gt;
+''' ユーザーデータアクセスオブジェクト
+''' &lt;/summary&gt;
+Public Class UserDAO
+    
+    ''' &lt;summary&gt;
+    ''' 全ユーザーを取得する
+    ''' &lt;/summary&gt;
+    ''' &lt;returns&gt;ユーザーリスト&lt;/returns&gt;
+    Public Shared Function GetAllUsers() As List(Of User)
+        Dim users As New List(Of User)()
+        
+        Try
+            Using connection As New SqlConnection(DatabaseConfig.GetConnectionString())
+                connection.Open()
+                
+                Dim query As String = "SELECT id, username, email, full_name, birth_date, created_at, updated_at FROM users ORDER BY created_at DESC"
+                
+                Using command As New SqlCommand(query, connection)
+                    Using reader As SqlDataReader = command.ExecuteReader()
+                        While reader.Read()
+                            Dim user As New User() With {
+                                .Id = reader.GetInt32("id"),
+                                .Username = reader.GetString("username"),
+                                .Email = reader.GetString("email"),
+                                .FullName = reader.GetString("full_name"),
+                                .BirthDate = If(reader.IsDBNull("birth_date"), Nothing, reader.GetDateTime("birth_date")),
+                                .CreatedAt = reader.GetDateTime("created_at"),
+                                .UpdatedAt = reader.GetDateTime("updated_at")
+                            }
+                            users.Add(user)
+                        End While
+                    End Using
+                End Using
+            End Using
+            
+        Catch ex As SqlException
+            ' SQL Server固有のエラー処理
+            System.Diagnostics.Debug.WriteLine($"SQL エラー (エラー番号: {ex.Number}): {ex.Message}")
+            Throw New Exception($"データベースエラーが発生しました。エラー番号: {ex.Number}", ex)
+            
+        Catch ex As Exception
+            ' その他のエラー処理
+            System.Diagnostics.Debug.WriteLine($"ユーザー取得エラー: {ex.Message}")
+            Throw New Exception("ユーザー情報の取得に失敗しました。", ex)
+        End Try
+        
+        Return users
+    End Function
+    
+    ''' &lt;summary&gt;
+    ''' IDによるユーザー取得
+    ''' &lt;/summary&gt;
+    ''' &lt;param name="userId"&gt;ユーザーID&lt;/param&gt;
+    ''' &lt;returns&gt;ユーザー情報（見つからない場合はNothing）&lt;/returns&gt;
+    Public Shared Function GetUserById(userId As Integer) As User
+        Try
+            Using connection As New SqlConnection(DatabaseConfig.GetConnectionString())
+                connection.Open()
+                
+                Dim query As String = "SELECT id, username, email, full_name, birth_date, created_at, updated_at FROM users WHERE id = @UserId"
+                
+                Using command As New SqlCommand(query, connection)
+                    command.Parameters.AddWithValue("@UserId", userId)
+                    
+                    Using reader As SqlDataReader = command.ExecuteReader()
+                        If reader.Read() Then
+                            Return New User() With {
+                                .Id = reader.GetInt32("id"),
+                                .Username = reader.GetString("username"),
+                                .Email = reader.GetString("email"),
+                                .FullName = reader.GetString("full_name"),
+                                .BirthDate = If(reader.IsDBNull("birth_date"), Nothing, reader.GetDateTime("birth_date")),
+                                .CreatedAt = reader.GetDateTime("created_at"),
+                                .UpdatedAt = reader.GetDateTime("updated_at")
+                            }
+                        Else
+                            Return Nothing
+                        End If
+                    End Using
+                End Using
+            End Using
+            
+        Catch ex As SqlException
+            System.Diagnostics.Debug.WriteLine($"SQL エラー (ID: {userId}): {ex.Message}")
+            Throw New Exception($"ユーザー情報の取得に失敗しました。ID: {userId}", ex)
+            
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"ユーザー取得エラー (ID: {userId}): {ex.Message}")
+            Throw New Exception($"ユーザー情報の取得に失敗しました。ID: {userId}", ex)
+        End Try
+    End Function
+    
+    ''' &lt;summary&gt;
+    ''' ユーザー名による検索
+    ''' &lt;/summary&gt;
+    ''' &lt;param name="username"&gt;ユーザー名&lt;/param&gt;
+    ''' &lt;returns&gt;ユーザー情報（見つからない場合はNothing）&lt;/returns&gt;
+    Public Shared Function GetUserByUsername(username As String) As User
+        If String.IsNullOrEmpty(username) Then
+            Return Nothing
+        End If
+        
+        Try
+            Using connection As New SqlConnection(DatabaseConfig.GetConnectionString())
+                connection.Open()
+                
+                Dim query As String = "SELECT id, username, email, full_name, birth_date, created_at, updated_at FROM users WHERE username = @Username"
+                
+                Using command As New SqlCommand(query, connection)
+                    command.Parameters.AddWithValue("@Username", username.Trim())
+                    
+                    Using reader As SqlDataReader = command.ExecuteReader()
+                        If reader.Read() Then
+                            Return New User() With {
+                                .Id = reader.GetInt32("id"),
+                                .Username = reader.GetString("username"),
+                                .Email = reader.GetString("email"),
+                                .FullName = reader.GetString("full_name"),
+                                .BirthDate = If(reader.IsDBNull("birth_date"), Nothing, reader.GetDateTime("birth_date")),
+                                .CreatedAt = reader.GetDateTime("created_at"),
+                                .UpdatedAt = reader.GetDateTime("updated_at")
+                            }
+                        Else
+                            Return Nothing
+                        End If
+                    End Using
+                End Using
+            End Using
+            
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"ユーザー名検索エラー ({username}): {ex.Message}")
+            Throw New Exception($"ユーザー名による検索に失敗しました。ユーザー名: {username}", ex)
+        End Try
+    End Function
+    
+    ''' &lt;summary&gt;
+    ''' ユーザー数の取得
+    ''' &lt;/summary&gt;
+    ''' &lt;returns&gt;総ユーザー数&lt;/returns&gt;
+    Public Shared Function GetUserCount() As Integer
+        Try
+            Using connection As New SqlConnection(DatabaseConfig.GetConnectionString())
+                connection.Open()
+                
+                Dim query As String = "SELECT COUNT(*) FROM users"
+                
+                Using command As New SqlCommand(query, connection)
+                    Return CInt(command.ExecuteScalar())
+                End Using
+            End Using
+            
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"ユーザー数取得エラー: {ex.Message}")
+            Throw New Exception("ユーザー数の取得に失敗しました。", ex)
+        End Try
+    End Function
+    
+    ''' &lt;summary&gt;
+    ''' ユーザー名の重複チェック
+    ''' &lt;/summary&gt;
+    ''' &lt;param name="username"&gt;チェックするユーザー名&lt;/param&gt;
+    ''' &lt;param name="excludeUserId"&gt;除外するユーザーID（更新時に使用）&lt;/param&gt;
+    ''' &lt;returns&gt;重複している場合True&lt;/returns&gt;
+    Public Shared Function IsUsernameExists(username As String, Optional excludeUserId As Integer = 0) As Boolean
+        If String.IsNullOrEmpty(username) Then
+            Return False
+        End If
+        
+        Try
+            Using connection As New SqlConnection(DatabaseConfig.GetConnectionString())
+                connection.Open()
+                
+                Dim query As String = "SELECT COUNT(*) FROM users WHERE username = @Username"
+                If excludeUserId > 0 Then
+                    query &= " AND id != @ExcludeUserId"
+                End If
+                
+                Using command As New SqlCommand(query, connection)
+                    command.Parameters.AddWithValue("@Username", username.Trim())
+                    If excludeUserId > 0 Then
+                        command.Parameters.AddWithValue("@ExcludeUserId", excludeUserId)
+                    End If
+                    
+                    Return CInt(command.ExecuteScalar()) > 0
+                End Using
+            End Using
+            
+        Catch ex As Exception
+            System.Diagnostics.Debug.WriteLine($"ユーザー名重複チェックエラー ({username}): {ex.Message}")
+            Throw New Exception($"ユーザー名の重複チェックに失敗しました。ユーザー名: {username}", ex)
+        End Try
+    End Function
+End Class</code></pre>
+                        
+                        <h6>期待される結果</h6>
+                        <ul>
+                            <li>UserDAOクラスが正常にコンパイルされる</li>
+                            <li>GetAllUsers()メソッドでサンプルデータが取得できる</li>
+                            <li>GetUserById()メソッドで特定ユーザーが取得できる</li>
+                            <li>適切な例外処理が実装されている</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">2.4 接続テストページの作成</h3>
+                    <p>実装したDAOクラスが正常に動作することを確認するテストページを作成します。</p>
+
+                    <!-- 実習3 -->
+                    <div class="exercise-container">
+                        <h5>実習 2-3: データベース接続テストページの実装</h5>
+                        <p>DAOクラスの各機能をテストし、データベース接続が正常に動作することを確認します。</p>
+                        
+                        <h6>DatabaseTest.aspx</h6>
+                        <pre><code>&lt;%@ Page Language="vb" AutoEventWireup="false" CodeBehind="DatabaseTest.aspx.vb" Inherits="UserManagementApp.DatabaseTest" %&gt;
+
+&lt;!DOCTYPE html&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+&lt;head runat="server"&gt;
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"/&gt;
+    &lt;title&gt;データベース接続テスト&lt;/title&gt;
+    &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;form id="form1" runat="server"&gt;
+        &lt;div class="container mt-5"&gt;
+            &lt;h1 class="text-primary"&gt;データベース接続テスト&lt;/h1&gt;
+            
+            &lt;div class="row mt-4"&gt;
+                &lt;div class="col-md-6"&gt;
+                    &lt;div class="card"&gt;
+                        &lt;div class="card-body"&gt;
+                            &lt;h5 class="card-title"&gt;接続テスト&lt;/h5&gt;
+                            &lt;asp:Button ID="btnTestConnection" runat="server" Text="接続テスト実行" CssClass="btn btn-primary" OnClick="btnTestConnection_Click" /&gt;
+                            &lt;asp:Button ID="btnGetUserCount" runat="server" Text="ユーザー数取得" CssClass="btn btn-info ms-2" OnClick="btnGetUserCount_Click" /&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                
+                &lt;div class="col-md-6"&gt;
+                    &lt;div class="card"&gt;
+                        &lt;div class="card-body"&gt;
+                            &lt;h5 class="card-title"&gt;ユーザー検索&lt;/h5&gt;
+                            &lt;div class="mb-3"&gt;
+                                &lt;label for="txtUserId" class="form-label"&gt;ユーザーID:&lt;/label&gt;
+                                &lt;asp:TextBox ID="txtUserId" runat="server" CssClass="form-control" placeholder="例: 1"&gt;&lt;/asp:TextBox&gt;
+                            &lt;/div&gt;
+                            &lt;asp:Button ID="btnSearchById" runat="server" Text="ID検索" CssClass="btn btn-success" OnClick="btnSearchById_Click" /&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;div class="row mt-4"&gt;
+                &lt;div class="col-12"&gt;
+                    &lt;div class="card"&gt;
+                        &lt;div class="card-body"&gt;
+                            &lt;h5 class="card-title"&gt;全ユーザー一覧&lt;/h5&gt;
+                            &lt;asp:Button ID="btnGetAllUsers" runat="server" Text="全ユーザー取得" CssClass="btn btn-warning mb-3" OnClick="btnGetAllUsers_Click" /&gt;
+                            &lt;asp:GridView ID="gvUsers" runat="server" CssClass="table table-striped" AutoGenerateColumns="False"&gt;
+                                &lt;Columns&gt;
+                                    &lt;asp:BoundField DataField="Id" HeaderText="ID" /&gt;
+                                    &lt;asp:BoundField DataField="Username" HeaderText="ユーザー名" /&gt;
+                                    &lt;asp:BoundField DataField="Email" HeaderText="メール" /&gt;
+                                    &lt;asp:BoundField DataField="FullName" HeaderText="氏名" /&gt;
+                                    &lt;asp:BoundField DataField="BirthDate" HeaderText="生年月日" DataFormatString="{0:yyyy/MM/dd}" /&gt;
+                                    &lt;asp:BoundField DataField="CreatedAt" HeaderText="作成日時" DataFormatString="{0:yyyy/MM/dd HH:mm}" /&gt;
+                                &lt;/Columns&gt;
+                            &lt;/asp:GridView&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;div class="row mt-4"&gt;
+                &lt;div class="col-12"&gt;
+                    &lt;div class="card"&gt;
+                        &lt;div class="card-body"&gt;
+                            &lt;h5 class="card-title"&gt;テスト結果&lt;/h5&gt;
+                            &lt;asp:Panel ID="pnlResults" runat="server" CssClass="mt-3"&gt;
+                                &lt;asp:Label ID="lblResults" runat="server" CssClass="alert d-block"&gt;&lt;/asp:Label&gt;
+                            &lt;/asp:Panel&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                        
+                        <h6>DatabaseTest.aspx.vb</h6>
+                        <pre><code>Public Class DatabaseTest
+    Inherits System.Web.UI.Page
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        If Not IsPostBack Then
+            pnlResults.Visible = False
+        End If
+    End Sub
+
+    Protected Sub btnTestConnection_Click(sender As Object, e As EventArgs) Handles btnTestConnection.Click
+        Try
+            Dim isConnected As Boolean = DatabaseConfig.TestConnection()
+            
+            If isConnected Then
+                ShowMessage("データベース接続成功！", "alert-success")
+                
+                ' 追加情報の表示
+                Dim dbExists As Boolean = DatabaseConfig.DatabaseExists("UserManagementDB")
+                Dim tableExists As Boolean = DatabaseConfig.TableExists("users")
+                
+                Dim additionalInfo As String = $"
+                    &lt;br&gt;&lt;strong&gt;詳細情報:&lt;/strong&gt;
+                    &lt;br&gt;• データベース 'UserManagementDB': {If(dbExists, "存在", "未作成")}
+                    &lt;br&gt;• テーブル 'users': {If(tableExists, "存在", "未作成")}"
+                
+                lblResults.Text &= additionalInfo
+            Else
+                ShowMessage("データベース接続に失敗しました。設定を確認してください。", "alert-danger")
+            End If
+            
+        Catch ex As Exception
+            ShowMessage($"接続テストエラー: {ex.Message}", "alert-danger")
+        End Try
+    End Sub
+
+    Protected Sub btnGetUserCount_Click(sender As Object, e As EventArgs) Handles btnGetUserCount.Click
+        Try
+            Dim userCount As Integer = UserDAO.GetUserCount()
+            ShowMessage($"登録ユーザー数: {userCount}人", "alert-info")
+            
+        Catch ex As Exception
+            ShowMessage($"ユーザー数取得エラー: {ex.Message}", "alert-danger")
+        End Try
+    End Sub
+
+    Protected Sub btnSearchById_Click(sender As Object, e As EventArgs) Handles btnSearchById.Click
+        Try
+            Dim userIdText As String = txtUserId.Text.Trim()
+            
+            If String.IsNullOrEmpty(userIdText) Then
+                ShowMessage("ユーザーIDを入力してください。", "alert-warning")
+                Return
+            End If
+            
+            Dim userId As Integer
+            If Not Integer.TryParse(userIdText, userId) Then
+                ShowMessage("有効なユーザーIDを入力してください。", "alert-warning")
+                Return
+            End If
+            
+            Dim user As User = UserDAO.GetUserById(userId)
+            
+            If user IsNot Nothing Then
+                Dim userInfo As String = $"
+                    &lt;strong&gt;ユーザー情報:&lt;/strong&gt;
+                    &lt;br&gt;• ID: {user.Id}
+                    &lt;br&gt;• ユーザー名: {user.Username}
+                    &lt;br&gt;• 氏名: {user.FullName}
+                    &lt;br&gt;• メール: {user.Email}
+                    &lt;br&gt;• 生年月日: {If(user.BirthDate.HasValue, user.BirthDate.Value.ToString("yyyy年MM月dd日"), "未設定")}
+                    &lt;br&gt;• 作成日: {user.CreatedAt:yyyy年MM月dd日 HH時mm分}"
+                
+                ShowMessage(userInfo, "alert-success")
+            Else
+                ShowMessage($"ID: {userId} のユーザーは見つかりませんでした。", "alert-warning")
+            End If
+            
+        Catch ex As Exception
+            ShowMessage($"ユーザー検索エラー: {ex.Message}", "alert-danger")
+        End Try
+    End Sub
+
+    Protected Sub btnGetAllUsers_Click(sender As Object, e As EventArgs) Handles btnGetAllUsers.Click
+        Try
+            Dim users As List(Of User) = UserDAO.GetAllUsers()
+            
+            gvUsers.DataSource = users
+            gvUsers.DataBind()
+            
+            ShowMessage($"全ユーザー情報を取得しました。({users.Count}件)", "alert-success")
+            
+        Catch ex As Exception
+            ShowMessage($"全ユーザー取得エラー: {ex.Message}", "alert-danger")
+            gvUsers.DataSource = Nothing
+            gvUsers.DataBind()
+        End Try
+    End Sub
+
+    Private Sub ShowMessage(message As String, cssClass As String)
+        lblResults.Text = message
+        lblResults.CssClass = $"alert {cssClass} d-block"
+        pnlResults.Visible = True
+    End Sub
+End Class</code></pre>
+                        
+                        <h6>テスト手順</h6>
+                        <ol>
+                            <li>DatabaseTest.aspxをブラウザで開く</li>
+                            <li>「接続テスト実行」ボタンをクリック → 成功メッセージ表示</li>
+                            <li>「ユーザー数取得」ボタンをクリック → 「5人」と表示</li>
+                            <li>ユーザーID「1」を入力して「ID検索」 → 田中太郎の情報表示</li>
+                            <li>「全ユーザー取得」ボタンをクリック → GridViewにデータ表示</li>
+                        </ol>
+                    </div>
+
+                    <div class="warning">
+                        <h6>⚠️ トラブルシューティング</h6>
+                        <ul>
+                            <li><strong>接続エラー:</strong> Docker SQLコンテナが起動しているか確認</li>
+                            <li><strong>データが表示されない:</strong> Step 2.2でサンプルデータを挿入したか確認</li>
+                            <li><strong>コンパイルエラー:</strong> Web.configの接続文字列設定を確認</li>
+                            <li><strong>権限エラー:</strong> SQL Serverのsa認証が有効になっているか確認</li>
+                        </ul>
+                    </div>
+
+                    <!-- 理解度確認 -->
+                    <div class="quiz-container">
+                        <h5>ASP.NET・VB.NET理解度クイズ</h5>
+                        <ol>
+                            <li>ADO.NETでSQL Serverに接続するために使用する主要なクラス名を2つ挙げてください。</li>
+                            <li>VB.NETでTry-Catch文を使った例外処理の基本構文を書いてください。</li>
+                            <li>Web.configファイルで接続文字列を定義するセクション名は何ですか？</li>
+                            <li>SqlCommand.Parameters.AddWithValue()メソッドを使う理由を説明してください。</li>
+                            <li>VB.NETでクラスを定義する際に使用するキーワードは何ですか？</li>
+                            <li>Usingステートメントの用途と利点を説明してください。</li>
+                        </ol>
+                        <details>
+                            <summary>解答例</summary>
+                            <ol>
+                                <li>SqlConnection、SqlCommand</li>
+                                <li><code>Try<br>&nbsp;&nbsp;&nbsp;&nbsp;' 処理<br>Catch ex As Exception<br>&nbsp;&nbsp;&nbsp;&nbsp;' エラー処理<br>End Try</code></li>
+                                <li>&lt;connectionStrings&gt;</li>
+                                <li>SQLインジェクション攻撃を防ぐため（パラメータ化クエリ）</li>
+                                <li>Class</li>
+                                <li>リソースの自動解放。using文を抜ける際に自動的にDispose()が呼ばれる</li>
+                            </ol>
+                        </details>
+                    </div>
+
+                    <!-- ナビゲーション -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="step1-environment-setup.html" class="btn btn-secondary">← 前のステップ</a>
+                        <a href="step3-user-registration.html" class="btn btn-primary">次のステップ: ユーザー登録機能 →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
