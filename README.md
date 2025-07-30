@@ -93,6 +93,7 @@
 ### Javaエコシステム
 
 - **[Java学習ガイド](docs/guide/java-ecosystem/java/README.md)** - Java言語基礎から高度技術まで8ステップ
+- **[JUnit学習ガイド](docs/guide/java-ecosystem/junit/README.md)** - JUnit 5を使用した単体テストの基礎から応用まで7ステップ
 - **[JDBC学習ガイド](docs/guide/java-ecosystem/jdbc/README.md)** - JDBC基礎からパフォーマンスチューニングまで10ステップ
 - **[JSP/Servlet学習ガイド](docs/guide/java-ecosystem/jsp/README.md)** - JSP/Servlet基礎からMVCアーキテクチャまで10ステップ
 - **[Spring Framework学習ガイド](docs/guide/java-ecosystem/spring/README.md)** - Spring基礎からSecurity機能まで11ステップ
