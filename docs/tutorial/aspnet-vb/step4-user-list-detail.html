@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASP.NET(VB) 実践チュートリアル Step 4 - ユーザー一覧・詳細表示</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ベースレイアウト */
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+
+        /* ナビゲーション - ASP.NET系テーマ */
+        .navbar {
+            background-color: #1976d2;
+        }
+
+        .navbar-brand, .navbar-nav .nav-link {
+            color: white !important;
+            font-weight: 500;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #bbdefb !important;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+            background-color: white;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .sidebar .nav-link {
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .sidebar .nav-link.active {
+            background-color: #1976d2 !important;
+            color: white !important;
+        }
+
+        /* タイトル */
+        .chapter-title {
+            color: #1976d2;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #1976d2;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title {
+            color: #42a5f5;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* コンテンツボックス */
+        .quiz-container {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #1976d2;
+        }
+
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .highlight {
+            background-color: #ffecb3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
+        }
+
+        .info {
+            background-color: #e8f5e8;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #4caf50;
+        }
+
+        /* コードブロック */
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        .step-number {
+            background-color: #1976d2;
+            color: white;
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">ASP.NET VB チュートリアル</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="README.md">チュートリアルTOP</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        チュートリアル目次
+                    </h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="step1-environment-setup.html">Step 1: 環境構築とASP.NET基礎</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step2-database-connection.html">Step 2: データベース設計と接続</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step3-user-registration.html">Step 3: ユーザー登録機能</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="step4-user-list-detail.html">Step 4: ユーザー一覧・詳細表示</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step5-user-update-delete.html">Step 5: ユーザー更新・削除</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step6-testing-debug.html">Step 6: 動作確認とデバッグ</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Step 4: ユーザー一覧・詳細表示</h1>
+                    <div class="badge bg-primary">所要時間: 1.5時間</div>
+                </div>
+
+                <div id="step4">
+                    <h2 class="chapter-title">基本的なデータ表示機能</h2>
+                    
+                    <!-- 学習目標 -->
+                    <div class="highlight">
+                        <h5>このステップで学ぶこと</h5>
+                        <ul>
+                            <li>GridViewコントロールの基本的な使い方</li>
+                            <li>データベースから取得したデータの一覧表示</li>
+                            <li>QueryStringによるページ間データ受け渡し</li>
+                            <li>ユーザー詳細画面の実装</li>
+                            <li>Request.QueryString()の使用方法</li>
+                            <li>LinkButtonを使ったページ遷移</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">4.1 ユーザー一覧画面の作成</h3>
+                    <p>既存のUserDAO.GetAllUsers()メソッドを使用して、登録されている全ユーザーを一覧表示する画面を作成します。</p>
+                    
+                    <!-- 実習1 -->
+                    <div class="exercise-container">
+                        <h5>実習 4-1: Users/List.aspxの作成</h5>
+                        <p>GridViewコントロールを使用してユーザー一覧を表示する画面を実装します。</p>
+
+                        <h6>Users/List.aspx</h6>
+                        <pre><code>&lt;%@ Page Title="ユーザー一覧" Language="vb" MasterPageFile="~/Site.Master" AutoEventWireup="false" CodeBehind="List.aspx.vb" Inherits="UserManagementApp.List" %&gt;
+
+&lt;asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server"&gt;
+&lt;/asp:Content&gt;
+
+&lt;asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server"&gt;
+    &lt;div class="d-flex justify-content-between align-items-center mb-4"&gt;
+        &lt;h2 class="text-primary"&gt;
+            &lt;i class="fas fa-users"&gt;&lt;/i&gt; ユーザー一覧
+        &lt;/h2&gt;
+        &lt;a href="Create.aspx" class="btn btn-success btn-lg"&gt;
+            &lt;i class="fas fa-plus"&gt;&lt;/i&gt; 新規登録
+        &lt;/a&gt;
+    &lt;/div&gt;
+
+    &lt;!-- エラーメッセージ表示エリア --&gt;
+    &lt;asp:Panel ID="pnlMessage" runat="server" Visible="false"&gt;
+        &lt;asp:Label ID="lblMessage" runat="server" CssClass="alert d-block"&gt;&lt;/asp:Label&gt;
+    &lt;/asp:Panel&gt;
+
+    &lt;!-- ユーザー一覧テーブル --&gt;
+    &lt;div class="card"&gt;
+        &lt;div class="card-body"&gt;
+            &lt;asp:GridView ID="gvUsers" runat="server" 
+                          CssClass="table table-striped table-hover" 
+                          AutoGenerateColumns="False"
+                          EmptyDataText="登録されているユーザーがありません。"&gt;
+                
+                &lt;Columns&gt;
+                    &lt;asp:BoundField DataField="Id" HeaderText="ID" ItemStyle-Width="80px" ItemStyle-CssClass="text-center" /&gt;
+                    
+                    &lt;asp:TemplateField HeaderText="ユーザー名"&gt;
+                        &lt;ItemTemplate&gt;
+                            &lt;asp:LinkButton ID="lnkUsername" runat="server" 
+                                            Text='&lt;%# Eval("Username") %&gt;' 
+                                            CssClass="text-decoration-none fw-bold"
+                                            OnClick="lnkUsername_Click"
+                                            CommandArgument='&lt;%# Eval("Id") %&gt;' /&gt;
+                        &lt;/ItemTemplate&gt;
+                    &lt;/asp:TemplateField&gt;
+                    
+                    &lt;asp:BoundField DataField="FullName" HeaderText="氏名" /&gt;
+                    &lt;asp:BoundField DataField="Email" HeaderText="メールアドレス" /&gt;
+                    
+                    &lt;asp:TemplateField HeaderText="生年月日" ItemStyle-Width="120px"&gt;
+                        &lt;ItemTemplate&gt;
+                            &lt;%# If(Eval("BirthDate") Is Nothing OrElse IsDBNull(Eval("BirthDate")), 
+                                    "未設定", 
+                                    Convert.ToDateTime(Eval("BirthDate")).ToString("yyyy/MM/dd")) %&gt;
+                        &lt;/ItemTemplate&gt;
+                    &lt;/asp:TemplateField&gt;
+                    
+                    &lt;asp:TemplateField HeaderText="操作" ItemStyle-Width="150px" ItemStyle-CssClass="text-center"&gt;
+                        &lt;ItemTemplate&gt;
+                            &lt;asp:LinkButton ID="lnkDetail" runat="server" 
+                                            Text="詳細" 
+                                            CssClass="btn btn-sm btn-outline-primary me-1"
+                                            OnClick="lnkDetail_Click"
+                                            CommandArgument='&lt;%# Eval("Id") %&gt;' /&gt;
+                            &lt;asp:LinkButton ID="lnkEdit" runat="server" 
+                                            Text="編集" 
+                                            CssClass="btn btn-sm btn-outline-secondary"
+                                            OnClick="lnkEdit_Click"
+                                            CommandArgument='&lt;%# Eval("Id") %&gt;' /&gt;
+                        &lt;/ItemTemplate&gt;
+                    &lt;/asp:TemplateField&gt;
+                &lt;/Columns&gt;
+                
+                &lt;EmptyDataRowStyle CssClass="text-center text-muted" /&gt;
+            &lt;/asp:GridView&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/asp:Content&gt;</code></pre>
+                        
+                        <h6>Users/List.aspx.vb</h6>
+                        <pre><code>Public Class List
+    Inherits System.Web.UI.Page
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        If Not IsPostBack Then
+            LoadUsers()
+        End If
+    End Sub
+
+    Protected Sub lnkUsername_Click(sender As Object, e As EventArgs)
+        Try
+            Dim lnk As LinkButton = CType(sender, LinkButton)
+            Dim userId As Integer = Convert.ToInt32(lnk.CommandArgument)
+            
+            Response.Redirect($"Detail.aspx?id={userId}")
+            
+        Catch ex As Exception
+            ShowMessage($"ページ遷移でエラーが発生しました: {ex.Message}", "alert-danger")
+        End Try
+    End Sub
+
+    Protected Sub lnkDetail_Click(sender As Object, e As EventArgs)
+        Try
+            Dim lnk As LinkButton = CType(sender, LinkButton)
+            Dim userId As Integer = Convert.ToInt32(lnk.CommandArgument)
+            
+            Response.Redirect($"Detail.aspx?id={userId}")
+            
+        Catch ex As Exception
+            ShowMessage($"詳細ページ遷移でエラーが発生しました: {ex.Message}", "alert-danger")
+        End Try
+    End Sub
+
+    Protected Sub lnkEdit_Click(sender As Object, e As EventArgs)
+        Try
+            Dim lnk As LinkButton = CType(sender, LinkButton)
+            Dim userId As Integer = Convert.ToInt32(lnk.CommandArgument)
+            
+            Response.Redirect($"Edit.aspx?id={userId}")
+            
+        Catch ex As Exception
+            ShowMessage($"編集ページ遷移でエラーが発生しました: {ex.Message}", "alert-danger")
+        End Try
+    End Sub
+
+    Private Sub LoadUsers()
+        Try
+            ' 全ユーザーを取得
+            Dim users As List(Of User) = UserDAO.GetAllUsers()
+            
+            ' GridViewにデータバインド
+            gvUsers.DataSource = users
+            gvUsers.DataBind()
+            
+        Catch ex As Exception
+            ShowMessage($"ユーザー一覧の取得に失敗しました: {ex.Message}", "alert-danger")
+        End Try
+    End Sub
+
+    Private Sub ShowMessage(message As String, cssClass As String)
+        lblMessage.Text = message
+        lblMessage.CssClass = $"alert {cssClass} d-block"
+        pnlMessage.Visible = True
+    End Sub
+End Class</code></pre>
+                        
+                        <h6>期待される結果</h6>
+                        <ul>
+                            <li>ユーザー一覧がテーブル形式で表示される</li>
+                            <li>ユーザー名をクリックすると詳細画面に遷移する</li>
+                            <li>詳細・編集ボタンが正常に動作する</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">4.2 ユーザー詳細画面の実装</h3>
+                    <p>QueryString（クエリストリング）でユーザーIDを受け取り、指定されたユーザーの詳細情報を表示する画面を作成します。</p>
+
+                    <!-- 実習2 -->
+                    <div class="exercise-container">
+                        <h5>実習 4-2: Users/Detail.aspxの作成</h5>
+                        <p>QueryStringによるパラメータ受け取りとユーザー詳細情報の表示を実装します。</p>
+                        
+                        <h6>Users/Detail.aspx</h6>
+                        <pre><code>&lt;%@ Page Title="ユーザー詳細" Language="vb" MasterPageFile="~/Site.Master" AutoEventWireup="false" CodeBehind="Detail.aspx.vb" Inherits="UserManagementApp.Detail" %&gt;
+
+&lt;asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server"&gt;
+&lt;/asp:Content&gt;
+
+&lt;asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server"&gt;
+    &lt;div class="row justify-content-center"&gt;
+        &lt;div class="col-lg-8"&gt;
+            &lt;!-- パンくずナビ --&gt;
+            &lt;nav aria-label="breadcrumb" class="mb-3"&gt;
+                &lt;ol class="breadcrumb"&gt;
+                    &lt;li class="breadcrumb-item"&gt;&lt;a href="../Default.aspx"&gt;ホーム&lt;/a&gt;&lt;/li&gt;
+                    &lt;li class="breadcrumb-item"&gt;&lt;a href="List.aspx"&gt;ユーザー一覧&lt;/a&gt;&lt;/li&gt;
+                    &lt;li class="breadcrumb-item active" aria-current="page"&gt;ユーザー詳細&lt;/li&gt;
+                &lt;/ol&gt;
+            &lt;/nav&gt;
+
+            &lt;!-- エラーメッセージ表示エリア --&gt;
+            &lt;asp:Panel ID="pnlError" runat="server" Visible="false"&gt;
+                &lt;div class="alert alert-danger"&gt;
+                    &lt;asp:Label ID="lblError" runat="server"&gt;&lt;/asp:Label&gt;
+                &lt;/div&gt;
+            &lt;/asp:Panel&gt;
+
+            &lt;!-- ユーザー詳細カード --&gt;
+            &lt;asp:Panel ID="pnlUserDetail" runat="server" Visible="false"&gt;
+                &lt;div class="card shadow"&gt;
+                    &lt;div class="card-header bg-primary text-white"&gt;
+                        &lt;h3 class="card-title mb-0"&gt;
+                            &lt;i class="fas fa-user"&gt;&lt;/i&gt; ユーザー詳細情報
+                        &lt;/h3&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-body"&gt;
+                        &lt;div class="row"&gt;
+                            &lt;div class="col-md-6"&gt;
+                                &lt;h5 class="text-primary mb-3"&gt;基本情報&lt;/h5&gt;
+                                
+                                &lt;div class="mb-3"&gt;
+                                    &lt;label class="form-label text-muted"&gt;ユーザーID&lt;/label&gt;
+                                    &lt;div class="form-control-plaintext fw-bold"&gt;
+                                        &lt;asp:Label ID="lblUserId" runat="server"&gt;&lt;/asp:Label&gt;
+                                    &lt;/div&gt;
+                                &lt;/div&gt;
+                                
+                                &lt;div class="mb-3"&gt;
+                                    &lt;label class="form-label text-muted"&gt;ユーザー名&lt;/label&gt;
+                                    &lt;div class="form-control-plaintext fw-bold text-primary"&gt;
+                                        &lt;asp:Label ID="lblUsername" runat="server"&gt;&lt;/asp:Label&gt;
+                                    &lt;/div&gt;
+                                &lt;/div&gt;
+                                
+                                &lt;div class="mb-3"&gt;
+                                    &lt;label class="form-label text-muted"&gt;氏名&lt;/label&gt;
+                                    &lt;div class="form-control-plaintext fw-bold"&gt;
+                                        &lt;asp:Label ID="lblFullName" runat="server"&gt;&lt;/asp:Label&gt;
+                                    &lt;/div&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                            
+                            &lt;div class="col-md-6"&gt;
+                                &lt;h5 class="text-primary mb-3"&gt;詳細情報&lt;/h5&gt;
+                                
+                                &lt;div class="mb-3"&gt;
+                                    &lt;label class="form-label text-muted"&gt;メールアドレス&lt;/label&gt;
+                                    &lt;div class="form-control-plaintext"&gt;
+                                        &lt;asp:Label ID="lblEmail" runat="server"&gt;&lt;/asp:Label&gt;
+                                    &lt;/div&gt;
+                                &lt;/div&gt;
+                                
+                                &lt;div class="mb-3"&gt;
+                                    &lt;label class="form-label text-muted"&gt;生年月日&lt;/label&gt;
+                                    &lt;div class="form-control-plaintext"&gt;
+                                        &lt;asp:Label ID="lblBirthDate" runat="server"&gt;&lt;/asp:Label&gt;
+                                    &lt;/div&gt;
+                                &lt;/div&gt;
+                                
+                                &lt;div class="mb-3"&gt;
+                                    &lt;label class="form-label text-muted"&gt;年齢&lt;/label&gt;
+                                    &lt;div class="form-control-plaintext"&gt;
+                                        &lt;asp:Label ID="lblAge" runat="server"&gt;&lt;/asp:Label&gt;
+                                    &lt;/div&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                        
+                        &lt;hr /&gt;
+                        
+                        &lt;!-- 操作ボタン --&gt;
+                        &lt;div class="d-flex justify-content-between"&gt;
+                            &lt;div&gt;
+                                &lt;asp:Button ID="btnEdit" runat="server" Text="編集" 
+                                            CssClass="btn btn-warning btn-lg" OnClick="btnEdit_Click" /&gt;
+                            &lt;/div&gt;
+                            
+                            &lt;div&gt;
+                                &lt;a href="List.aspx" class="btn btn-secondary btn-lg"&gt;一覧に戻る&lt;/a&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/asp:Panel&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/asp:Content&gt;</code></pre>
+                        
+                        <h6>Users/Detail.aspx.vb</h6>
+                        <pre><code>Public Class Detail
+    Inherits System.Web.UI.Page
+
+    Private Property CurrentUserId As Integer
+        Get
+            Return If(ViewState("UserId"), 0)
+        End Get
+        Set(value As Integer)
+            ViewState("UserId") = value
+        End Set
+    End Property
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        If Not IsPostBack Then
+            LoadUserDetail()
+        End If
+    End Sub
+
+    Private Sub LoadUserDetail()
+        Try
+            ' QueryStringからユーザーIDを取得
+            Dim userIdParam As String = Request.QueryString("id")
+            
+            If String.IsNullOrEmpty(userIdParam) Then
+                ShowError("ユーザーIDが指定されていません。")
+                Return
+            End If
+            
+            Dim userId As Integer
+            If Not Integer.TryParse(userIdParam, userId) OrElse userId <= 0 Then
+                ShowError("無効なユーザーIDです。")
+                Return
+            End If
+            
+            CurrentUserId = userId
+            
+            ' ユーザー情報の取得
+            Dim user As User = UserDAO.GetUserById(userId)
+            
+            If user Is Nothing Then
+                ShowError($"ID: {userId} のユーザーが見つかりません。")
+                Return
+            End If
+            
+            ' ユーザー情報の表示
+            DisplayUserInfo(user)
+            
+        Catch ex As Exception
+            ShowError($"ユーザー情報の取得に失敗しました: {ex.Message}")
+        End Try
+    End Sub
+
+    Private Sub DisplayUserInfo(user As User)
+        Try
+            ' 基本情報の表示
+            lblUserId.Text = user.Id.ToString()
+            lblUsername.Text = user.Username
+            lblFullName.Text = user.FullName
+            lblEmail.Text = user.Email
+            
+            ' 生年月日と年齢の表示
+            If user.BirthDate.HasValue Then
+                lblBirthDate.Text = user.BirthDate.Value.ToString("yyyy年MM月dd日")
+                lblAge.Text = CalculateAge(user.BirthDate.Value).ToString() + "歳"
+            Else
+                lblBirthDate.Text = "未設定"
+                lblAge.Text = "-"
+            End If
+            
+            ' 詳細パネルを表示
+            pnlUserDetail.Visible = True
+            pnlError.Visible = False
+            
+        Catch ex As Exception
+            ShowError("ユーザー情報の表示に失敗しました。")
+        End Try
+    End Sub
+
+    Protected Sub btnEdit_Click(sender As Object, e As EventArgs) Handles btnEdit.Click
+        Try
+            If CurrentUserId > 0 Then
+                Response.Redirect($"Edit.aspx?id={CurrentUserId}")
+            Else
+                ShowError("編集対象のユーザーIDが取得できません。")
+            End If
+            
+        Catch ex As Exception
+            ShowError($"編集ページへの遷移に失敗しました: {ex.Message}")
+        End Try
+    End Sub
+
+    Private Sub ShowError(message As String)
+        lblError.Text = message
+        pnlError.Visible = True
+        pnlUserDetail.Visible = False
+    End Sub
+
+    Private Function CalculateAge(birthDate As DateTime) As Integer
+        Dim age As Integer = DateTime.Today.Year - birthDate.Year
+        
+        ' 誕生日前の場合は1歳減らす
+        If DateTime.Today < birthDate.AddYears(age) Then
+            age -= 1
+        End If
+        
+        Return age
+    End Function
+End Class</code></pre>
+                        
+                        <h6>期待される結果</h6>
+                        <ul>
+                            <li>QueryStringでユーザーIDを正しく受け取る</li>
+                            <li>ユーザー詳細情報がきれいに表示される</li>
+                            <li>無効なIDや存在しないユーザーのエラーメッセージが表示される</li>
+                            <li>年齢計算が正確に動作する</li>
+                            <li>編集ボタンでEdit.aspxに正しく遷移する</li>
+                        </ul>
+                    </div>
+
+                    <div class="info">
+                        <h6>💡 QueryStringの基本</h6>
+                        <ul>
+                            <li><strong>パラメータ取得:</strong> Request.QueryString("パラメータ名")</li>
+                            <li><strong>安全な型変換:</strong> Integer.TryParse()で変換チェック</li>
+                            <li><strong>URL生成:</strong> Response.Redirect($"Detail.aspx?id={userId}")</li>
+                            <li><strong>エラー処理:</strong> パラメータが空やnullの場合の対処</li>
+                        </ul>
+                    </div>
+
+                    <!-- 理解度確認 -->
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>GridViewでデータを表示するために必要な2つのステップは何ですか？</li>
+                            <li>QueryStringでパラメータを取得するVB.NET構文を書いてください。</li>
+                            <li>String型を安全にInteger型に変換するメソッドは何ですか？</li>
+                            <li>GridViewのTemplateFieldを使う利点は何ですか？</li>
+                            <li>Response.Redirectメソッドの用途を説明してください。</li>
+                        </ol>
+                        <details>
+                            <summary>解答例</summary>
+                            <ol>
+                                <li>DataSourceにデータを設定し、DataBind()メソッドを呼び出す</li>
+                                <li><code>Dim value As String = Request.QueryString("id")</code></li>
+                                <li>Integer.TryParse()メソッド</li>
+                                <li>自由なレイアウトでデータを表示できる（リンクボタンなど）</li>
+                                <li>指定したURLにページをリダイレクトするため</li>
+                            </ol>
+                        </details>
+                    </div>
+
+                    <!-- ナビゲーション -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="step3-user-registration.html" class="btn btn-secondary">← 前のステップ</a>
+                        <a href="step5-user-update-delete.html" class="btn btn-primary">次のステップ →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

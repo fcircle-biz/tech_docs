@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASP.NET(VB) 実践チュートリアル Step 5 - ユーザー更新・削除機能</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ベースレイアウト */
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+
+        /* ナビゲーション - ASP.NET系テーマ */
+        .navbar {
+            background-color: #1976d2;
+        }
+
+        .navbar-brand, .navbar-nav .nav-link {
+            color: white !important;
+            font-weight: 500;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #bbdefb !important;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+            background-color: white;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .sidebar .nav-link {
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .sidebar .nav-link.active {
+            background-color: #1976d2 !important;
+            color: white !important;
+        }
+
+        /* タイトル */
+        .chapter-title {
+            color: #1976d2;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #1976d2;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title {
+            color: #42a5f5;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* コンテンツボックス */
+        .quiz-container {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #1976d2;
+        }
+
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .highlight {
+            background-color: #ffecb3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
+        }
+
+        .info {
+            background-color: #e8f5e8;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #4caf50;
+        }
+
+        /* コードブロック */
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        .step-number {
+            background-color: #1976d2;
+            color: white;
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">ASP.NET VB チュートリアル</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="README.md">チュートリアルTOP</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        チュートリアル目次
+                    </h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="step1-environment-setup.html">Step 1: 環境構築とASP.NET基礎</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step2-database-connection.html">Step 2: データベース設計と接続</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step3-user-registration.html">Step 3: ユーザー登録機能</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step4-user-list-detail.html">Step 4: ユーザー一覧・詳細表示</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="step5-user-update-delete.html">Step 5: ユーザー更新・削除</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step6-testing-debug.html">Step 6: 動作確認とデバッグ</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Step 5: ユーザー更新・削除機能</h1>
+                    <div class="badge bg-primary">所要時間: 2時間</div>
+                </div>
+
+                <div id="step5">
+                    <h2 class="chapter-title">基本的なCRUD操作の完成</h2>
+                    
+                    <!-- 学習目標 -->
+                    <div class="highlight">
+                        <h5>このステップで学ぶこと</h5>
+                        <ul>
+                            <li>UserDAOクラスの基本的なUPDATE・DELETE処理実装</li>
+                            <li>編集フォームの基本的なデータバインディング</li>
+                            <li>フォームコントロールの値の取得と設定</li>
+                            <li>基本的な入力値検証</li>
+                            <li>シンプルな確認メッセージの表示</li>
+                            <li>エラーハンドリングの基礎</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">5.1 UserDAOクラスのUPDATE・DELETE機能追加</h3>
+                    <p>CRUD操作を完成させるため、ユーザー情報の更新と削除機能をUserDAOクラスに追加します。</p>
+                    
+                    <!-- 実習1 -->
+                    <div class="exercise-container">
+                        <h5>実習 5-1: UserDAOクラスに基本的なUPDATE・DELETE機能を追加</h5>
+                        <p>シンプルなユーザー情報の更新と削除処理をUserDAOクラスに実装します。</p>
+                        
+                        <h6>App_Code/UserDAO.vb に追加するメソッド</h6>
+                        <pre><code>''' &lt;summary&gt;
+''' ユーザー情報の更新
+''' &lt;/summary&gt;
+''' &lt;param name="user"&gt;更新するユーザー情報&lt;/param&gt;
+''' &lt;returns&gt;更新件数&lt;/returns&gt;
+Public Shared Function UpdateUser(user As User) As Integer
+    Try
+        Using connection As New SqlConnection(DatabaseConfig.GetConnectionString())
+            connection.Open()
+            
+            Dim query As String = "
+                UPDATE users 
+                SET username = @Username, 
+                    email = @Email, 
+                    full_name = @FullName, 
+                    birth_date = @BirthDate
+                WHERE id = @Id"
+            
+            Using command As New SqlCommand(query, connection)
+                command.Parameters.AddWithValue("@Id", user.Id)
+                command.Parameters.AddWithValue("@Username", user.Username)
+                command.Parameters.AddWithValue("@Email", user.Email)
+                command.Parameters.AddWithValue("@FullName", user.FullName)
+                
+                If user.BirthDate.HasValue Then
+                    command.Parameters.AddWithValue("@BirthDate", user.BirthDate.Value)
+                Else
+                    command.Parameters.AddWithValue("@BirthDate", DBNull.Value)
+                End If
+                
+                Return command.ExecuteNonQuery()
+            End Using
+        End Using
+        
+    Catch ex As Exception
+        Throw New Exception("ユーザー情報の更新に失敗しました。", ex)
+    End Try
+End Function
+
+''' &lt;summary&gt;
+''' ユーザーの削除
+''' &lt;/summary&gt;
+''' &lt;param name="userId"&gt;削除するユーザーID&lt;/param&gt;
+''' &lt;returns&gt;削除件数&lt;/returns&gt;
+Public Shared Function DeleteUser(userId As Integer) As Integer
+    Try
+        Using connection As New SqlConnection(DatabaseConfig.GetConnectionString())
+            connection.Open()
+            
+            Dim query As String = "DELETE FROM users WHERE id = @UserId"
+            
+            Using command As New SqlCommand(query, connection)
+                command.Parameters.AddWithValue("@UserId", userId)
+                Return command.ExecuteNonQuery()
+            End Using
+        End Using
+        
+    Catch ex As Exception
+        Throw New Exception("ユーザーの削除に失敗しました。", ex)
+    End Try
+End Function</code></pre>
+                        
+                        <h6>期待される結果</h6>
+                        <ul>
+                            <li>UpdateUserメソッドが正常にコンパイルされる</li>
+                            <li>DeleteUserメソッドが正常にコンパイルされる</li>
+                            <li>基本的なUPDATE・DELETE処理が動作する</li>
+                            <li>Using文によりリソースが適切に管理される</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">5.2 シンプルな編集フォームの実装</h3>
+                    <p>基本的なユーザー情報編集フォームを作成します。</p>
+
+                    <!-- 実習2 -->
+                    <div class="exercise-container">
+                        <h5>実習 5-2: シンプルなユーザー編集フォーム（Edit.aspx）の作成</h5>
+                        <p>基本的なデータバインディングを含む編集フォームを実装します。</p>
+                        
+                        <h6>Users/Edit.aspx</h6>
+                        <pre><code>&lt;%@ Page Title="ユーザー編集" Language="vb" MasterPageFile="~/Site.Master" AutoEventWireup="false" CodeBehind="Edit.aspx.vb" Inherits="UserManagementApp.Edit" %&gt;
+
+&lt;asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server"&gt;
+&lt;/asp:Content&gt;
+
+&lt;asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server"&gt;
+    &lt;div class="row justify-content-center"&gt;
+        &lt;div class="col-lg-8"&gt;
+            &lt;!-- パンくずナビ --&gt;
+            &lt;nav aria-label="breadcrumb" class="mb-3"&gt;
+                &lt;ol class="breadcrumb"&gt;
+                    &lt;li class="breadcrumb-item"&gt;&lt;a href="../Default.aspx"&gt;ホーム&lt;/a&gt;&lt;/li&gt;
+                    &lt;li class="breadcrumb-item"&gt;&lt;a href="List.aspx"&gt;ユーザー一覧&lt;/a&gt;&lt;/li&gt;
+                    &lt;li class="breadcrumb-item active" aria-current="page"&gt;ユーザー編集&lt;/li&gt;
+                &lt;/ol&gt;
+            &lt;/nav&gt;
+
+            &lt;!-- エラーメッセージ表示エリア --&gt;
+            &lt;asp:Panel ID="pnlMessage" runat="server" Visible="false"&gt;
+                &lt;asp:Label ID="lblMessage" runat="server" CssClass="alert d-block"&gt;&lt;/asp:Label&gt;
+            &lt;/asp:Panel&gt;
+
+            &lt;!-- 編集フォーム --&gt;
+            &lt;div class="card shadow"&gt;
+                &lt;div class="card-header bg-warning text-dark"&gt;
+                    &lt;h3 class="card-title mb-0"&gt;
+                        &lt;i class="fas fa-edit"&gt;&lt;/i&gt; ユーザー情報編集
+                    &lt;/h3&gt;
+                &lt;/div&gt;
+                &lt;div class="card-body"&gt;
+                    &lt;div class="row"&gt;
+                        &lt;div class="col-md-6"&gt;
+                            &lt;!-- ユーザー名 --&gt;
+                            &lt;div class="mb-3"&gt;
+                                &lt;asp:Label ID="lblUsername" runat="server" Text="ユーザー名" CssClass="form-label" AssociatedControlID="txtUsername"&gt;&lt;/asp:Label&gt;
+                                &lt;span class="text-danger"&gt;*&lt;/span&gt;
+                                &lt;asp:TextBox ID="txtUsername" runat="server" CssClass="form-control" MaxLength="50" placeholder="半角英数字で入力"&gt;&lt;/asp:TextBox&gt;
+                                &lt;asp:RequiredFieldValidator ID="rfvUsername" runat="server" ControlToValidate="txtUsername" 
+                                                          ErrorMessage="ユーザー名は必須です" CssClass="text-danger" Display="Dynamic"&gt;&lt;/asp:RequiredFieldValidator&gt;
+                            &lt;/div&gt;
+
+                            &lt;!-- メールアドレス --&gt;
+                            &lt;div class="mb-3"&gt;
+                                &lt;asp:Label ID="lblEmail" runat="server" Text="メールアドレス" CssClass="form-label" AssociatedControlID="txtEmail"&gt;&lt;/asp:Label&gt;
+                                &lt;span class="text-danger"&gt;*&lt;/span&gt;
+                                &lt;asp:TextBox ID="txtEmail" runat="server" CssClass="form-control" MaxLength="100" placeholder="example@example.com"&gt;&lt;/asp:TextBox&gt;
+                                &lt;asp:RequiredFieldValidator ID="rfvEmail" runat="server" ControlToValidate="txtEmail" 
+                                                          ErrorMessage="メールアドレスは必須です" CssClass="text-danger" Display="Dynamic"&gt;&lt;/asp:RequiredFieldValidator&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                        
+                        &lt;div class="col-md-6"&gt;
+                            &lt;!-- 氏名 --&gt;
+                            &lt;div class="mb-3"&gt;
+                                &lt;asp:Label ID="lblFullName" runat="server" Text="氏名" CssClass="form-label" AssociatedControlID="txtFullName"&gt;&lt;/asp:Label&gt;
+                                &lt;span class="text-danger"&gt;*&lt;/span&gt;
+                                &lt;asp:TextBox ID="txtFullName" runat="server" CssClass="form-control" MaxLength="100" placeholder="山田 太郎"&gt;&lt;/asp:TextBox&gt;
+                                &lt;asp:RequiredFieldValidator ID="rfvFullName" runat="server" ControlToValidate="txtFullName" 
+                                                          ErrorMessage="氏名は必須です" CssClass="text-danger" Display="Dynamic"&gt;&lt;/asp:RequiredFieldValidator&gt;
+                            &lt;/div&gt;
+
+                            &lt;!-- 生年月日 --&gt;
+                            &lt;div class="mb-3"&gt;
+                                &lt;asp:Label ID="lblBirthDate" runat="server" Text="生年月日" CssClass="form-label" AssociatedControlID="txtBirthDate"&gt;&lt;/asp:Label&gt;
+                                &lt;asp:TextBox ID="txtBirthDate" runat="server" CssClass="form-control" TextMode="Date"&gt;&lt;/asp:TextBox&gt;
+                                &lt;small class="form-text text-muted"&gt;未入力でも登録可能です&lt;/small&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                    
+                    &lt;hr /&gt;
+                    
+                    &lt;!-- 操作ボタン --&gt;
+                    &lt;div class="d-flex justify-content-between"&gt;
+                        &lt;div&gt;
+                            &lt;asp:Button ID="btnUpdate" runat="server" Text="更新" 
+                                        CssClass="btn btn-success btn-lg" OnClick="btnUpdate_Click" /&gt;
+                            &lt;asp:Button ID="btnDelete" runat="server" Text="削除" 
+                                        CssClass="btn btn-danger btn-lg ms-2" OnClick="btnDelete_Click"
+                                        OnClientClick="return confirm('本当に削除しますか？');" /&gt;
+                        &lt;/div&gt;
+                        
+                        &lt;div&gt;
+                            &lt;a href="List.aspx" class="btn btn-secondary btn-lg"&gt;一覧に戻る&lt;/a&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/asp:Content&gt;</code></pre>
+                        
+                        <h6>Users/Edit.aspx.vb</h6>
+                        <pre><code>Public Class Edit
+    Inherits System.Web.UI.Page
+
+    Private Property CurrentUserId As Integer
+        Get
+            Return If(ViewState("UserId"), 0)
+        End Get
+        Set(value As Integer)
+            ViewState("UserId") = value
+        End Set
+    End Property
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        If Not IsPostBack Then
+            LoadUserForEdit()
+        End If
+    End Sub
+
+    Private Sub LoadUserForEdit()
+        Try
+            ' QueryStringからユーザーIDを取得
+            Dim userIdParam As String = Request.QueryString("id")
+            
+            If String.IsNullOrEmpty(userIdParam) Then
+                ShowMessage("ユーザーIDが指定されていません。", "alert-danger")
+                Return
+            End If
+            
+            Dim userId As Integer
+            If Not Integer.TryParse(userIdParam, userId) OrElse userId <= 0 Then
+                ShowMessage("無効なユーザーIDです。", "alert-danger")
+                Return
+            End If
+            
+            CurrentUserId = userId
+            
+            ' ユーザー情報の取得と表示
+            Dim user As User = UserDAO.GetUserById(userId)
+            
+            If user Is Nothing Then
+                ShowMessage($"ID: {userId} のユーザーが見つかりません。", "alert-danger")
+                Return
+            End If
+            
+            ' フォームに値を設定
+            DisplayUserForEdit(user)
+            
+        Catch ex As Exception
+            ShowMessage($"ユーザー情報の取得に失敗しました: {ex.Message}", "alert-danger")
+        End Try
+    End Sub
+
+    Private Sub DisplayUserForEdit(user As User)
+        Try
+            txtUsername.Text = user.Username
+            txtEmail.Text = user.Email
+            txtFullName.Text = user.FullName
+            
+            ' 生年月日の設定
+            If user.BirthDate.HasValue Then
+                txtBirthDate.Text = user.BirthDate.Value.ToString("yyyy-MM-dd")
+            Else
+                txtBirthDate.Text = ""
+            End If
+            
+        Catch ex As Exception
+            ShowMessage("フォームの初期化に失敗しました。", "alert-danger")
+        End Try
+    End Sub
+
+    Protected Sub btnUpdate_Click(sender As Object, e As EventArgs) Handles btnUpdate.Click
+        Try
+            If CurrentUserId <= 0 Then
+                ShowMessage("更新対象のユーザーIDが取得できません。", "alert-danger")
+                Return
+            End If
+
+            ' フォームから値を取得してUserオブジェクトを作成
+            Dim user As New User() With {
+                .Id = CurrentUserId,
+                .Username = txtUsername.Text.Trim(),
+                .Email = txtEmail.Text.Trim(),
+                .FullName = txtFullName.Text.Trim()
+            }
+            
+            ' 生年月日の設定
+            If Not String.IsNullOrEmpty(txtBirthDate.Text) Then
+                Dim birthDate As DateTime
+                If DateTime.TryParse(txtBirthDate.Text, birthDate) Then
+                    user.BirthDate = birthDate
+                End If
+            End If
+            
+            ' 更新処理
+            Dim affectedRows As Integer = UserDAO.UpdateUser(user)
+            
+            If affectedRows > 0 Then
+                ShowMessage("ユーザー情報を更新しました。", "alert-success")
+            Else
+                ShowMessage("更新対象のユーザーが見つかりませんでした。", "alert-warning")
+            End If
+            
+        Catch ex As Exception
+            ShowMessage($"更新処理でエラーが発生しました: {ex.Message}", "alert-danger")
+        End Try
+    End Sub
+
+    Protected Sub btnDelete_Click(sender As Object, e As EventArgs) Handles btnDelete.Click
+        Try
+            If CurrentUserId <= 0 Then
+                ShowMessage("削除対象のユーザーIDが取得できません。", "alert-danger")
+                Return
+            End If
+            
+            ' 削除処理
+            Dim affectedRows As Integer = UserDAO.DeleteUser(CurrentUserId)
+            
+            If affectedRows > 0 Then
+                ' 削除成功時は一覧画面にリダイレクト
+                Response.Redirect("List.aspx")
+            Else
+                ShowMessage("削除対象のユーザーが見つかりませんでした。", "alert-warning")
+            End If
+            
+        Catch ex As Exception
+            ShowMessage($"削除処理でエラーが発生しました: {ex.Message}", "alert-danger")
+        End Try
+    End Sub
+
+    Private Sub ShowMessage(message As String, cssClass As String)
+        lblMessage.Text = message
+        lblMessage.CssClass = $"alert {cssClass} d-block"
+        pnlMessage.Visible = True
+    End Sub
+End Class</code></pre>
+                        
+                        <h6>期待される結果</h6>
+                        <ul>
+                            <li>編集フォームが正常に表示される</li>
+                            <li>既存のユーザー情報がフォームに読み込まれる</li>
+                            <li>更新ボタンでユーザー情報が正常に更新される</li>
+                            <li>削除ボタンでユーザーが削除される</li>
+                            <li>基本的なバリデーションが動作する</li>
+                        </ul>
+                    </div>
+
+                    <div class="info">
+                        <h6>💡 基本的なフォーム処理のポイント</h6>
+                        <ul>
+                            <li><strong>データバインディング:</strong> ユーザー情報をフォームコントロールに設定</li>
+                            <li><strong>基本バリデーション:</strong> RequiredFieldValidatorによる必須チェック</li>
+                            <li><strong>確認ダイアログ:</strong> OnClientClickによるJavaScript確認</li>
+                            <li><strong>リダイレクト:</strong> Response.Redirectによるページ移動</li>
+                        </ul>
+                    </div>
+
+                    <!-- 理解度確認 -->
+                    <div class="quiz-container">
+                        <h5>ASP.NET・VB.NET理解度クイズ</h5>
+                        <ol>
+                            <li>UPDATE文でデータベースのレコードを更新するのに必要な基本的な要素は何ですか？</li>
+                            <li>VB.NETでDateTime型の値をnull許可にするにはどのような型を使いますか？</li>
+                            <li>ASP.NETでJavaScriptの確認ダイアログを表示するプロパティは何ですか？</li>
+                            <li>Try-Catch文でエラーハンドリングする際の基本的な構文を書いてください。</li>
+                            <li>Response.Redirectメソッドの用途を説明してください。</li>
+                        </ol>
+                        <details>
+                            <summary>解答例</summary>
+                            <ol>
+                                <li>SET句（更新する列と値）、WHERE句（更新対象の条件）</li>
+                                <li>DateTime?（Nullable(Of DateTime)）</li>
+                                <li>OnClientClick</li>
+                                <li><code>Try<br>&nbsp;&nbsp;&nbsp;&nbsp;' 処理<br>Catch ex As Exception<br>&nbsp;&nbsp;&nbsp;&nbsp;' エラー処理<br>End Try</code></li>
+                                <li>指定したURLにページをリダイレクトするため</li>
+                            </ol>
+                        </details>
+                    </div>
+
+                    <!-- ナビゲーション -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="step4-user-list-detail.html" class="btn btn-secondary">← 前のステップ</a>
+                        <a href="step6-testing-debug.html" class="btn btn-primary">次のステップ: 動作確認とデバッグ →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
