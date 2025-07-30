@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JUnit学習教材 第7章 - テストの組織化とベストプラクティス</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ベースレイアウト */
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+
+        /* ナビゲーション */
+        .navbar {
+            background-color: #f57c00;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+
+        /* タイトル */
+        .chapter-title {
+            color: #f57c00;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #f57c00;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title {
+            color: #ff9800;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* コンテンツボックス */
+        .quiz-container {
+            background-color: #fff3e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #f57c00;
+        }
+
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .highlight {
+            background-color: #ffecb3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
+        }
+
+        /* ナビゲーション */
+        .nav-link.active {
+            background-color: #f57c00 !important;
+            color: white !important;
+        }
+
+        /* プリフォーマット */
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.875em;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">JUnit学習教材</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../../../README.md">ホーム</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="README.md">JUnitガイド</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="junit-learning-material-1.html">第1章: JUnit基礎とセットアップ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="junit-learning-material-2.html">第2章: 基本的なテストケース</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="junit-learning-material-3.html">第3章: アサーションとマッチャー</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="junit-learning-material-4.html">第4章: テストライフサイクル</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="junit-learning-material-5.html">第5章: パラメータ化テスト</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="junit-learning-material-6.html">第6章: 例外テストとタイムアウト</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#chapter7">第7章: テストの組織化</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第7章: テストの組織化とベストプラクティス</h1>
+                </div>
+
+                <div id="chapter7">
+                    <h2 class="chapter-title">保守しやすいテストコードの設計と管理</h2>
+                    
+                    <!-- 学習目標 -->
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>@Nestedアノテーションによるテストの階層化</li>
+                            <li>@Tagアノテーションを使用したテストの分類</li>
+                            <li>条件付き実行（@EnabledOn系アノテーション）</li>
+                            <li>テストデータの管理とファクトリーパターン</li>
+                            <li>保守しやすいテストコードの設計原則</li>
+                            <li>テスト実行戦略と継続的インテグレーション</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">7.1 @Nestedによるテストの階層化</h3>
+                    <p>関連するテストケースをグループ化し、階層構造で整理する方法について学習します。</p>
+                    
+                    <h4>@Nestedの利点</h4>
+                    <ul>
+                        <li><strong>論理的なグループ化</strong>: 機能別、条件別でのテスト整理</li>
+                        <li><strong>共通セットアップの共有</strong>: 階層レベルでの前処理</li>
+                        <li><strong>読みやすい結果表示</strong>: ツリー構造での結果確認</li>
+                        <li><strong>保守性の向上</strong>: 関連テストの一元管理</li>
+                    </ul>
+
+                    <!-- 実習1 -->
+                    <div class="exercise-container">
+                        <h5>実習 7-1: @Nestedによる階層テストの作成</h5>
+                        <p>ショッピングカート機能を例に、機能別にテストを階層化します。</p>
+                        <h6>手順</h6>
+                        <ol>
+                            <li>ShoppingCartクラスを作成</li>
+                            <li>機能別に@Nestedクラスを定義</li>
+                            <li>各階層で適切なセットアップを実装</li>
+                        </ol>
+                        <h6>実行例</h6>
+                        <p><strong>ShoppingCart.java</strong></p>
+                        <pre><code>import java.math.BigDecimal;
+import java.util.*;
+
+public class ShoppingCart {
+    private List&lt;CartItem&gt; items;
+    private String customerId;
+    private BigDecimal discountRate;
+    
+    public ShoppingCart(String customerId) {
+        this.customerId = customerId;
+        this.items = new ArrayList&lt;&gt;();
+        this.discountRate = BigDecimal.ZERO;
+    }
+    
+    public void addItem(String productId, String name, BigDecimal price, int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be positive");
+        }
+        
+        Optional&lt;CartItem&gt; existingItem = items.stream()
+            .filter(item -&gt; item.getProductId().equals(productId))
+            .findFirst();
+            
+        if (existingItem.isPresent()) {
+            existingItem.get().setQuantity(existingItem.get().getQuantity() + quantity);
+        } else {
+            items.add(new CartItem(productId, name, price, quantity));
+        }
+    }
+    
+    public void removeItem(String productId) {
+        items.removeIf(item -&gt; item.getProductId().equals(productId));
+    }
+    
+    public void updateQuantity(String productId, int newQuantity) {
+        if (newQuantity <= 0) {
+            removeItem(productId);
+            return;
+        }
+        
+        Optional&lt;CartItem&gt; item = items.stream()
+            .filter(i -&gt; i.getProductId().equals(productId))
+            .findFirst();
+            
+        if (item.isPresent()) {
+            item.get().setQuantity(newQuantity);
+        } else {
+            throw new IllegalArgumentException("Product not found in cart");
+        }
+    }
+    
+    public BigDecimal getTotal() {
+        BigDecimal subtotal = items.stream()
+            .map(item -&gt; item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+            
+        BigDecimal discount = subtotal.multiply(discountRate);
+        return subtotal.subtract(discount);
+    }
+    
+    public void applyDiscount(BigDecimal discountRate) {
+        if (discountRate.compareTo(BigDecimal.ZERO) < 0 || 
+            discountRate.compareTo(BigDecimal.ONE) > 0) {
+            throw new IllegalArgumentException("Discount rate must be between 0 and 1");
+        }
+        this.discountRate = discountRate;
+    }
+    
+    public void clear() {
+        items.clear();
+    }
+    
+    public boolean isEmpty() {
+        return items.isEmpty();
+    }
+    
+    public int getItemCount() {
+        return items.stream().mapToInt(CartItem::getQuantity).sum();
+    }
+    
+    public List&lt;CartItem&gt; getItems() {
+        return new ArrayList&lt;&gt;(items);
+    }
+}
+
+class CartItem {
+    private String productId;
+    private String name;
+    private BigDecimal price;
+    private int quantity;
+    
+    public CartItem(String productId, String name, BigDecimal price, int quantity) {
+        this.productId = productId;
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+    }
+    
+    // getters and setters
+    public String getProductId() { return productId; }
+    public String getName() { return name; }
+    public BigDecimal getPrice() { return price; }
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
+}</code></pre>
+                        <p><strong>ShoppingCartNestedTest.java</strong></p>
+                        <pre><code>import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+import java.math.BigDecimal;
+
+@DisplayName("ショッピングカート機能のテスト")
+class ShoppingCartNestedTest {
+    
+    private ShoppingCart cart;
+    
+    @BeforeEach
+    void setUp() {
+        cart = new ShoppingCart("customer123");
+    }
+    
+    @Nested
+    @DisplayName("商品追加機能")
+    class AddItemTests {
+        
+        @Test
+        @DisplayName("新しい商品を追加できる")
+        void shouldAddNewItem() {
+            cart.addItem("P001", "Product 1", new BigDecimal("100.00"), 2);
+            
+            assertEquals(1, cart.getItems().size());
+            assertEquals(2, cart.getItemCount());
+        }
+        
+        @Test
+        @DisplayName("同じ商品を追加すると数量が増加する")
+        void shouldIncreaseQuantityWhenAddingSameItem() {
+            cart.addItem("P001", "Product 1", new BigDecimal("100.00"), 2);
+            cart.addItem("P001", "Product 1", new BigDecimal("100.00"), 3);
+            
+            assertEquals(1, cart.getItems().size());
+            assertEquals(5, cart.getItemCount());
+        }
+        
+        @Test
+        @DisplayName("負の数量での追加は例外が発生する")
+        void shouldThrowExceptionForNegativeQuantity() {
+            assertThrows(IllegalArgumentException.class, () -&gt; {
+                cart.addItem("P001", "Product 1", new BigDecimal("100.00"), -1);
+            });
+        }
+        
+        @Nested
+        @DisplayName("複数商品の追加")
+        class MultipleItemTests {
+            
+            @BeforeEach
+            void addMultipleItems() {
+                cart.addItem("P001", "Product 1", new BigDecimal("100.00"), 2);
+                cart.addItem("P002", "Product 2", new BigDecimal("50.00"), 1);
+            }
+            
+            @Test
+            @DisplayName("複数商品が正しく追加される")
+            void shouldAddMultipleItems() {
+                assertEquals(2, cart.getItems().size());
+                assertEquals(3, cart.getItemCount());
+            }
+            
+            @Test
+            @DisplayName("合計金額が正しく calculate される")
+            void shouldCalculateCorrectTotal() {
+                BigDecimal expected = new BigDecimal("250.00"); // 100*2 + 50*1
+                assertEquals(0, expected.compareTo(cart.getTotal()));
+            }
+        }
+    }
+    
+    @Nested
+    @DisplayName("商品削除機能")
+    class RemoveItemTests {
+        
+        @BeforeEach
+        void addItemsForRemoval() {
+            cart.addItem("P001", "Product 1", new BigDecimal("100.00"), 2);
+            cart.addItem("P002", "Product 2", new BigDecimal("50.00"), 1);
+        }
+        
+        @Test
+        @DisplayName("商品を削除できる")
+        void shouldRemoveItem() {
+            cart.removeItem("P001");
+            
+            assertEquals(1, cart.getItems().size());
+            assertEquals(1, cart.getItemCount());
+        }
+        
+        @Test
+        @DisplayName("存在しない商品の削除は何も起こらない")
+        void shouldDoNothingWhenRemovingNonExistentItem() {
+            cart.removeItem("P999");
+            
+            assertEquals(2, cart.getItems().size());
+        }
+        
+        @Test
+        @DisplayName("すべての商品を削除できる")
+        void shouldRemoveAllItems() {
+            cart.removeItem("P001");
+            cart.removeItem("P002");
+            
+            assertTrue(cart.isEmpty());
+        }
+    }
+    
+    @Nested
+    @DisplayName("数量更新機能")
+    class UpdateQuantityTests {
+        
+        @BeforeEach
+        void addItemForUpdate() {
+            cart.addItem("P001", "Product 1", new BigDecimal("100.00"), 3);
+        }
+        
+        @Test
+        @DisplayName("数量を増加できる")
+        void shouldIncreaseQuantity() {
+            cart.updateQuantity("P001", 5);
+            
+            assertEquals(5, cart.getItemCount());
+        }
+        
+        @Test
+        @DisplayName("数量を減少できる")
+        void shouldDecreaseQuantity() {
+            cart.updateQuantity("P001", 2);
+            
+            assertEquals(2, cart.getItemCount());
+        }
+        
+        @Test
+        @DisplayName("数量を0にすると商品が削除される")
+        void shouldRemoveItemWhenQuantityIsZero() {
+            cart.updateQuantity("P001", 0);
+            
+            assertTrue(cart.isEmpty());
+        }
+        
+        @Test
+        @DisplayName("存在しない商品の数量更新は例外が発生する")
+        void shouldThrowExceptionWhenUpdatingNonExistentItem() {
+            assertThrows(IllegalArgumentException.class, () -&gt; {
+                cart.updateQuantity("P999", 5);
+            });
+        }
+    }
+    
+    @Nested
+    @DisplayName("割引機能")
+    class DiscountTests {
+        
+        @BeforeEach
+        void addItemsForDiscount() {
+            cart.addItem("P001", "Product 1", new BigDecimal("100.00"), 2);
+            cart.addItem("P002", "Product 2", new BigDecimal("50.00"), 2);
+        }
+        
+        @Test
+        @DisplayName("10%割引を適用できる")
+        void shouldApply10PercentDiscount() {
+            cart.applyDiscount(new BigDecimal("0.10"));
+            
+            BigDecimal expected = new BigDecimal("270.00"); // 300 * 0.9
+            assertEquals(0, expected.compareTo(cart.getTotal()));
+        }
+        
+        @Test
+        @DisplayName("50%割引を適用できる")
+        void shouldApply50PercentDiscount() {
+            cart.applyDiscount(new BigDecimal("0.50"));
+            
+            BigDecimal expected = new BigDecimal("150.00"); // 300 * 0.5
+            assertEquals(0, expected.compareTo(cart.getTotal()));
+        }
+        
+        @Test
+        @DisplayName("無効な割引率は例外が発生する")
+        void shouldThrowExceptionForInvalidDiscountRate() {
+            assertAll("Invalid discount rates",
+                () -&gt; assertThrows(IllegalArgumentException.class, 
+                                 () -&gt; cart.applyDiscount(new BigDecimal("-0.10"))),
+                () -&gt; assertThrows(IllegalArgumentException.class, 
+                                 () -&gt; cart.applyDiscount(new BigDecimal("1.10")))
+            );
+        }
+    }
+    
+    @Nested
+    @DisplayName("カート状態管理")
+    class CartStateTests {
+        
+        @Test
+        @DisplayName("新しいカートは空である")
+        void shouldBeEmptyWhenNew() {
+            assertTrue(cart.isEmpty());
+            assertEquals(0, cart.getItemCount());
+            assertEquals(0, cart.getTotal().compareTo(BigDecimal.ZERO));
+        }
+        
+        @Test
+        @DisplayName("カートをクリアできる")
+        void shouldClearCart() {
+            cart.addItem("P001", "Product 1", new BigDecimal("100.00"), 2);
+            cart.clear();
+            
+            assertTrue(cart.isEmpty());
+        }
+        
+        @Test
+        @DisplayName("カートの商品リストは不変である")
+        void shouldReturnImmutableItemsList() {
+            cart.addItem("P001", "Product 1", new BigDecimal("100.00"), 2);
+            
+            var items = cart.getItems();
+            items.clear(); // この操作は元のカートに影響しない
+            
+            assertEquals(1, cart.getItems().size());
+        }
+    }
+}</code></pre>
+                        <h6>期待される結果</h6>
+                        <p>テストが階層構造で組織化され、IDE上でツリー表示によりテスト構成が明確に表示されます。</p>
+                    </div>
+
+                    <h3 class="section-title">7.2 @Tagによるテストの分類</h3>
+                    <p>テストに標識を付けて、実行するテストセットを柔軟に制御する方法について学習します。</p>
+
+                    <h4>一般的なタグの分類</h4>
+                    <ul>
+                        <li><strong>実行時間別</strong>: fast, slow, integration</li>
+                        <li><strong>機能別</strong>: unit, integration, acceptance</li>
+                        <li><strong>環境別</strong>: dev, staging, production</li>
+                        <li><strong>重要度別</strong>: critical, important, optional</li>
+                    </ul>
+
+                    <!-- 実習2 -->
+                    <div class="exercise-container">
+                        <h5>実習 7-2: @Tagによるテスト分類の実装</h5>
+                        <p>異なる実行特性を持つテストにタグを付け、選択的実行を実現します。</p>
+                        <h6>手順</h6>
+                        <ol>
+                            <li>パフォーマンステストと機能テストを作成</li>
+                            <li>適切なタグを付与</li>
+                            <li>タグによる実行制御を確認</li>
+                        </ol>
+                        <h6>実行例</h6>
+                        <p><strong>DatabaseService.java</strong></p>
+                        <pre><code>import java.util.*;
+import java.util.concurrent.TimeUnit;
+
+public class DatabaseService {
+    private Map&lt;String, Object&gt; cache;
+    private boolean connected;
+    
+    public DatabaseService() {
+        this.cache = new HashMap&lt;&gt;();
+        this.connected = false;
+    }
+    
+    public void connect() throws InterruptedException {
+        // データベース接続をシミュレート（時間がかかる）
+        Thread.sleep(1000);
+        connected = true;
+    }
+    
+    public void disconnect() {
+        connected = false;
+        cache.clear();
+    }
+    
+    public void save(String key, Object value) {
+        if (!connected) {
+            throw new IllegalStateException("Not connected to database");
+        }
+        
+        // データ保存をシミュレート
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        
+        cache.put(key, value);
+    }
+    
+    public Object load(String key) {
+        if (!connected) {
+            throw new IllegalStateException("Not connected to database");
+        }
+        
+        // データ読み込みをシミュレート（高速）
+        return cache.get(key);
+    }
+    
+    public List&lt;Object&gt; loadAll() throws InterruptedException {
+        if (!connected) {
+            throw new IllegalStateException("Not connected to database");
+        }
+        
+        // 全データ読み込み（時間がかかる）
+        Thread.sleep(2000);
+        return new ArrayList&lt;&gt;(cache.values());
+    }
+    
+    public void performMaintenance() throws InterruptedException {
+        if (!connected) {
+            throw new IllegalStateException("Not connected to database");
+        }
+        
+        // メンテナンス処理（非常に時間がかかる）
+        Thread.sleep(5000);
+        System.out.println("Maintenance completed");
+    }
+    
+    public boolean isConnected() {
+        return connected;
+    }
+    
+    public int getCacheSize() {
+        return cache.size();
+    }
+}</code></pre>
+                        <p><strong>DatabaseServiceTaggedTest.java</strong></p>
+                        <pre><code>import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+
+@DisplayName("データベースサービスのテスト")
+class DatabaseServiceTaggedTest {
+    
+    private DatabaseService service;
+    
+    @BeforeEach
+    void setUp() {
+        service = new DatabaseService();
+    }
+    
+    @AfterEach
+    void tearDown() {
+        if (service.isConnected()) {
+            service.disconnect();
+        }
+    }
+    
+    @Nested
+    @DisplayName("高速テスト")
+    class FastTests {
+        
+        @Test
+        @Tag("fast")
+        @Tag("unit")
+        @DisplayName("初期状態での接続確認")
+        void shouldNotBeConnectedInitially() {
+            assertFalse(service.isConnected());
+        }
+        
+        @Test
+        @Tag("fast")
+        @Tag("unit")
+        @DisplayName("未接続状態での操作は例外が発生する")
+        void shouldThrowExceptionWhenNotConnected() {
+            assertThrows(IllegalStateException.class, () -&gt; {
+                service.save("key1", "value1");
+            });
+            
+            assertThrows(IllegalStateException.class, () -&gt; {
+                service.load("key1");
+            });
+        }
+        
+        @Test
+        @Tag("fast")
+        @Tag("unit")
+        @DisplayName("キャッシュサイズの確認")
+        void shouldReturnCorrectCacheSize() {
+            assertEquals(0, service.getCacheSize());
+        }
+    }
+    
+    @Nested
+    @DisplayName("統合テスト")
+    class IntegrationTests {
+        
+        @BeforeEach
+        void connectToDatabase() throws InterruptedException {
+            service.connect();
+        }
+        
+        @Test
+        @Tag("integration")
+        @Tag("slow")
+        @DisplayName("データの保存と読み込み")
+        void shouldSaveAndLoadData() {
+            String key = "testKey";
+            String value = "testValue";
+            
+            service.save(key, value);
+            Object loadedValue = service.load(key);
+            
+            assertEquals(value, loadedValue);
+            assertEquals(1, service.getCacheSize());
+        }
+        
+        @Test
+        @Tag("integration")
+        @Tag("slow")
+        @DisplayName("複数データの保存と全件読み込み")
+        void shouldSaveMultipleDataAndLoadAll() throws InterruptedException {
+            service.save("key1", "value1");
+            service.save("key2", "value2");
+            service.save("key3", "value3");
+            
+            List&lt;Object&gt; allData = service.loadAll();
+            
+            assertEquals(3, allData.size());
+            assertTrue(allData.contains("value1"));
+            assertTrue(allData.contains("value2"));
+            assertTrue(allData.contains("value3"));
+        }
+        
+        @Test
+        @Tag("integration")
+        @Tag("critical")
+        @DisplayName("接続状態の確認")
+        void shouldBeConnectedAfterConnect() {
+            assertTrue(service.isConnected());
+        }
+        
+        @Test
+        @Tag("integration")
+        @Tag("critical")
+        @DisplayName("データ上書き保存")
+        void shouldOverwriteExistingData() {
+            String key = "overwriteKey";
+            
+            service.save(key, "originalValue");
+            service.save(key, "newValue");
+            
+            assertEquals("newValue", service.load(key));
+            assertEquals(1, service.getCacheSize());
+        }
+    }
+    
+    @Nested
+    @DisplayName("パフォーマンステスト")
+    class PerformanceTests {
+        
+        @BeforeEach
+        void connectToDatabase() throws InterruptedException {
+            service.connect();
+        }
+        
+        @Test
+        @Tag("performance")
+        @Tag("slow")
+        @Tag("optional")
+        @DisplayName("大量データ処理のパフォーマンス")
+        void shouldHandleLargeDataSet() {
+            long startTime = System.currentTimeMillis();
+            
+            // 大量データの保存
+            for (int i = 0; i < 100; i++) {
+                service.save("key" + i, "value" + i);
+            }
+            
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            
+            System.out.println("Large dataset processing time: " + duration + "ms");
+            assertEquals(100, service.getCacheSize());
+            
+            // パフォーマンス要件（例：10秒以内）
+            assertTrue(duration < 10000, "Processing should complete within 10 seconds");
+        }
+        
+        @Test
+        @Tag("performance")
+        @Tag("very-slow")
+        @Tag("optional")
+        @Timeout(value = 10, unit = java.util.concurrent.TimeUnit.SECONDS)
+        @DisplayName("メンテナンス処理のパフォーマンス")
+        void shouldCompleteMaintenanceWithinTimeLimit() throws InterruptedException {
+            long startTime = System.currentTimeMillis();
+            
+            service.performMaintenance();
+            
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            
+            System.out.println("Maintenance processing time: " + duration + "ms");
+            assertTrue(duration >= 5000, "Maintenance should take at least 5 seconds");
+        }
+    }
+    
+    @Nested
+    @DisplayName("重要機能テスト")
+    class CriticalFunctionTests {
+        
+        @Test
+        @Tag("critical")
+        @Tag("integration")
+        @DisplayName("接続・切断のライフサイクル")
+        void shouldHandleConnectionLifecycle() throws InterruptedException {
+            assertFalse(service.isConnected());
+            
+            service.connect();
+            assertTrue(service.isConnected());
+            
+            service.disconnect();
+            assertFalse(service.isConnected());
+        }
+        
+        @Test
+        @Tag("critical")
+        @Tag("integration")
+        @DisplayName("切断後のデータクリア")
+        void shouldClearDataAfterDisconnect() throws InterruptedException {
+            service.connect();
+            service.save("key1", "value1");
+            assertEquals(1, service.getCacheSize());
+            
+            service.disconnect();
+            service.connect();
+            
+            assertEquals(0, service.getCacheSize());
+        }
+    }
+    
+    @Nested
+    @DisplayName("開発環境専用テスト")
+    class DevelopmentOnlyTests {
+        
+        @Test
+        @Tag("dev")
+        @Tag("debug")
+        @DisplayName("デバッグ情報の出力")
+        void shouldOutputDebugInformation() throws InterruptedException {
+            service.connect();
+            service.save("debugKey", "debugValue");
+            
+            System.out.println("Debug: Cache size = " + service.getCacheSize());
+            System.out.println("Debug: Connected = " + service.isConnected());
+            
+            // 開発環境でのみ実行されるデバッグ確認
+            assertTrue(service.isConnected());
+            assertEquals(1, service.getCacheSize());
+        }
+    }
+}</code></pre>
+                        <h6>期待される結果</h6>
+                        <p>タグに基づいてテストを選択実行でき、CI/CDパイプラインで用途別にテストセットを管理できます。</p>
+                    </div>
+
+                    <h3 class="section-title">7.3 条件付きテスト実行</h3>
+                    <p>環境や条件に応じてテストの実行を制御する方法について学習します。</p>
+
+                    <h4>条件付き実行アノテーション</h4>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>アノテーション</th>
+                                <th>条件</th>
+                                <th>用途</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@EnabledOnOs</td>
+                                <td>特定のOS</td>
+                                <td>OS固有機能のテスト</td>
+                            </tr>
+                            <tr>
+                                <td>@EnabledOnJre</td>
+                                <td>特定のJavaバージョン</td>
+                                <td>Java版依存の機能テスト</td>
+                            </tr>
+                            <tr>
+                                <td>@EnabledIfSystemProperty</td>
+                                <td>システムプロパティ</td>
+                                <td>設定値による制御</td>
+                            </tr>
+                            <tr>
+                                <td>@EnabledIfEnvironmentVariable</td>
+                                <td>環境変数</td>
+                                <td>環境別テスト制御</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- 実習3 -->
+                    <div class="exercise-container">
+                        <h5>実習 7-3: 条件付きテスト実行の実装</h5>
+                        <p>環境や条件に応じて実行されるテストケースを作成します。</p>
+                        <h6>手順</h6>
+                        <ol>
+                            <li>OS固有の機能テストを作成</li>
+                            <li>Java版依存のテストを作成</li>
+                            <li>環境変数による条件分岐テストを作成</li>
+                        </ol>
+                        <h6>実行例</h6>
+                        <p><strong>SystemInfoService.java</strong></p>
+                        <pre><code>import java.io.File;
+import java.nio.file.FileSystems;
+
+public class SystemInfoService {
+    
+    public String getOperatingSystem() {
+        return System.getProperty("os.name");
+    }
+    
+    public String getJavaVersion() {
+        return System.getProperty("java.version");
+    }
+    
+    public String getFileSeparator() {
+        return File.separator;
+    }
+    
+    public String[] getFileSystemRoots() {
+        return FileSystems.getDefault().getRootDirectories()
+                .toString().split(",");
+    }
+    
+    public boolean isWindows() {
+        return getOperatingSystem().toLowerCase().contains("windows");
+    }
+    
+    public boolean isUnix() {
+        String os = getOperatingSystem().toLowerCase();
+        return os.contains("linux") || os.contains("unix") || 
+               os.contains("mac os") || os.contains("darwin");
+    }
+    
+    public long getMaxMemory() {
+        return Runtime.getRuntime().maxMemory();
+    }
+    
+    public int getAvailableProcessors() {
+        return Runtime.getRuntime().availableProcessors();
+    }
+    
+    public String getUserHome() {
+        return System.getProperty("user.home");
+    }
+    
+    public String getEnvironmentVariable(String name) {
+        return System.getenv(name);
+    }
+}</code></pre>
+                        <p><strong>SystemInfoConditionalTest.java</strong></p>
+                        <pre><code>import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+@DisplayName("システム情報サービスの条件付きテスト")
+class SystemInfoConditionalTest {
+    
+    private SystemInfoService service;
+    
+    @BeforeEach
+    void setUp() {
+        service = new SystemInfoService();
+    }
+    
+    @Nested
+    @DisplayName("OS固有のテスト")
+    class OperatingSystemTests {
+        
+        @Test
+        @EnabledOnOs(OS.WINDOWS)
+        @DisplayName("Windows環境でのファイルセパレータ確認")
+        void shouldUseBackslashOnWindows() {
+            assertEquals("\\", service.getFileSeparator());
+            assertTrue(service.isWindows());
+            assertFalse(service.isUnix());
+        }
+        
+        @Test
+        @EnabledOnOs({OS.LINUX, OS.MAC})
+        @DisplayName("Unix系環境でのファイルセパレータ確認")
+        void shouldUseForwardSlashOnUnix() {
+            assertEquals("/", service.getFileSeparator());
+            assertTrue(service.isUnix());
+            assertFalse(service.isWindows());
+        }
+        
+        @Test
+        @DisabledOnOs(OS.WINDOWS)
+        @DisplayName("Windows以外でのUnix固有機能テスト")
+        void shouldHaveUnixSpecificFeatures() {
+            String os = service.getOperatingSystem();
+            assertTrue(os.toLowerCase().contains("linux") || 
+                      os.toLowerCase().contains("mac") || 
+                      os.toLowerCase().contains("darwin"));
+        }
+        
+        @Test
+        @EnabledOnOs(OS.MAC)
+        @DisplayName("macOS固有の確認")
+        void shouldDetectMacOS() {
+            String os = service.getOperatingSystem();
+            assertTrue(os.toLowerCase().contains("mac") || 
+                      os.toLowerCase().contains("darwin"));
+        }
+    }
+    
+    @Nested
+    @DisplayName("Javaバージョン依存のテスト")
+    class JavaVersionTests {
+        
+        @Test
+        @EnabledOnJre(JRE.JAVA_8)
+        @DisplayName("Java 8での機能確認")
+        void shouldWorkOnJava8() {
+            String version = service.getJavaVersion();
+            assertTrue(version.startsWith("1.8") || version.startsWith("8"));
+        }
+        
+        @Test
+        @EnabledOnJre({JRE.JAVA_11, JRE.JAVA_17, JRE.JAVA_21})
+        @DisplayName("モダンなJavaバージョンでの機能確認")
+        void shouldWorkOnModernJava() {
+            String version = service.getJavaVersion();
+            
+            // Java 11以降では新しいバージョン形式
+            assertFalse(version.startsWith("1."));
+            System.out.println("Running on Java: " + version);
+        }
+        
+        @Test
+        @EnabledForJreRange(min = JRE.JAVA_11)
+        @DisplayName("Java 11以降での新機能テスト")
+        void shouldHaveModernJavaFeatures() {
+            // Java 11以降で利用可能な機能のテスト
+            String version = service.getJavaVersion();
+            
+            // 新しいString.isBlank() メソッド（Java 11以降）
+            assertTrue("   ".isBlank());
+            assertFalse("text".isBlank());
+        }
+        
+        @Test
+        @DisabledForJreRange(max = JRE.JAVA_8)
+        @DisplayName("Java 8では無効化されるテスト")
+        void shouldBeDisabledOnJava8() {
+            // Java 9以降でのみ実行される
+            System.out.println("This test runs only on Java 9+");
+            assertTrue(service.getAvailableProcessors() > 0);
+        }
+    }
+    
+    @Nested
+    @DisplayName("システムプロパティによる条件付きテスト")
+    class SystemPropertyTests {
+        
+        @Test
+        @EnabledIfSystemProperty(named = "java.awt.headless", matches = "true")
+        @DisplayName("ヘッドレス環境でのテスト")
+        void shouldRunInHeadlessEnvironment() {
+            assertEquals("true", System.getProperty("java.awt.headless"));
+            System.out.println("Running in headless environment");
+        }
+        
+        @Test
+        @EnabledIfSystemProperty(named = "user.country", matches = "JP")
+        @DisplayName("日本環境でのテスト")
+        void shouldRunInJapaneseLocale() {
+            assertEquals("JP", System.getProperty("user.country"));
+            System.out.println("Running in Japanese locale");
+        }
+        
+        @Test
+        @DisabledIfSystemProperty(named = "skip.integration.tests", matches = "true")
+        @DisplayName("統合テストスキップフラグによる制御")
+        void shouldSkipWhenFlagIsSet() {
+            // skip.integration.tests=true が設定されていない場合のみ実行
+            System.out.println("Integration test is running");
+            assertNotNull(service.getUserHome());
+        }
+        
+        @Test
+        @EnabledIfSystemProperty(named = "test.level", matches = "debug")
+        @DisplayName("デバッグレベルでのみ実行")
+        void shouldRunOnlyInDebugMode() {
+            System.out.println("Debug level test execution");
+            System.out.println("Max memory: " + service.getMaxMemory());
+            System.out.println("Available processors: " + service.getAvailableProcessors());
+        }
+    }
+    
+    @Nested
+    @DisplayName("環境変数による条件付きテスト")
+    class EnvironmentVariableTests {
+        
+        @Test
+        @EnabledIfEnvironmentVariable(named = "CI", matches = "true")
+        @DisplayName("CI環境でのみ実行されるテスト")
+        void shouldRunOnlyInCIEnvironment() {
+            assertEquals("true", System.getenv("CI"));
+            System.out.println("Running in CI environment");
+            
+            // CI環境でのみ必要な特別なテスト
+            assertNotNull(service.getOperatingSystem());
+        }
+        
+        @Test
+        @EnabledIfEnvironmentVariable(named = "ENVIRONMENT", matches = "development")
+        @DisplayName("開発環境でのみ実行")
+        void shouldRunOnlyInDevelopment() {
+            assertEquals("development", System.getenv("ENVIRONMENT"));
+            System.out.println("Running in development environment");
+        }
+        
+        @Test
+        @DisabledIfEnvironmentVariable(named = "SKIP_SLOW_TESTS", matches = "true")
+        @DisplayName("時間のかかるテスト（環境変数で制御）")
+        void shouldSkipSlowTestWhenRequested() throws InterruptedException {
+            // SKIP_SLOW_TESTS=true が設定されていない場合のみ実行
+            System.out.println("Executing slow test...");
+            Thread.sleep(1000); // 時間のかかる処理をシミュレート
+            assertTrue(service.getMaxMemory() > 0);
+        }
+        
+        @Test
+        @EnabledIfEnvironmentVariable(named = "HOME", matches = ".*")
+        @DisplayName("UNIX系環境での HOME 環境変数確認")
+        void shouldHaveHomeEnvironment() {
+            String home = service.getEnvironmentVariable("HOME");
+            assertNotNull(home);
+            assertFalse(home.isEmpty());
+            System.out.println("HOME directory: " + home);
+        }
+    }
+    
+    @Nested
+    @DisplayName("カスタム条件テスト")
+    class CustomConditionTests {
+        
+        @Test
+        @EnabledIf("java.time.LocalDate.now().getDayOfWeek().getValue() < 6")
+        @DisplayName("平日にのみ実行されるテスト")
+        void shouldRunOnlyOnWeekdays() {
+            System.out.println("This test runs only on weekdays");
+            assertTrue(java.time.LocalDate.now().getDayOfWeek().getValue() < 6);
+        }
+        
+        @Test
+        @DisabledIf("java.lang.Runtime.getRuntime().maxMemory() < 1073741824L")
+        @DisplayName("十分なメモリがある場合のみ実行")
+        void shouldRunOnlyWithSufficientMemory() {
+            long maxMemory = service.getMaxMemory();
+            System.out.println("Max memory: " + maxMemory + " bytes");
+            assertTrue(maxMemory >= 1073741824L); // 1GB以上
+        }
+    }
+}</code></pre>
+                        <h6>期待される結果</h6>
+                        <p>実行環境に応じてテストが選択的に実行され、環境固有の問題を適切にテストできます。</p>
+                    </div>
+
+                    <h3 class="section-title">7.4 テストデータ管理のベストプラクティス</h3>
+                    <p>テストで使用するデータの管理と生成の効率的な方法について学習します。</p>
+
+                    <div class="warning">
+                        <h6>テストデータ管理の原則</h6>
+                        <ul>
+                            <li><strong>独立性</strong>: テスト間でデータを共有しない</li>
+                            <li><strong>再現性</strong>: 同じ条件で同じ結果が得られる</li>
+                            <li><strong>保守性</strong>: データの変更が容易</li>
+                            <li><strong>可読性</strong>: テストの意図が明確</li>
+                        </ul>
+                    </div>
+
+                    <!-- 実習4 -->
+                    <div class="exercise-container">
+                        <h5>実習 7-4: テストデータファクトリーの実装</h5>
+                        <p>テストデータの生成と管理を効率化するファクトリーパターンを実装します。</p>
+                        <h6>手順</h6>
+                        <ol>
+                            <li>テストデータファクトリークラスを作成</li>
+                            <li>ビルダーパターンでデータ構築</li>
+                            <li>テンプレートメソッドパターンで共通化</li>
+                        </ol>
+                        <h6>実行例</h6>
+                        <p><strong>Order.java とその関連クラス</strong></p>
+                        <pre><code>import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.*;
+
+public class Order {
+    private String orderId;
+    private String customerId;
+    private LocalDateTime orderDate;
+    private OrderStatus status;
+    private List&lt;OrderItem&gt; items;
+    private BigDecimal totalAmount;
+    private Address shippingAddress;
+    private PaymentInfo paymentInfo;
+    
+    public Order(String orderId, String customerId) {
+        this.orderId = orderId;
+        this.customerId = customerId;
+        this.orderDate = LocalDateTime.now();
+        this.status = OrderStatus.PENDING;
+        this.items = new ArrayList&lt;&gt;();
+        this.totalAmount = BigDecimal.ZERO;
+    }
+    
+    // getters and setters
+    public String getOrderId() { return orderId; }
+    public String getCustomerId() { return customerId; }
+    public LocalDateTime getOrderDate() { return orderDate; }
+    public void setOrderDate(LocalDateTime orderDate) { this.orderDate = orderDate; }
+    public OrderStatus getStatus() { return status; }
+    public void setStatus(OrderStatus status) { this.status = status; }
+    public List&lt;OrderItem&gt; getItems() { return new ArrayList&lt;&gt;(items); }
+    public void setItems(List&lt;OrderItem&gt; items) { this.items = new ArrayList&lt;&gt;(items); }
+    public BigDecimal getTotalAmount() { return totalAmount; }
+    public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
+    public Address getShippingAddress() { return shippingAddress; }
+    public void setShippingAddress(Address shippingAddress) { this.shippingAddress = shippingAddress; }
+    public PaymentInfo getPaymentInfo() { return paymentInfo; }
+    public void setPaymentInfo(PaymentInfo paymentInfo) { this.paymentInfo = paymentInfo; }
+}
+
+enum OrderStatus {
+    PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED
+}
+
+class OrderItem {
+    private String productId;
+    private String productName;
+    private BigDecimal unitPrice;
+    private int quantity;
+    
+    public OrderItem(String productId, String productName, BigDecimal unitPrice, int quantity) {
+        this.productId = productId;
+        this.productName = productName;
+        this.unitPrice = unitPrice;
+        this.quantity = quantity;
+    }
+    
+    public String getProductId() { return productId; }
+    public String getProductName() { return productName; }
+    public BigDecimal getUnitPrice() { return unitPrice; }
+    public int getQuantity() { return quantity; }
+    
+    public BigDecimal getTotalPrice() {
+        return unitPrice.multiply(BigDecimal.valueOf(quantity));
+    }
+}
+
+class Address {
+    private String street;
+    private String city;
+    private String state;
+    private String zipCode;
+    private String country;
+    
+    public Address(String street, String city, String state, String zipCode, String country) {
+        this.street = street;
+        this.city = city;
+        this.state = state;
+        this.zipCode = zipCode;
+        this.country = country;
+    }
+    
+    public String getStreet() { return street; }
+    public String getCity() { return city; }
+    public String getState() { return state; }
+    public String getZipCode() { return zipCode; }
+    public String getCountry() { return country; }
+}
+
+class PaymentInfo {
+    private String cardNumber;
+    private String cardHolderName;
+    private String expiryDate;
+    private PaymentMethod method;
+    
+    public PaymentInfo(String cardNumber, String cardHolderName, String expiryDate, PaymentMethod method) {
+        this.cardNumber = cardNumber;
+        this.cardHolderName = cardHolderName;
+        this.expiryDate = expiryDate;
+        this.method = method;
+    }
+    
+    public String getCardNumber() { return cardNumber; }
+    public String getCardHolderName() { return cardHolderName; }
+    public String getExpiryDate() { return expiryDate; }
+    public PaymentMethod getMethod() { return method; }
+}
+
+enum PaymentMethod {
+    CREDIT_CARD, DEBIT_CARD, PAYPAL, BANK_TRANSFER
+}</code></pre>
+                        <p><strong>TestDataFactory.java</strong></p>
+                        <pre><code>import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.*;
+
+public class TestDataFactory {
+    
+    private static int orderCounter = 1;
+    private static int customerCounter = 1;
+    
+    // Order builders
+    public static OrderBuilder createOrder() {
+        return new OrderBuilder();
+    }
+    
+    public static OrderBuilder createPendingOrder() {
+        return createOrder().withStatus(OrderStatus.PENDING);
+    }
+    
+    public static OrderBuilder createConfirmedOrder() {
+        return createOrder().withStatus(OrderStatus.CONFIRMED);
+    }
+    
+    public static OrderBuilder createShippedOrder() {
+        return createOrder()
+            .withStatus(OrderStatus.SHIPPED)
+            .withOrderDate(LocalDateTime.now().minusDays(2));
+    }
+    
+    public static OrderBuilder createDeliveredOrder() {
+        return createOrder()
+            .withStatus(OrderStatus.DELIVERED)
+            .withOrderDate(LocalDateTime.now().minusDays(5));
+    }
+    
+    // Address builders
+    public static AddressBuilder createAddress() {
+        return new AddressBuilder();
+    }
+    
+    public static AddressBuilder createJapaneseAddress() {
+        return createAddress()
+            .withCountry("Japan")
+            .withState("Tokyo")
+            .withCity("Shibuya");
+    }
+    
+    public static AddressBuilder createUSAddress() {
+        return createAddress()
+            .withCountry("USA")
+            .withState("California")
+            .withCity("San Francisco");
+    }
+    
+    // Payment info builders
+    public static PaymentInfoBuilder createPaymentInfo() {
+        return new PaymentInfoBuilder();
+    }
+    
+    public static PaymentInfoBuilder createCreditCardPayment() {
+        return createPaymentInfo()
+            .withMethod(PaymentMethod.CREDIT_CARD)
+            .withCardNumber("4111-1111-1111-1111")
+            .withExpiryDate("12/25");
+    }
+    
+    // Utility methods
+    public static String nextOrderId() {
+        return "ORDER-" + String.format("%06d", orderCounter++);
+    }
+    
+    public static String nextCustomerId() {
+        return "CUST-" + String.format("%06d", customerCounter++);
+    }
+    
+    public static void resetCounters() {
+        orderCounter = 1;
+        customerCounter = 1;
+    }
+    
+    // Builder classes
+    public static class OrderBuilder {
+        private Order order;
+        
+        public OrderBuilder() {
+            this.order = new Order(nextOrderId(), nextCustomerId());
+        }
+        
+        public OrderBuilder withOrderId(String orderId) {
+            this.order = new Order(orderId, order.getCustomerId());
+            return this;
+        }
+        
+        public OrderBuilder withCustomerId(String customerId) {
+            this.order = new Order(order.getOrderId(), customerId);
+            return this;
+        }
+        
+        public OrderBuilder withOrderDate(LocalDateTime orderDate) {
+            order.setOrderDate(orderDate);
+            return this;
+        }
+        
+        public OrderBuilder withStatus(OrderStatus status) {
+            order.setStatus(status);
+            return this;
+        }
+        
+        public OrderBuilder withItem(String productId, String productName, 
+                                   BigDecimal unitPrice, int quantity) {
+            List&lt;OrderItem&gt; items = new ArrayList&lt;&gt;(order.getItems());
+            items.add(new OrderItem(productId, productName, unitPrice, quantity));
+            order.setItems(items);
+            updateTotalAmount();
+            return this;
+        }
+        
+        public OrderBuilder withStandardItems() {
+            return withItem("P001", "Product 1", new BigDecimal("100.00"), 2)
+                   .withItem("P002", "Product 2", new BigDecimal("50.00"), 1);
+        }
+        
+        public OrderBuilder withExpensiveItems() {
+            return withItem("P101", "Premium Product", new BigDecimal("1000.00"), 1)
+                   .withItem("P102", "Luxury Item", new BigDecimal("2000.00"), 1);
+        }
+        
+        public OrderBuilder withShippingAddress(Address address) {
+            order.setShippingAddress(address);
+            return this;
+        }
+        
+        public OrderBuilder withJapaneseShipping() {
+            return withShippingAddress(createJapaneseAddress().build());
+        }
+        
+        public OrderBuilder withUSShipping() {
+            return withShippingAddress(createUSAddress().build());
+        }
+        
+        public OrderBuilder withPaymentInfo(PaymentInfo paymentInfo) {
+            order.setPaymentInfo(paymentInfo);
+            return this;
+        }
+        
+        public OrderBuilder withCreditCardPayment() {
+            return withPaymentInfo(createCreditCardPayment().build());
+        }
+        
+        private void updateTotalAmount() {
+            BigDecimal total = order.getItems().stream()
+                .map(OrderItem::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+            order.setTotalAmount(total);
+        }
+        
+        public Order build() {
+            return order;
+        }
+    }
+    
+    public static class AddressBuilder {
+        private String street = "123 Main St";
+        private String city = "Default City";
+        private String state = "Default State";
+        private String zipCode = "12345";
+        private String country = "Default Country";
+        
+        public AddressBuilder withStreet(String street) {
+            this.street = street;
+            return this;
+        }
+        
+        public AddressBuilder withCity(String city) {
+            this.city = city;
+            return this;
+        }
+        
+        public AddressBuilder withState(String state) {
+            this.state = state;
+            return this;
+        }
+        
+        public AddressBuilder withZipCode(String zipCode) {
+            this.zipCode = zipCode;
+            return this;
+        }
+        
+        public AddressBuilder withCountry(String country) {
+            this.country = country;
+            return this;
+        }
+        
+        public Address build() {
+            return new Address(street, city, state, zipCode, country);
+        }
+    }
+    
+    public static class PaymentInfoBuilder {
+        private String cardNumber = "4000-0000-0000-0000";
+        private String cardHolderName = "Test User";
+        private String expiryDate = "12/24";
+        private PaymentMethod method = PaymentMethod.CREDIT_CARD;
+        
+        public PaymentInfoBuilder withCardNumber(String cardNumber) {
+            this.cardNumber = cardNumber;
+            return this;
+        }
+        
+        public PaymentInfoBuilder withCardHolderName(String cardHolderName) {
+            this.cardHolderName = cardHolderName;
+            return this;
+        }
+        
+        public PaymentInfoBuilder withExpiryDate(String expiryDate) {
+            this.expiryDate = expiryDate;
+            return this;
+        }
+        
+        public PaymentInfoBuilder withMethod(PaymentMethod method) {
+            this.method = method;
+            return this;
+        }
+        
+        public PaymentInfo build() {
+            return new PaymentInfo(cardNumber, cardHolderName, expiryDate, method);
+        }
+    }
+}</code></pre>
+                        <p><strong>OrderTestDataFactoryTest.java</strong></p>
+                        <pre><code>import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@DisplayName("テストデータファクトリーの使用例")
+class OrderTestDataFactoryTest {
+    
+    @BeforeEach
+    void setUp() {
+        TestDataFactory.resetCounters();
+    }
+    
+    @Nested
+    @DisplayName("基本的な注文作成テスト")
+    class BasicOrderCreationTests {
+        
+        @Test
+        @DisplayName("デフォルトの注文を作成できる")
+        void shouldCreateDefaultOrder() {
+            Order order = TestDataFactory.createOrder().build();
+            
+            assertNotNull(order.getOrderId());
+            assertNotNull(order.getCustomerId());
+            assertEquals(OrderStatus.PENDING, order.getStatus());
+            assertTrue(order.getItems().isEmpty());
+            assertEquals(0, order.getTotalAmount().compareTo(BigDecimal.ZERO));
+        }
+        
+        @Test
+        @DisplayName("標準商品付きの注文を作成できる")
+        void shouldCreateOrderWithStandardItems() {
+            Order order = TestDataFactory.createOrder()
+                .withStandardItems()
+                .build();
+            
+            assertEquals(2, order.getItems().size());
+            assertEquals(0, new BigDecimal("250.00").compareTo(order.getTotalAmount()));
+        }
+        
+        @Test
+        @DisplayName("高価商品付きの注文を作成できる")
+        void shouldCreateOrderWithExpensiveItems() {
+            Order order = TestDataFactory.createOrder()
+                .withExpensiveItems()
+                .build();
+            
+            assertEquals(2, order.getItems().size());
+            assertEquals(0, new BigDecimal("3000.00").compareTo(order.getTotalAmount()));
+        }
+    }
+    
+    @Nested
+    @DisplayName("ステータス別注文作成テスト")
+    class StatusSpecificOrderTests {
+        
+        @Test
+        @DisplayName("未確認状態の注文を作成できる")
+        void shouldCreatePendingOrder() {
+            Order order = TestDataFactory.createPendingOrder()
+                .withStandardItems()
+                .build();
+            
+            assertEquals(OrderStatus.PENDING, order.getStatus());
+        }
+        
+        @Test
+        @DisplayName("確認済み状態の注文を作成できる")
+        void shouldCreateConfirmedOrder() {
+            Order order = TestDataFactory.createConfirmedOrder()
+                .withStandardItems()
+                .build();
+            
+            assertEquals(OrderStatus.CONFIRMED, order.getStatus());
+        }
+        
+        @Test
+        @DisplayName("発送済み状態の注文を作成できる")
+        void shouldCreateShippedOrder() {
+            Order order = TestDataFactory.createShippedOrder()
+                .withStandardItems()
+                .build();
+            
+            assertEquals(OrderStatus.SHIPPED, order.getStatus());
+            assertTrue(order.getOrderDate().isBefore(LocalDateTime.now()));
+        }
+        
+        @Test
+        @DisplayName("配送完了状態の注文を作成できる")
+        void shouldCreateDeliveredOrder() {
+            Order order = TestDataFactory.createDeliveredOrder()
+                .withStandardItems()
+                .build();
+            
+            assertEquals(OrderStatus.DELIVERED, order.getStatus());
+            assertTrue(order.getOrderDate().isBefore(LocalDateTime.now().minusDays(3)));
+        }
+    }
+    
+    @Nested
+    @DisplayName("住所付き注文作成テスト")
+    class AddressOrderTests {
+        
+        @Test
+        @DisplayName("日本住所付きの注文を作成できる")
+        void shouldCreateOrderWithJapaneseAddress() {
+            Order order = TestDataFactory.createOrder()
+                .withStandardItems()
+                .withJapaneseShipping()
+                .build();
+            
+            Address address = order.getShippingAddress();
+            assertNotNull(address);
+            assertEquals("Japan", address.getCountry());
+            assertEquals("Tokyo", address.getState());
+            assertEquals("Shibuya", address.getCity());
+        }
+        
+        @Test
+        @DisplayName("米国住所付きの注文を作成できる")
+        void shouldCreateOrderWithUSAddress() {
+            Order order = TestDataFactory.createOrder()
+                .withStandardItems()
+                .withUSShipping()
+                .build();
+            
+            Address address = order.getShippingAddress();
+            assertNotNull(address);
+            assertEquals("USA", address.getCountry());
+            assertEquals("California", address.getState());
+            assertEquals("San Francisco", address.getCity());
+        }
+        
+        @Test
+        @DisplayName("カスタム住所付きの注文を作成できる")
+        void shouldCreateOrderWithCustomAddress() {
+            Address customAddress = TestDataFactory.createAddress()
+                .withStreet("456 Custom Ave")
+                .withCity("Custom City")
+                .withState("Custom State")
+                .withZipCode("54321")
+                .withCountry("Custom Country")
+                .build();
+            
+            Order order = TestDataFactory.createOrder()
+                .withStandardItems()
+                .withShippingAddress(customAddress)
+                .build();
+            
+            Address address = order.getShippingAddress();
+            assertEquals("456 Custom Ave", address.getStreet());
+            assertEquals("Custom City", address.getCity());
+        }
+    }
+    
+    @Nested
+    @DisplayName("支払い情報付き注文作成テスト")
+    class PaymentOrderTests {
+        
+        @Test
+        @DisplayName("クレジットカード支払い付きの注文を作成できる")
+        void shouldCreateOrderWithCreditCardPayment() {
+            Order order = TestDataFactory.createOrder()
+                .withStandardItems()
+                .withCreditCardPayment()
+                .build();
+            
+            PaymentInfo payment = order.getPaymentInfo();
+            assertNotNull(payment);
+            assertEquals(PaymentMethod.CREDIT_CARD, payment.getMethod());
+            assertEquals("4111-1111-1111-1111", payment.getCardNumber());
+        }
+        
+        @Test
+        @DisplayName("カスタム支払い情報付きの注文を作成できる")
+        void shouldCreateOrderWithCustomPayment() {
+            PaymentInfo customPayment = TestDataFactory.createPaymentInfo()
+                .withMethod(PaymentMethod.PAYPAL)
+                .withCardHolderName("Custom User")
+                .build();
+            
+            Order order = TestDataFactory.createOrder()
+                .withStandardItems()
+                .withPaymentInfo(customPayment)
+                .build();
+            
+            PaymentInfo payment = order.getPaymentInfo();
+            assertEquals(PaymentMethod.PAYPAL, payment.getMethod());
+            assertEquals("Custom User", payment.getCardHolderName());
+        }
+    }
+    
+    @Nested
+    @DisplayName("複合的な注文作成テスト")
+    class ComplexOrderTests {
+        
+        @Test
+        @DisplayName("完全な注文情報を作成できる")
+        void shouldCreateCompleteOrder() {
+            Order order = TestDataFactory.createConfirmedOrder()
+                .withStandardItems()
+                .withJapaneseShipping()
+                .withCreditCardPayment()
+                .build();
+            
+            // 注文基本情報
+            assertEquals(OrderStatus.CONFIRMED, order.getStatus());
+            assertEquals(2, order.getItems().size());
+            
+            // 住所情報
+            Address address = order.getShippingAddress();
+            assertEquals("Japan", address.getCountry());
+            
+            // 支払い情報
+            PaymentInfo payment = order.getPaymentInfo();
+            assertEquals(PaymentMethod.CREDIT_CARD, payment.getMethod());
+            
+            // 合計金額
+            assertEquals(0, new BigDecimal("250.00").compareTo(order.getTotalAmount()));
+        }
+        
+        @Test
+        @DisplayName("複数の注文で独立したIDが生成される")
+        void shouldGenerateUniqueIdsForMultipleOrders() {
+            Order order1 = TestDataFactory.createOrder().build();
+            Order order2 = TestDataFactory.createOrder().build();
+            
+            assertNotEquals(order1.getOrderId(), order2.getOrderId());
+            assertNotEquals(order1.getCustomerId(), order2.getCustomerId());
+        }
+    }
+}</code></pre>
+                        <h6>期待される結果</h6>
+                        <p>テストデータの生成が効率化され、様々なパターンのテストデータを簡単に作成できるようになります。</p>
+                    </div>
+
+                    <!-- 理解度確認 -->
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>@Nestedアノテーションを使用する利点を3つ挙げてください。</li>
+                            <li>@Tagアノテーションによるテスト分類で一般的な分類軸を4つ挙げてください。</li>
+                            <li>@EnabledOnOsと@DisabledOnOsの使い方の違いを説明してください。</li>
+                            <li>テストデータファクトリーパターンの利点を説明してください。</li>
+                            <li>ビルダーパターンをテストデータ作成に使用する理由は何ですか？</li>
+                            <li>CI/CD環境でのテスト実行において、タグをどのように活用できますか？</li>
+                        </ol>
+                        <details>
+                            <summary>解答例</summary>
+                            <ol>
+                                <li>1)論理的グループ化、2)共通セットアップ共有、3)階層的な結果表示による可読性向上</li>
+                                <li>1)実行時間別(fast/slow)、2)機能別(unit/integration)、3)環境別(dev/prod)、4)重要度別(critical/optional)</li>
+                                <li>@EnabledOnOsは指定OSでのみ実行、@DisabledOnOsは指定OS以外で実行される</li>
+                                <li>テストデータ作成の標準化、再利用性向上、保守性向上、テスト意図の明確化</li>
+                                <li>複雑なオブジェクトの段階的構築、必要な属性のみ設定、メソッドチェーンによる可読性向上</li>
+                                <li>fastタグで高速テスト実行、integration タグで結合テスト実行、環境別タグでデプロイ前テスト等</li>
+                            </ol>
+                        </details>
+                    </div>
+
+                    <!-- 章間ナビゲーション -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="junit-learning-material-6.html" class="btn btn-secondary">← 前の章</a>
+                        <span class="btn btn-secondary disabled">次の章 →</span>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

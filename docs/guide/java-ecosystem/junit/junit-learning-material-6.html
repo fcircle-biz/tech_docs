@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JUnit学習教材 第6章 - 例外テストとタイムアウト</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ベースレイアウト */
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+
+        /* ナビゲーション */
+        .navbar {
+            background-color: #f57c00;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+
+        /* タイトル */
+        .chapter-title {
+            color: #f57c00;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #f57c00;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title {
+            color: #ff9800;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* コンテンツボックス */
+        .quiz-container {
+            background-color: #fff3e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #f57c00;
+        }
+
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .highlight {
+            background-color: #ffecb3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
+        }
+
+        /* ナビゲーション */
+        .nav-link.active {
+            background-color: #f57c00 !important;
+            color: white !important;
+        }
+
+        /* プリフォーマット */
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.875em;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">JUnit学習教材</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../../../README.md">ホーム</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="README.md">JUnitガイド</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="junit-learning-material-1.html">第1章: JUnit基礎とセットアップ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="junit-learning-material-2.html">第2章: 基本的なテストケース</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="junit-learning-material-3.html">第3章: アサーションとマッチャー</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="junit-learning-material-4.html">第4章: テストライフサイクル</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="junit-learning-material-5.html">第5章: パラメータ化テスト</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#chapter6">第6章: 例外テストとタイムアウト</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="junit-learning-material-7.html">第7章: テストの組織化</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第6章: 例外テストとタイムアウト</h1>
+                </div>
+
+                <div id="chapter6">
+                    <h2 class="chapter-title">例外処理とパフォーマンステストの実装</h2>
+                    
+                    <!-- 学習目標 -->
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>assertThrows()を使用した例外テストの基本</li>
+                            <li>例外メッセージと原因の検証方法</li>
+                            <li>@Timeoutアノテーションによるタイムアウトテスト</li>
+                            <li>assertTimeout()とassertTimeoutPreemptively()の使い分け</li>
+                            <li>パフォーマンステストのベストプラクティス</li>
+                            <li>非同期処理のテスト手法</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">6.1 例外テストの基礎</h3>
+                    <p>期待される例外が正しく発生することを検証するテストについて学習します。</p>
+                    
+                    <h4>例外テストの重要性</h4>
+                    <ul>
+                        <li><strong>エラーハンドリングの検証</strong>: 不正な入力に対する適切な応答</li>
+                        <li><strong>境界値テスト</strong>: 限界条件での動作確認</li>
+                        <li><strong>堅牢性の保証</strong>: システムの安定性向上</li>
+                        <li><strong>API契約の検証</strong>: 例外仕様の遵守確認</li>
+                    </ul>
+
+                    <!-- 実習1 -->
+                    <div class="exercise-container">
+                        <h5>実習 6-1: assertThrows()を使用した基本的な例外テスト</h5>
+                        <p>様々な例外タイプを適切にテストする方法を学習します。</p>
+                        <h6>手順</h6>
+                        <ol>
+                            <li>BankAccountクラスを作成</li>
+                            <li>異なる例外タイプのテストケース作成</li>
+                            <li>例外メッセージの検証を実装</li>
+                        </ol>
+                        <h6>実行例</h6>
+                        <p><strong>BankAccount.java</strong></p>
+                        <pre><code>import java.math.BigDecimal;
+
+public class BankAccount {
+    private String accountNumber;
+    private BigDecimal balance;
+    private boolean frozen;
+    
+    public BankAccount(String accountNumber, BigDecimal initialBalance) {
+        if (accountNumber == null || accountNumber.trim().isEmpty()) {
+            throw new IllegalArgumentException("Account number cannot be null or empty");
+        }
+        if (initialBalance == null || initialBalance.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Initial balance cannot be negative");
+        }
+        
+        this.accountNumber = accountNumber;
+        this.balance = initialBalance;
+        this.frozen = false;
+    }
+    
+    public void deposit(BigDecimal amount) {
+        if (frozen) {
+            throw new IllegalStateException("Account is frozen");
+        }
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Deposit amount must be positive");
+        }
+        
+        balance = balance.add(amount);
+    }
+    
+    public void withdraw(BigDecimal amount) {
+        if (frozen) {
+            throw new IllegalStateException("Account is frozen");
+        }
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Withdrawal amount must be positive");
+        }
+        if (balance.compareTo(amount) < 0) {
+            throw new RuntimeException("Insufficient funds");
+        }
+        
+        balance = balance.subtract(amount);
+    }
+    
+    public void freeze() {
+        this.frozen = true;
+    }
+    
+    public BigDecimal getBalance() {
+        return balance;
+    }
+    
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+    
+    public boolean isFrozen() {
+        return frozen;
+    }
+}</code></pre>
+                        <p><strong>BankAccountExceptionTest.java</strong></p>
+                        <pre><code>import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import java.math.BigDecimal;
+
+class BankAccountExceptionTest {
+    
+    private BankAccount account;
+    
+    @BeforeEach
+    void setUp() {
+        account = new BankAccount("ACC001", new BigDecimal("1000.00"));
+    }
+    
+    @Test
+    @DisplayName("null口座番号での作成時にIllegalArgumentExceptionが発生する")
+    void shouldThrowExceptionForNullAccountNumber() {
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> new BankAccount(null, new BigDecimal("100.00")),
+            "Expected IllegalArgumentException for null account number"
+        );
+        
+        assertEquals("Account number cannot be null or empty", exception.getMessage());
+    }
+    
+    @Test
+    @DisplayName("空口座番号での作成時にIllegalArgumentExceptionが発生する")
+    void shouldThrowExceptionForEmptyAccountNumber() {
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> new BankAccount("  ", new BigDecimal("100.00"))
+        );
+        
+        assertTrue(exception.getMessage().contains("Account number cannot be null or empty"));
+    }
+    
+    @Test
+    @DisplayName("負の初期残高での作成時にIllegalArgumentExceptionが発生する")
+    void shouldThrowExceptionForNegativeInitialBalance() {
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> new BankAccount("ACC002", new BigDecimal("-100.00"))
+        );
+    }
+    
+    @Test
+    @DisplayName("負の金額での入金時にIllegalArgumentExceptionが発生する")
+    void shouldThrowExceptionForNegativeDeposit() {
+        IllegalArgumentException exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> account.deposit(new BigDecimal("-50.00"))
+        );
+        
+        assertEquals("Deposit amount must be positive", exception.getMessage());
+    }
+    
+    @Test
+    @DisplayName("ゼロでの入金時にIllegalArgumentExceptionが発生する")
+    void shouldThrowExceptionForZeroDeposit() {
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> account.deposit(BigDecimal.ZERO)
+        );
+    }
+    
+    @Test
+    @DisplayName("残高不足での出金時にRuntimeExceptionが発生する")
+    void shouldThrowExceptionForInsufficientFunds() {
+        RuntimeException exception = assertThrows(
+            RuntimeException.class,
+            () -> account.withdraw(new BigDecimal("2000.00")),
+            "Expected RuntimeException for insufficient funds"
+        );
+        
+        assertEquals("Insufficient funds", exception.getMessage());
+    }
+    
+    @Test
+    @DisplayName("凍結口座からの入金時にIllegalStateExceptionが発生する")
+    void shouldThrowExceptionForDepositToFrozenAccount() {
+        account.freeze();
+        
+        IllegalStateException exception = assertThrows(
+            IllegalStateException.class,
+            () -> account.deposit(new BigDecimal("100.00"))
+        );
+        
+        assertEquals("Account is frozen", exception.getMessage());
+    }
+    
+    @Test
+    @DisplayName("凍結口座からの出金時にIllegalStateExceptionが発生する")
+    void shouldThrowExceptionForWithdrawFromFrozenAccount() {
+        account.freeze();
+        
+        assertThrows(
+            IllegalStateException.class,
+            () -> account.withdraw(new BigDecimal("100.00"))
+        );
+    }
+}</code></pre>
+                        <h6>期待される結果</h6>
+                        <p>各種の例外が適切にテストされ、例外メッセージの内容も検証されます。</p>
+                    </div>
+
+                    <h3 class="section-title">6.2 例外の詳細検証</h3>
+                    <p>発生した例外のより詳細な属性を検証する方法について学習します。</p>
+
+                    <!-- 実習2 -->
+                    <div class="exercise-container">
+                        <h5>実習 6-2: 例外の原因と詳細情報の検証</h5>
+                        <p>例外チェーンや詳細属性を検証するテストを作成します。</p>
+                        <h6>手順</h6>
+                        <ol>
+                            <li>チェーン例外を発生するサービスクラス作成</li>
+                            <li>例外の原因（cause）を検証</li>
+                            <li>カスタム例外の属性を検証</li>
+                        </ol>
+                        <h6>実行例</h6>
+                        <p><strong>UserService.java</strong></p>
+                        <pre><code>import java.util.*;
+
+public class UserService {
+    private Map&lt;String, String&gt; userDatabase;
+    
+    public UserService() {
+        userDatabase = new HashMap&lt;&gt;();
+        userDatabase.put("john", "password123");
+        userDatabase.put("jane", "secret456");
+    }
+    
+    public boolean authenticate(String username, String password) throws AuthenticationException {
+        if (username == null || username.trim().isEmpty()) {
+            throw new AuthenticationException("Username cannot be empty", "EMPTY_USERNAME");
+        }
+        
+        if (password == null || password.trim().isEmpty()) {
+            throw new AuthenticationException("Password cannot be empty", "EMPTY_PASSWORD");
+        }
+        
+        try {
+            String storedPassword = userDatabase.get(username);
+            if (storedPassword == null) {
+                throw new UserNotFoundException("User not found: " + username);
+            }
+            
+            if (!storedPassword.equals(password)) {
+                throw new AuthenticationException("Invalid password", "INVALID_PASSWORD");
+            }
+            
+            return true;
+        } catch (UserNotFoundException e) {
+            throw new AuthenticationException("Authentication failed", "USER_NOT_FOUND", e);
+        }
+    }
+    
+    public void updatePassword(String username, String oldPassword, String newPassword) 
+            throws AuthenticationException, ValidationException {
+        
+        // 現在のパスワードを検証
+        authenticate(username, oldPassword);
+        
+        // 新しいパスワードを検証
+        if (newPassword == null || newPassword.length() < 8) {
+            throw new ValidationException("Password must be at least 8 characters", 
+                                        "WEAK_PASSWORD", "password");
+        }
+        
+        if (newPassword.equals(oldPassword)) {
+            throw new ValidationException("New password must be different from old password", 
+                                        "SAME_PASSWORD", "password");
+        }
+        
+        userDatabase.put(username, newPassword);
+    }
+}
+
+class AuthenticationException extends Exception {
+    private final String errorCode;
+    
+    public AuthenticationException(String message, String errorCode) {
+        super(message);
+        this.errorCode = errorCode;
+    }
+    
+    public AuthenticationException(String message, String errorCode, Throwable cause) {
+        super(message, cause);
+        this.errorCode = errorCode;
+    }
+    
+    public String getErrorCode() {
+        return errorCode;
+    }
+}
+
+class ValidationException extends Exception {
+    private final String errorCode;
+    private final String fieldName;
+    
+    public ValidationException(String message, String errorCode, String fieldName) {
+        super(message);
+        this.errorCode = errorCode;
+        this.fieldName = fieldName;
+    }
+    
+    public String getErrorCode() { return errorCode; }
+    public String getFieldName() { return fieldName; }
+}
+
+class UserNotFoundException extends RuntimeException {
+    public UserNotFoundException(String message) {
+        super(message);
+    }
+}</code></pre>
+                        <p><strong>UserServiceExceptionTest.java</strong></p>
+                        <pre><code>import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class UserServiceExceptionTest {
+    
+    private UserService userService;
+    
+    @BeforeEach
+    void setUp() {
+        userService = new UserService();
+    }
+    
+    @Test
+    @DisplayName("空のユーザー名での認証時にAuthenticationExceptionが発生する")
+    void shouldThrowAuthenticationExceptionForEmptyUsername() {
+        AuthenticationException exception = assertThrows(
+            AuthenticationException.class,
+            () -> userService.authenticate("", "password123")
+        );
+        
+        assertEquals("Username cannot be empty", exception.getMessage());
+        assertEquals("EMPTY_USERNAME", exception.getErrorCode());
+        assertNull(exception.getCause(), "Should not have a cause for direct validation error");
+    }
+    
+    @Test
+    @DisplayName("存在しないユーザーでの認証時にチェーン例外が発生する")
+    void shouldThrowChainedExceptionForNonExistentUser() {
+        AuthenticationException exception = assertThrows(
+            AuthenticationException.class,
+            () -> userService.authenticate("nonexistent", "password123")
+        );
+        
+        assertEquals("Authentication failed", exception.getMessage());
+        assertEquals("USER_NOT_FOUND", exception.getErrorCode());
+        
+        // 原因例外の検証
+        assertNotNull(exception.getCause(), "Should have a cause exception");
+        assertTrue(exception.getCause() instanceof UserNotFoundException);
+        assertTrue(exception.getCause().getMessage().contains("User not found: nonexistent"));
+    }
+    
+    @Test
+    @DisplayName("間違ったパスワードでの認証時にAuthenticationExceptionが発生する")
+    void shouldThrowAuthenticationExceptionForWrongPassword() {
+        AuthenticationException exception = assertThrows(
+            AuthenticationException.class,
+            () -> userService.authenticate("john", "wrongpassword")
+        );
+        
+        assertEquals("Invalid password", exception.getMessage());
+        assertEquals("INVALID_PASSWORD", exception.getErrorCode());
+    }
+    
+    @Test
+    @DisplayName("弱いパスワードでの更新時にValidationExceptionが発生する")
+    void shouldThrowValidationExceptionForWeakPassword() {
+        ValidationException exception = assertThrows(
+            ValidationException.class,
+            () -> userService.updatePassword("john", "password123", "weak")
+        );
+        
+        assertEquals("Password must be at least 8 characters", exception.getMessage());
+        assertEquals("WEAK_PASSWORD", exception.getErrorCode());
+        assertEquals("password", exception.getFieldName());
+    }
+    
+    @Test
+    @DisplayName("同じパスワードでの更新時にValidationExceptionが発生する")
+    void shouldThrowValidationExceptionForSamePassword() {
+        ValidationException exception = assertThrows(
+            ValidationException.class,
+            () -> userService.updatePassword("john", "password123", "password123")
+        );
+        
+        assertEquals("New password must be different from old password", exception.getMessage());
+        assertEquals("SAME_PASSWORD", exception.getErrorCode());
+        assertEquals("password", exception.getFieldName());
+    }
+    
+    @Test
+    @DisplayName("パスワード更新時の認証失敗でチェーン例外が発生する")
+    void shouldThrowChainedExceptionDuringPasswordUpdate() {
+        AuthenticationException exception = assertThrows(
+            AuthenticationException.class,
+            () -> userService.updatePassword("nonexistent", "anypassword", "newpassword123")
+        );
+        
+        // 更新処理中の認証失敗による例外チェーン
+        assertEquals("Authentication failed", exception.getMessage());
+        assertEquals("USER_NOT_FOUND", exception.getErrorCode());
+        assertNotNull(exception.getCause());
+        assertTrue(exception.getCause() instanceof UserNotFoundException);
+    }
+    
+    @Test
+    @DisplayName("複数の例外を同時に検証する")
+    void shouldVerifyMultipleExceptionProperties() {
+        assertAll("Authentication exception properties",
+            () -> {
+                AuthenticationException ex1 = assertThrows(
+                    AuthenticationException.class,
+                    () -> userService.authenticate(null, "password")
+                );
+                assertEquals("EMPTY_USERNAME", ex1.getErrorCode());
+            },
+            () -> {
+                AuthenticationException ex2 = assertThrows(
+                    AuthenticationException.class,
+                    () -> userService.authenticate("user", null)
+                );
+                assertEquals("EMPTY_PASSWORD", ex2.getErrorCode());
+            }
+        );
+    }
+}</code></pre>
+                        <h6>期待される結果</h6>
+                        <p>例外の詳細属性（エラーコード、原因例外、フィールド名など）が正確に検証されます。</p>
+                    </div>
+
+                    <h3 class="section-title">6.3 タイムアウトテスト</h3>
+                    <p>処理時間の制限を設定し、パフォーマンスを検証するテストについて学習します。</p>
+
+                    <h4>タイムアウトテストの種類</h4>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>メソッド</th>
+                                <th>動作</th>
+                                <th>用途</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>assertTimeout()</td>
+                                <td>完了を待ってから検証</td>
+                                <td>処理時間の測定</td>
+                            </tr>
+                            <tr>
+                                <td>assertTimeoutPreemptively()</td>
+                                <td>タイムアウト時に即座に中断</td>
+                                <td>無限ループの防止</td>
+                            </tr>
+                            <tr>
+                                <td>@Timeout</td>
+                                <td>アノテーションベースの制限</td>
+                                <td>メソッド全体の制限</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- 実習3 -->
+                    <div class="exercise-container">
+                        <h5>実習 6-3: 様々なタイムアウトテストの実装</h5>
+                        <p>処理時間の制限と測定を行うテストを作成します。</p>
+                        <h6>手順</h6>
+                        <ol>
+                            <li>時間のかかる処理をシミュレートするクラス作成</li>
+                            <li>assertTimeout()とassertTimeoutPreemptively()の違いを確認</li>
+                            <li>@Timeoutアノテーションの使用方法を学習</li>
+                        </ol>
+                        <h6>実行例</h6>
+                        <p><strong>DataProcessor.java</strong></p>
+                        <pre><code>import java.util.*;
+import java.util.concurrent.TimeUnit;
+
+public class DataProcessor {
+    
+    public List&lt;Integer&gt; processNumbers(List&lt;Integer&gt; numbers, int delayMillis) {
+        List&lt;Integer&gt; result = new ArrayList&lt;&gt;();
+        
+        for (Integer number : numbers) {
+            // 処理時間をシミュレート
+            try {
+                Thread.sleep(delayMillis);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Processing interrupted", e);
+            }
+            
+            result.add(number * 2);
+        }
+        
+        return result;
+    }
+    
+    public String complexCalculation(int iterations) {
+        StringBuilder result = new StringBuilder();
+        
+        for (int i = 0; i < iterations; i++) {
+            // CPU集約的な処理をシミュレート
+            double value = Math.pow(Math.random(), Math.random());
+            result.append(value);
+            
+            if (i % 1000 == 0) {
+                // 定期的にスレッドの中断状態をチェック
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new RuntimeException("Calculation interrupted");
+                }
+            }
+        }
+        
+        return result.toString();
+    }
+    
+    public void infiniteLoop() {
+        while (true) {
+            // 無限ループ（テスト用）
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+    }
+    
+    public int quickCalculation(int a, int b) {
+        return a + b; // 即座に完了
+    }
+    
+    public String slowStringBuilder(int count) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < count; i++) {
+            sb.append("item-").append(i).append("-");
+            if (i % 100 == 0) {
+                try {
+                    Thread.sleep(1); // 少し遅延
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        }
+        return sb.toString();
+    }
+}</code></pre>
+                        <p><strong>DataProcessorTimeoutTest.java</strong></p>
+                        <pre><code>import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import static org.junit.jupiter.api.Assertions.*;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+class DataProcessorTimeoutTest {
+    
+    private DataProcessor processor;
+    
+    @BeforeEach
+    void setUp() {
+        processor = new DataProcessor();
+    }
+    
+    @Test
+    @DisplayName("高速処理が時間制限内に完了することを確認")
+    void shouldCompleteQuickCalculationWithinTimeout() {
+        assertTimeout(Duration.ofMillis(100), () -> {
+            int result = processor.quickCalculation(5, 3);
+            assertEquals(8, result);
+        });
+    }
+    
+    @Test
+    @DisplayName("assertTimeout()で完了を待つ処理時間測定")
+    void shouldMeasureProcessingTimeWithAssertTimeout() {
+        List&lt;Integer&gt; numbers = Arrays.asList(1, 2, 3);
+        
+        // 処理は完了するが時間制限をオーバーする
+        assertTimeout(Duration.ofMillis(200), () -> {
+            List&lt;Integer&gt; result = processor.processNumbers(numbers, 100);
+            assertEquals(Arrays.asList(2, 4, 6), result);
+        }, "Processing should complete within 200ms");
+    }
+    
+    @Test
+    @DisplayName("assertTimeoutPreemptively()で即座に中断")
+    void shouldPreemptivelyTimeoutForSlowProcess() {
+        assertTimeoutPreemptively(Duration.ofMillis(500), () -> {
+            // この処理は中断される
+            processor.slowStringBuilder(10000);
+        }, "Should be interrupted before completion");
+    }
+    
+    @Test
+    @Timeout(value = 2, unit = TimeUnit.SECONDS)
+    @DisplayName("@Timeoutアノテーションによる制限")
+    void shouldCompleteWithinAnnotationTimeout() {
+        String result = processor.complexCalculation(1000);
+        assertNotNull(result);
+        assertTrue(result.length() > 0);
+    }
+    
+    @Test
+    @DisplayName("例外を含む処理でのタイムアウト")
+    void shouldTimeoutEvenWithException() {
+        assertTimeout(Duration.ofMillis(1000), () -> {
+            try {
+                processor.infiniteLoop();
+            } catch (Exception e) {
+                // 例外が発生してもタイムアウトは有効
+                fail("Should not reach here in infinite loop");
+            }
+        });
+    }
+    
+    @Test
+    @DisplayName("タイムアウト内で正常に完了する処理")
+    void shouldCompleteNormallyWithinTimeout() {
+        List&lt;Integer&gt; numbers = Arrays.asList(1, 2);
+        
+        List&lt;Integer&gt; result = assertTimeout(Duration.ofMillis(500), () -> {
+            return processor.processNumbers(numbers, 50); // 各要素50ms × 2 = 100ms
+        });
+        
+        assertEquals(Arrays.asList(2, 4), result);
+    }
+    
+    @Test
+    @DisplayName("assertTimeoutPreemptively()の中断確認")
+    void shouldInterruptLongRunningProcess() {
+        // この処理は確実に中断される
+        assertTimeoutPreemptively(Duration.ofMillis(100), () -> {
+            processor.infiniteLoop();
+            fail("Should never reach this point");
+        });
+    }
+    
+    @Test
+    @DisplayName("タイムアウトしない正常ケース")
+    void shouldNotTimeoutForFastProcess() {
+        assertTimeout(Duration.ofSeconds(1), () -> {
+            List&lt;Integer&gt; result = processor.processNumbers(Arrays.asList(1), 10);
+            assertEquals(Arrays.asList(2), result);
+        });
+    }
+    
+    @Test
+    @Timeout(value = 500, unit = TimeUnit.MILLISECONDS)
+    @DisplayName("短いタイムアウトでの制限テスト")
+    void shouldFailWithShortTimeout() {
+        // このテストは意図的にタイムアウトする可能性がある
+        processor.complexCalculation(100);
+    }
+}</code></pre>
+                        <h6>期待される結果</h6>
+                        <p>各種タイムアウト制限が適切に機能し、処理時間の測定や中断が正しく行われます。</p>
+                    </div>
+
+                    <h3 class="section-title">6.4 非同期処理のテスト</h3>
+                    <p>並行処理や非同期処理を含むコードのテスト方法について学習します。</p>
+
+                    <div class="warning">
+                        <h6>非同期テストの注意点</h6>
+                        <ul>
+                            <li>テストの実行時間が長くなる可能性</li>
+                            <li>タイミングに依存する不安定なテスト</li>
+                            <li>適切な待機時間の設定が重要</li>
+                            <li>デッドロックやリソースリークの防止</li>
+                        </ul>
+                    </div>
+
+                    <!-- 実習4 -->
+                    <div class="exercise-container">
+                        <h5>実習 6-4: 非同期処理とパフォーマンステスト</h5>
+                        <p>CompletableFutureやスレッドプールを使用した非同期処理のテストを作成します。</p>
+                        <h6>手順</h6>
+                        <ol>
+                            <li>非同期処理を行うサービスクラス作成</li>
+                            <li>非同期処理の完了待機とタイムアウト処理</li>
+                            <li>並行処理のパフォーマンステスト実装</li>
+                        </ol>
+                        <h6>実行例</h6>
+                        <p><strong>AsyncService.java</strong></p>
+                        <pre><code>import java.util.concurrent.*;
+import java.util.List;
+import java.util.ArrayList;
+
+public class AsyncService {
+    private final ExecutorService executor;
+    
+    public AsyncService() {
+        this.executor = Executors.newFixedThreadPool(4);
+    }
+    
+    public CompletableFuture&lt;String&gt; processAsync(String input, int delayMillis) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                Thread.sleep(delayMillis);
+                return "Processed: " + input.toUpperCase();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Processing interrupted", e);
+            }
+        }, executor);
+    }
+    
+    public CompletableFuture&lt;Integer&gt; calculateAsync(int a, int b) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                Thread.sleep(100); // 計算処理をシミュレート
+                return a * b + (a - b);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Calculation interrupted", e);
+            }
+        }, executor);
+    }
+    
+    public CompletableFuture&lt;List&lt;String&gt;&gt; processMultipleAsync(List&lt;String&gt; inputs) {
+        List&lt;CompletableFuture&lt;String&gt;&gt; futures = new ArrayList&lt;&gt;();
+        
+        for (String input : inputs) {
+            CompletableFuture&lt;String&gt; future = processAsync(input, 50);
+            futures.add(future);
+        }
+        
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                .thenApply(v -> futures.stream()
+                        .map(CompletableFuture::join)
+                        .collect(java.util.stream.Collectors.toList()));
+    }
+    
+    public CompletableFuture&lt;String&gt; processWithException(boolean shouldFail) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                Thread.sleep(50);
+                if (shouldFail) {
+                    throw new RuntimeException("Intentional failure");
+                }
+                return "Success";
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Processing interrupted", e);
+            }
+        }, executor);
+    }
+    
+    public void shutdown() {
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+    }
+}</code></pre>
+                        <p><strong>AsyncServiceTest.java</strong></p>
+                        <pre><code>import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+class AsyncServiceTest {
+    
+    private AsyncService asyncService;
+    
+    @BeforeEach
+    void setUp() {
+        asyncService = new AsyncService();
+    }
+    
+    @AfterEach
+    void tearDown() {
+        asyncService.shutdown();
+    }
+    
+    @Test
+    @DisplayName("非同期処理が正常に完了することを確認")
+    void shouldCompleteAsyncProcessing() {
+        assertTimeout(Duration.ofSeconds(2), () -> {
+            CompletableFuture&lt;String&gt; future = asyncService.processAsync("hello", 100);
+            String result = future.get(1, TimeUnit.SECONDS);
+            assertEquals("Processed: HELLO", result);
+        });
+    }
+    
+    @Test
+    @DisplayName("非同期計算処理のテスト")
+    void shouldCalculateAsynchronously() throws Exception {
+        CompletableFuture&lt;Integer&gt; future = asyncService.calculateAsync(5, 3);
+        
+        assertTimeout(Duration.ofMillis(500), () -> {
+            Integer result = future.get(200, TimeUnit.MILLISECONDS);
+            assertEquals(17, result); // 5*3 + (5-3) = 15 + 2 = 17
+        });
+    }
+    
+    @Test
+    @DisplayName("複数の非同期処理の並行実行")
+    void shouldProcessMultipleInputsConcurrently() {
+        List&lt;String&gt; inputs = Arrays.asList("first", "second", "third");
+        
+        assertTimeout(Duration.ofSeconds(1), () -> {
+            CompletableFuture&lt;List&lt;String&gt;&gt; future = asyncService.processMultipleAsync(inputs);
+            List&lt;String&gt; results = future.get(800, TimeUnit.MILLISECONDS);
+            
+            assertEquals(3, results.size());
+            assertTrue(results.contains("Processed: FIRST"));
+            assertTrue(results.contains("Processed: SECOND"));
+            assertTrue(results.contains("Processed: THIRD"));
+        });
+    }
+    
+    @Test
+    @DisplayName("非同期処理での例外ハンドリング")
+    void shouldHandleAsyncException() {
+        CompletableFuture&lt;String&gt; future = asyncService.processWithException(true);
+        
+        assertTimeout(Duration.ofSeconds(1), () -> {
+            ExecutionException exception = assertThrows(
+                ExecutionException.class,
+                () -> future.get(200, TimeUnit.MILLISECONDS)
+            );
+            
+            assertTrue(exception.getCause() instanceof RuntimeException);
+            assertEquals("Intentional failure", exception.getCause().getMessage());
+        });
+    }
+    
+    @Test
+    @DisplayName("非同期処理の成功ケース")
+    void shouldSucceedWithoutException() {
+        assertTimeout(Duration.ofSeconds(1), () -> {
+            CompletableFuture&lt;String&gt; future = asyncService.processWithException(false);
+            String result = future.get(200, TimeUnit.MILLISECONDS);
+            assertEquals("Success", result);
+        });
+    }
+    
+    @Test
+    @DisplayName("非同期処理のタイムアウト")
+    void shouldTimeoutAsyncOperation() {
+        CompletableFuture&lt;String&gt; future = asyncService.processAsync("slow", 2000);
+        
+        assertThrows(TimeoutException.class, () -> {
+            future.get(500, TimeUnit.MILLISECONDS);
+        });
+    }
+    
+    @Test
+    @DisplayName("並行処理のパフォーマンステスト")
+    void shouldBeFasterWithConcurrentProcessing() {
+        List&lt;String&gt; inputs = Arrays.asList("item1", "item2", "item3", "item4");
+        
+        long startTime = System.currentTimeMillis();
+        
+        assertTimeout(Duration.ofMillis(300), () -> {
+            // 並行処理（各50ms × 4 = 約50ms）
+            CompletableFuture&lt;List&lt;String&gt;&gt; concurrentFuture = 
+                asyncService.processMultipleAsync(inputs);
+            List&lt;String&gt; results = concurrentFuture.get(250, TimeUnit.MILLISECONDS);
+            assertEquals(4, results.size());
+        });
+        
+        long concurrentTime = System.currentTimeMillis() - startTime;
+        
+        // 順次処理と比較（参考用）
+        System.out.println("Concurrent processing time: " + concurrentTime + "ms");
+        assertTrue(concurrentTime < 250, "Concurrent processing should be faster");
+    }
+    
+    @Test
+    @Timeout(value = 3, unit = TimeUnit.SECONDS)
+    @DisplayName("長時間実行処理の制限テスト")
+    void shouldCompleteWithinGlobalTimeout() throws Exception {
+        CompletableFuture&lt;String&gt; future = asyncService.processAsync("test", 500);
+        String result = future.get();
+        assertEquals("Processed: TEST", result);
+    }
+}</code></pre>
+                        <h6>期待される結果</h6>
+                        <p>非同期処理が適切にテストされ、並行処理のパフォーマンス向上と例外ハンドリングが確認できます。</p>
+                    </div>
+
+                    <!-- 理解度確認 -->
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>assertThrows()メソッドの戻り値は何ですか？それを使って何ができますか？</li>
+                            <li>assertTimeout()とassertTimeoutPreemptively()の主な違いを説明してください。</li>
+                            <li>例外チェーン（chained exception）をテストする際に確認すべき項目を3つ挙げてください。</li>
+                            <li>@TimeoutアノテーションとassertTimeout()メソッドの使い分けを説明してください。</li>
+                            <li>非同期処理のテストで注意すべき点を2つ挙げてください。</li>
+                            <li>CompletableFuture.get(timeout, unit)でTimeoutExceptionが発生した場合、元の処理はどうなりますか？</li>
+                        </ol>
+                        <details>
+                            <summary>解答例</summary>
+                            <ol>
+                                <li>発生した例外オブジェクトを返す。メッセージ、エラーコード、原因例外などの詳細検証が可能</li>
+                                <li>assertTimeout()は処理完了を待つ、assertTimeoutPreemptively()はタイムアウト時に即座に中断する</li>
+                                <li>1)例外の型、2)メッセージ内容、3)原因例外（getCause()）の型とメッセージ</li>
+                                <li>@Timeoutはメソッド全体の制限、assertTimeout()は特定処理の時間測定と制限</li>
+                                <li>1)適切な待機時間の設定、2)リソースの確実な解放（executor.shutdown()など）</li>
+                                <li>元の処理は継続実行される（中断されない）。適切にキャンセルする場合はfuture.cancel()が必要</li>
+                            </ol>
+                        </details>
+                    </div>
+
+                    <!-- 章間ナビゲーション -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="junit-learning-material-5.html" class="btn btn-secondary">← 前の章</a>
+                        <a href="junit-learning-material-7.html" class="btn btn-primary">次の章 →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
