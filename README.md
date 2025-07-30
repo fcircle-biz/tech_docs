@@ -107,6 +107,7 @@
 ### Web開発
 
 - **[PHP学習ガイド](docs/guide/web/php/README.md)** - PHP基礎から実践的なWebアプリケーション開発まで10章完成カリキュラム
+- **[ASP.NET(VB.NET)学習ガイド](docs/guide/web/aspnet-vb/README.md)** - ASP.NET Web Forms基礎から実践的なユーザー管理システム開発まで8章完成カリキュラム
 
 ### データベース
 
@@ -135,6 +136,7 @@
 ### Web開発
 
 - **[PHP実践チュートリアル](docs/tutorial/php/README.md)** - PHPの基本文法からデータベース連携まで、初心者向けユーザー管理システム開発チュートリアル（6章構成）
+- **[ASP.NET(VB.NET)実践チュートリアル](docs/tutorial/aspnet-vb/README.md)** - ASP.NET Web FormsとVB.NETによるユーザー管理システム開発の実践的なチュートリアル（6章構成）
 
 ### Java・Web開発
 
