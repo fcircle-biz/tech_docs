@@ -206,14 +206,13 @@
                     <div class="highlight">
                         <h5>このステップで学ぶこと</h5>
                         <ul>
-                            <li>GridViewコントロールによる表形式データの表示</li>
+                            <li>GridViewコントロールによる基本的なデータ表示</li>
                             <li>データベースからのSELECTクエリとデータバインディング</li>
-                            <li>検索機能の実装（TextBoxとButtonの連携）</li>
-                            <li>ページング機能による大量データの分割表示</li>
                             <li>クエリストリング（QueryString）によるページ間データ受け渡し</li>
                             <li>ユーザー詳細画面の実装</li>
                             <li>For Each文とIf文による条件処理</li>
                             <li>型変換（String⇔Integer）とnull値の処理</li>
+                            <li>基本的なエラーハンドリング</li>
                         </ul>
                     </div>
 
@@ -492,45 +491,9 @@ End Class</code></pre>
         &lt;/a&gt;
     &lt;/div&gt;
 
-    &lt;!-- 検索機能 --&gt;
-    &lt;div class="card mb-4"&gt;
-        &lt;div class="card-body"&gt;
-            &lt;h5 class="card-title"&gt;検索&lt;/h5&gt;
-            &lt;div class="row"&gt;
-                &lt;div class="col-md-8"&gt;
-                    &lt;div class="input-group"&gt;
-                        &lt;asp:TextBox ID="txtSearch" runat="server" CssClass="form-control" 
-                                     placeholder="ユーザー名、氏名、メールアドレスで検索" MaxLength="100"&gt;&lt;/asp:TextBox&gt;
-                        &lt;asp:Button ID="btnSearch" runat="server" Text="検索" 
-                                    CssClass="btn btn-primary" OnClick="btnSearch_Click" /&gt;
-                        &lt;asp:Button ID="btnClearSearch" runat="server" Text="クリア" 
-                                    CssClass="btn btn-secondary" OnClick="btnClearSearch_Click" /&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
-                &lt;div class="col-md-4"&gt;
-                    &lt;div class="input-group"&gt;
-                        &lt;label class="input-group-text"&gt;表示件数&lt;/label&gt;
-                        &lt;asp:DropDownList ID="ddlPageSize" runat="server" CssClass="form-select" 
-                                          AutoPostBack="True" OnSelectedIndexChanged="ddlPageSize_SelectedIndexChanged"&gt;
-                            &lt;asp:ListItem Value="5"&gt;5件&lt;/asp:ListItem&gt;
-                            &lt;asp:ListItem Value="10" Selected="True"&gt;10件&lt;/asp:ListItem&gt;
-                            &lt;asp:ListItem Value="20"&gt;20件&lt;/asp:ListItem&gt;
-                            &lt;asp:ListItem Value="50"&gt;50件&lt;/asp:ListItem&gt;
-                        &lt;/asp:DropDownList&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
-    &lt;/div&gt;
-
-    &lt;!-- 検索結果情報 --&gt;
-    &lt;div class="d-flex justify-content-between align-items-center mb-3"&gt;
-        &lt;div&gt;
-            &lt;asp:Label ID="lblSearchInfo" runat="server" CssClass="text-muted"&gt;&lt;/asp:Label&gt;
-        &lt;/div&gt;
-        &lt;div&gt;
-            &lt;asp:Label ID="lblPageInfo" runat="server" CssClass="text-info"&gt;&lt;/asp:Label&gt;
-        &lt;/div&gt;
+    &lt;!-- 総件数表示 --&gt;
+    &lt;div class="mb-3"&gt;
+        &lt;asp:Label ID="lblTotalCount" runat="server" CssClass="text-muted"&gt;&lt;/asp:Label&gt;
     &lt;/div&gt;
 
     &lt;!-- エラーメッセージ表示エリア --&gt;
@@ -544,11 +507,8 @@ End Class</code></pre>
             &lt;asp:GridView ID="gvUsers" runat="server" 
                           CssClass="table table-striped table-hover" 
                           AutoGenerateColumns="False"
-                          AllowPaging="True"
-                          PageSize="10"
-                          OnPageIndexChanging="gvUsers_PageIndexChanging"
                           OnRowDataBound="gvUsers_RowDataBound"
-                          EmptyDataText="該当するユーザーが見つかりませんでした。"&gt;
+                          EmptyDataText="登録されているユーザーがありません。"&gt;
                 
                 &lt;Columns&gt;
                     &lt;asp:BoundField DataField="Id" HeaderText="ID" ItemStyle-Width="60px" HeaderStyle-CssClass="text-center" ItemStyle-CssClass="text-center" /&gt;
@@ -602,42 +562,15 @@ End Class</code></pre>
                     &lt;/asp:TemplateField&gt;
                 &lt;/Columns&gt;
                 
-                &lt;PagerSettings Mode="NumericFirstLast" PageButtonCount="10" FirstPageText="最初" LastPageText="最後" PreviousPageText="前へ" NextPageText="次へ" /&gt;
-                &lt;PagerStyle CssClass="pagination justify-content-center" /&gt;
                 &lt;EmptyDataRowStyle CssClass="text-center text-muted" /&gt;
             &lt;/asp:GridView&gt;
         &lt;/div&gt;
     &lt;/div&gt;
 
-    &lt;!-- 統計情報 --&gt;
-    &lt;div class="row mt-4"&gt;
-        &lt;div class="col-md-6"&gt;
-            &lt;div class="card"&gt;
-                &lt;div class="card-body"&gt;
-                    &lt;h5 class="card-title"&gt;年代別統計&lt;/h5&gt;
-                    &lt;asp:Repeater ID="rptStatistics" runat="server"&gt;
-                        &lt;ItemTemplate&gt;
-                            &lt;div class="d-flex justify-content-between"&gt;
-                                &lt;span&gt;&lt;%# Eval("Key") %&gt;:&lt;/span&gt;
-                                &lt;span class="badge bg-primary"&gt;&lt;%# Eval("Value") %&gt;人&lt;/span&gt;
-                            &lt;/div&gt;
-                        &lt;/ItemTemplate&gt;
-                    &lt;/asp:Repeater&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
-        &lt;div class="col-md-6"&gt;
-            &lt;div class="card"&gt;
-                &lt;div class="card-body"&gt;
-                    &lt;h5 class="card-title"&gt;クイック操作&lt;/h5&gt;
-                    &lt;div class="d-grid gap-2"&gt;
-                        &lt;a href="Create.aspx" class="btn btn-success"&gt;新規ユーザー登録&lt;/a&gt;
-                        &lt;asp:Button ID="btnRefresh" runat="server" Text="一覧を更新" 
-                                    CssClass="btn btn-outline-primary" OnClick="btnRefresh_Click" /&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
+    &lt;!-- 操作ボタン --&gt;
+    &lt;div class="mt-4 text-center"&gt;
+        &lt;asp:Button ID="btnRefresh" runat="server" Text="一覧を更新" 
+                    CssClass="btn btn-outline-primary" OnClick="btnRefresh_Click" /&gt;
     &lt;/div&gt;
 &lt;/asp:Content&gt;</code></pre>
                         
@@ -645,111 +578,23 @@ End Class</code></pre>
                         <pre><code>Public Class List
     Inherits System.Web.UI.Page
 
-    ' 検索条件とページング情報を管理するプロパティ
-    Private Property CurrentSearchKeyword As String
-        Get
-            Return If(ViewState("SearchKeyword"), "").ToString()
-        End Get
-        Set(value As String)
-            ViewState("SearchKeyword") = value
-        End Set
-    End Property
-
-    Private Property CurrentPageIndex As Integer
-        Get
-            Return If(ViewState("PageIndex"), 0)
-        End Get
-        Set(value As Integer)
-            ViewState("PageIndex") = value
-        End Set
-    End Property
-
-    Private Property CurrentPageSize As Integer
-        Get
-            Return If(ViewState("PageSize"), 10)
-        End Get
-        Set(value As Integer)
-            ViewState("PageSize") = value
-        End Set
-    End Property
-
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         If Not IsPostBack Then
             ' 初期表示時の処理
             InitializePage()
             LoadUsers()
-            LoadStatistics()
         End If
     End Sub
 
     Private Sub InitializePage()
-        ' ページサイズの初期設定
-        CurrentPageSize = 10
-        CurrentPageIndex = 0
-        CurrentSearchKeyword = ""
-        
         ' メッセージエリアを非表示に
         pnlMessage.Visible = False
-    End Sub
-
-    Protected Sub btnSearch_Click(sender As Object, e As EventArgs) Handles btnSearch.Click
-        Try
-            ' 検索実行
-            CurrentSearchKeyword = txtSearch.Text.Trim()
-            CurrentPageIndex = 0 ' 検索時は最初のページに戻る
-            
-            LoadUsers()
-            
-        Catch ex As Exception
-            ShowMessage($"検索処理でエラーが発生しました: {ex.Message}", "alert-danger")
-        End Try
-    End Sub
-
-    Protected Sub btnClearSearch_Click(sender As Object, e As EventArgs) Handles btnClearSearch.Click
-        Try
-            ' 検索条件のクリア
-            txtSearch.Text = ""
-            CurrentSearchKeyword = ""
-            CurrentPageIndex = 0
-            
-            LoadUsers()
-            
-        Catch ex As Exception
-            ShowMessage($"検索クリア処理でエラーが発生しました: {ex.Message}", "alert-danger")
-        End Try
-    End Sub
-
-    Protected Sub ddlPageSize_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ddlPageSize.SelectedIndexChanged
-        Try
-            ' ページサイズ変更
-            Dim newPageSize As Integer
-            If Integer.TryParse(ddlPageSize.SelectedValue, newPageSize) Then
-                CurrentPageSize = newPageSize
-                CurrentPageIndex = 0 ' ページサイズ変更時は最初のページに戻る
-                
-                LoadUsers()
-            End If
-            
-        Catch ex As Exception
-            ShowMessage($"ページサイズ変更でエラーが発生しました: {ex.Message}", "alert-danger")
-        End Try
-    End Sub
-
-    Protected Sub gvUsers_PageIndexChanging(sender As Object, e As GridViewPageEventArgs) Handles gvUsers.PageIndexChanging
-        Try
-            ' ページ変更
-            CurrentPageIndex = e.NewPageIndex
-            LoadUsers()
-            
-        Catch ex As Exception
-            ShowMessage($"ページ変更でエラーが発生しました: {ex.Message}", "alert-danger")
-        End Try
     End Sub
 
     Protected Sub gvUsers_RowDataBound(sender As Object, e As GridViewRowEventArgs) Handles gvUsers.RowDataBound
         ' 行のデータバインド時の処理（必要に応じてカスタマイズ）
         If e.Row.RowType = DataControlRowType.DataRow Then
-            ' マウスオーバー効果などを追加可能
+            ' マウスオーバー効果を追加
             e.Row.Attributes("onmouseover") = "this.style.backgroundColor='#f0f8ff'"
             e.Row.Attributes("onmouseout") = "this.style.backgroundColor=''"
         End If
@@ -794,7 +639,6 @@ End Class</code></pre>
     Protected Sub btnRefresh_Click(sender As Object, e As EventArgs) Handles btnRefresh.Click
         Try
             LoadUsers()
-            LoadStatistics()
             ShowMessage("一覧を更新しました。", "alert-success")
             
         Catch ex As Exception
@@ -804,22 +648,15 @@ End Class</code></pre>
 
     Private Sub LoadUsers()
         Try
-            ' 検索実行
-            Dim searchResult As SearchResult = UserDAO.SearchUsers(CurrentSearchKeyword, CurrentPageSize, CurrentPageIndex)
+            ' 全ユーザーを取得
+            Dim users As List(Of User) = UserDAO.GetAllUsers()
             
             ' GridViewにデータバインド
-            gvUsers.DataSource = searchResult.Users
-            gvUsers.PageSize = CurrentPageSize
+            gvUsers.DataSource = users
             gvUsers.DataBind()
             
-            ' ページサイズドロップダウンの更新
-            ddlPageSize.SelectedValue = CurrentPageSize.ToString()
-            
-            ' 検索情報の表示
-            UpdateSearchInfo(searchResult)
-            
-            ' ページング情報の表示
-            UpdatePageInfo(searchResult)
+            ' 総件数の表示
+            lblTotalCount.Text = $"登録ユーザー数: {users.Count}件"
             
         Catch ex As Exception
             ShowMessage($"ユーザー一覧の取得に失敗しました: {ex.Message}", "alert-danger")
@@ -827,37 +664,8 @@ End Class</code></pre>
             ' エラー時は空のGridViewを表示
             gvUsers.DataSource = New List(Of User)()
             gvUsers.DataBind()
+            lblTotalCount.Text = "ユーザー一覧の取得に失敗しました"
         End Try
-    End Sub
-
-    Private Sub LoadStatistics()
-        Try
-            Dim statistics As Dictionary(Of String, Integer) = UserDAO.GetUserStatistics()
-            
-            ' Repeaterコントロールにバインド
-            rptStatistics.DataSource = statistics
-            rptStatistics.DataBind()
-            
-        Catch ex As Exception
-            System.Diagnostics.Debug.WriteLine($"統計情報取得エラー: {ex.Message}")
-            ' 統計取得エラーは非表示（メイン機能に影響しない）
-        End Try
-    End Sub
-
-    Private Sub UpdateSearchInfo(searchResult As SearchResult)
-        If String.IsNullOrEmpty(CurrentSearchKeyword) Then
-            lblSearchInfo.Text = $"全ユーザー: {searchResult.TotalCount}件"
-        Else
-            lblSearchInfo.Text = $"検索結果: {searchResult.TotalCount}件（キーワード: 「{Server.HtmlEncode(CurrentSearchKeyword)}」）"
-        End If
-    End Sub
-
-    Private Sub UpdatePageInfo(searchResult As SearchResult)
-        If searchResult.TotalCount > 0 Then
-            lblPageInfo.Text = $"{searchResult.StartIndex}-{searchResult.EndIndex}件目 / 全{searchResult.TotalCount}件 (ページ {searchResult.CurrentPage}/{searchResult.TotalPages})"
-        Else
-            lblPageInfo.Text = "該当するデータがありません"
-        End If
     End Sub
 
     Private Sub ShowMessage(message As String, cssClass As String)
@@ -894,11 +702,10 @@ End Class</code></pre>
                         <h6>期待される結果</h6>
                         <ul>
                             <li>ユーザー一覧がGridViewで美しく表示される</li>
-                            <li>検索機能で部分一致検索ができる</li>
-                            <li>ページング機能が正常に動作する</li>
-                            <li>表示件数の変更ができる</li>
-                            <li>年代別統計が表示される</li>
+                            <li>登録されている全ユーザーの基本情報が確認できる</li>
                             <li>詳細・編集ページへのリンクが動作する</li>
+                            <li>総ユーザー数が表示される</li>
+                            <li>一覧更新ボタンが動作する</li>
                         </ul>
                     </div>
 
@@ -1181,13 +988,13 @@ End Class</code></pre>
                     </div>
 
                     <div class="info">
-                        <h6>💡 GridViewコントロールの主要機能</h6>
+                        <h6>💡 GridViewコントロールの基本機能</h6>
                         <ul>
                             <li><strong>データバインディング:</strong> DataSourceプロパティで簡単にデータ表示</li>
-                            <li><strong>ページング:</strong> AllowPaging="True"で自動ページング</li>
                             <li><strong>テンプレート:</strong> TemplateFieldで柔軟なレイアウト</li>
-                            <li><strong>イベント処理:</strong> RowDataBound、PageIndexChangingなど</li>
+                            <li><strong>イベント処理:</strong> RowDataBoundイベントでカスタマイズ</li>
                             <li><strong>スタイリング:</strong> CSSクラスによる見た目のカスタマイズ</li>
+                            <li><strong>基本表示:</strong> AutoGenerateColumns="False"で列制御</li>
                         </ul>
                     </div>
 
@@ -1200,7 +1007,7 @@ End Class</code></pre>
                             <li>For Each文を使ってList(Of User)の全要素を処理するコードを書いてください。</li>
                             <li>VB.NETで文字列を整数に変換する安全な方法を2つ挙げてください。</li>
                             <li>GridViewのTemplateFieldの用途を説明してください。</li>
-                            <li>ASP.NETでページング機能を有効にするために設定する必要があるプロパティは何ですか？</li>
+                            <li>Response.Redirectメソッドの用途は何ですか？</li>
                         </ol>
                         <details>
                             <summary>解答例</summary>
@@ -1210,7 +1017,7 @@ End Class</code></pre>
                                 <li><code>For Each user As User In userList<br>&nbsp;&nbsp;&nbsp;&nbsp;' 処理<br>Next</code></li>
                                 <li>Integer.TryParse()メソッド、Convert.ToInt32()メソッド</li>
                                 <li>自由なレイアウトでデータを表示するため（リンクボタン、複数項目の組み合わせなど）</li>
-                                <li>AllowPaging="True"とPageSize</li>
+                                <li>別のページにリダイレクトするため（詳細画面や編集画面への遷移など）</li>
                             </ol>
                         </details>
                     </div>
