@@ -221,12 +221,12 @@
                     <div class="highlight">
                         <h5>このステップで学ぶこと</h5>
                         <ul>
-                            <li>Visual Studio基本デバッガーの使い方</li>
-                            <li>ブレークポイントの設定と基本的なステップ実行</li>
+                            <li>Visual Studioの基本的なデバッグ操作</li>
+                            <li>ブレークポイントの設定とステップ実行</li>
                             <li>作成したアプリケーションの動作確認</li>
-                            <li>基本的なエラーの見つけ方と修正方法</li>
+                            <li>よくあるエラーの解決方法</li>
                             <li>簡単なテスト手順</li>
-                            <li>デバッグ出力の基礎</li>
+                            <li>基本的なトラブルシューティング</li>
                         </ul>
                     </div>
 
@@ -291,15 +291,15 @@
 
                     <!-- 実習1 -->
                     <div class="exercise-container">
-                        <h5>実習 6-1: デバッグ技法の実践</h5>
-                        <p>ユーザー登録機能を例に、Visual Studioデバッガーの各機能を実際に使用してみます。</p>
+                        <h5>実習 6-1: 基本的なデバッグの実践</h5>
+                        <p>ユーザー登録機能を例に、Visual Studioの基本的なデバッグ機能を使ってみます。</p>
                         
                         <h6>デバッグ実習手順</h6>
                         <ol>
                             <li><strong>ブレークポイントの設定</strong>
                                 <ul>
-                                    <li>Create.aspx.vbの<code>btnRegister_Click</code>メソッドの最初の行にブレークポイントを設定</li>
-                                    <li>UserDAO.vbの<code>InsertUser</code>メソッドの最初の行にもブレークポイントを設定</li>
+                                    <li>Create.aspx.vbの<code>btnRegister_Click</code>メソッドの最初の行をクリックして行番号の左側をクリック</li>
+                                    <li>赤い丸が表示されればブレークポイントが設定完了</li>
                                 </ul>
                             </li>
                             <li><strong>デバッグ実行の開始</strong>
@@ -311,166 +311,58 @@
                             </li>
                             <li><strong>変数の確認</strong>
                                 <ul>
-                                    <li>ローカルウィンドウで変数の値を確認</li>
-                                    <li>ウォッチウィンドウに監視したい変数を追加</li>
-                                    <li>即座ウィンドウで式を評価</li>
+                                    <li>実行が停止したら、下部の「ローカル」ウィンドウで変数の値を確認</li>
+                                    <li>F10キーで次の行に進む（ステップオーバー）</li>
+                                    <li>F11キーで関数の中に入る（ステップイン）</li>
                                 </ul>
                             </li>
                         </ol>
                         
-                        <h6>デバッグ用のログ出力実装</h6>
-                        <pre><code>' デバッグ用ログ出力クラス
-Public Class DebugHelper
-    
-    ''' &lt;summary&gt;
-    ''' デバッグログの出力
-    ''' &lt;/summary&gt;
-    ''' &lt;param name="message"&gt;ログメッセージ&lt;/param&gt;
-    ''' &lt;param name="category"&gt;カテゴリ（INFO, WARN, ERROR等）&lt;/param&gt;
-    ''' &lt;param name="methodName"&gt;呼び出し元メソッド名&lt;/param&gt;
-    Public Shared Sub WriteDebugLog(message As String, 
-                                    Optional category As String = "INFO", 
-                                    Optional methodName As String = "")
-        
-        If String.IsNullOrEmpty(methodName) Then
-            ' 呼び出し元メソッド名を自動取得
-            Dim frame As New StackFrame(1)
-            Dim method As System.Reflection.MethodBase = frame.GetMethod()
-            methodName = $"{method.DeclaringType.Name}.{method.Name}"
-        End If
-        
-        Dim timestamp As String = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")
-        Dim logMessage As String = $"[{timestamp}] [{category}] [{methodName}] {message}"
-        
-        ' Visual Studio出力ウィンドウに出力
-        System.Diagnostics.Debug.WriteLine(logMessage)
-        
-        ' ファイルにも出力（オプション）
-        WriteToLogFile(logMessage)
-    End Sub
-    
-    ''' &lt;summary&gt;
-    ''' オブジェクトの詳細情報をデバッグ出力
-    ''' &lt;/summary&gt;
-    ''' &lt;param name="obj"&gt;出力するオブジェクト&lt;/param&gt;
-    ''' &lt;param name="objectName"&gt;オブジェクト名&lt;/param&gt;
-    Public Shared Sub DumpObject(obj As Object, objectName As String)
-        Try
-            If obj Is Nothing Then
-                WriteDebugLog($"{objectName} is Nothing", "DEBUG")
-                Return
-            End If
-            
-            WriteDebugLog($"=== {objectName} Dump Start ===", "DEBUG")
-            
-            ' オブジェクトの型情報
-            Dim objType As Type = obj.GetType()
-            WriteDebugLog($"Type: {objType.FullName}", "DEBUG")
-            
-            ' プロパティ値の出力
-            For Each prop As System.Reflection.PropertyInfo In objType.GetProperties()
-                Try
-                    If prop.CanRead Then
-                        Dim value As Object = prop.GetValue(obj, Nothing)
-                        WriteDebugLog($"{prop.Name}: {If(value, "null")}", "DEBUG")
-                    End If
-                Catch ex As Exception
-                    WriteDebugLog($"{prop.Name}: [Error getting value: {ex.Message}]", "DEBUG")
-                End Try
-            Next
-            
-            WriteDebugLog($"=== {objectName} Dump End ===", "DEBUG")
-            
-        Catch ex As Exception
-            WriteDebugLog($"Error dumping object {objectName}: {ex.Message}", "ERROR")
-        End Try
-    End Sub
-    
-    ''' &lt;summary&gt;
-    ''' パフォーマンス測定用のStopwatchラッパー
-    ''' &lt;/summary&gt;
-    Public Class PerformanceTimer
-        Implements IDisposable
-        
-        Private ReadOnly _stopwatch As Stopwatch
-        Private ReadOnly _operationName As String
-        
-        Public Sub New(operationName As String)
-            _operationName = operationName
-            _stopwatch = Stopwatch.StartNew()
-            WriteDebugLog($"Started: {_operationName}", "PERF")
-        End Sub
-        
-        Public Sub Dispose() Implements IDisposable.Dispose
-            _stopwatch.Stop()
-            WriteDebugLog($"Completed: {_operationName} in {_stopwatch.ElapsedMilliseconds}ms", "PERF")
-        End Sub
-    End Class
-    
-    ''' &lt;summary&gt;
-    ''' ログファイルへの出力
-    ''' &lt;/summary&gt;
-    Private Shared Sub WriteToLogFile(logMessage As String)
-        Try
-            Dim logDirectory As String = HttpContext.Current.Server.MapPath("~/App_Data/Logs")
-            If Not Directory.Exists(logDirectory) Then
-                Directory.CreateDirectory(logDirectory)
-            End If
-            
-            Dim logFileName As String = Path.Combine(logDirectory, $"debug_{DateTime.Now:yyyyMMdd}.log")
-            File.AppendAllText(logFileName, logMessage + Environment.NewLine)
-            
-        Catch ex As Exception
-            ' ファイル出力エラーは無視（デバッグに影響しないように）
-            System.Diagnostics.Debug.WriteLine($"Log file write error: {ex.Message}")
-        End Try
-    End Sub
-End Class
-
-' 使用例: Create.aspx.vbでの実装
+                        <h6>簡単なデバッグ出力の例</h6>
+                        <pre><code>' Create.aspx.vbでの簡単なログ出力例
 Protected Sub btnRegister_Click(sender As Object, e As EventArgs) Handles btnRegister.Click
-    DebugHelper.WriteDebugLog("ユーザー登録処理開始")
+    ' デバッグ出力でメソッドの開始を確認
+    System.Diagnostics.Debug.WriteLine("ユーザー登録処理を開始しました")
     
     Try
-        Using timer As New DebugHelper.PerformanceTimer("UserRegistration")
-            
-            If Not Page.IsValid Then
-                DebugHelper.WriteDebugLog("ページバリデーション失敗", "WARN")
-                ShowMessage("入力内容に不備があります。", "alert-warning")
-                Return
-            End If
-            
-            Dim newUser As New User() With {
-                .Username = txtUsername.Text.Trim(),
-                .Email = txtEmail.Text.Trim(),
-                .FullName = txtFullName.Text.Trim(),
-                .BirthDate = GetBirthDate()
-            }
-            
-            ' オブジェクトの詳細をデバッグ出力
-            DebugHelper.DumpObject(newUser, "newUser")
-            
-            Dim newUserId As Integer = UserDAO.InsertUser(newUser)
-            
-            DebugHelper.WriteDebugLog($"ユーザー登録成功 ID: {newUserId}")
-            ShowMessage($"ユーザー '{Server.HtmlEncode(newUser.FullName)}' を登録しました。", "alert-success")
-            
-            ClearForm()
-        End Using
+        If Not Page.IsValid Then
+            System.Diagnostics.Debug.WriteLine("バリデーションエラーが発生しました")
+            ShowMessage("入力内容に不備があります。", "alert-warning")
+            Return
+        End If
+        
+        ' ユーザー情報をデバッグ出力
+        System.Diagnostics.Debug.WriteLine($"ユーザー名: {txtUsername.Text}")
+        System.Diagnostics.Debug.WriteLine($"メールアドレス: {txtEmail.Text}")
+        System.Diagnostics.Debug.WriteLine($"氏名: {txtFullName.Text}")
+        
+        Dim newUser As New User() With {
+            .Username = txtUsername.Text.Trim(),
+            .Email = txtEmail.Text.Trim(),
+            .FullName = txtFullName.Text.Trim(),
+            .BirthDate = GetBirthDate()
+        }
+        
+        Dim newUserId As Integer = UserDAO.InsertUser(newUser)
+        
+        System.Diagnostics.Debug.WriteLine($"ユーザー登録成功 ID: {newUserId}")
+        ShowMessage($"ユーザー '{Server.HtmlEncode(newUser.FullName)}' を登録しました。", "alert-success")
+        
+        ClearForm()
         
     Catch ex As Exception
-        DebugHelper.WriteDebugLog($"ユーザー登録エラー: {ex.Message}", "ERROR")
+        ' エラーをデバッグ出力とユーザーに表示
+        System.Diagnostics.Debug.WriteLine($"エラー: {ex.Message}")
         ShowMessage("登録処理でエラーが発生しました。", "alert-danger")
     End Try
 End Sub</code></pre>
                         
                         <h6>期待される結果</h6>
                         <ul>
-                            <li>ブレークポイントで実行が適切に停止する</li>
+                            <li>ブレークポイントで実行が停止する</li>
                             <li>変数の値がローカルウィンドウで確認できる</li>
                             <li>ステップ実行でコードの流れを追跡できる</li>
-                            <li>デバッグログが出力ウィンドウに表示される</li>
-                            <li>パフォーマンス測定結果が確認できる</li>
+                            <li>Visual Studioの出力ウィンドウにデバッグメッセージが表示される</li>
                         </ul>
                     </div>
 
@@ -478,44 +370,35 @@ End Sub</code></pre>
                     <p>作成したユーザー管理システムの全機能を体系的にテストします。</p>
 
                     <div class="test-checklist">
-                        <h5>🔍 機能テストチェックリスト</h5>
+                        <h5>🔍 基本機能テストチェックリスト</h5>
                         
                         <h6>ユーザー登録機能</h6>
                         <ul>
                             <li>☐ 正常なユーザー情報で登録が成功する</li>
                             <li>☐ 必須項目が未入力の場合にエラーメッセージが表示される</li>
-                            <li>☐ ユーザー名の重複チェックが動作する</li>
-                            <li>☐ メールアドレスの重複チェックが動作する</li>
-                            <li>☐ 不正な形式のメールアドレスがエラーになる</li>
-                            <li>☐ 生年月日の未来日がエラーになる</li>
-                            <li>☐ 文字数制限チェックが動作する</li>
+                            <li>☐ 登録完了メッセージが表示される</li>
+                            <li>☐ 登録後にフォームがクリアされる</li>
                         </ul>
 
-                        <h6>ユーザー一覧・検索機能</h6>
+                        <h6>ユーザー一覧表示機能</h6>
                         <ul>
-                            <li>☐ 全ユーザーが正しく一覧表示される</li>
-                            <li>☐ 検索キーワードによる絞り込みが動作する</li>
-                            <li>☐ ページング機能が正常に動作する</li>
-                            <li>☐ 表示件数変更機能が動作する</li>
-                            <li>☐ 年齢計算が正確に表示される</li>
-                            <li>☐ 統計情報が正しく表示される</li>
+                            <li>☐ 全ユーザーが一覧表示される</li>
+                            <li>☐ ユーザー情報が正しく表示される</li>
+                            <li>☐ 編集・削除リンクが正常に動作する</li>
                         </ul>
 
                         <h6>ユーザー詳細表示機能</h6>
                         <ul>
                             <li>☐ 正しいIDでユーザー詳細が表示される</li>
-                            <li>☐ 無効なIDでエラーメッセージが表示される</li>
                             <li>☐ 存在しないIDでエラーメッセージが表示される</li>
                             <li>☐ 編集・削除ボタンのリンクが正常に動作する</li>
                         </ul>
 
                         <h6>ユーザー編集機能</h6>
                         <ul>
-                            <li>☐ 既存データがフォームに正しくバインドされる</li>
+                            <li>☐ 既存データがフォームに正しく表示される</li>
                             <li>☐ 更新処理が正常に動作する</li>
-                            <li>☐ 変更検知機能が動作する</li>
-                            <li>☐ 重複チェックが更新時に適切に動作する</li>
-                            <li>☐ セッション管理が正常に動作する</li>
+                            <li>☐ 更新完了メッセージが表示される</li>
                         </ul>
 
                         <h6>ユーザー削除機能</h6>
@@ -523,217 +406,118 @@ End Sub</code></pre>
                             <li>☐ 削除確認ダイアログが表示される</li>
                             <li>☐ 削除処理が正常に動作する</li>
                             <li>☐ 削除後に一覧ページにリダイレクトされる</li>
-                            <li>☐ 存在しないユーザーの削除でエラーメッセージが表示される</li>
                         </ul>
                     </div>
 
                     <!-- 実習2 -->
                     <div class="exercise-container">
-                        <h5>実習 6-2: エラーハンドリングとログ分析</h5>
-                        <p>意図的にエラーを発生させ、ログの確認とトラブルシューティングを実践します。</p>
+                        <h5>実習 6-2: よくあるエラーとトラブルシューティング</h5>
+                        <p>初心者がよく遭遇するエラーと、その解決方法を学びます。</p>
                         
-                        <h6>エラーテスト手順</h6>
+                        <h6>よくあるエラーと対処法</h6>
                         <ol>
-                            <li><strong>データベース接続エラーのテスト</strong>
+                            <li><strong>コンパイルエラー</strong>
                                 <ul>
-                                    <li>Web.configの接続文字列を意図的に間違ったものに変更</li>
-                                    <li>アプリケーションを実行してエラーメッセージを確認</li>
-                                    <li>Visual Studioの出力ウィンドウでエラーログを確認</li>
+                                    <li>「'UserDAO' は宣言されていません」→ App_Codeフォルダーのビルドアクションを「コンパイル」に設定</li>
+                                    <li>「名前 'txtUsername' は宣言されていません」→ aspxファイルのコントロールIDを確認</li>
                                 </ul>
                             </li>
-                            <li><strong>バリデーションエラーのテスト</strong>
+                            <li><strong>実行時エラー</strong>
                                 <ul>
-                                    <li>不正なデータでフォーム送信</li>
-                                    <li>クライアントサイド・サーバーサイド両方のバリデーションを確認</li>
+                                    <li>「Web.config ファイルでデバッグが有効になっています」→ Web.configの&lt;compilation debug="false"&gt;に設定（本番環境）</li>
+                                    <li>「データベースに接続できません」→ SQL Server LocalDBが起動しているか確認</li>
                                 </ul>
                             </li>
-                            <li><strong>SQL インジェクション対策の確認</strong>
+                            <li><strong>バリデーションエラー</strong>
                                 <ul>
-                                    <li>検索フォームに悪意のあるSQL文を入力</li>
-                                    <li>パラメータ化クエリによる保護を確認</li>
+                                    <li>必須項目チェックが動作しない→ RequiredFieldValidatorの設定を確認</li>
+                                    <li>「UnobtrusiveValidationMode にはjQuery の ScriptResourceMapping が必要です」→ Web.configに設定を追加</li>
                                 </ul>
                             </li>
                         </ol>
                         
-                        <h6>総合エラーハンドリングクラス</h6>
-                        <pre><code>Public Class ErrorHandler
-    
-    ''' &lt;summary&gt;
-    ''' グローバルエラーハンドラー（Global.asax.vbで使用）
-    ''' &lt;/summary&gt;
-    Public Shared Sub HandleGlobalError(context As HttpContext, exception As Exception)
-        Try
-            ' エラー情報の詳細な記録
-            Dim errorInfo As New ErrorInfo() With {
-                .Exception = exception,
-                .RequestUrl = If(context.Request IsNot Nothing, context.Request.Url.ToString(), "N/A"),
-                .UserAgent = If(context.Request IsNot Nothing, context.Request.UserAgent, "N/A"),
-                .RemoteAddress = If(context.Request IsNot Nothing, context.Request.UserHostAddress, "N/A"),
-                .SessionId = If(context.Session IsNot Nothing, context.Session.SessionID, "N/A"),
-                .Timestamp = DateTime.Now
-            }
+                        <h6>基本的なエラー処理の例</h6>
+                        <pre><code>' UserDAO.vbでの基本的なエラー処理
+Public Shared Function InsertUser(user As User) As Integer
+    Try
+        Using connection As New SqlConnection(DatabaseConfig.GetConnectionString())
+            connection.Open()
             
-            ' 詳細ログの出力
-            LogDetailedError(errorInfo)
+            Dim query As String = "INSERT INTO users (username, email, full_name, birth_date) " &
+                                  "VALUES (@Username, @Email, @FullName, @BirthDate); " &
+                                  "SELECT SCOPE_IDENTITY();"
             
-            ' エラーレベルに応じた処理
-            Select Case GetErrorLevel(exception)
-                Case ErrorLevel.Critical
-                    HandleCriticalError(errorInfo)
-                Case ErrorLevel.Error
-                    HandleStandardError(errorInfo)
-                Case ErrorLevel.Warning
-                    HandleWarning(errorInfo)
-            End Select
-            
-        Catch logEx As Exception
-            ' エラーハンドリング自体でエラーが発生した場合
-            System.Diagnostics.Debug.WriteLine($"Error handling failed: {logEx.Message}")
-        End Try
-    End Sub
-    
-    Private Shared Sub LogDetailedError(errorInfo As ErrorInfo)
-        Dim logMessage As New System.Text.StringBuilder()
-        
-        logMessage.AppendLine("=== Error Details ===")
-        logMessage.AppendLine($"Timestamp: {errorInfo.Timestamp}")
-        logMessage.AppendLine($"Exception Type: {errorInfo.Exception.GetType().FullName}")
-        logMessage.AppendLine($"Message: {errorInfo.Exception.Message}")
-        logMessage.AppendLine($"Stack Trace: {errorInfo.Exception.StackTrace}")
-        logMessage.AppendLine($"Request URL: {errorInfo.RequestUrl}")
-        logMessage.AppendLine($"User Agent: {errorInfo.UserAgent}")
-        logMessage.AppendLine($"Remote Address: {errorInfo.RemoteAddress}")
-        logMessage.AppendLine($"Session ID: {errorInfo.SessionId}")
-        
-        ' 内部例外の記録
-        Dim innerEx As Exception = errorInfo.Exception.InnerException
-        While innerEx IsNot Nothing
-            logMessage.AppendLine($"Inner Exception: {innerEx.GetType().FullName}")
-            logMessage.AppendLine($"Inner Message: {innerEx.Message}")
-            innerEx = innerEx.InnerException
-        End While
-        
-        logMessage.AppendLine("=== End Error Details ===")
-        
-        ' ログ出力
-        DebugHelper.WriteDebugLog(logMessage.ToString(), "ERROR")
-    End Sub
-    
-    Private Shared Function GetErrorLevel(exception As Exception) As ErrorLevel
-        ' 例外の種類によってエラーレベルを判定
-        Select Case True
-            Case TypeOf exception Is OutOfMemoryException,
-                 TypeOf exception Is StackOverflowException
-                Return ErrorLevel.Critical
+            Using command As New SqlCommand(query, connection)
+                command.Parameters.AddWithValue("@Username", user.Username)
+                command.Parameters.AddWithValue("@Email", user.Email)
+                command.Parameters.AddWithValue("@FullName", user.FullName)
                 
-            Case TypeOf exception Is System.Data.SqlClient.SqlException
-                Dim sqlEx As System.Data.SqlClient.SqlException = CType(exception, System.Data.SqlClient.SqlException)
-                If sqlEx.Number >= 50000 Then ' ユーザー定義エラー
-                    Return ErrorLevel.Warning
+                If user.BirthDate.HasValue Then
+                    command.Parameters.AddWithValue("@BirthDate", user.BirthDate.Value)
                 Else
-                    Return ErrorLevel.Error
+                    command.Parameters.AddWithValue("@BirthDate", DBNull.Value)
                 End If
                 
-            Case TypeOf exception Is ArgumentException,
-                 TypeOf exception Is InvalidOperationException
-                Return ErrorLevel.Warning
-                
-            Case Else
-                Return ErrorLevel.Error
-        End Select
-    End Function
-    
-    Private Shared Sub HandleCriticalError(errorInfo As ErrorInfo)
-        ' 緊急時の処理（アプリケーション停止、管理者通知など）
-        DebugHelper.WriteDebugLog("CRITICAL ERROR DETECTED - Application may need restart", "CRITICAL")
-        ' 実際の実装では、メール通知やSlack通知などを行う
-    End Sub
-    
-    Private Shared Sub HandleStandardError(errorInfo As ErrorInfo)
-        ' 標準的なエラー処理
-        DebugHelper.WriteDebugLog($"Standard error handled: {errorInfo.Exception.Message}", "ERROR")
-    End Sub
-    
-    Private Shared Sub HandleWarning(errorInfo As ErrorInfo)
-        ' 警告レベルの処理
-        DebugHelper.WriteDebugLog($"Warning handled: {errorInfo.Exception.Message}", "WARN")
-    End Sub
-    
-    Public Enum ErrorLevel
-        Warning = 1
-        [Error] = 2
-        Critical = 3
-    End Enum
-    
-    Public Class ErrorInfo
-        Public Property Exception As Exception
-        Public Property RequestUrl As String
-        Public Property UserAgent As String
-        Public Property RemoteAddress As String
-        Public Property SessionId As String
-        Public Property Timestamp As DateTime
-    End Class
-End Class</code></pre>
+                Return CInt(command.ExecuteScalar())
+            End Using
+        End Using
+        
+    Catch ex As Exception
+        ' エラーをデバッグ出力に記録
+        System.Diagnostics.Debug.WriteLine($"InsertUser エラー: {ex.Message}")
+        
+        ' 呼び出し元にエラーを伝える
+        Throw New Exception("ユーザーの登録に失敗しました。", ex)
+    End Try
+End Function</code></pre>
                         
                         <h6>期待される結果</h6>
                         <ul>
-                            <li>各種エラーが適切にキャッチされる</li>
-                            <li>詳細なエラーログが出力される</li>
-                            <li>ユーザーにはわかりやすいエラーメッセージが表示される</li>
-                            <li>SQL インジェクション攻撃が防がれる</li>
-                            <li>システムの安定性が保たれる</li>
+                            <li>よくあるエラーパターンが理解できる</li>
+                            <li>基本的なエラー対処法がわかる</li>
+                            <li>デバッグ出力でエラー原因を特定できる</li>
+                            <li>Try-Catch文の基本的な使い方がわかる</li>
                         </ul>
                     </div>
 
-                    <h3 class="section-title">6.3 パフォーマンス監視</h3>
-                    <p>アプリケーションのパフォーマンスを測定し、ボトルネックを特定します。</p>
+                    <h3 class="section-title">6.3 基本的なパフォーマンス改善</h3>
+                    <p>アプリケーションの動作を早くするための基本的なポイントを学びます。</p>
 
-                    <h4>パフォーマンス測定の重要指標</h4>
+                    <h4>初心者向けパフォーマンス改善のポイント</h4>
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>指標</th>
-                                <th>測定項目</th>
-                                <th>目安</th>
-                                <th>改善方法</th>
+                                <th>項目</th>
+                                <th>問題</th>
+                                <th>解決方法</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>応答時間</td>
-                                <td>ページ読み込み時間</td>
-                                <td>2秒以内</td>
-                                <td>クエリ最適化、キャッシュ</td>
+                                <td>ページ読み込み</td>
+                                <td>画面表示が遅い</td>
+                                <td>不要なデバッグ情報を削除</td>
                             </tr>
                             <tr>
-                                <td>データベースクエリ</td>
-                                <td>SQL実行時間</td>
-                                <td>100ms以内</td>
-                                <td>インデックス、正規化</td>
+                                <td>データベース</td>
+                                <td>データ取得が遅い</td>
+                                <td>必要なデータだけを取得する</td>
                             </tr>
                             <tr>
-                                <td>メモリ使用量</td>
-                                <td>プロセスメモリ</td>
-                                <td>適切な範囲内</td>
-                                <td>オブジェクト最適化</td>
-                            </tr>
-                            <tr>
-                                <td>同時ユーザー数</td>
-                                <td>セッション数</td>
-                                <td>設計値以内</td>
-                                <td>負荷分散、スケーリング</td>
+                                <td>メモリ</td>
+                                <td>アプリケーションが重い</td>
+                                <td>Using文で適切にリソースを開放</td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <div class="warning">
-                        <h6>⚠️ プロダクション環境での注意点</h6>
+                    <div class="info">
+                        <h6>💡 基本的な改善ポイント</h6>
                         <ul>
-                            <li><strong>デバッグ設定:</strong> Web.configでdebug="false"に設定</li>
-                            <li><strong>エラー表示:</strong> 詳細なエラー情報を非表示</li>
-                            <li><strong>ログレベル:</strong> 不要な詳細ログを削除</li>
-                            <li><strong>接続文字列:</strong> 暗号化して保護</li>
-                            <li><strong>セキュリティ:</strong> HTTPSの使用、セキュリティヘッダー設定</li>
+                            <li><strong>デバッグ設定:</strong> 公開時はWeb.configでdebug="false"に設定</li>
+                            <li><strong>接続管理:</strong> Using文でデータベース接続を適切に閉じる</li>
+                            <li><strong>不要なコード:</strong> 使わないSystem.Diagnostics.Debug.WriteLineを削除</li>
+                            <li><strong>データ取得:</strong> 必要最小限のデータだけを取得する</li>
                         </ul>
                     </div>
 
@@ -742,24 +526,22 @@ End Class</code></pre>
 
                     <!-- 理解度確認 -->
                     <div class="quiz-container">
-                        <h5>総合理解度確認クイズ</h5>
+                        <h5>基本理解度確認クイズ</h5>
                         <ol>
-                            <li>Visual Studioでステップ実行を行うショートカットキーを3つ挙げてください。</li>
-                            <li>System.Diagnostics.Debugクラスの主な用途を説明してください。</li>
-                            <li>プロダクション環境でdebug="false"に設定する理由を説明してください。</li>
-                            <li>エラーハンドリングの階層化（メソッド・ページ・アプリケーションレベル）の利点を説明してください。</li>
-                            <li>パフォーマンス測定で重要な4つの指標を挙げてください。</li>
-                            <li>SQL インジェクション攻撃を防ぐASP.NETの仕組みを説明してください。</li>
+                            <li>Visual Studioでデバッグ実行を開始するキーは何ですか？</li>
+                            <li>ブレークポイントを設定する方法を説明してください。</li>
+                            <li>System.Diagnostics.Debug.WriteLineの用途は何ですか？</li>
+                            <li>Try-Catch文の基本的な使い方を説明してください。</li>
+                            <li>Using文を使う理由は何ですか？</li>
                         </ol>
                         <details>
                             <summary>解答例</summary>
                             <ol>
-                                <li>F10（ステップオーバー）、F11（ステップイン）、Shift+F11（ステップアウト）</li>
-                                <li>デバッグ時の詳細情報出力、出力ウィンドウへのログ表示</li>
-                                <li>パフォーマンス向上、詳細エラー情報の非表示（セキュリティ）</li>
-                                <li>適切なレベルでの例外処理、コードの保守性向上、エラー分類</li>
-                                <li>応答時間、データベースクエリ時間、メモリ使用量、同時ユーザー数</li>
-                                <li>パラメータ化クエリ（SqlParameter）による入力値のエスケープ</li>
+                                <li>F5キー</li>
+                                <li>コードの行番号の左側をクリックして赤い丸を表示させる</li>
+                                <li>デバッグ時に情報を出力ウィンドウに表示するため</li>
+                                <li>Tryブロックに通常の処理、Catchブロックにエラー処理を書く</li>
+                                <li>データベース接続などのリソースを自動的に開放するため</li>
                             </ol>
                         </details>
                     </div>
@@ -767,40 +549,39 @@ End Class</code></pre>
                     <!-- 完了メッセージ -->
                     <div class="success">
                         <h4>🎊 チュートリアル完了おめでとうございます！</h4>
-                        <p>ASP.NET Web Forms (VB.NET) による <strong>Simple User Management System</strong> の開発を通じて、以下のスキルを習得しました：</p>
+                        <p>ASP.NET Web Forms (VB.NET) による <strong>シンプルなユーザー管理システム</strong> の開発を通じて、以下のスキルを習得しました：</p>
                         
                         <div class="row mt-3">
                             <div class="col-md-6">
-                                <h6>技術スキル</h6>
+                                <h6>基本技術スキル</h6>
                                 <ul>
-                                    <li>ASP.NET Web Forms の基本概念</li>
-                                    <li>VB.NET プログラミング</li>
-                                    <li>SQL Server + Docker 環境構築</li>
-                                    <li>ADO.NET によるデータアクセス</li>
-                                    <li>CRUD操作の完全実装</li>
-                                    <li>Visual Studio デバッグ技法</li>
+                                    <li>ASP.NET Web Forms の基本</li>
+                                    <li>VB.NET プログラミングの基礎</li>
+                                    <li>SQL Server LocalDB の利用</li>
+                                    <li>ADO.NET によるデータベース操作</li>
+                                    <li>基本的なCRUD操作の実装</li>
+                                    <li>Visual Studio デバッグの基本</li>
                                 </ul>
                             </div>
                             <div class="col-md-6">
-                                <h6>開発プラクティス</h6>
+                                <h6>開発の基本スキル</h6>
                                 <ul>
-                                    <li>セキュアなコーディング</li>
-                                    <li>エラーハンドリング</li>
-                                    <li>パフォーマンス最適化</li>
-                                    <li>テスト・デバッグ手法</li>
-                                    <li>ユーザビリティを考慮したUI設計</li>
-                                    <li>保守性の高いコード構造</li>
+                                    <li>基本的なエラーハンドリング</li>
+                                    <li>Try-Catch文の使い方</li>
+                                    <li>Using文によるリソース管理</li>
+                                    <li>基本的なテスト手順</li>
+                                    <li>Visual Studioでのデバッグ操作</li>
+                                    <li>よくあるエラーの対処法</li>
                                 </ul>
                             </div>
                         </div>
                         
                         <h6 class="mt-3">次のステップ</h6>
                         <ul>
-                            <li><strong>ASP.NET MVC / Core</strong>: より現代的なWeb開発フレームワーク</li>
-                            <li><strong>Entity Framework</strong>: O/R マッピングによる高度なデータアクセス</li>
-                            <li><strong>Web API</strong>: RESTful API開発とSPA連携</li>
-                            <li><strong>セキュリティ強化</strong>: ASP.NET Identity、OAuth実装</li>
-                            <li><strong>クラウド対応</strong>: Azure、AWS への展開</li>
+                            <li><strong>ASP.NET MVC</strong>: より現代的なWeb開発を学ぶ</li>
+                            <li><strong>Entity Framework</strong>: より高度なデータベース操作</li>
+                            <li><strong>JavaScript</strong>: フロントエンドの動的機能</li>
+                            <li><strong>セキュリティの基礎</strong>: Web アプリケーションの安全性</li>
                         </ul>
                     </div>
 

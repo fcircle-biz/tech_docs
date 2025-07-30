@@ -200,84 +200,102 @@
                 </div>
 
                 <div id="step2">
-                    <h2 class="chapter-title">SQL Serverデータベースの構築とADO.NET接続</h2>
+                    <h2 class="chapter-title">LocalDBデータベースの構築とADO.NET接続</h2>
                     
                     <!-- 学習目標 -->
                     <div class="highlight">
                         <h5>このステップで学ぶこと</h5>
                         <ul>
-                            <li>Docker SQL Serverコンテナの詳細設定と管理</li>
-                            <li>SSMS(日本語版)による効率的なデータベース操作</li>
+                            <li>SQL Server LocalDBの詳細設定と管理</li>
+                            <li>Visual StudioおよびSSMSによるLocalDBデータベース操作</li>
                             <li>ユーザー管理システム用のデータベースとテーブル設計</li>
-                            <li>ADO.NETによるデータベース接続（SqlConnection、SqlCommand）</li>
+                            <li>ADO.NETによるLocalDB接続（SqlConnection、SqlCommand）</li>
                             <li>VB.NETでのデータアクセスクラス（DAO）の実装</li>
                             <li>例外処理とエラーハンドリングのベストプラクティス</li>
                             <li>接続文字列の管理とWeb.config設定</li>
                         </ul>
                     </div>
 
-                    <h3 class="section-title">2.1 SQL Serverコンテナの詳細設定</h3>
-                    <p>Step 1で起動したSQL Serverコンテナを本格運用向けに設定し、永続化とセキュリティを強化します。</p>
+                    <h3 class="section-title">2.1 SQL Server LocalDBの詳細設定</h3>
+                    <p>Step 1で確認したSQL Server LocalDBを実際の開発で使用するための詳細設定を行います。</p>
                     
-                    <h4><span class="step-number">1</span>データ永続化のためのボリューム設定</h4>
-                    <p>コンテナを削除してもデータが消失しないよう、Dockerボリュームを設定します。</p>
-                    <pre><code># 既存コンテナの停止・削除
-docker stop sqlserver2019
-docker rm sqlserver2019
+                    <h4><span class="step-number">1</span>LocalDBインスタンスの管理</h4>
+                    <p>LocalDBインスタンスの作成、起動、停止などの基本的な管理操作を学習します。</p>
+                    <pre><code># 利用可能なLocalDBインスタンスの確認
+sqllocaldb info
 
-# 永続化ボリューム付きでSQL Serverを起動
-docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=YourPassword123!" `
-   -p 1433:1433 --name sqlserver2019 `
-   -v sqlserver_data:/var/opt/mssql `
-   -d mcr.microsoft.com/mssql/server:2019-latest
+# 新しいインスタンス作成（必要に応じて）
+sqllocaldb create "UserManagementDB" -s
 
-# ボリュームの確認
-docker volume ls
-docker volume inspect sqlserver_data</code></pre>
+# インスタンスの起動
+sqllocaldb start MSSQLLocalDB
 
-                    <h4><span class="step-number">2</span>接続テストとコンテナ管理</h4>
-                    <pre><code># コンテナの状態確認
-docker ps -a
+# インスタンスの詳細情報確認
+sqllocaldb info MSSQLLocalDB
 
-# ログの確認
-docker logs sqlserver2019
-
-# コンテナ内でSQL Serverの状態確認
-docker exec -it sqlserver2019 /opt/mssql-tools/bin/sqlcmd `
-   -S localhost -U SA -P "YourPassword123!" `
-   -Q "SELECT @@VERSION;"
-
-# メモリ使用量の確認
-docker stats sqlserver2019</code></pre>
+# インスタンスのバージョン確認
+sqllocaldb versions</code></pre>
 
                     <div class="info">
-                        <h6>💡 Docker管理のポイント</h6>
+                        <h6>💡 LocalDBとは</h6>
+                        <p><strong>SQL Server LocalDB</strong>は、開発者向けのSQL Server Express の軽量版です。フルインストールのSQL Serverと異なり、開発時のみ使用される小規模なデータベースエンジンです。</p>
                         <ul>
-                            <li><strong>自動起動設定:</strong> <code>--restart unless-stopped</code> オプションでPC再起動時も自動起動</li>
-                            <li><strong>メモリ制限:</strong> <code>--memory=2g</code> でメモリ使用量を制限</li>
-                            <li><strong>バックアップ:</strong> 定期的にボリュームのバックアップを作成</li>
+                            <li><strong>自動起動/停止:</strong> 使用時に自動起動し、未使用時は自動停止</li>
+                            <li><strong>ファイルベース:</strong> データベースは.mdfファイルとして保存</li>
+                            <li><strong>Windows認証:</strong> Windows認証のみ使用（SAアカウント不要）</li>
+                            <li><strong>開発専用:</strong> 開発・テスト環境専用（本番環境では使用不可）</li>
+                            <li><strong>軽量:</strong> フルSQL Serverと比べて軽量で高速起動</li>
                         </ul>
                     </div>
 
-                    <h3 class="section-title">2.2 SSMSによるデータベース設計</h3>
-                    <p>SQL Server Management Studio (SSMS) 日本語版を使用して、ユーザー管理システム用のデータベースを設計・作成します。</p>
+                    <h3 class="section-title">2.2 SSMSによるLocalDBデータベース設計</h3>
+                    <p>SQL Server Management Studio (SSMS)を使用して、LocalDB上にユーザー管理システム用のデータベースを設計・作成します。</p>
 
                     <h4><span class="step-number">1</span>データベースの作成</h4>
                     <ol>
-                        <li>SSMSを起動し、SQL Serverに接続</li>
+                        <li>SSMSを起動</li>
+                        <li>サーバー名に <code>(localdb)\MSSQLLocalDB</code> を入力</li>
+                        <li>認証は「Windows認証」を選択して接続</li>
                         <li>オブジェクトエクスプローラーで「データベース」を右クリック</li>
                         <li>「新しいデータベース」を選択</li>
                         <li>データベース名: <code>UserManagementDB</code></li>
+                        <li><strong>照合順序の設定（重要）</strong>：「オプション」タブで照合順序を「<code>Japanese_CI_AS</code>」に変更</li>
                         <li>設定を確認して「OK」をクリック</li>
                     </ol>
+                    
+                    <div class="warning">
+                        <h6>⚠️ 既存データベースがある場合</h6>
+                        <p>既にUserManagementDBが存在している場合：</p>
+                        <ol>
+                            <li>既存データベースを右クリック→「削除」</li>
+                            <li>確認ダイアログで「既存の接続を閉じる」にチェック</li>
+                            <li>「OK」をクリックして削除</li>
+                            <li>上記手順で照合順序<code>Japanese_CI_AS</code>を指定して再作成</li>
+                        </ol>
+                        <p><strong>照合順序は後から変更が困難</strong>なため、最初に正しく設定することが重要です。</p>
+                    </div>
 
                     <h4><span class="step-number">2</span>usersテーブルの作成</h4>
-                    <p>新しいクエリウィンドウで以下のSQLを実行:</p>
-                    <pre><code>USE UserManagementDB;
-GO
+                    <p><strong>重要：データベースコンテキストを正しく設定してSQLを実行します</strong></p>
+                    
+                    <div class="warning">
+                        <h6>⚠️ 実行前の確認事項</h6>
+                        <ol>
+                            <li>SSMSでUserManagementDBデータベースが作成されていることを確認</li>
+                            <li>オブジェクトエクスプローラーで<strong>UserManagementDB</strong>を右クリック</li>
+                            <li><strong>「新しいクエリ」</strong>を選択（重要：データベース固有のクエリウィンドウを開く）</li>
+                            <li>クエリウィンドウ上部のデータベース名が<strong>「UserManagementDB」</strong>になっていることを確認</li>
+                        </ol>
+                    </div>
 
--- usersテーブルの作成
-CREATE TABLE users (
+                    <p>UserManagementDBに接続したクエリウィンドウで以下のSQLを<strong>個別に</strong>実行してください：</p>
+                    
+                    <h6>ステップ1: データベースの使用設定</h6>
+                    <pre><code>USE UserManagementDB;
+GO</code></pre>
+                    
+                    <h6>ステップ2: usersテーブルの作成</h6>
+                    <pre><code>CREATE TABLE users (
     id INT IDENTITY(1,1) PRIMARY KEY,
     username NVARCHAR(50) NOT NULL UNIQUE,
     email NVARCHAR(100) NOT NULL,
@@ -286,13 +304,15 @@ CREATE TABLE users (
     created_at DATETIME2 DEFAULT GETDATE(),
     updated_at DATETIME2 DEFAULT GETDATE()
 );
+GO</code></pre>
 
--- インデックスの作成（パフォーマンス向上）
-CREATE INDEX IX_users_username ON users(username);
+                    <h6>ステップ3: インデックスの作成（パフォーマンス向上）</h6>
+                    <pre><code>CREATE INDEX IX_users_username ON users(username);
 CREATE INDEX IX_users_email ON users(email);
+GO</code></pre>
 
--- テーブル構造の確認
-SELECT 
+                    <h6>ステップ4: テーブル構造の確認</h6>
+                    <pre><code>SELECT 
     COLUMN_NAME,
     DATA_TYPE,
     CHARACTER_MAXIMUM_LENGTH,
@@ -303,19 +323,44 @@ WHERE TABLE_NAME = 'users'
 ORDER BY ORDINAL_POSITION;</code></pre>
 
                     <h4><span class="step-number">3</span>サンプルデータの挿入</h4>
-                    <pre><code>-- テスト用サンプルデータの挿入
-INSERT INTO users (username, email, full_name, birth_date) VALUES
+                    
+                    <h6>ステップ5: サンプルデータの挿入</h6>
+                    <pre><code>INSERT INTO users (username, email, full_name, birth_date) VALUES
 ('taro_tanaka', 'taro@example.com', '田中太郎', '1990-05-15'),
 ('hanako_sato', 'hanako@example.com', '佐藤花子', '1985-08-22'),
 ('jiro_suzuki', 'jiro@example.com', '鈴木次郎', '1992-12-03'),
 ('yuki_takahashi', 'yuki@example.com', '高橋雪', '1988-03-18'),
 ('ichiro_yamada', 'ichiro@example.com', '山田一郎', '1995-11-30');
+GO</code></pre>
 
--- データの確認
-SELECT id, username, email, full_name, birth_date, 
+                    <h6>ステップ6: データの確認</h6>
+                    <pre><code>SELECT id, username, email, full_name, birth_date, 
        created_at, updated_at 
 FROM users 
 ORDER BY created_at;</code></pre>
+
+                    <div class="info">
+                        <h6>💡 正常に実行されると</h6>
+                        <ul>
+                            <li><strong>ステップ2</strong>: 「コマンドは正常に完了しました。」</li>
+                            <li><strong>ステップ3</strong>: 「コマンドは正常に完了しました。」</li>
+                            <li><strong>ステップ5</strong>: 「(5 行処理されました)」</li>
+                            <li><strong>ステップ6</strong>: 5行のユーザーデータが表示される</li>
+                        </ul>
+                    </div>
+
+                    <div class="warning">
+                        <h6>⚠️ エラーメッセージが表示される場合の対処法</h6>
+                        <p>データが正常に作成されているにも関わらず、下部のエラー一覧に「列名 'username' が無効です」などのエラーが表示される場合は、<strong>SSMSのIntelliSenseキャッシュの問題</strong>です。以下の手順で解決してください：</p>
+                        
+                        <h6>対処法: IntelliSenseの有効化</h6>
+                        <ol>
+                            <li>SSMSのメニューバーで<strong>「編集」</strong>をクリック</li>
+                            <li><strong>「IntelliSenseの有効」</strong>を選択</li>
+                        </ol>
+                        
+                        <p><strong>重要:</strong> エラーメッセージが表示されていても、データが正常に表示されていれば作業は成功しています。</p>
+                    </div>
 
                     <!-- 実習1 -->
                     <div class="exercise-container">
@@ -325,13 +370,38 @@ ORDER BY created_at;</code></pre>
                         <h6>手順</h6>
                         <ol>
                             <li>Visual StudioでUserManagementAppプロジェクトを開く</li>
-                            <li>App_Codeフォルダを作成（存在しない場合）</li>
-                            <li>DatabaseConfig.vbファイルを作成</li>
+                            <li><strong>App_Codeフォルダの作成</strong>
+                                <ol type="a">
+                                    <li>ソリューションエクスプローラーでプロジェクト名を右クリック</li>
+                                    <li>「追加」→「<strong>ASP.NETフォルダー</strong>」→「<strong>App_Code</strong>」を選択</li>
+                                    <li>App_Codeフォルダが作成され、自動的にビルド対象として認識される</li>
+                                </ol>
+                                <div class="warning">
+                                    <p><strong>重要：</strong> 通常のフォルダではなく、必ず「ASP.NETフォルダー」→「App_Code」で作成してください。これにより自動的にビルド対象として認識されます。</p>
+                                </div>
+                            </li>
+                            <li><strong>DatabaseConfig.vbファイルの作成</strong>
+                                <ol type="a">
+                                    <li>App_Codeフォルダを右クリック</li>
+                                    <li>「追加」→「クラス」を選択</li>
+                                    <li>名前を「DatabaseConfig.vb」に設定</li>
+                                    <li>「追加」をクリック</li>
+                                </ol>
+                            </li>
+                            <li><strong>ビルドアクションの設定（必須）</strong>
+                                <ol type="a">
+                                    <li>作成したDatabaseConfig.vbファイルを右クリック</li>
+                                    <li>「プロパティ」を選択</li>
+                                    <li>「ビルドアクション」を「<strong>コンパイル</strong>」に設定</li>
+                                    <li><strong>重要：</strong> この設定を行わないとファイルが認識されません</li>
+                                </ol>
+                            </li>
                             <li>Web.configに接続文字列を追加</li>
                         </ol>
                         
                         <h6>App_Code/DatabaseConfig.vb</h6>
-                        <pre><code>Imports System.Configuration
+                        <pre><code>Imports System
+Imports System.Configuration
 Imports System.Data.SqlClient
 
 ''' &lt;summary&gt;
@@ -434,12 +504,12 @@ Public Class DatabaseConfig
     End Function
 End Class</code></pre>
                         
-                        <h6>Web.config (接続文字列の追加)</h6>
+                        <h6>Web.config (LocalDB接続文字列の追加)</h6>
                         <pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;configuration&gt;
   &lt;connectionStrings&gt;
     &lt;add name="DefaultConnection" 
-         connectionString="Server=localhost,1433;Database=UserManagementDB;User Id=sa;Password=YourPassword123!;TrustServerCertificate=True;" 
+         connectionString="Server=(localdb)\MSSQLLocalDB;Database=UserManagementDB;Integrated Security=true;" 
          providerName="System.Data.SqlClient" /&gt;
   &lt;/connectionStrings&gt;
   
@@ -460,6 +530,7 @@ End Class</code></pre>
                             <li>Web.configの接続文字列が正しく設定される</li>
                             <li>TestConnection()メソッドがTrueを返す</li>
                         </ul>
+                        
                     </div>
 
                     <h3 class="section-title">2.3 UserDAOクラスの実装</h3>
@@ -470,8 +541,31 @@ End Class</code></pre>
                         <h5>実習 2-2: UserDAOクラスの基本実装</h5>
                         <p>データベースのusersテーブルに対するCRUD操作を行うDAOクラスを実装します。</p>
                         
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>UserDAO.vbファイルの作成</strong>
+                                <ol type="a">
+                                    <li>App_Codeフォルダを右クリック</li>
+                                    <li>「追加」→「クラス」を選択</li>
+                                    <li>名前を「UserDAO.vb」に設定</li>
+                                    <li>「追加」をクリック</li>
+                                </ol>
+                            </li>
+                            <li><strong>ビルドアクションの設定（必須）</strong>
+                                <ol type="a">
+                                    <li>作成したUserDAO.vbファイルを右クリック</li>
+                                    <li>「プロパティ」を選択</li>
+                                    <li>「ビルドアクション」を「<strong>コンパイル</strong>」に設定</li>
+                                    <li><strong>重要：</strong> この設定を行わないとファイルが認識されません</li>
+                                </ol>
+                            </li>
+                            <li>以下のコードをUserDAO.vbファイルに記述する</li>
+                        </ol>
+                        
                         <h6>App_Code/UserDAO.vb</h6>
-                        <pre><code>Imports System.Data.SqlClient
+                        <pre><code>Imports System
+Imports System.Collections.Generic
+Imports System.Data.SqlClient
 Imports System.Data
 
 ''' &lt;summary&gt;
@@ -540,15 +634,21 @@ Public Class UserDAO
                 Using command As New SqlCommand(query, connection)
                     Using reader As SqlDataReader = command.ExecuteReader()
                         While reader.Read()
-                            Dim user As New User() With {
-                                .Id = reader.GetInt32("id"),
-                                .Username = reader.GetString("username"),
-                                .Email = reader.GetString("email"),
-                                .FullName = reader.GetString("full_name"),
-                                .BirthDate = If(reader.IsDBNull("birth_date"), Nothing, reader.GetDateTime("birth_date")),
-                                .CreatedAt = reader.GetDateTime("created_at"),
-                                .UpdatedAt = reader.GetDateTime("updated_at")
-                            }
+                            Dim user As New User()
+                            user.Id = CInt(reader("id"))
+                            user.Username = CStr(reader("username"))
+                            user.Email = CStr(reader("email"))
+                            user.FullName = CStr(reader("full_name"))
+                            
+                            ' birth_date の安全な処理
+                            If IsDBNull(reader("birth_date")) Then
+                                user.BirthDate = Nothing
+                            Else
+                                user.BirthDate = CDate(reader("birth_date"))
+                            End If
+                            
+                            user.CreatedAt = CDate(reader("created_at"))
+                            user.UpdatedAt = CDate(reader("updated_at"))
                             users.Add(user)
                         End While
                     End Using
@@ -586,15 +686,23 @@ Public Class UserDAO
                     
                     Using reader As SqlDataReader = command.ExecuteReader()
                         If reader.Read() Then
-                            Return New User() With {
-                                .Id = reader.GetInt32("id"),
-                                .Username = reader.GetString("username"),
-                                .Email = reader.GetString("email"),
-                                .FullName = reader.GetString("full_name"),
-                                .BirthDate = If(reader.IsDBNull("birth_date"), Nothing, reader.GetDateTime("birth_date")),
-                                .CreatedAt = reader.GetDateTime("created_at"),
-                                .UpdatedAt = reader.GetDateTime("updated_at")
-                            }
+                            Dim user As New User()
+                            user.Id = CInt(reader("id"))
+                            user.Username = CStr(reader("username"))
+                            user.Email = CStr(reader("email"))
+                            user.FullName = CStr(reader("full_name"))
+                            
+                            ' birth_date の安全な処理
+                            If IsDBNull(reader("birth_date")) Then
+                                user.BirthDate = Nothing
+                            Else
+                                user.BirthDate = CDate(reader("birth_date"))
+                            End If
+                            
+                            user.CreatedAt = CDate(reader("created_at"))
+                            user.UpdatedAt = CDate(reader("updated_at"))
+                            
+                            Return user
                         Else
                             Return Nothing
                         End If
@@ -633,15 +741,23 @@ Public Class UserDAO
                     
                     Using reader As SqlDataReader = command.ExecuteReader()
                         If reader.Read() Then
-                            Return New User() With {
-                                .Id = reader.GetInt32("id"),
-                                .Username = reader.GetString("username"),
-                                .Email = reader.GetString("email"),
-                                .FullName = reader.GetString("full_name"),
-                                .BirthDate = If(reader.IsDBNull("birth_date"), Nothing, reader.GetDateTime("birth_date")),
-                                .CreatedAt = reader.GetDateTime("created_at"),
-                                .UpdatedAt = reader.GetDateTime("updated_at")
-                            }
+                            Dim user As New User()
+                            user.Id = CInt(reader("id"))
+                            user.Username = CStr(reader("username"))
+                            user.Email = CStr(reader("email"))
+                            user.FullName = CStr(reader("full_name"))
+                            
+                            ' birth_date の安全な処理
+                            If IsDBNull(reader("birth_date")) Then
+                                user.BirthDate = Nothing
+                            Else
+                                user.BirthDate = CDate(reader("birth_date"))
+                            End If
+                            
+                            user.CreatedAt = CDate(reader("created_at"))
+                            user.UpdatedAt = CDate(reader("updated_at"))
+                            
+                            Return user
                         Else
                             Return Nothing
                         End If
@@ -722,6 +838,7 @@ End Class</code></pre>
                             <li>適切な例外処理が実装されている</li>
                         </ul>
                     </div>
+
 
                     <h3 class="section-title">2.4 接続テストページの作成</h3>
                     <p>実装したDAOクラスが正常に動作することを確認するテストページを作成します。</p>
@@ -810,7 +927,9 @@ End Class</code></pre>
 &lt;/html&gt;</code></pre>
                         
                         <h6>DatabaseTest.aspx.vb</h6>
-                        <pre><code>Public Class DatabaseTest
+                        <pre><code>Imports System.Data.SqlClient
+
+Public Class DatabaseTest
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
@@ -925,15 +1044,6 @@ End Class</code></pre>
                         </ol>
                     </div>
 
-                    <div class="warning">
-                        <h6>⚠️ トラブルシューティング</h6>
-                        <ul>
-                            <li><strong>接続エラー:</strong> Docker SQLコンテナが起動しているか確認</li>
-                            <li><strong>データが表示されない:</strong> Step 2.2でサンプルデータを挿入したか確認</li>
-                            <li><strong>コンパイルエラー:</strong> Web.configの接続文字列設定を確認</li>
-                            <li><strong>権限エラー:</strong> SQL Serverのsa認証が有効になっているか確認</li>
-                        </ul>
-                    </div>
 
                     <!-- 理解度確認 -->
                     <div class="quiz-container">

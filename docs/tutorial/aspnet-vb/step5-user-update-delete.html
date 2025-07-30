@@ -230,49 +230,35 @@
 ''' &lt;param name="user"&gt;更新するユーザー情報&lt;/param&gt;
 ''' &lt;returns&gt;更新件数&lt;/returns&gt;
 Public Shared Function UpdateUser(user As User) As Integer
-    ' 基本的な入力値チェック
-    If user Is Nothing Then
-        Throw New ArgumentNullException("user", "ユーザー情報が指定されていません。")
-    End If
-    
-    If user.Id <= 0 Then
-        Throw New ArgumentException("有効なユーザーIDが指定されていません。")
-    End If
-    
     Try
         Using connection As New SqlConnection(DatabaseConfig.GetConnectionString())
             connection.Open()
             
-            ' シンプルなUPDATE SQL文
             Dim query As String = "
                 UPDATE users 
                 SET username = @Username, 
                     email = @Email, 
                     full_name = @FullName, 
-                    birth_date = @BirthDate, 
-                    updated_at = GETDATE()
+                    birth_date = @BirthDate
                 WHERE id = @Id"
             
             Using command As New SqlCommand(query, connection)
                 command.Parameters.AddWithValue("@Id", user.Id)
-                command.Parameters.AddWithValue("@Username", user.Username.Trim())
-                command.Parameters.AddWithValue("@Email", user.Email.Trim())
-                command.Parameters.AddWithValue("@FullName", user.FullName.Trim())
+                command.Parameters.AddWithValue("@Username", user.Username)
+                command.Parameters.AddWithValue("@Email", user.Email)
+                command.Parameters.AddWithValue("@FullName", user.FullName)
                 
-                ' 生年月日の処理（NULL許可）
                 If user.BirthDate.HasValue Then
                     command.Parameters.AddWithValue("@BirthDate", user.BirthDate.Value)
                 Else
                     command.Parameters.AddWithValue("@BirthDate", DBNull.Value)
                 End If
                 
-                ' UPDATEの実行
                 Return command.ExecuteNonQuery()
             End Using
         End Using
         
     Catch ex As Exception
-        System.Diagnostics.Debug.WriteLine($"ユーザー更新エラー: {ex.Message}")
         Throw New Exception("ユーザー情報の更新に失敗しました。", ex)
     End Try
 End Function
@@ -283,26 +269,19 @@ End Function
 ''' &lt;param name="userId"&gt;削除するユーザーID&lt;/param&gt;
 ''' &lt;returns&gt;削除件数&lt;/returns&gt;
 Public Shared Function DeleteUser(userId As Integer) As Integer
-    If userId <= 0 Then
-        Throw New ArgumentException("有効なユーザーIDを指定してください。")
-    End If
-    
     Try
         Using connection As New SqlConnection(DatabaseConfig.GetConnectionString())
             connection.Open()
             
-            ' シンプルなDELETE SQL文
             Dim query As String = "DELETE FROM users WHERE id = @UserId"
             
             Using command As New SqlCommand(query, connection)
                 command.Parameters.AddWithValue("@UserId", userId)
-                
                 Return command.ExecuteNonQuery()
             End Using
         End Using
         
     Catch ex As Exception
-        System.Diagnostics.Debug.WriteLine($"ユーザー削除エラー: {ex.Message}")
         Throw New Exception("ユーザーの削除に失敗しました。", ex)
     End Try
 End Function</code></pre>
@@ -311,8 +290,8 @@ End Function</code></pre>
                         <ul>
                             <li>UpdateUserメソッドが正常にコンパイルされる</li>
                             <li>DeleteUserメソッドが正常にコンパイルされる</li>
-                            <li>基本的なCRUD操作が動作する</li>
-                            <li>シンプルなエラーハンドリングが機能する</li>
+                            <li>基本的なUPDATE・DELETE処理が動作する</li>
+                            <li>Using文によりリソースが適切に管理される</li>
                         </ul>
                     </div>
 
@@ -568,8 +547,7 @@ End Class</code></pre>
                         <h6>💡 基本的なフォーム処理のポイント</h6>
                         <ul>
                             <li><strong>データバインディング:</strong> ユーザー情報をフォームコントロールに設定</li>
-                            <li><strong>入力値検証:</strong> RequiredFieldValidatorによる必須チェック</li>
-                            <li><strong>エラーハンドリング:</strong> Try-Catch文による例外処理</li>
+                            <li><strong>基本バリデーション:</strong> RequiredFieldValidatorによる必須チェック</li>
                             <li><strong>確認ダイアログ:</strong> OnClientClickによるJavaScript確認</li>
                             <li><strong>リダイレクト:</strong> Response.Redirectによるページ移動</li>
                         </ul>

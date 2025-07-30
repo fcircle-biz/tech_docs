@@ -23,16 +23,15 @@ ASP.NET Web FormsとVB.NETを使用したWebアプリケーション開発の実
 - **段階的学習**: 各章でASP.NET・VB.NET理解度クイズによる習熟度確認
 - **実践重視**: 実際に動作するユーザー管理システムを構築
 - **セキュリティ基礎**: SQLインジェクション・XSS対策の基本を学習
-- **Docker活用**: SQL Serverの環境構築にDockerを活用
+- **LocalDB活用**: SQL Server LocalDBによる簡単な環境構築
 
 ## 前提条件・環境要件
 
 ### 必要なソフトウェア
 - **開発環境**: Visual Studio 2019/2022 Community（VB.NET対応）
 - **Webサーバー**: IIS Express（Visual Studioに含まれる）
-- **データベース**: SQL Server 2019+ (Docker使用)
+- **データベース**: SQL Server LocalDB（Visual Studioに含まれる）
 - **データベース管理**: SQL Server Management Studio (SSMS) 日本語版
-- **コンテナ**: Docker Desktop for Windows
 - **ランタイム**: .NET Framework 4.8+
 
 ### 推奨する基礎知識
@@ -45,7 +44,7 @@ ASP.NET Web FormsとVB.NETを使用したWebアプリケーション開発の実
 
 ### Step 1: [環境構築とASP.NET基礎](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-vb/step1-environment-setup.html)
 - Visual Studio Community 2022の設定
-- DockerによるSQL Server環境構築
+- SQL Server LocalDBの環境構築
 - ASP.NET Web Formsプロジェクトの作成
 - VB.NETの基本構文（変数、出力、配列）
 - プロジェクト構成の理解
@@ -54,7 +53,7 @@ ASP.NET Web FormsとVB.NETを使用したWebアプリケーション開発の実
 **習得内容**: VB.NET基本構文、ASP.NETページライフサイクル、サーバーコントロール基礎
 
 ### Step 2: [データベース設計と接続](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-vb/step2-database-connection.html)
-- Docker SQL Serverコンテナの起動と設定
+- SQL Server LocalDBの起動と設定
 - SSMS(日本語版)による接続確認
 - データベースとテーブルの作成
 - ADO.NETによるデータベース接続（SqlConnection）
@@ -76,33 +75,30 @@ ASP.NET Web FormsとVB.NETを使用したWebアプリケーション開発の実
 
 ### Step 4: [ユーザー一覧・詳細表示機能](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-vb/step4-user-list-detail.html)
 - データベースからのデータ取得（SELECT）
-- GridViewコントロールによる一覧表示
+- GridViewコントロールによる基本的な一覧表示
 - 詳細画面の実装とクエリストリング処理
-- 基本的な検索機能（TextBoxとButton）
-- ページング機能の実装
-
-**所要時間**: 2.5時間  
-**習得内容**: GridView、DataTable、QueryString、For Each文、If文、型変換
-
-### Step 5: [ユーザー情報更新・削除機能](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-vb/step5-user-update-delete.html)
-- UserDAOクラスの拡張（Update/Deleteメソッド）
-- 編集フォームの実装とデータバインディング
-- UPDATE・DELETE処理の実装
-- 確認ダイアログとJavaScript連携
-- セッション状態の活用
-
-**所要時間**: 3時間  
-**習得内容**: Session、ViewState、ClientScript、論理演算子、ADO.NETパラメータ
-
-### Step 6: [ブラウザでの動作確認とデバッグ](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-vb/step6-testing-debug.html)
-- Visual Studioデバッガーの活用
-- ブラウザでの動作確認手順
-- 各機能のテスト方法
-- エラーログの確認とトラブルシューティング
-- パフォーマンス監視の基本
+- LinkButtonによるページ遷移
 
 **所要時間**: 1.5時間  
-**習得内容**: デバッグ技法、ブレークポイント、System.Diagnostics.Debug、例外処理
+**習得内容**: GridView、QueryString、LinkButton、Response.Redirect、Integer.TryParse
+
+### Step 5: [ユーザー情報更新・削除機能](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-vb/step5-user-update-delete.html)
+- UserDAOクラスの基本的なUpdate/Deleteメソッド実装
+- 編集フォームの実装とデータバインディング
+- 基本的なUPDATE・DELETE処理の実装
+- 確認ダイアログとJavaScript連携
+
+**所要時間**: 2時間  
+**習得内容**: ViewState、OnClientClick、データバインディング、ADO.NETパラメータ
+
+### Step 6: [ブラウザでの動作確認とデバッグ](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-vb/step6-testing-debug.html)
+- Visual Studioの基本的なデバッグ操作
+- ブレークポイントとステップ実行
+- 基本的な動作確認とテスト
+- よくあるエラーとトラブルシューティング
+
+**所要時間**: 1時間  
+**習得内容**: デバッグ基本操作、Try-Catch文、System.Diagnostics.Debug.WriteLine
 
 ## 作成するアプリケーション概要
 
@@ -110,7 +106,7 @@ ASP.NET Web FormsとVB.NETを使用したWebアプリケーション開発の実
 
 #### 主な機能
 1. **ユーザー登録** - 新規ユーザーの情報を登録
-2. **ユーザー一覧** - 登録されたユーザーの一覧表示・検索
+2. **ユーザー一覧** - 登録されたユーザーの一覧表示
 3. **ユーザー詳細** - 特定ユーザーの詳細情報表示
 4. **ユーザー編集** - 既存ユーザー情報の更新
 5. **ユーザー削除** - ユーザー情報の安全な削除
@@ -131,7 +127,7 @@ CREATE TABLE users (
 #### 技術スタック
 - **言語**: VB.NET (.NET Framework 4.8)
 - **フレームワーク**: ASP.NET Web Forms
-- **データベース**: SQL Server 2019+ (Docker)
+- **データベース**: SQL Server LocalDB
 - **データベース接続**: ADO.NET (SqlConnection, SqlCommand)
 - **フロントエンド**: HTML5 + Bootstrap 5 + ASP.NET Server Controls
 - **Webサーバー**: IIS Express (開発用)
@@ -173,7 +169,7 @@ UserManagementApp
 ```
 
 ## 総所要時間
-**約14時間**（個人の習熟度により変動）
+**約11.5時間**（個人の習熟度により変動）
 
 ## 学習の特徴
 
@@ -182,8 +178,8 @@ UserManagementApp
 - **Step 1**: ASP.NET基本概念（ページライフサイクル、サーバーコントロール、VB.NET構文）
 - **Step 2**: データベース接続基礎（ADO.NET、SqlConnection、Try-Catch）
 - **Step 3**: Web Forms基礎（ポストバック、バリデーション、イベント処理）
-- **Step 4**: データ表示制御（GridView、データバインディング、クエリストリング）
-- **Step 5**: 状態管理（Session、ViewState、JavaScript連携）
+- **Step 4**: データ表示制御（GridView、データバインディング、QueryString、ページ遷移）
+- **Step 5**: 状態管理（ViewState、JavaScript連携、基本的なCRUD操作）
 - **Step 6**: デバッグとエラー処理（Visual Studioデバッガー、例外処理）
 
 ### 初心者向け最適化
@@ -192,28 +188,15 @@ UserManagementApp
 - **段階的な理解**: 各章で前章の復習を含む構成
 - **実践的な学習**: 実際に動作するシステムを段階的に構築
 
-## Docker環境構築
+## LocalDB環境構築
 
-### SQL Server コンテナの起動
-```bash
-# SQL Server 2019 コンテナの起動
-docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=YourPassword123!" \
-   -p 1433:1433 --name sqlserver2019 \
-   -d mcr.microsoft.com/mssql/server:2019-latest
-
-# コンテナの状態確認
-docker ps
-
-# コンテナの停止・開始
-docker stop sqlserver2019
-docker start sqlserver2019
-```
+### SQL Server LocalDBの利用
+Visual Studioに含まれるSQL Server LocalDBを使用します。
 
 ### 接続情報
-- **サーバー**: localhost,1433
-- **認証**: SQL Server認証
-- **ユーザー**: sa
-- **パスワード**: YourPassword123!
+- **サーバー**: (localdb)\MSSQLLocalDB
+- **認証**: Windows認証
+- **データベース**: UserManagementDB
 
 ## 参考資料とリンク
 
@@ -226,7 +209,6 @@ docker start sqlserver2019
 ### 開発ツール
 - [Visual Studio Community](https://visualstudio.microsoft.com/ja/vs/community/)
 - [SQL Server Management Studio (SSMS)](https://docs.microsoft.com/ja-jp/sql/ssms/download-sql-server-management-studio-ssms/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
 ### 関連技術
 - [Bootstrap 5 公式ドキュメント](https://getbootstrap.jp/)
@@ -234,7 +216,7 @@ docker start sqlserver2019
 
 ## チュートリアルの進め方
 
-1. **環境準備**: Visual Studio、Docker、SSMS、SQL Serverコンテナの設定
+1. **環境準備**: Visual Studio、SSMS、SQL Server LocalDBの設定
 2. **段階実装**: 各ステップを順次実装し、必ず動作確認
 3. **クイズ挑戦**: 各章のASP.NET・VB.NET理解度クイズで習熟度確認
 4. **動作テスト**: ブラウザとVisual Studioデバッガーでの機能テスト
@@ -274,8 +256,8 @@ A: Web Formsは初心者にとって理解しやすいイベント駆動モデ�
 ### Q: VB.NETとC#のどちらを選ぶべきですか？
 A: このチュートリアルではVB.NETを使用しますが、学習した概念はC#にも応用できます。VB.NETは自然言語に近い文法で初心者に優しく、基礎を固めるのに適しています。
 
-### Q: Docker環境でトラブルが発生した場合は？
-A: Step 1の環境構築セクションで詳細なトラブルシューティングガイドを提供しています。また、DockerなしでSQL Server Express LocalDBを使用する代替手順も説明しています。
+### Q: LocalDB環境でトラブルが発生した場合は？
+A: Step 1の環境構築セクションで詳細なトラブルシューティングガイドを提供しています。SQL Server LocalDBはVisual Studioに含まれているため、通常は追加インストールは不要です。
 
 ## サポート
 
