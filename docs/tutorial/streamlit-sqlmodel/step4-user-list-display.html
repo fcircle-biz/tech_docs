@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streamlit + SQLModel チュートリアル Step 4 - ユーザー一覧とデータ表示</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+
+        .navbar {
+            background-color: #2196f3;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+
+        .chapter-title {
+            color: #2196f3;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #2196f3;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title {
+            color: #1976d2;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .quiz-container {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #2196f3;
+        }
+
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .highlight {
+            background-color: #ffecb3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
+        }
+
+        .info {
+            background-color: #e1f5fe;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #00bcd4;
+        }
+
+        .nav-link.active {
+            background-color: #2196f3 !important;
+            color: white !important;
+        }
+
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            color: #d63384;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        pre code {
+            background-color: transparent;
+            color: #212529;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Streamlit + SQLModel チュートリアル</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading px-3 mt-4 mb-1 text-muted">チュートリアル目次</h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="step1-environment-setup.html">
+                                Step 1: 環境構築
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step2-database-design.html">
+                                Step 2: データベース設計
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step3-user-registration.html">
+                                Step 3: ユーザー登録機能
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="step4-user-list-display.html">
+                                Step 4: ユーザー一覧表示
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step5-user-crud-operations.html">
+                                Step 5: CRUD操作
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step6-dashboard-visualization.html">
+                                Step 6: ダッシュボード
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step7-security-deployment.html">
+                                Step 7: セキュリティ・デプロイ
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Step 4: ユーザー一覧とデータ表示</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <span class="badge bg-primary">所要時間: 2.5時間</span>
+                    </div>
+                </div>
+
+                <div id="step4">
+                    <h2 class="chapter-title">ユーザー一覧とデータ表示</h2>
+                    
+                    <!-- 学習目標 -->
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>st.dataframeを使用した効率的なデータ表示</li>
+                            <li>動的な検索・フィルタリング機能の実装</li>
+                            <li>ページネーション（ページ分割）の設計と実装</li>
+                            <li>カラムのソート機能とユーザビリティ向上</li>
+                            <li>データのエクスポート（CSV/Excel）機能の実装</li>
+                        </ul>
+                    </div>
+
+                    <!-- データ表示の基本 -->
+                    <h3 class="section-title">4.1 Streamlitでのデータ表示</h3>
+                    <p>Streamlitは、pandas DataFrameとの親和性が高く、効率的なデータ表示機能を提供します。</p>
+                    
+                    <div class="info">
+                        <h6>Streamlitデータ表示オプション</h6>
+                        <ul>
+                            <li><strong>st.dataframe</strong>: インタラクティブなテーブル（ソート、フィルタ付き）</li>
+                            <li><strong>st.table</strong>: 静的なテーブル表示</li>
+                            <li><strong>st.data_editor</strong>: 編集可能なデータテーブル</li>
+                            <li><strong>st.column_config</strong>: カラムの詳細設定</li>
+                            <li><strong>st.metric</strong>: 統計値の効果的な表示</li>
+                        </ul>
+                    </div>
+
+                    <!-- ユーザー一覧の基本実装 -->
+                    <h3 class="section-title">4.2 基本的なユーザー一覧の実装</h3>
+                    <p>SQLModelで取得したデータをpandas DataFrameに変換し、Streamlitで表示します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 4-1: 基本ユーザー一覧の作成</h5>
+                        <p>データベースからユーザーデータを取得し、基本的な一覧表示を実装します。</p>
+                        
+                        <h6>手順</h6>
+                        <ol>
+                            <li><code>app/utils/data_processors.py</code>ファイルを作成：</li>
+                        </ol>
+                        <pre><code>import pandas as pd
+from typing import List, Dict, Any
+from datetime import datetime
+import io
+
+from app.models.user import User, UserStatus, Department
+
+def users_to_dataframe(users: List[User]) -> pd.DataFrame:
+    """ユーザーリストをDataFrameに変換"""
+    if not users:
+        return pd.DataFrame()
+    
+    data = []
+    for user in users:
+        user_data = {
+            'ID': user.id,
+            'ユーザー名': user.username,
+            'メールアドレス': user.email,
+            'フルネーム': user.full_name,
+            '年齢': user.age if user.age else '未設定',
+            '部署': get_department_display_name(user.department),
+            'ステータス': get_status_display_name(user.status),
+            'アクティブ': '✅' if user.is_active else '❌',
+            '作成日': user.created_at.strftime('%Y-%m-%d') if user.created_at else '',
+            '更新日': user.updated_at.strftime('%Y-%m-%d') if user.updated_at else '',
+            '最終ログイン': user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login else '未ログイン'
+        }
+        data.append(user_data)
+    
+    return pd.DataFrame(data)
+
+def get_department_display_name(department: Department) -> str:
+    """部署の表示名を取得"""
+    if not department:
+        return '未設定'
+    
+    department_map = {
+        Department.ENGINEERING: 'エンジニアリング',
+        Department.MARKETING: 'マーケティング',
+        Department.SALES: '営業',
+        Department.HR: '人事',
+        Department.FINANCE: '財務',
+        Department.OPERATIONS: '運営'
+    }
+    return department_map.get(department, department.value)
+
+def get_status_display_name(status: UserStatus) -> str:
+    """ステータスの表示名を取得"""
+    if not status:
+        return '未設定'
+    
+    status_map = {
+        UserStatus.ACTIVE: 'アクティブ',
+        UserStatus.INACTIVE: '非アクティブ',
+        UserStatus.PENDING: '承認待ち',
+        UserStatus.SUSPENDED: '停止中'
+    }
+    return status_map.get(status, status.value)
+
+def apply_filters(users: List[User], filters: Dict[str, Any]) -> List[User]:
+    """フィルタを適用してユーザーリストを絞り込み"""
+    filtered_users = users.copy()
+    
+    # テキスト検索
+    search_text = filters.get('search_text', '').lower()
+    if search_text:
+        filtered_users = [
+            user for user in filtered_users
+            if (search_text in user.username.lower() or
+                search_text in user.email.lower() or
+                search_text in user.full_name.lower())
+        ]
+    
+    # 部署フィルタ
+    department_filter = filters.get('department')
+    if department_filter and department_filter != 'すべて':
+        dept_value = get_department_value_from_display(department_filter)
+        if dept_value:
+            filtered_users = [
+                user for user in filtered_users
+                if user.department == dept_value
+            ]
+    
+    # ステータスフィルタ
+    status_filter = filters.get('status')
+    if status_filter and status_filter != 'すべて':
+        status_value = get_status_value_from_display(status_filter)
+        if status_value:
+            filtered_users = [
+                user for user in filtered_users
+                if user.status == status_value
+            ]
+    
+    # アクティブフィルタ
+    active_filter = filters.get('is_active')
+    if active_filter != 'すべて':
+        is_active = active_filter == 'アクティブのみ'
+        filtered_users = [
+            user for user in filtered_users
+            if user.is_active == is_active
+        ]
+    
+    # 年齢範囲フィルタ
+    age_range = filters.get('age_range')
+    if age_range and age_range != (0, 150):
+        min_age, max_age = age_range
+        filtered_users = [
+            user for user in filtered_users
+            if user.age and min_age <= user.age <= max_age
+        ]
+    
+    return filtered_users
+
+def get_department_value_from_display(display_name: str) -> Department:
+    """表示名から部署値を取得"""
+    display_to_value = {
+        'エンジニアリング': Department.ENGINEERING,
+        'マーケティング': Department.MARKETING,
+        '営業': Department.SALES,
+        '人事': Department.HR,
+        '財務': Department.FINANCE,
+        '運営': Department.OPERATIONS
+    }
+    return display_to_value.get(display_name)
+
+def get_status_value_from_display(display_name: str) -> UserStatus:
+    """表示名からステータス値を取得"""
+    display_to_value = {
+        'アクティブ': UserStatus.ACTIVE,
+        '非アクティブ': UserStatus.INACTIVE,
+        '承認待ち': UserStatus.PENDING,
+        '停止中': UserStatus.SUSPENDED
+    }
+    return display_to_value.get(display_name)
+
+def export_to_csv(df: pd.DataFrame) -> bytes:
+    """DataFrameをCSVにエクスポート"""
+    output = io.StringIO()
+    df.to_csv(output, index=False, encoding='utf-8-sig')
+    return output.getvalue().encode('utf-8-sig')
+
+def export_to_excel(df: pd.DataFrame) -> bytes:
+    """DataFrameをExcelにエクスポート"""
+    output = io.BytesIO()
+    
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, sheet_name='ユーザー一覧', index=False)
+        
+        # セルの書式設定
+        worksheet = writer.sheets['ユーザー一覧']
+        
+        # ヘッダーのスタイル設定
+        for col_num, value in enumerate(df.columns.values):
+            cell = worksheet.cell(row=1, column=col_num + 1)
+            cell.font = cell.font.copy(bold=True)
+            cell.fill = cell.fill.copy(fgColor="CCCCCC")
+        
+        # 列幅の自動調整
+        for column in worksheet.columns:
+            max_length = 0
+            column_letter = column[0].column_letter
+            for cell in column:
+                try:
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(str(cell.value))
+                except:
+                    pass
+            adjusted_width = min(max_length + 2, 50)
+            worksheet.column_dimensions[column_letter].width = adjusted_width
+    
+    return output.getvalue()</code></pre>
+
+                        <ol start="2">
+                            <li><code>app/pages/1_👥_User_List.py</code>ファイルを作成：</li>
+                        </ol>
+                        <pre><code>import streamlit as st
+import pandas as pd
+from datetime import datetime
+from typing import Dict, Any
+
+from app.database.crud import UserCRUD
+from app.models.user import UserStatus, Department
+from app.utils.data_processors import (
+    users_to_dataframe,
+    apply_filters,
+    export_to_csv,
+    export_to_excel,
+    get_department_display_name,
+    get_status_display_name
+)
+
+def main():
+    """ユーザー一覧ページのメイン関数"""
+    st.set_page_config(
+        page_title="ユーザー一覧",
+        page_icon="👥",
+        layout="wide"
+    )
+    
+    st.title("👥 ユーザー一覧管理")
+    st.markdown("---")
+    
+    # データの読み込み
+    @st.cache_data(ttl=30)  # 30秒間キャッシュ
+    def load_users():
+        """ユーザーデータを読み込み（キャッシュ付き）"""
+        return UserCRUD.get_users(limit=1000)
+    
+    users = load_users()
+    
+    if not users:
+        st.warning("📭 登録されているユーザーがありません")
+        if st.button("ユーザー登録ページへ"):
+            st.switch_page("pages/2_➕_Add_User.py")
+        return
+    
+    # サイドバーのフィルタ設定
+    with st.sidebar:
+        st.header("🔍 検索・フィルタ")
+        
+        # テキスト検索
+        search_text = st.text_input(
+            "🔎 キーワード検索",
+            placeholder="ユーザー名、メール、名前で検索",
+            help="部分一致で検索されます"
+        )
+        
+        # 部署フィルタ
+        departments = ['すべて'] + [get_department_display_name(dept) for dept in Department]
+        department_filter = st.selectbox(
+            "🏢 部署",
+            departments
+        )
+        
+        # ステータスフィルタ
+        statuses = ['すべて'] + [get_status_display_name(status) for status in UserStatus]
+        status_filter = st.selectbox(
+            "📊 ステータス",
+            statuses
+        )
+        
+        # アクティブフィルタ
+        active_filter = st.selectbox(
+            "✅ アクティブ状態",
+            ['すべて', 'アクティブのみ', '非アクティブのみ']
+        )
+        
+        # 年齢範囲フィルタ
+        age_range = st.slider(
+            "🎂 年齢範囲",
+            min_value=0,
+            max_value=150,
+            value=(0, 150),
+            step=1
+        )
+        
+        # フィルタクリアボタン
+        if st.button("🔄 フィルタクリア", use_container_width=True):
+            st.rerun()
+    
+    # フィルタの適用
+    filters = {
+        'search_text': search_text,
+        'department': department_filter,
+        'status': status_filter,
+        'is_active': active_filter,
+        'age_range': age_range
+    }
+    
+    filtered_users = apply_filters(users, filters)
+    
+    # 統計情報の表示
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric("総ユーザー数", len(users))
+    
+    with col2:
+        active_count = len([u for u in users if u.is_active])
+        st.metric("アクティブユーザー", active_count)
+    
+    with col3:
+        filtered_count = len(filtered_users)
+        st.metric("フィルタ結果", filtered_count)
+    
+    with col4:
+        avg_age = sum(u.age for u in users if u.age) / len([u for u in users if u.age])
+        st.metric("平均年齢", f"{avg_age:.1f}歳" if avg_age else "N/A")
+    
+    # データフレームの作成と表示
+    if filtered_users:
+        df = users_to_dataframe(filtered_users)
+        
+        # エクスポート機能
+        st.markdown("---")
+        col1, col2, col3 = st.columns([1, 1, 1])
+        
+        with col1:
+            csv_data = export_to_csv(df)
+            st.download_button(
+                label="📄 CSV ダウンロード",
+                data=csv_data,
+                file_name=f"users_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                mime="text/csv",
+                use_container_width=True
+            )
+        
+        with col2:
+            try:
+                excel_data = export_to_excel(df)
+                st.download_button(
+                    label="📊 Excel ダウンロード",
+                    data=excel_data,
+                    file_name=f"users_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    use_container_width=True
+                )
+            except ImportError:
+                st.info("Excel出力にはopenpyxlが必要です")
+        
+        with col3:
+            if st.button("🔄 データ更新", use_container_width=True):
+                st.cache_data.clear()
+                st.rerun()
+        
+        # ページネーション設定
+        st.markdown("---")
+        items_per_page = st.selectbox(
+            "1ページあたりの表示件数",
+            [10, 25, 50, 100],
+            index=1
+        )
+        
+        total_pages = (len(filtered_users) - 1) // items_per_page + 1
+        
+        if total_pages > 1:
+            page = st.number_input(
+                f"ページ (1-{total_pages})",
+                min_value=1,
+                max_value=total_pages,
+                value=1,
+                step=1
+            )
+        else:
+            page = 1
+        
+        # ページネーション適用
+        start_idx = (page - 1) * items_per_page
+        end_idx = start_idx + items_per_page
+        paginated_df = df.iloc[start_idx:end_idx]
+        
+        # データテーブルの表示
+        st.subheader(f"📋 ユーザー一覧 (ページ {page}/{total_pages})")
+        
+        # カラム設定
+        column_config = {
+            'ID': st.column_config.NumberColumn(
+                'ID',
+                help='ユーザーID',
+                width='small'
+            ),
+            'ユーザー名': st.column_config.TextColumn(
+                'ユーザー名',
+                help='ログイン用ユーザー名',
+                width='medium'
+            ),
+            'メールアドレス': st.column_config.TextColumn(
+                'メールアドレス',
+                help='連絡先メールアドレス',
+                width='large'
+            ),
+            'フルネーム': st.column_config.TextColumn(
+                'フルネーム',
+                help='表示名',
+                width='medium'
+            ),
+            '年齢': st.column_config.NumberColumn(
+                '年齢',
+                help='年齢',
+                width='small'
+            ),
+            '部署': st.column_config.TextColumn(
+                '部署',
+                help='所属部署',
+                width='medium'
+            ),
+            'ステータス': st.column_config.TextColumn(
+                'ステータス',
+                help='ユーザーステータス',
+                width='medium'
+            ),
+            'アクティブ': st.column_config.TextColumn(
+                'アクティブ',
+                help='アクティブ状態',
+                width='small'
+            )
+        }
+        
+        # 選択可能なデータフレーム
+        selected_rows = st.dataframe(
+            paginated_df,
+            column_config=column_config,
+            use_container_width=True,
+            hide_index=True,
+            on_select="rerun",
+            selection_mode="multi-row"
+        )
+        
+        # 選択されたユーザーの操作
+        if selected_rows.selection.rows:
+            st.markdown("---")
+            st.subheader("🎯 選択されたユーザーの操作")
+            
+            selected_users = paginated_df.iloc[selected_rows.selection.rows]
+            st.write(f"選択されたユーザー数: {len(selected_users)}")
+            
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                if st.button("📝 一括編集", use_container_width=True):
+                    st.info("一括編集機能は次のステップで実装します")
+            
+            with col2:
+                if st.button("📤 選択データエクスポート", use_container_width=True):
+                    csv_selected = export_to_csv(selected_users)
+                    st.download_button(
+                        label="選択データをCSVダウンロード",
+                        data=csv_selected,
+                        file_name=f"selected_users_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                        mime="text/csv"
+                    )
+            
+            with col3:
+                if st.button("🗑️ 選択削除", use_container_width=True, type="secondary"):
+                    st.warning("削除機能は次のステップで実装します")
+        
+        # ページネーションナビゲーション
+        if total_pages > 1:
+            st.markdown("---")
+            col1, col2, col3, col4, col5 = st.columns(5)
+            
+            with col1:
+                if page > 1:
+                    if st.button("⏮️ 最初"):
+                        st.query_params.page = "1"
+                        st.rerun()
+            
+            with col2:
+                if page > 1:
+                    if st.button("◀️ 前へ"):
+                        st.query_params.page = str(page - 1)
+                        st.rerun()
+            
+            with col3:
+                st.write(f"ページ {page} / {total_pages}")
+            
+            with col4:
+                if page < total_pages:
+                    if st.button("▶️ 次へ"):
+                        st.query_params.page = str(page + 1)
+                        st.rerun()
+            
+            with col5:
+                if page < total_pages:
+                    if st.button("⏭️ 最後"):
+                        st.query_params.page = str(total_pages)
+                        st.rerun()
+    
+    else:
+        st.info("🔍 検索条件に一致するユーザーがありません")
+        st.markdown("検索条件を変更してお試しください")
+
+if __name__ == "__main__":
+    main()</code></pre>
+
+                        <ol start="3">
+                            <li><code>requirements.txt</code>にExcel処理用ライブラリを追加：</li>
+                        </ol>
+                        <pre><code>openpyxl==3.1.2</code></pre>
+
+                        <ol start="4">
+                            <li>パッケージをインストール：</li>
+                        </ol>
+                        <pre><code>pip install openpyxl</code></pre>
+
+                        <ol start="5">
+                            <li>アプリケーションを起動してテスト：</li>
+                        </ol>
+                        <pre><code>streamlit run app/main.py</code></pre>
+
+                        <h6>動作確認項目</h6>
+                        <ul>
+                            <li>ユーザーデータの表示</li>
+                            <li>検索機能</li>
+                            <li>フィルタリング機能</li>
+                            <li>ページネーション</li>
+                            <li>エクスポート機能</li>
+                        </ul>
+                    </div>
+
+                    <!-- 高度なフィルタリング -->
+                    <h3 class="section-title">4.3 高度なフィルタリングと検索</h3>
+                    <p>複数条件を組み合わせた詳細なフィルタリング機能を実装します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 4-2: 高度な検索機能の実装</h5>
+                        <p>日付範囲検索、複合条件、ソート機能を追加します。</p>
+                        
+                        <h6>手順</h6>
+                        <ol>
+                            <li><code>app/utils/advanced_filters.py</code>ファイルを作成：</li>
+                        </ol>
+                        <pre><code>import streamlit as st
+from datetime import datetime, date, timedelta
+from typing import List, Dict, Any, Tuple
+import pandas as pd
+
+from app.models.user import User, UserStatus, Department
+
+class AdvancedUserFilter:
+    """高度なユーザーフィルタクラス"""
+    
+    def __init__(self):
+        self.reset_filters()
+    
+    def reset_filters(self):
+        """フィルタをリセット"""
+        self.filters = {
+            'text_search': '',
+            'departments': [],
+            'statuses': [],
+            'is_active': None,
+            'age_min': 0,
+            'age_max': 150,
+            'created_after': None,
+            'created_before': None,
+            'has_login': None,
+            'sort_by': 'created_at',
+            'sort_order': 'desc'
+        }
+    
+    def render_sidebar_filters(self) -> Dict[str, Any]:
+        """サイドバーにフィルタUIを表示"""
+        with st.sidebar:
+            st.header("🔍 高度な検索")
+            
+            # テキスト検索
+            self.filters['text_search'] = st.text_input(
+                "🔎 キーワード検索",
+                value=self.filters['text_search'],
+                placeholder="ユーザー名、メール、名前で検索"
+            )
+            
+            # 部署複数選択
+            department_options = [dept.value for dept in Department]
+            department_labels = {
+                'engineering': 'エンジニアリング',
+                'marketing': 'マーケティング',
+                'sales': '営業',
+                'hr': '人事', 
+                'finance': '財務',
+                'operations': '運営'
+            }
+            
+            selected_dept_labels = st.multiselect(
+                "🏢 部署（複数選択可）",
+                options=[department_labels[dept] for dept in department_options],
+                default=[]
+            )
+            
+            # 表示名から値に変換
+            self.filters['departments'] = [
+                dept for dept, label in department_labels.items()
+                if label in selected_dept_labels
+            ]
+            
+            # ステータス複数選択
+            status_options = [status.value for status in UserStatus]
+            status_labels = {
+                'active': 'アクティブ',
+                'inactive': '非アクティブ',
+                'pending': '承認待ち',
+                'suspended': '停止中'
+            }
+            
+            selected_status_labels = st.multiselect(
+                "📊 ステータス（複数選択可）",
+                options=[status_labels[status] for status in status_options],
+                default=[]
+            )
+            
+            self.filters['statuses'] = [
+                status for status, label in status_labels.items()
+                if label in selected_status_labels
+            ]
+            
+            # アクティブ状態
+            active_options = ['すべて', 'アクティブのみ', '非アクティブのみ']
+            active_selection = st.selectbox(
+                "✅ アクティブ状態",
+                active_options
+            )
+            
+            if active_selection == 'アクティブのみ':
+                self.filters['is_active'] = True
+            elif active_selection == '非アクティブのみ':
+                self.filters['is_active'] = False
+            else:
+                self.filters['is_active'] = None
+            
+            # 年齢範囲
+            age_range = st.slider(
+                "🎂 年齢範囲",
+                min_value=0,
+                max_value=150,
+                value=(self.filters['age_min'], self.filters['age_max'])
+            )
+            self.filters['age_min'], self.filters['age_max'] = age_range
+            
+            # 作成日フィルタ
+            st.markdown("📅 **作成日フィルタ**")
+            
+            date_filter_type = st.selectbox(
+                "期間指定",
+                ['指定なし', '今日', '今週', '今月', '過去30日', 'カスタム']
+            )
+            
+            today = date.today()
+            
+            if date_filter_type == '今日':
+                self.filters['created_after'] = today
+                self.filters['created_before'] = today
+            elif date_filter_type == '今週':
+                week_start = today - timedelta(days=today.weekday())
+                self.filters['created_after'] = week_start
+                self.filters['created_before'] = today
+            elif date_filter_type == '今月':
+                month_start = today.replace(day=1)
+                self.filters['created_after'] = month_start
+                self.filters['created_before'] = today
+            elif date_filter_type == '過去30日':
+                self.filters['created_after'] = today - timedelta(days=30)
+                self.filters['created_before'] = today
+            elif date_filter_type == 'カスタム':
+                col1, col2 = st.columns(2)
+                with col1:
+                    self.filters['created_after'] = st.date_input(
+                        "開始日",
+                        value=None
+                    )
+                with col2:
+                    self.filters['created_before'] = st.date_input(
+                        "終了日",
+                        value=None
+                    )
+            else:
+                self.filters['created_after'] = None
+                self.filters['created_before'] = None
+            
+            # ログイン状態フィルタ
+            login_filter = st.selectbox(
+                "🔐 ログイン履歴",
+                ['すべて', 'ログイン済み', '未ログイン']
+            )
+            
+            if login_filter == 'ログイン済み':
+                self.filters['has_login'] = True
+            elif login_filter == '未ログイン':
+                self.filters['has_login'] = False
+            else:
+                self.filters['has_login'] = None
+            
+            # ソート設定
+            st.markdown("📊 **ソート設定**")
+            
+            sort_options = {
+                'created_at': '作成日',
+                'updated_at': '更新日',
+                'username': 'ユーザー名',
+                'email': 'メールアドレス',
+                'full_name': 'フルネーム',
+                'age': '年齢',
+                'last_login': '最終ログイン'
+            }
+            
+            self.filters['sort_by'] = st.selectbox(
+                "ソート項目",
+                options=list(sort_options.keys()),
+                format_func=lambda x: sort_options[x],
+                index=0
+            )
+            
+            self.filters['sort_order'] = st.selectbox(
+                "ソート順",
+                ['desc', 'asc'],
+                format_func=lambda x: '降順' if x == 'desc' else '昇順'
+            )
+            
+            # フィルタクリア
+            if st.button("🔄 すべてクリア", use_container_width=True):
+                self.reset_filters()
+                st.rerun()
+        
+        return self.filters
+    
+    def apply_filters(self, users: List[User]) -> List[User]:
+        """フィルタを適用"""
+        filtered_users = users.copy()
+        
+        # テキスト検索
+        if self.filters['text_search']:
+            search_text = self.filters['text_search'].lower()
+            filtered_users = [
+                user for user in filtered_users
+                if (search_text in user.username.lower() or
+                    search_text in user.email.lower() or
+                    search_text in user.full_name.lower())
+            ]
+        
+        # 部署フィルタ
+        if self.filters['departments']:
+            filtered_users = [
+                user for user in filtered_users
+                if user.department and user.department.value in self.filters['departments']
+            ]
+        
+        # ステータスフィルタ
+        if self.filters['statuses']:
+            filtered_users = [
+                user for user in filtered_users
+                if user.status and user.status.value in self.filters['statuses']
+            ]
+        
+        # アクティブ状態フィルタ
+        if self.filters['is_active'] is not None:
+            filtered_users = [
+                user for user in filtered_users
+                if user.is_active == self.filters['is_active']
+            ]
+        
+        # 年齢フィルタ
+        filtered_users = [
+            user for user in filtered_users
+            if user.age is None or (
+                self.filters['age_min'] <= user.age <= self.filters['age_max']
+            )
+        ]
+        
+        # 作成日フィルタ
+        if self.filters['created_after']:
+            created_after = datetime.combine(self.filters['created_after'], datetime.min.time())
+            filtered_users = [
+                user for user in filtered_users
+                if user.created_at and user.created_at >= created_after
+            ]
+        
+        if self.filters['created_before']:
+            created_before = datetime.combine(self.filters['created_before'], datetime.max.time())
+            filtered_users = [
+                user for user in filtered_users
+                if user.created_at and user.created_at <= created_before
+            ]
+        
+        # ログイン履歴フィルタ
+        if self.filters['has_login'] is not None:
+            if self.filters['has_login']:
+                filtered_users = [
+                    user for user in filtered_users
+                    if user.last_login is not None
+                ]
+            else:
+                filtered_users = [
+                    user for user in filtered_users
+                    if user.last_login is None
+                ]
+        
+        # ソート
+        if self.filters['sort_by']:
+            reverse = self.filters['sort_order'] == 'desc'
+            
+            if self.filters['sort_by'] == 'age':
+                filtered_users.sort(
+                    key=lambda x: x.age if x.age is not None else 0,
+                    reverse=reverse
+                )
+            elif self.filters['sort_by'] == 'last_login':
+                filtered_users.sort(
+                    key=lambda x: x.last_login if x.last_login is not None else datetime.min,
+                    reverse=reverse
+                )
+            else:
+                filtered_users.sort(
+                    key=lambda x: getattr(x, self.filters['sort_by'], ''),
+                    reverse=reverse
+                )
+        
+        return filtered_users</code></pre>
+
+                        <h6>高度なフィルタ機能の特徴</h6>
+                        <ul>
+                            <li><strong>複数選択</strong>: 部署やステータスの複数選択</li>
+                            <li><strong>日付範囲</strong>: 作成日でのフィルタリング</li>
+                            <li><strong>ログイン状態</strong>: ログイン履歴での絞り込み</li>
+                            <li><strong>動的ソート</strong>: 複数項目でのソート</li>
+                        </ul>
+                    </div>
+
+                    <!-- パフォーマンス最適化 -->
+                    <h3 class="section-title">4.4 パフォーマンス最適化</h3>
+                    <p>大量のデータを効率的に処理するための最適化技術を学習します。</p>
+
+                    <div class="info">
+                        <h6>パフォーマンス最適化のポイント</h6>
+                        <ul>
+                            <li><strong>キャッシュ機能</strong>: @st.cache_dataによるデータキャッシュ</li>
+                            <li><strong>遅延読み込み</strong>: 必要な時だけデータを取得</li>
+                            <li><strong>ページネーション</strong>: 表示件数の制限</li>
+                            <li><strong>インデックス活用</strong>: データベースインデックスの最適化</li>
+                            <li><strong>メモリ管理</strong>: 不要なデータの削除</li>
+                        </ul>
+                    </div>
+
+                    <!-- データエクスポート -->
+                    <h3 class="section-title">4.5 データエクスポート機能</h3>
+                    <p>CSV、Excel形式でのデータエクスポート機能の詳細実装を学習します。</p>
+
+                    <div class="warning">
+                        <h6>エクスポート時の注意事項</h6>
+                        <ul>
+                            <li><strong>文字エンコード</strong>: UTF-8 BOMの適切な設定</li>
+                            <li><strong>ファイルサイズ</strong>: 大量データの処理制限</li>
+                            <li><strong>セキュリティ</strong>: 機密情報の除外</li>
+                            <li><strong>フォーマット</strong>: 見やすい形式での出力</li>
+                        </ul>
+                    </div>
+
+                    <!-- 理解度確認 -->
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>Streamlitでインタラクティブなデータテーブルを表示するコンポーネントは？</li>
+                            <li>pandas DataFrameをCSVエクスポートする際の文字エンコード設定は？</li>
+                            <li>データキャッシュに使用するStreamlitデコレータは？</li>
+                            <li>ページネーションで1ページあたりの表示件数を制御するパラメータは？</li>
+                            <li>フィルタリング後のユーザー数を表示するために使用するStreamlitコンポーネントは？</li>
+                        </ol>
+                        
+                        <details>
+                            <summary>解答例</summary>
+                            <ol>
+                                <li>st.dataframe</li>
+                                <li>utf-8-sig（BOM付きUTF-8）</li>
+                                <li>@st.cache_data</li>
+                                <li>items_per_page（limit）</li>
+                                <li>st.metric</li>
+                            </ol>
+                        </details>
+                    </div>
+
+                    <!-- ナビゲーション -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="step3-user-registration.html" class="btn btn-secondary">← 前のステップ: ユーザー登録機能</a>
+                        <a href="step5-user-crud-operations.html" class="btn btn-primary">次のステップ: CRUD操作 →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

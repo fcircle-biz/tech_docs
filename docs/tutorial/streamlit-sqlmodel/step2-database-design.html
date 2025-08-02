@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streamlit + SQLModel チュートリアル Step 2 - SQLModelでのデータベース設計</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+
+        .navbar {
+            background-color: #2196f3;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+
+        .chapter-title {
+            color: #2196f3;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #2196f3;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title {
+            color: #1976d2;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .quiz-container {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #2196f3;
+        }
+
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .highlight {
+            background-color: #ffecb3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
+        }
+
+        .info {
+            background-color: #e1f5fe;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #00bcd4;
+        }
+
+        .nav-link.active {
+            background-color: #2196f3 !important;
+            color: white !important;
+        }
+
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            color: #d63384;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        pre code {
+            background-color: transparent;
+            color: #212529;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Streamlit + SQLModel チュートリアル</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading px-3 mt-4 mb-1 text-muted">チュートリアル目次</h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="step1-environment-setup.html">
+                                Step 1: 環境構築
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="step2-database-design.html">
+                                Step 2: データベース設計
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step3-user-registration.html">
+                                Step 3: ユーザー登録機能
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step4-user-list-display.html">
+                                Step 4: ユーザー一覧表示
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step5-user-crud-operations.html">
+                                Step 5: CRUD操作
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step6-dashboard-visualization.html">
+                                Step 6: ダッシュボード
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step7-security-deployment.html">
+                                Step 7: セキュリティ・デプロイ
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Step 2: SQLModelでのデータベース設計</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <span class="badge bg-primary">所要時間: 2.5時間</span>
+                    </div>
+                </div>
+
+                <div id="step2">
+                    <h2 class="chapter-title">SQLModelでのデータベース設計</h2>
+                    
+                    <!-- 学習目標 -->
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>SQLModelの基本概念とPydanticとの関係</li>
+                            <li>型安全なUserモデルクラスの設計と実装</li>
+                            <li>データベース接続の設定とエンジン管理</li>
+                            <li>SQLAlchemyを使用したテーブルの自動作成</li>
+                            <li>基本的なCRUD操作の実装とベストプラクティス</li>
+                        </ul>
+                    </div>
+
+                    <!-- SQLModel概要 -->
+                    <h3 class="section-title">2.1 SQLModelの基本概念</h3>
+                    <p>SQLModelは、FastAPIの作者が開発したORMライブラリで、PydanticとSQLAlchemyの利点を組み合わせています。</p>
+                    
+                    <div class="info">
+                        <h6>SQLModelの特徴</h6>
+                        <ul>
+                            <li><strong>型安全性</strong>: Python型ヒントによる静的型検査</li>
+                            <li><strong>データ検証</strong>: Pydanticベースの自動検証</li>
+                            <li><strong>ORM機能</strong>: SQLAlchemyの強力なORM機能</li>
+                            <li><strong>JSONシリアライゼーション</strong>: 自動的なJSON変換</li>
+                            <li><strong>IDEサポート</strong>: 優れた自動補完とエラー検出</li>
+                        </ul>
+                    </div>
+
+                    <!-- データベース接続設定 -->
+                    <h3 class="section-title">2.2 データベース接続の設定</h3>
+                    <p>SQLModelを使用してPostgreSQLデータベースに接続する設定を実装します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 2-1: データベース接続設定</h5>
+                        <p>SQLModelエンジンとセッション管理を設定します。</p>
+                        
+                        <h6>手順</h6>
+                        <ol>
+                            <li><code>app/database/connection.py</code>ファイルを作成：</li>
+                        </ol>
+                        <pre><code>from sqlmodel import SQLModel, create_engine, Session
+from dotenv import load_dotenv
+import os
+
+# 環境変数を読み込み
+load_dotenv()
+
+# データベースURL
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+# エンジンの作成
+engine = create_engine(
+    DATABASE_URL,
+    echo=True,  # SQLクエリをログに出力（開発時）
+    pool_pre_ping=True,  # 接続の事前確認
+    pool_recycle=300,  # 接続の再利用時間（秒）
+)
+
+def create_db_and_tables():
+    """データベースとテーブルを作成"""
+    SQLModel.metadata.create_all(engine)
+
+def get_session():
+    """データベースセッションを取得"""
+    with Session(engine) as session:
+        yield session
+
+# セッション生成関数（Streamlit用）
+def get_db_session():
+    """Streamlit用のセッション取得"""
+    return Session(engine)</code></pre>
+
+                        <ol start="2">
+                            <li><code>app/config.py</code>ファイルを作成：</li>
+                        </ol>
+                        <pre><code>from dotenv import load_dotenv
+import os
+
+# 環境変数を読み込み
+load_dotenv()
+
+class Settings:
+    """アプリケーション設定"""
+    
+    # データベース設定
+    DATABASE_URL: str = os.getenv("DATABASE_URL")
+    POSTGRES_USER: str = os.getenv("POSTGRES_USER")
+    POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD")
+    POSTGRES_DB: str = os.getenv("POSTGRES_DB")
+    
+    # アプリケーション設定
+    APP_TITLE: str = os.getenv("APP_TITLE", "User Management Dashboard")
+    DEBUG: bool = os.getenv("DEBUG", "False").lower() == "true"
+    
+    # ページ設定
+    PAGE_SIZE: int = 10
+    MAX_PAGE_SIZE: int = 100
+
+# 設定インスタンス
+settings = Settings()</code></pre>
+
+                        <h6>実行確認</h6>
+                        <p>Python REPLで接続をテスト：</p>
+                        <pre><code>python
+>>> from app.database.connection import engine
+>>> from sqlmodel import text
+>>> with engine.connect() as conn:
+...     result = conn.execute(text("SELECT version()"))
+...     print(result.fetchone())
+>>> exit()</code></pre>
+                    </div>
+
+                    <!-- Userモデル設計 -->
+                    <h3 class="section-title">2.3 Userモデルの設計</h3>
+                    <p>型安全で拡張性の高いUserモデルを設計します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 2-2: Userモデルクラスの実装</h5>
+                        <p>SQLModelを使用してUserテーブルのモデルを作成します。</p>
+                        
+                        <h6>手順</h6>
+                        <ol>
+                            <li><code>app/models/user.py</code>ファイルを作成：</li>
+                        </ol>
+                        <pre><code>from sqlmodel import Field, SQLModel
+from datetime import datetime
+from typing import Optional
+from enum import Enum
+
+# 列挙型の定義
+class Department(str, Enum):
+    """部署列挙型"""
+    ENGINEERING = "engineering"
+    MARKETING = "marketing"
+    SALES = "sales"
+    HR = "hr"
+    FINANCE = "finance"
+    OPERATIONS = "operations"
+
+class UserStatus(str, Enum):
+    """ユーザーステータス列挙型"""
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+    PENDING = "pending"
+    SUSPENDED = "suspended"
+
+# ベースモデル（共通フィールド）
+class UserBase(SQLModel):
+    """ユーザーベースモデル"""
+    username: str = Field(
+        unique=True, 
+        index=True, 
+        min_length=3, 
+        max_length=50,
+        description="一意のユーザー名"
+    )
+    email: str = Field(
+        unique=True, 
+        index=True,
+        regex=r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+        description="メールアドレス"
+    )
+    full_name: str = Field(
+        min_length=1, 
+        max_length=100,
+        description="フルネーム"
+    )
+    age: Optional[int] = Field(
+        default=None, 
+        ge=0, 
+        le=150,
+        description="年齢"
+    )
+    department: Optional[Department] = Field(
+        default=None,
+        description="部署"
+    )
+    status: UserStatus = Field(
+        default=UserStatus.ACTIVE,
+        description="ユーザーステータス"
+    )
+
+# データベーステーブルモデル
+class User(UserBase, table=True):
+    """ユーザーテーブルモデル"""
+    __tablename__ = "users"
+    
+    id: Optional[int] = Field(
+        default=None, 
+        primary_key=True,
+        description="プライマリキー"
+    )
+    password_hash: Optional[str] = Field(
+        default=None,
+        max_length=255,
+        description="ハッシュ化されたパスワード"
+    )
+    is_active: bool = Field(
+        default=True,
+        description="アクティブフラグ"
+    )
+    created_at: datetime = Field(
+        default_factory=datetime.utcnow,
+        description="作成日時"
+    )
+    updated_at: datetime = Field(
+        default_factory=datetime.utcnow,
+        description="更新日時"
+    )
+    last_login: Optional[datetime] = Field(
+        default=None,
+        description="最終ログイン日時"
+    )
+
+# 作成用モデル（パスワードを含む）
+class UserCreate(UserBase):
+    """ユーザー作成モデル"""
+    password: str = Field(
+        min_length=8,
+        max_length=50,
+        description="パスワード"
+    )
+
+# 更新用モデル
+class UserUpdate(SQLModel):
+    """ユーザー更新モデル"""
+    username: Optional[str] = Field(
+        default=None, 
+        min_length=3, 
+        max_length=50
+    )
+    email: Optional[str] = Field(
+        default=None,
+        regex=r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    )
+    full_name: Optional[str] = Field(
+        default=None, 
+        min_length=1, 
+        max_length=100
+    )
+    age: Optional[int] = Field(
+        default=None, 
+        ge=0, 
+        le=150
+    )
+    department: Optional[Department] = None
+    status: Optional[UserStatus] = None
+
+# レスポンス用モデル（パスワードハッシュを除外）
+class UserResponse(UserBase):
+    """ユーザーレスポンスモデル"""
+    id: int
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime
+    last_login: Optional[datetime] = None</code></pre>
+
+                        <ol start="2">
+                            <li><code>app/models/__init__.py</code>を更新：</li>
+                        </ol>
+                        <pre><code>from .user import User, UserCreate, UserUpdate, UserResponse, Department, UserStatus
+
+__all__ = [
+    "User",
+    "UserCreate", 
+    "UserUpdate",
+    "UserResponse",
+    "Department",
+    "UserStatus"
+]</code></pre>
+
+                        <h6>モデルの特徴説明</h6>
+                        <ul>
+                            <li><strong>型安全性</strong>: すべてのフィールドに型ヒント</li>
+                            <li><strong>バリデーション</strong>: 自動的な入力検証</li>
+                            <li><strong>ドキュメント</strong>: フィールドの説明付き</li>
+                            <li><strong>セキュリティ</strong>: パスワードハッシュの分離</li>
+                        </ul>
+                    </div>
+
+                    <!-- CRUD操作の実装 -->
+                    <h3 class="section-title">2.4 CRUD操作の実装</h3>
+                    <p>基本的なCRUD（Create, Read, Update, Delete）操作を実装します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 2-3: CRUD操作の実装</h5>
+                        <p>ユーザーに対する基本的なデータベース操作を実装します。</p>
+                        
+                        <h6>手順</h6>
+                        <ol>
+                            <li><code>app/database/crud.py</code>ファイルを作成：</li>
+                        </ol>
+                        <pre><code>from sqlmodel import Session, select
+from typing import List, Optional
+from datetime import datetime
+import hashlib
+
+from app.models.user import User, UserCreate, UserUpdate, UserStatus
+from app.database.connection import get_db_session
+
+class UserCRUD:
+    """ユーザーCRUD操作クラス"""
+    
+    @staticmethod
+    def hash_password(password: str) -> str:
+        """パスワードをハッシュ化"""
+        return hashlib.sha256(password.encode()).hexdigest()
+    
+    @staticmethod
+    def create_user(user_data: UserCreate) -> User:
+        """ユーザーを作成"""
+        with get_db_session() as session:
+            # パスワードをハッシュ化
+            password_hash = UserCRUD.hash_password(user_data.password)
+            
+            # ユーザーオブジェクトを作成
+            db_user = User(
+                username=user_data.username,
+                email=user_data.email,
+                full_name=user_data.full_name,
+                age=user_data.age,
+                department=user_data.department,
+                status=user_data.status,
+                password_hash=password_hash,
+                created_at=datetime.utcnow(),
+                updated_at=datetime.utcnow()
+            )
+            
+            # データベースに保存
+            session.add(db_user)
+            session.commit()
+            session.refresh(db_user)
+            
+            return db_user
+    
+    @staticmethod
+    def get_user_by_id(user_id: int) -> Optional[User]:
+        """IDでユーザーを取得"""
+        with get_db_session() as session:
+            statement = select(User).where(User.id == user_id)
+            return session.exec(statement).first()
+    
+    @staticmethod
+    def get_user_by_username(username: str) -> Optional[User]:
+        """ユーザー名でユーザーを取得"""
+        with get_db_session() as session:
+            statement = select(User).where(User.username == username)
+            return session.exec(statement).first()
+    
+    @staticmethod
+    def get_user_by_email(email: str) -> Optional[User]:
+        """メールアドレスでユーザーを取得"""
+        with get_db_session() as session:
+            statement = select(User).where(User.email == email)
+            return session.exec(statement).first()
+    
+    @staticmethod
+    def get_users(
+        skip: int = 0, 
+        limit: int = 100,
+        status: Optional[UserStatus] = None,
+        department: Optional[str] = None
+    ) -> List[User]:
+        """ユーザーリストを取得"""
+        with get_db_session() as session:
+            statement = select(User)
+            
+            # フィルタリング
+            if status:
+                statement = statement.where(User.status == status)
+            if department:
+                statement = statement.where(User.department == department)
+            
+            # ページネーション
+            statement = statement.offset(skip).limit(limit)
+            
+            return list(session.exec(statement).all())
+    
+    @staticmethod
+    def update_user(user_id: int, user_update: UserUpdate) -> Optional[User]:
+        """ユーザーを更新"""
+        with get_db_session() as session:
+            db_user = session.get(User, user_id)
+            if not db_user:
+                return None
+            
+            # 更新データを適用
+            user_data = user_update.dict(exclude_unset=True)
+            for field, value in user_data.items():
+                setattr(db_user, field, value)
+            
+            # 更新日時を設定
+            db_user.updated_at = datetime.utcnow()
+            
+            session.add(db_user)
+            session.commit()
+            session.refresh(db_user)
+            
+            return db_user
+    
+    @staticmethod
+    def delete_user(user_id: int) -> bool:
+        """ユーザーを削除"""
+        with get_db_session() as session:
+            db_user = session.get(User, user_id)
+            if not db_user:
+                return False
+            
+            session.delete(db_user)
+            session.commit()
+            
+            return True
+    
+    @staticmethod
+    def get_user_count(
+        status: Optional[UserStatus] = None,
+        department: Optional[str] = None
+    ) -> int:
+        """ユーザー数を取得"""
+        with get_db_session() as session:
+            statement = select(User)
+            
+            # フィルタリング
+            if status:
+                statement = statement.where(User.status == status)
+            if department:
+                statement = statement.where(User.department == department)
+            
+            return len(list(session.exec(statement).all()))
+    
+    @staticmethod
+    def search_users(query: str, limit: int = 50) -> List[User]:
+        """ユーザーを検索"""
+        with get_db_session() as session:
+            statement = select(User).where(
+                (User.username.contains(query)) |
+                (User.email.contains(query)) |
+                (User.full_name.contains(query))
+            ).limit(limit)
+            
+            return list(session.exec(statement).all())</code></pre>
+
+                        <ol start="2">
+                            <li><code>app/database/__init__.py</code>を更新：</li>
+                        </ol>
+                        <pre><code>from .connection import create_db_and_tables, get_db_session, engine
+from .crud import UserCRUD
+
+__all__ = [
+    "create_db_and_tables",
+    "get_db_session", 
+    "engine",
+    "UserCRUD"
+]</code></pre>
+                    </div>
+
+                    <!-- データベース初期化 -->
+                    <h3 class="section-title">2.5 データベースの初期化</h3>
+                    <p>テーブルの作成とサンプルデータの投入を行います。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 2-4: データベース初期化スクリプト</h5>
+                        <p>テーブルの作成とテストデータの投入を行います。</p>
+                        
+                        <h6>手順</h6>
+                        <ol>
+                            <li><code>app/database/init_db.py</code>ファイルを作成：</li>
+                        </ol>
+                        <pre><code>"""データベース初期化スクリプト"""
+
+from app.database.connection import create_db_and_tables
+from app.database.crud import UserCRUD
+from app.models.user import UserCreate, Department, UserStatus
+
+def init_database():
+    """データベースを初期化"""
+    print("🚀 データベースの初期化を開始...")
+    
+    # テーブルを作成
+    create_db_and_tables()
+    print("✅ テーブルが作成されました")
+    
+    # サンプルユーザーを作成
+    sample_users = [
+        UserCreate(
+            username="admin",
+            email="admin@example.com",
+            full_name="管理者",
+            age=35,
+            department=Department.ENGINEERING,
+            status=UserStatus.ACTIVE,
+            password="admin123"
+        ),
+        UserCreate(
+            username="john_doe",
+            email="john@example.com", 
+            full_name="John Doe",
+            age=28,
+            department=Department.MARKETING,
+            status=UserStatus.ACTIVE,
+            password="password123"
+        ),
+        UserCreate(
+            username="jane_smith",
+            email="jane@example.com",
+            full_name="Jane Smith", 
+            age=32,
+            department=Department.SALES,
+            status=UserStatus.ACTIVE,
+            password="password123"
+        ),
+        UserCreate(
+            username="bob_wilson",
+            email="bob@example.com",
+            full_name="Bob Wilson",
+            age=45,
+            department=Department.HR,
+            status=UserStatus.INACTIVE,
+            password="password123"
+        ),
+        UserCreate(
+            username="alice_brown",
+            email="alice@example.com",
+            full_name="Alice Brown",
+            age=29,
+            department=Department.FINANCE,
+            status=UserStatus.PENDING,
+            password="password123"
+        )
+    ]
+    
+    created_count = 0
+    for user_data in sample_users:
+        try:
+            # 既存ユーザーチェック
+            existing_user = UserCRUD.get_user_by_username(user_data.username)
+            if existing_user:
+                print(f"⚠️  ユーザー '{user_data.username}' は既に存在します")
+                continue
+                
+            # ユーザーを作成
+            UserCRUD.create_user(user_data)
+            print(f"✅ ユーザー '{user_data.username}' を作成しました")
+            created_count += 1
+            
+        except Exception as e:
+            print(f"❌ ユーザー '{user_data.username}' の作成に失敗: {e}")
+    
+    print(f"🎉 初期化完了！ {created_count}件のサンプルユーザーを作成しました")
+
+if __name__ == "__main__":
+    init_database()</code></pre>
+
+                        <ol start="2">
+                            <li>初期化スクリプトを実行：</li>
+                        </ol>
+                        <pre><code>python app/database/init_db.py</code></pre>
+
+                        <h6>期待される結果</h6>
+                        <pre><code>🚀 データベースの初期化を開始...
+✅ テーブルが作成されました
+✅ ユーザー 'admin' を作成しました
+✅ ユーザー 'john_doe' を作成しました
+✅ ユーザー 'jane_smith' を作成しました
+✅ ユーザー 'bob_wilson' を作成しました
+✅ ユーザー 'alice_brown' を作成しました
+🎉 初期化完了！ 5件のサンプルユーザーを作成しました</code></pre>
+                    </div>
+
+                    <!-- テスト実装 -->
+                    <h3 class="section-title">2.6 CRUD操作のテスト</h3>
+                    <p>実装したCRUD操作が正しく動作することを確認します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 2-5: CRUD操作テスト</h5>
+                        <p>簡単なテストアプリケーションでCRUD操作を確認します。</p>
+                        
+                        <h6>手順</h6>
+                        <ol>
+                            <li><code>app/test_crud.py</code>ファイルを作成：</li>
+                        </ol>
+                        <pre><code>"""CRUD操作テストスクリプト"""
+
+from app.database.crud import UserCRUD
+from app.models.user import UserCreate, UserUpdate, Department, UserStatus
+
+def test_crud_operations():
+    """CRUD操作をテスト"""
+    print("🧪 CRUD操作のテストを開始...")
+    
+    # CREATE - ユーザー作成テスト
+    print("\n📝 CREATE テスト")
+    test_user = UserCreate(
+        username="test_user",
+        email="test@example.com",
+        full_name="テストユーザー",
+        age=25,
+        department=Department.ENGINEERING,
+        status=UserStatus.ACTIVE,
+        password="test123"
+    )
+    
+    try:
+        created_user = UserCRUD.create_user(test_user)
+        print(f"✅ ユーザー作成成功: ID={created_user.id}, Username={created_user.username}")
+        test_user_id = created_user.id
+    except Exception as e:
+        print(f"❌ ユーザー作成失敗: {e}")
+        return
+    
+    # READ - ユーザー取得テスト
+    print("\n👀 READ テスト")
+    
+    # IDで取得
+    user = UserCRUD.get_user_by_id(test_user_id)
+    if user:
+        print(f"✅ ID検索成功: {user.username} ({user.email})")
+    else:
+        print("❌ ID検索失敗")
+    
+    # ユーザー名で取得
+    user = UserCRUD.get_user_by_username("test_user")
+    if user:
+        print(f"✅ ユーザー名検索成功: {user.full_name}")
+    else:
+        print("❌ ユーザー名検索失敗")
+    
+    # 全ユーザー取得
+    users = UserCRUD.get_users(limit=10)
+    print(f"✅ 全ユーザー取得: {len(users)}件")
+    
+    # UPDATE - ユーザー更新テスト
+    print("\n✏️ UPDATE テスト")
+    update_data = UserUpdate(
+        full_name="更新されたテストユーザー",
+        age=26,
+        department=Department.MARKETING
+    )
+    
+    updated_user = UserCRUD.update_user(test_user_id, update_data)
+    if updated_user:
+        print(f"✅ ユーザー更新成功: {updated_user.full_name}, Age: {updated_user.age}")
+    else:
+        print("❌ ユーザー更新失敗")
+    
+    # 統計情報テスト
+    print("\n📊 統計情報テスト")
+    total_count = UserCRUD.get_user_count()
+    active_count = UserCRUD.get_user_count(status=UserStatus.ACTIVE)
+    print(f"✅ 総ユーザー数: {total_count}")
+    print(f"✅ アクティブユーザー数: {active_count}")
+    
+    # 検索テスト
+    print("\n🔍 検索テスト")
+    search_results = UserCRUD.search_users("test")
+    print(f"✅ 検索結果: {len(search_results)}件")
+    
+    # DELETE - ユーザー削除テスト
+    print("\n🗑️ DELETE テスト")
+    deleted = UserCRUD.delete_user(test_user_id)
+    if deleted:
+        print("✅ ユーザー削除成功")
+        
+        # 削除確認
+        user = UserCRUD.get_user_by_id(test_user_id)
+        if user is None:
+            print("✅ 削除確認: ユーザーが存在しません")
+        else:
+            print("❌ 削除確認失敗: ユーザーがまだ存在します")
+    else:
+        print("❌ ユーザー削除失敗")
+    
+    print("\n🎉 CRUD操作テスト完了！")
+
+if __name__ == "__main__":
+    test_crud_operations()</code></pre>
+
+                        <ol start="2">
+                            <li>テストスクリプトを実行：</li>
+                        </ol>
+                        <pre><code>python app/test_crud.py</code></pre>
+
+                        <h6>期待される結果</h6>
+                        <p>すべてのCRUD操作が正常に動作することを確認してください。</p>
+                    </div>
+
+                    <!-- ベストプラクティス -->
+                    <h3 class="section-title">2.7 SQLModelのベストプラクティス</h3>
+                    <div class="info">
+                        <h6>設計時のポイント</h6>
+                        <ul>
+                            <li><strong>型ヒント</strong>: すべてのフィールドに適切な型を指定</li>
+                            <li><strong>バリデーション</strong>: Fieldでの制約設定</li>
+                            <li><strong>インデックス</strong>: 検索頻度の高いフィールドにindex=True</li>
+                            <li><strong>セキュリティ</strong>: パスワードハッシュの適切な管理</li>
+                            <li><strong>パフォーマンス</strong>: 適切なページネーション</li>
+                        </ul>
+                    </div>
+
+                    <div class="warning">
+                        <h6>注意事項</h6>
+                        <ul>
+                            <li>パスワードを平文で保存しない</li>
+                            <li>セッションの適切なクローズ</li>
+                            <li>SQLインジェクション対策（ORMの利用）</li>
+                            <li>大量データ処理時のメモリ管理</li>
+                        </ul>
+                    </div>
+
+                    <!-- 理解度確認 -->
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>SQLModelの基盤となっている2つのライブラリは何ですか？</li>
+                            <li>Userモデルで主キーとして設定されているフィールドは何ですか？</li>
+                            <li>パスワードをデータベースに保存する際に行っている処理は何ですか？</li>
+                            <li>ユーザー検索で使用されているSQLの演算子は何ですか？</li>
+                            <li>ページネーションで使用されているSQLのキーワードは何ですか？</li>
+                        </ol>
+                        
+                        <details>
+                            <summary>解答例</summary>
+                            <ol>
+                                <li>PydanticとSQLAlchemy</li>
+                                <li>id（primary_key=True）</li>
+                                <li>SHA256によるハッシュ化</li>
+                                <li>LIKE演算子（contains メソッド）</li>
+                                <li>OFFSET と LIMIT</li>
+                            </ol>
+                        </details>
+                    </div>
+
+                    <!-- ナビゲーション -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="step1-environment-setup.html" class="btn btn-secondary">← 前のステップ: 環境構築</a>
+                        <a href="step3-user-registration.html" class="btn btn-primary">次のステップ: ユーザー登録機能 →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

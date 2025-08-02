@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streamlit + SQLModel チュートリアル Step 6 - ダッシュボードと可視化</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+
+        .navbar {
+            background-color: #2196f3;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+
+        .chapter-title {
+            color: #2196f3;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #2196f3;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title {
+            color: #1976d2;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .quiz-container {
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #2196f3;
+        }
+
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .highlight {
+            background-color: #ffecb3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
+        }
+
+        .info {
+            background-color: #e1f5fe;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #00bcd4;
+        }
+
+        .nav-link.active {
+            background-color: #2196f3 !important;
+            color: white !important;
+        }
+
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            color: #d63384;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        pre code {
+            background-color: transparent;
+            color: #212529;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Streamlit + SQLModel チュートリアル</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading px-3 mt-4 mb-1 text-muted">チュートリアル目次</h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="step1-environment-setup.html">
+                                Step 1: 環境構築
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step2-database-design.html">
+                                Step 2: データベース設計
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step3-user-registration.html">
+                                Step 3: ユーザー登録機能
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step4-user-list-display.html">
+                                Step 4: ユーザー一覧表示
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step5-user-crud-operations.html">
+                                Step 5: CRUD操作
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="step6-dashboard-visualization.html">
+                                Step 6: ダッシュボード
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step7-security-deployment.html">
+                                Step 7: セキュリティ・デプロイ
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Step 6: ダッシュボードと可視化</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <span class="badge bg-primary">所要時間: 2.5時間</span>
+                    </div>
+                </div>
+
+                <div id="step6">
+                    <h2 class="chapter-title">ダッシュボードと可視化</h2>
+                    
+                    <!-- 学習目標 -->
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>統計情報の集計とメトリクス表示</li>
+                            <li>Plotlyを使用したインタラクティブグラフの作成</li>
+                            <li>リアルタイムデータ更新機能の実装</li>
+                            <li>ダッシュボードのレイアウト設計</li>
+                            <li>PDFレポート生成機能の実装</li>
+                            <li>データ可視化のベストプラクティス</li>
+                        </ul>
+                    </div>
+
+                    <!-- ダッシュボードの概念 -->
+                    <h3 class="section-title">6.1 ダッシュボードの設計原則</h3>
+                    <p>効果的なダッシュボードは、重要な情報を一目で理解できるように設計されています。ユーザーデータの統計情報と傾向を視覚的に表現します。</p>
+                    
+                    <div class="info">
+                        <h6>ダッシュボード設計の基本原則</h6>
+                        <ul>
+                            <li><strong>明確性</strong>: 重要な情報を最初に表示</li>
+                            <li><strong>一貫性</strong>: 統一されたデザインとレイアウト</li>
+                            <li><strong>実用性</strong>: 実際のビジネス価値を提供</li>
+                            <li><strong>応答性</strong>: 異なる画面サイズに対応</li>
+                            <li><strong>更新性</strong>: リアルタイムまたは定期的な更新</li>
+                        </ul>
+                    </div>
+
+                    <!-- 統計情報の集計 -->
+                    <h3 class="section-title">6.2 統計情報の集計</h3>
+                    <p>ユーザーデータから有用な統計情報を抽出し、メトリクスとして表示します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 6-1: ダッシュボード統計機能の実装</h5>
+                        <p>ユーザーデータの統計情報を計算し、わかりやすく表示する機能を実装します。</p>
+                        
+                        <h6>手順</h6>
+                        <ol>
+                            <li><code>app/utils/dashboard_analytics.py</code>ファイルを作成：</li>
+                        </ol>
+                        <pre><code>import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+from typing import Dict, List, Any, Optional
+from dataclasses import dataclass
+
+from app.models.user import User, UserStatus, Department
+from app.database.crud import UserCRUD
+
+@dataclass
+class DashboardMetrics:
+    """ダッシュボードメトリクスデータクラス"""
+    total_users: int
+    active_users: int
+    inactive_users: int
+    pending_users: int
+    suspended_users: int
+    average_age: float
+    new_users_today: int
+    new_users_week: int
+    new_users_month: int
+    login_rate: float
+    department_distribution: Dict[str, int]
+    age_distribution: Dict[str, int]
+    registration_trends: Dict[str, int]
+    activity_trends: Dict[str, int]
+
+class DashboardAnalytics:
+    """ダッシュボード分析クラス"""
+    
+    def __init__(self):
+        self.users = UserCRUD.get_users(limit=10000)  # 全ユーザーを取得
+        self.df = self._create_dataframe()
+    
+    def _create_dataframe(self) -> pd.DataFrame:
+        """ユーザーデータをDataFrameに変換"""
+        if not self.users:
+            return pd.DataFrame()
+        
+        data = []
+        for user in self.users:
+            user_data = {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'full_name': user.full_name,
+                'age': user.age,
+                'department': user.department.value if user.department else 'unassigned',
+                'status': user.status.value if user.status else 'active',
+                'is_active': user.is_active,
+                'created_at': user.created_at,
+                'updated_at': user.updated_at,
+                'last_login': user.last_login
+            }
+            data.append(user_data)
+        
+        return pd.DataFrame(data)
+    
+    def calculate_metrics(self) -> DashboardMetrics:
+        """主要メトリクスの計算"""
+        if self.df.empty:
+            return self._empty_metrics()
+        
+        now = datetime.utcnow()
+        today = now.date()
+        week_ago = now - timedelta(days=7)
+        month_ago = now - timedelta(days=30)
+        
+        # 基本統計
+        total_users = len(self.df)
+        active_users = len(self.df[self.df['is_active'] == True])
+        inactive_users = len(self.df[self.df['is_active'] == False])
+        
+        # ステータス別統計
+        status_counts = self.df['status'].value_counts()
+        pending_users = status_counts.get('pending', 0)
+        suspended_users = status_counts.get('suspended', 0)
+        
+        # 年齢統計
+        valid_ages = self.df[self.df['age'].notna()]['age']
+        average_age = float(valid_ages.mean()) if len(valid_ages) > 0 else 0.0
+        
+        # 新規ユーザー統計
+        new_users_today = len(self.df[self.df['created_at'].dt.date == today])
+        new_users_week = len(self.df[self.df['created_at'] >= week_ago])
+        new_users_month = len(self.df[self.df['created_at'] >= month_ago])
+        
+        # ログイン率
+        logged_in_users = len(self.df[self.df['last_login'].notna()])
+        login_rate = (logged_in_users / total_users * 100) if total_users > 0 else 0.0
+        
+        # 部署分布
+        department_distribution = self.df['department'].value_counts().to_dict()
+        
+        # 年齢分布
+        age_distribution = self._calculate_age_distribution()
+        
+        # 登録傾向
+        registration_trends = self._calculate_registration_trends()
+        
+        # アクティビティ傾向
+        activity_trends = self._calculate_activity_trends()
+        
+        return DashboardMetrics(
+            total_users=total_users,
+            active_users=active_users,
+            inactive_users=inactive_users,
+            pending_users=pending_users,
+            suspended_users=suspended_users,
+            average_age=average_age,
+            new_users_today=new_users_today,
+            new_users_week=new_users_week,
+            new_users_month=new_users_month,
+            login_rate=login_rate,
+            department_distribution=department_distribution,
+            age_distribution=age_distribution,
+            registration_trends=registration_trends,
+            activity_trends=activity_trends
+        )
+    
+    def _calculate_age_distribution(self) -> Dict[str, int]:
+        """年齢分布の計算"""
+        if self.df.empty or 'age' not in self.df.columns:
+            return {}
+        
+        valid_ages = self.df[self.df['age'].notna()]['age']
+        if len(valid_ages) == 0:
+            return {}
+        
+        age_bins = [0, 20, 30, 40, 50, 60, 100]
+        age_labels = ['20歳未満', '20-29歳', '30-39歳', '40-49歳', '50-59歳', '60歳以上']
+        
+        age_groups = pd.cut(valid_ages, bins=age_bins, labels=age_labels, right=False)
+        return age_groups.value_counts().to_dict()
+    
+    def _calculate_registration_trends(self) -> Dict[str, int]:
+        """登録傾向の計算（過去30日間）"""
+        if self.df.empty:
+            return {}
+        
+        now = datetime.utcnow()
+        thirty_days_ago = now - timedelta(days=30)
+        
+        recent_users = self.df[self.df['created_at'] >= thirty_days_ago].copy()
+        
+        if recent_users.empty:
+            return {}
+        
+        recent_users['date'] = recent_users['created_at'].dt.date
+        daily_registrations = recent_users.groupby('date').size()
+        
+        # 過去30日の日付を生成
+        date_range = pd.date_range(start=thirty_days_ago.date(), end=now.date(), freq='D')
+        
+        # 全日付でインデックスを再作成（登録がない日は0）
+        result = {}
+        for date in date_range:
+            date_key = date.strftime('%Y-%m-%d')
+            result[date_key] = daily_registrations.get(date.date(), 0)
+        
+        return result
+    
+    def _calculate_activity_trends(self) -> Dict[str, int]:
+        """アクティビティ傾向の計算（過去30日間のログイン）"""
+        if self.df.empty:
+            return {}
+        
+        now = datetime.utcnow()
+        thirty_days_ago = now - timedelta(days=30)
+        
+        recent_logins = self.df[
+            (self.df['last_login'].notna()) & 
+            (self.df['last_login'] >= thirty_days_ago)
+        ].copy()
+        
+        if recent_logins.empty:
+            return {}
+        
+        recent_logins['date'] = recent_logins['last_login'].dt.date
+        daily_logins = recent_logins.groupby('date').size()
+        
+        # 過去30日の日付を生成
+        date_range = pd.date_range(start=thirty_days_ago.date(), end=now.date(), freq='D')
+        
+        result = {}
+        for date in date_range:
+            date_key = date.strftime('%Y-%m-%d')
+            result[date_key] = daily_logins.get(date.date(), 0)
+        
+        return result
+    
+    def _empty_metrics(self) -> DashboardMetrics:
+        """空のメトリクスを返す"""
+        return DashboardMetrics(
+            total_users=0,
+            active_users=0,
+            inactive_users=0,
+            pending_users=0,
+            suspended_users=0,
+            average_age=0.0,
+            new_users_today=0,
+            new_users_week=0,
+            new_users_month=0,
+            login_rate=0.0,
+            department_distribution={},
+            age_distribution={},
+            registration_trends={},
+            activity_trends={}
+        )
+    
+    def get_department_summary(self) -> Dict[str, Any]:
+        """部署別サマリーの取得"""
+        if self.df.empty:
+            return {}
+        
+        department_stats = {}
+        
+        for dept in self.df['department'].unique():
+            dept_users = self.df[self.df['department'] == dept]
+            
+            department_stats[dept] = {
+                'total_count': len(dept_users),
+                'active_count': len(dept_users[dept_users['is_active'] == True]),
+                'average_age': float(dept_users[dept_users['age'].notna()]['age'].mean()) if len(dept_users[dept_users['age'].notna()]) > 0 else 0.0,
+                'login_rate': len(dept_users[dept_users['last_login'].notna()]) / len(dept_users) * 100 if len(dept_users) > 0 else 0.0
+            }
+        
+        return department_stats
+    
+    def get_user_growth_analysis(self) -> Dict[str, Any]:
+        """ユーザー成長分析"""
+        if self.df.empty:
+            return {}
+        
+        now = datetime.utcnow()
+        
+        # 月別成長率
+        monthly_registrations = self.df.groupby(self.df['created_at'].dt.to_period('M')).size()
+        
+        # 成長率計算
+        growth_rates = {}
+        for i in range(1, len(monthly_registrations)):
+            current = monthly_registrations.iloc[i]
+            previous = monthly_registrations.iloc[i-1]
+            if previous > 0:
+                growth_rate = ((current - previous) / previous) * 100
+                growth_rates[str(monthly_registrations.index[i])] = round(growth_rate, 2)
+        
+        return {
+            'monthly_registrations': monthly_registrations.to_dict(),
+            'growth_rates': growth_rates,
+            'total_growth': len(self.df),
+            'average_monthly_growth': np.mean(list(growth_rates.values())) if growth_rates else 0
+        }</code></pre>
+
+                        <ol start="2">
+                            <li><code>requirements.txt</code>にPlotlyを追加：</li>
+                        </ol>
+                        <pre><code>plotly==5.17.0</code></pre>
+
+                        <ol start="3">
+                            <li>パッケージをインストール：</li>
+                        </ol>
+                        <pre><code>pip install plotly</code></pre>
+
+                        <h6>統計機能の特徴</h6>
+                        <ul>
+                            <li><strong>包括的統計</strong>: ユーザー、部署、年齢、アクティビティの分析</li>
+                            <li><strong>時系列分析</strong>: 登録トレンドとアクティビティトレンド</li>
+                            <li><strong>成長分析</strong>: 月別成長率の計算</li>
+                            <li><strong>部署別統計</strong>: 組織単位での詳細分析</li>
+                        </ul>
+                    </div>
+
+                    <!-- データ可視化 -->
+                    <h3 class="section-title">6.3 Plotlyによるインタラクティブグラフ</h3>
+                    <p>Plotlyを使用して、データを魅力的で理解しやすいグラフとして表示します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 6-2: インタラクティブグラフの作成</h5>
+                        <p>統計データをPlotlyグラフとして可視化する機能を実装します。</p>
+                        
+                        <h6>手順</h6>
+                        <ol>
+                            <li><code>app/utils/chart_generators.py</code>ファイルを作成：</li>
+                        </ol>
+                        <pre><code>import plotly.graph_objects as go
+import plotly.express as px
+from plotly.subplots import make_subplots
+import pandas as pd
+from datetime import datetime, timedelta
+from typing import Dict, List, Any
+
+from app.utils.dashboard_analytics import DashboardMetrics
+
+class ChartGenerator:
+    """グラフ生成クラス"""
+    
+    def __init__(self, metrics: DashboardMetrics):
+        self.metrics = metrics
+        self.color_palette = [
+            '#2196F3', '#4CAF50', '#FF9800', '#F44336', 
+            '#9C27B0', '#00BCD4', '#795548', '#607D8B'
+        ]
+    
+    def create_user_status_pie_chart(self) -> go.Figure:
+        """ユーザーステータス円グラフ"""
+        labels = ['アクティブ', '非アクティブ', '承認待ち', '停止中']
+        values = [
+            self.metrics.active_users,
+            self.metrics.inactive_users,
+            self.metrics.pending_users,
+            self.metrics.suspended_users
+        ]
+        
+        # 値が0のものを除外
+        non_zero_data = [(label, value) for label, value in zip(labels, values) if value > 0]
+        
+        if not non_zero_data:
+            return self._create_empty_chart("ユーザーステータス分布")
+        
+        labels, values = zip(*non_zero_data)
+        
+        fig = go.Figure(data=[go.Pie(
+            labels=labels,
+            values=values,
+            hole=0.3,
+            marker_colors=self.color_palette[:len(labels)],
+            textinfo='label+percent+value',
+            textposition='auto',
+            hovertemplate='<b>%{label}</b><br>ユーザー数: %{value}<br>割合: %{percent}<extra></extra>'
+        )])
+        
+        fig.update_layout(
+            title={
+                'text': 'ユーザーステータス分布',
+                'x': 0.5,
+                'xanchor': 'center',
+                'font': {'size': 18}
+            },
+            font={'family': 'Noto Sans JP'},
+            height=400,
+            margin=dict(l=20, r=20, t=60, b=20)
+        )
+        
+        return fig
+    
+    def create_department_bar_chart(self) -> go.Figure:
+        """部署別ユーザー数棒グラフ"""
+        if not self.metrics.department_distribution:
+            return self._create_empty_chart("部署別ユーザー数")
+        
+        # 部署名の日本語化
+        dept_labels = {
+            'engineering': 'エンジニアリング',
+            'marketing': 'マーケティング',
+            'sales': '営業',
+            'hr': '人事',
+            'finance': '財務',
+            'operations': '運営',
+            'unassigned': '未設定'
+        }
+        
+        departments = list(self.metrics.department_distribution.keys())
+        values = list(self.metrics.department_distribution.values())
+        labels = [dept_labels.get(dept, dept) for dept in departments]
+        
+        fig = go.Figure(data=[go.Bar(
+            x=labels,
+            y=values,
+            marker_color=self.color_palette[0],
+            text=values,
+            textposition='auto',
+            hovertemplate='<b>%{x}</b><br>ユーザー数: %{y}<extra></extra>'
+        )])
+        
+        fig.update_layout(
+            title={
+                'text': '部署別ユーザー数',
+                'x': 0.5,
+                'xanchor': 'center',
+                'font': {'size': 18}
+            },
+            xaxis_title='部署',
+            yaxis_title='ユーザー数',
+            font={'family': 'Noto Sans JP'},
+            height=400,
+            margin=dict(l=20, r=20, t=60, b=20),
+            xaxis={'tickangle': -45}
+        )
+        
+        return fig
+    
+    def create_age_distribution_histogram(self) -> go.Figure:
+        """年齢分布ヒストグラム"""
+        if not self.metrics.age_distribution:
+            return self._create_empty_chart("年齢分布")
+        
+        age_groups = list(self.metrics.age_distribution.keys())
+        values = list(self.metrics.age_distribution.values())
+        
+        fig = go.Figure(data=[go.Bar(
+            x=age_groups,
+            y=values,
+            marker_color=self.color_palette[2],
+            text=values,
+            textposition='auto',
+            hovertemplate='<b>%{x}</b><br>ユーザー数: %{y}<extra></extra>'
+        )])
+        
+        fig.update_layout(
+            title={
+                'text': '年齢分布',
+                'x': 0.5,
+                'xanchor': 'center',
+                'font': {'size': 18}
+            },
+            xaxis_title='年齢グループ',
+            yaxis_title='ユーザー数',
+            font={'family': 'Noto Sans JP'},
+            height=400,
+            margin=dict(l=20, r=20, t=60, b=20)
+        )
+        
+        return fig
+    
+    def create_registration_trend_chart(self) -> go.Figure:
+        """登録トレンド線グラフ"""
+        if not self.metrics.registration_trends:
+            return self._create_empty_chart("登録トレンド（過去30日）")
+        
+        dates = list(self.metrics.registration_trends.keys())
+        values = list(self.metrics.registration_trends.values())
+        
+        # 日付を変換
+        date_objects = [datetime.strptime(date, '%Y-%m-%d') for date in dates]
+        
+        fig = go.Figure()
+        
+        # 登録数の線グラフ
+        fig.add_trace(go.Scatter(
+            x=date_objects,
+            y=values,
+            mode='lines+markers',
+            name='日別登録数',
+            line=dict(color=self.color_palette[1], width=3),
+            marker=dict(size=6),
+            hovertemplate='<b>%{x|%Y-%m-%d}</b><br>登録数: %{y}<extra></extra>'
+        ))
+        
+        # トレンドライン（移動平均）
+        if len(values) >= 7:
+            df = pd.DataFrame({'values': values})
+            moving_avg = df['values'].rolling(window=7, center=True).mean()
+            
+            fig.add_trace(go.Scatter(
+                x=date_objects,
+                y=moving_avg,
+                mode='lines',
+                name='7日移動平均',
+                line=dict(color=self.color_palette[3], width=2, dash='dash'),
+                hovertemplate='<b>%{x|%Y-%m-%d}</b><br>7日平均: %{y:.1f}<extra></extra>'
+            ))
+        
+        fig.update_layout(
+            title={
+                'text': '登録トレンド（過去30日）',
+                'x': 0.5,
+                'xanchor': 'center',
+                'font': {'size': 18}
+            },
+            xaxis_title='日付',
+            yaxis_title='登録数',
+            font={'family': 'Noto Sans JP'},
+            height=400,
+            margin=dict(l=20, r=20, t=60, b=20),
+            hovermode='x unified'
+        )
+        
+        return fig
+    
+    def create_activity_trend_chart(self) -> go.Figure:
+        """アクティビティトレンド線グラフ"""
+        if not self.metrics.activity_trends:
+            return self._create_empty_chart("ログイントレンド（過去30日）")
+        
+        dates = list(self.metrics.activity_trends.keys())
+        values = list(self.metrics.activity_trends.values())
+        
+        date_objects = [datetime.strptime(date, '%Y-%m-%d') for date in dates]
+        
+        fig = go.Figure()
+        
+        fig.add_trace(go.Scatter(
+            x=date_objects,
+            y=values,
+            mode='lines+markers',
+            name='日別ログイン数',
+            line=dict(color=self.color_palette[4], width=3),
+            marker=dict(size=6),
+            fill='tonexty',
+            hovertemplate='<b>%{x|%Y-%m-%d}</b><br>ログイン数: %{y}<extra></extra>'
+        ))
+        
+        fig.update_layout(
+            title={
+                'text': 'ログイントレンド（過去30日）',
+                'x': 0.5,
+                'xanchor': 'center',
+                'font': {'size': 18}
+            },
+            xaxis_title='日付',
+            yaxis_title='ログイン数',
+            font={'family': 'Noto Sans JP'},
+            height=400,
+            margin=dict(l=20, r=20, t=60, b=20),
+            hovermode='x unified'
+        )
+        
+        return fig
+    
+    def create_comprehensive_dashboard(self) -> go.Figure:
+        """包括的ダッシュボード（複数グラフ）"""
+        fig = make_subplots(
+            rows=2, cols=2,
+            subplot_titles=(
+                'ユーザーステータス分布',
+                '部署別ユーザー数',
+                '年齢分布',
+                '登録トレンド'
+            ),
+            specs=[
+                [{"type": "pie"}, {"type": "bar"}],
+                [{"type": "bar"}, {"type": "scatter"}]
+            ]
+        )
+        
+        # ユーザーステータス円グラフ
+        if self.metrics.total_users > 0:
+            labels = ['アクティブ', '非アクティブ', '承認待ち', '停止中']
+            values = [
+                self.metrics.active_users,
+                self.metrics.inactive_users,
+                self.metrics.pending_users,
+                self.metrics.suspended_users
+            ]
+            
+            fig.add_trace(go.Pie(
+                labels=labels,
+                values=values,
+                hole=0.3,
+                marker_colors=self.color_palette[:4]
+            ), row=1, col=1)
+        
+        # 部署別棒グラフ
+        if self.metrics.department_distribution:
+            dept_labels = {
+                'engineering': 'エンジニアリング',
+                'marketing': 'マーケティング',
+                'sales': '営業',
+                'hr': '人事',
+                'finance': '財務',
+                'operations': '運営',
+                'unassigned': '未設定'
+            }
+            
+            departments = list(self.metrics.department_distribution.keys())
+            values = list(self.metrics.department_distribution.values())
+            labels = [dept_labels.get(dept, dept) for dept in departments]
+            
+            fig.add_trace(go.Bar(
+                x=labels,
+                y=values,
+                marker_color=self.color_palette[0]
+            ), row=1, col=2)
+        
+        # 年齢分布
+        if self.metrics.age_distribution:
+            age_groups = list(self.metrics.age_distribution.keys())
+            values = list(self.metrics.age_distribution.values())
+            
+            fig.add_trace(go.Bar(
+                x=age_groups,
+                y=values,
+                marker_color=self.color_palette[2]
+            ), row=2, col=1)
+        
+        # 登録トレンド
+        if self.metrics.registration_trends:
+            dates = list(self.metrics.registration_trends.keys())
+            values = list(self.metrics.registration_trends.values())
+            date_objects = [datetime.strptime(date, '%Y-%m-%d') for date in dates]
+            
+            fig.add_trace(go.Scatter(
+                x=date_objects,
+                y=values,
+                mode='lines+markers',
+                line=dict(color=self.color_palette[1])
+            ), row=2, col=2)
+        
+        fig.update_layout(
+            height=800,
+            showlegend=False,
+            title={
+                'text': 'ユーザー管理ダッシュボード',
+                'x': 0.5,
+                'xanchor': 'center',
+                'font': {'size': 20}
+            },
+            font={'family': 'Noto Sans JP'}
+        )
+        
+        return fig
+    
+    def _create_empty_chart(self, title: str) -> go.Figure:
+        """空のグラフを作成"""
+        fig = go.Figure()
+        
+        fig.add_annotation(
+            text="データがありません",
+            x=0.5,
+            y=0.5,
+            xref="paper",
+            yref="paper",
+            showarrow=False,
+            font=dict(size=16, color="gray")
+        )
+        
+        fig.update_layout(
+            title={
+                'text': title,
+                'x': 0.5,
+                'xanchor': 'center',
+                'font': {'size': 18}
+            },
+            height=400,
+            margin=dict(l=20, r=20, t=60, b=20),
+            font={'family': 'Noto Sans JP'}
+        )
+        
+        return fig</code></pre>
+
+                        <h6>Plotlyグラフの特徴</h6>
+                        <ul>
+                            <li><strong>インタラクティブ</strong>: ズーム、ホバー、選択機能</li>
+                            <li><strong>レスポンシブ</strong>: 画面サイズに自動調整</li>
+                            <li><strong>カスタマイズ可能</strong>: 色、フォント、レイアウトの調整</li>
+                            <li><strong>多様なグラフ</strong>: 円、棒、線、散布図など</li>
+                        </ul>
+                    </div>
+
+                    <!-- ダッシュボードページ -->
+                    <h3 class="section-title">6.4 ダッシュボードページの実装</h3>
+                    <p>統計情報とグラフを組み合わせた包括的なダッシュボードページを作成します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 6-3: ダッシュボードページの作成</h5>
+                        <p>メトリクス表示とインタラクティブグラフを組み合わせたダッシュボードを実装します。</p>
+                        
+                        <h6>手順</h6>
+                        <ol>
+                            <li><code>app/pages/4_📊_Dashboard.py</code>ファイルを作成：</li>
+                        </ol>
+                        <pre><code>import streamlit as st
+import plotly.graph_objects as go
+from datetime import datetime
+import time
+
+from app.utils.dashboard_analytics import DashboardAnalytics
+from app.utils.chart_generators import ChartGenerator
+
+def main():
+    """ダッシュボードページのメイン関数"""
+    st.set_page_config(
+        page_title="ダッシュボード",
+        page_icon="📊",
+        layout="wide",
+        initial_sidebar_state="collapsed"
+    )
+    
+    st.title("📊 ユーザー管理ダッシュボード")
+    
+    # リアルタイム更新設定
+    auto_refresh = st.sidebar.checkbox("自動更新（30秒間隔）", value=False)
+    
+    if auto_refresh:
+        # 30秒ごとに自動更新
+        time.sleep(30)
+        st.rerun()
+    
+    # 手動更新ボタン
+    col1, col2, col3 = st.columns([1, 1, 4])
+    with col1:
+        if st.button("🔄 データ更新", use_container_width=True):
+            st.cache_data.clear()
+            st.rerun()
+    
+    with col2:
+        if st.button("📄 レポート生成", use_container_width=True):
+            generate_pdf_report()
+    
+    st.markdown("---")
+    
+    # データ読み込み
+    @st.cache_data(ttl=300)  # 5分間キャッシュ
+    def load_dashboard_data():
+        analytics = DashboardAnalytics()
+        return analytics.calculate_metrics()
+    
+    try:
+        metrics = load_dashboard_data()
+        chart_generator = ChartGenerator(metrics)
+        
+        # メトリクス表示
+        display_key_metrics(metrics)
+        
+        st.markdown("---")
+        
+        # グラフ表示
+        display_charts(chart_generator, metrics)
+        
+        # 詳細統計
+        display_detailed_statistics(metrics)
+        
+    except Exception as e:
+        st.error(f"ダッシュボードの読み込み中にエラーが発生しました: {str(e)}")
+        st.info("データベース接続またはデータの問題が考えられます。")
+
+def display_key_metrics(metrics):
+    """主要メトリクスの表示"""
+    st.subheader("📈 主要指標")
+    
+    # メイン指標
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric(
+            label="総ユーザー数",
+            value=metrics.total_users,
+            delta=f"+{metrics.new_users_month}（今月）",
+            delta_color="normal"
+        )
+    
+    with col2:
+        active_rate = (metrics.active_users / metrics.total_users * 100) if metrics.total_users > 0 else 0
+        st.metric(
+            label="アクティブユーザー",
+            value=metrics.active_users,
+            delta=f"{active_rate:.1f}%",
+            delta_color="normal"
+        )
+    
+    with col3:
+        st.metric(
+            label="平均年齢",
+            value=f"{metrics.average_age:.1f}歳" if metrics.average_age > 0 else "N/A",
+            delta=None
+        )
+    
+    with col4:
+        st.metric(
+            label="ログイン率",
+            value=f"{metrics.login_rate:.1f}%",
+            delta=None
+        )
+    
+    # 新規ユーザー指標
+    st.markdown("#### 📅 新規ユーザー")
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.metric(
+            label="今日",
+            value=metrics.new_users_today,
+            delta=None
+        )
+    
+    with col2:
+        st.metric(
+            label="今週",
+            value=metrics.new_users_week,
+            delta=None
+        )
+    
+    with col3:
+        st.metric(
+            label="今月",
+            value=metrics.new_users_month,
+            delta=None
+        )
+
+def display_charts(chart_generator, metrics):
+    """グラフの表示"""
+    st.subheader("📊 データ可視化")
+    
+    # タブでグラフを分類
+    tab1, tab2, tab3, tab4 = st.tabs(["概要", "分布", "トレンド", "包括"])
+    
+    with tab1:
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # ユーザーステータス円グラフ
+            status_chart = chart_generator.create_user_status_pie_chart()
+            st.plotly_chart(status_chart, use_container_width=True)
+        
+        with col2:
+            # 部署別棒グラフ
+            dept_chart = chart_generator.create_department_bar_chart()
+            st.plotly_chart(dept_chart, use_container_width=True)
+    
+    with tab2:
+        # 年齢分布
+        age_chart = chart_generator.create_age_distribution_histogram()
+        st.plotly_chart(age_chart, use_container_width=True)
+        
+        # 部署別詳細統計
+        if metrics.total_users > 0:
+            analytics = DashboardAnalytics()
+            dept_stats = analytics.get_department_summary()
+            
+            if dept_stats:
+                st.markdown("#### 部署別詳細統計")
+                display_department_details(dept_stats)
+    
+    with tab3:
+        col1, col2 = st.columns(1, 1)
+        
+        with col1:
+            # 登録トレンド
+            reg_chart = chart_generator.create_registration_trend_chart()
+            st.plotly_chart(reg_chart, use_container_width=True)
+        
+        with col2:
+            # アクティビティトレンド
+            activity_chart = chart_generator.create_activity_trend_chart()
+            st.plotly_chart(activity_chart, use_container_width=True)
+    
+    with tab4:
+        # 包括的ダッシュボード
+        comprehensive_chart = chart_generator.create_comprehensive_dashboard()
+        st.plotly_chart(comprehensive_chart, use_container_width=True)
+
+def display_department_details(dept_stats):
+    """部署別詳細統計の表示"""
+    dept_labels = {
+        'engineering': 'エンジニアリング',
+        'marketing': 'マーケティング',
+        'sales': '営業',
+        'hr': '人事',
+        'finance': '財務',
+        'operations': '運営',
+        'unassigned': '未設定'
+    }
+    
+    for dept, stats in dept_stats.items():
+        dept_name = dept_labels.get(dept, dept)
+        
+        with st.expander(f"🏢 {dept_name}"):
+            col1, col2, col3, col4 = st.columns(4)
+            
+            with col1:
+                st.metric("総数", stats['total_count'])
+            
+            with col2:
+                st.metric("アクティブ", stats['active_count'])
+            
+            with col3:
+                st.metric("平均年齢", f"{stats['average_age']:.1f}歳" if stats['average_age'] > 0 else "N/A")
+            
+            with col4:
+                st.metric("ログイン率", f"{stats['login_rate']:.1f}%")
+
+def display_detailed_statistics(metrics):
+    """詳細統計の表示"""
+    st.markdown("---")
+    st.subheader("📋 詳細統計")
+    
+    # ステータス内訳
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("#### ユーザーステータス内訳")
+        status_data = {
+            "アクティブ": metrics.active_users,
+            "非アクティブ": metrics.inactive_users,
+            "承認待ち": metrics.pending_users,
+            "停止中": metrics.suspended_users
+        }
+        
+        for status, count in status_data.items():
+            percentage = (count / metrics.total_users * 100) if metrics.total_users > 0 else 0
+            st.write(f"**{status}**: {count}名 ({percentage:.1f}%)")
+    
+    with col2:
+        st.markdown("#### システム情報")
+        st.write(f"**最終更新**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        st.write(f"**データ期間**: 過去30日")
+        st.write(f"**総レコード数**: {metrics.total_users}")
+
+def generate_pdf_report():
+    """PDFレポート生成（プレースホルダー）"""
+    st.info("📄 PDFレポート生成機能は次のステップで実装予定です")
+    
+    # 実際の実装では、reportlabやweasyprint等を使用
+    report_content = f"""
+    # ユーザー管理ダッシュボードレポート
+    
+    **生成日時**: {datetime.now().strftime('%Y年%m月%d日 %H:%M:%S')}
+    
+    ## サマリー
+    このレポートには以下の情報が含まれます：
+    - ユーザー統計情報
+    - 部署別分析
+    - 成長トレンド
+    - アクティビティ分析
+    """
+    
+    st.download_button(
+        label="📄 サンプルレポートダウンロード",
+        data=report_content,
+        file_name=f"dashboard_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md",
+        mime="text/markdown"
+    )
+
+if __name__ == "__main__":
+    main()</code></pre>
+
+                        <h6>ダッシュボードの機能</h6>
+                        <ul>
+                            <li><strong>リアルタイム更新</strong>: 自動または手動でのデータ更新</li>
+                            <li><strong>メトリクス表示</strong>: 重要な指標の見やすい表示</li>
+                            <li><strong>タブ分類</strong>: 情報を整理したタブ表示</li>
+                            <li><strong>レポート生成</strong>: PDFレポートのダウンロード</li>
+                        </ul>
+                    </div>
+
+                    <!-- リアルタイム更新 -->
+                    <h3 class="section-title">6.5 リアルタイムデータ更新</h3>
+                    <p>データの変更を即座に反映するリアルタイム更新機能を実装します。</p>
+
+                    <div class="info">
+                        <h6>リアルタイム更新の実装方法</h6>
+                        <ul>
+                            <li><strong>自動リフレッシュ</strong>: 定期的なページ再読み込み</li>
+                            <li><strong>キャッシュ管理</strong>: 適切なキャッシュ期間設定</li>
+                            <li><strong>WebSocket</strong>: リアルタイム通信（高度な実装）</li>
+                            <li><strong>ポーリング</strong>: 定期的なデータ取得</li>
+                        </ul>
+                    </div>
+
+                    <!-- PDFレポート生成 -->
+                    <h3 class="section-title">6.6 PDFレポート生成機能</h3>
+                    <p>ダッシュボードのデータをPDF形式でエクスポートする機能を実装します。</p>
+
+                    <div class="warning">
+                        <h6>PDFレポート生成の注意事項</h6>
+                        <ul>
+                            <li><strong>ライブラリ選択</strong>: reportlab、weasyprint等の検討</li>
+                            <li><strong>フォント対応</strong>: 日本語フォントの設定</li>
+                            <li><strong>レイアウト</strong>: グラフとテキストの適切な配置</li>
+                            <li><strong>ファイルサイズ</strong>: 大量データの処理制限</li>
+                        </ul>
+                    </div>
+
+                    <!-- 理解度確認 -->
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>Plotlyでインタラクティブな円グラフを作成するために使用するクラスは？</li>
+                            <li>Streamlitでメトリクス（数値指標）を表示するコンポーネントは？</li>
+                            <li>ダッシュボードでキャッシュを使用する主な目的は？</li>
+                            <li>時系列データの可視化に適したグラフの種類は？</li>
+                            <li>リアルタイム更新を実装する際の考慮事項は？</li>
+                        </ol>
+                        
+                        <details>
+                            <summary>解答例</summary>
+                            <ol>
+                                <li>go.Pie</li>
+                                <li>st.metric</li>
+                                <li>パフォーマンスの向上とデータベース負荷の軽減</li>
+                                <li>線グラフ（go.Scatter）</li>
+                                <li>更新頻度、キャッシュ管理、ユーザー体験の配慮</li>
+                            </ol>
+                        </details>
+                    </div>
+
+                    <!-- ナビゲーション -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="step5-user-crud-operations.html" class="btn btn-secondary">← 前のステップ: CRUD操作</a>
+                        <a href="step7-security-deployment.html" class="btn btn-primary">次のステップ: セキュリティ・デプロイ →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
