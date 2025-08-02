@@ -142,6 +142,10 @@
 
 - **[Struts 1.x実践チュートリアル](docs/tutorial/struts1/README.md)** - Apache Struts 1.xフレームワークを使用したWebアプリケーション開発の実践的なチュートリアル（6章構成）
 
+### Python・データ分析
+
+- **[Python-Streamlit実践チュートリアル](docs/tutorial/python-streamlit/README.md)** - Python言語とStreamlitフレームワークを使用したモダンなWebアプリケーション開発、Windows環境でのDocker/PostgreSQL連携（8章構成）
+
 ---
 
 ## 🤖 AIアシスタント用プロンプト集
