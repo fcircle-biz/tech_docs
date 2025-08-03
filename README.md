@@ -17,10 +17,15 @@
 
 - **[PHP実践チュートリアル](docs/tutorial/php/README.md)** - PHPの基本文法からデータベース連携まで、初心者向けユーザー管理システム開発チュートリアル（6章構成）
 - **[ASP.NET(VB.NET)実践チュートリアル](docs/tutorial/aspnet-vb/README.md)** - ASP.NET Web FormsとVB.NETによるユーザー管理システム開発の実践的なチュートリアル（6章構成）
+- **[ASP.NET Core MVC(VB.NET)実践チュートリアル](docs/tutorial/aspnet-core-mvc-vb/README.md)** - ASP.NET Core MVCとEntity Framework Coreを使用したモダンなWebアプリケーション開発の実践的なチュートリアル（7章構成）
 
 ### Java・Web開発
 
 - **[Struts 1.x実践チュートリアル](docs/tutorial/struts1/README.md)** - Apache Struts 1.xフレームワークを使用したWebアプリケーション開発の実践的なチュートリアル（6章構成）
+
+### Python・データ分析
+
+- **[Streamlit + SQLModel実践チュートリアル](docs/tutorial/streamlit-sqlmodel/README.md)** - StreamlitとSQLModelを使用したモダンなWebアプリケーション開発の実践的なチュートリアル（6章構成）
 
 ---
 
@@ -59,6 +64,11 @@
 ### Office・自動化
 
 - **[VBA学習ガイド](docs/guide/office/vba/README.md)** - VBA基礎からExcel自動化まで10ステップ
+
+### Pythonエコシステム
+
+- **[Python学習ガイド](docs/guide/python-ecosystem/python/README.md)** - Python基礎から高度なプログラミング技術まで10章完成カリキュラム
+- **[Streamlit学習ガイド](docs/guide/python-ecosystem/streamlit/README.md)** - Streamlitを使用したWebアプリケーション開発の基礎から実践まで10章完成カリキュラム
 
 ### データ分析
 
