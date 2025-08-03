@@ -122,6 +122,29 @@ function hello() {
 - `language-xml` - XML
 - `language-bash` - Bash/Shell
 
+### HTMLコードの表示について
+HTMLコードブロックを作成する際は、HTMLタグを適切にエスケープする必要があります：
+
+```html
+<!-- 正しい例：HTMLタグをエスケープして表示 -->
+<pre class="code-block"><code class="language-html">&lt;div class="container"&gt;
+    &lt;h1&gt;タイトル&lt;/h1&gt;
+    &lt;p&gt;本文テキスト&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+
+<!-- 間違った例：HTMLタグをそのまま記述（ブラウザがタグとして解釈してしまう） -->
+<pre class="code-block"><code class="language-html"><div class="container">
+    <h1>タイトル</h1>
+    <p>本文テキスト</p>
+</div></code></pre>
+```
+
+**エスケープ対象の主なHTMLタグ：**
+- `<` → `&lt;`
+- `>` → `&gt;`
+- `&` → `&amp;`
+- `"` → `&quot;`（属性値内で必要に応じて）
+
 ### テーマの変更
 デフォルトはAtom One Dark（黒背景）テーマ、その他も利用可能：
 ```html
