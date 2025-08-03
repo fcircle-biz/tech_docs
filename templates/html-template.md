@@ -20,14 +20,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     
+    <!-- カスタムCSS（templates/css-styles.mdを参照） -->
     <style>
-        /* カスタムCSS（技術分野別カラーテーマ適用） */
-        .code-block {
-            background-color: #1e1e1e;
-            border-radius: 5px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
+        /* CSSスタイルはtemplates/css-styles.mdに定義されています */
     </style>
 </head>
 <body>

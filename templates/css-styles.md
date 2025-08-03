@@ -68,6 +68,14 @@ body {
     border-left: 4px solid #f44336;
 }
 
+/* コードハイライト */
+.code-block {
+    background-color: #1e1e1e;
+    border-radius: 5px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
 /* ナビゲーション */
 .nav-link.active {
     background-color: [技術固有色] !important;
