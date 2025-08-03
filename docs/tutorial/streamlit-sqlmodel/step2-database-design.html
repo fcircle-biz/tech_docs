@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streamlit + SQLModel チュートリアル Step 2 - SQLModelでのデータベース設計</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ベースレイアウト */
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+
+        /* ナビゲーション */
+        .navbar {
+            background-color: #0066cc;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+
+        /* タイトル */
+        .chapter-title {
+            color: #0066cc;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title {
+            color: #3399ff;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* コンテンツボックス */
+        .quiz-container {
+            background-color: #e6f2ff;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #0066cc;
+        }
+
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .highlight {
+            background-color: #ffecb3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
+        }
+
+        .info {
+            background-color: #e8f5e8;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #4caf50;
+        }
+
+        /* ナビゲーション */
+        .nav-link.active {
+            background-color: #0066cc !important;
+            color: white !important;
+        }
+
+        .nav-link {
+            color: #495057;
+        }
+
+        .nav-link:hover {
+            background-color: #e6f2ff;
+        }
+
+        /* コードブロック */
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.875em;
+        }
+
+        .img-preview {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        /* テーブルスタイル */
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../../../index.html">Tech Docs</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../../../index.html">ホーム</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="../streamlit-sqlmodel/README.html">Streamlit + SQLModel</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading px-3 mt-4 mb-1 text-muted">
+                        Streamlit + SQLModel チュートリアル
+                    </h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="step1-environment-setup.html">Step 1: 環境構築</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#step2">Step 2: データベース設計</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step3-user-registration.html">Step 3: ユーザー登録機能</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step4-user-list-display.html">Step 4: ユーザー一覧表示</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step5-user-crud-operations.html">Step 5: CRUD操作</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step6-security-deployment.html">Step 6: セキュリティとデプロイ</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- 章ヘッダー -->
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Step 2: SQLModelでのデータベース設計</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <span class="badge bg-info">所要時間: 2.5時間</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="step2">
+                    <!-- 章タイトル -->
+                    <h2 class="chapter-title">型安全なORM設計とデータベース操作</h2>
+                    
+                    <!-- 学習目標 -->
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>SQLModelの基本概念とPydanticとの関係</li>
+                            <li>型ヒントを活用したUserモデルクラスの設計</li>
+                            <li>データベース接続プールの設定と管理</li>
+                            <li>テーブル自動作成とマイグレーション</li>
+                            <li>基本CRUD操作の実装パターン</li>
+                            <li>SQLAlchemyエンジンとセッション管理</li>
+                        </ul>
+                    </div>
+
+                    <!-- セクション1: SQLModel概要 -->
+                    <h3 class="section-title">2.1 SQLModelとは</h3>
+                    <p>SQLModelは、FastAPIの作者が開発した現代的なPython ORM（Object-Relational Mapping）ライブラリです。SQLAlchemyとPydanticの優れた機能を統合し、型安全なデータベース操作を実現します。</p>
+
+                    <div class="info">
+                        <h6>SQLModelの特徴</h6>
+                        <ul>
+                            <li><strong>型安全性</strong>: Python 3.6+の型ヒントをフル活用</li>
+                            <li><strong>自動バリデーション</strong>: Pydanticによる入力検証</li>
+                            <li><strong>エディタサポート</strong>: IDE/エディタでの優れた補完とエラー検出</li>
+                            <li><strong>シンプルな API</strong>: 学習コストが低く、直感的な使用方法</li>
+                            <li><strong>パフォーマンス</strong>: SQLAlchemyベースの高性能なクエリ</li>
+                        </ul>
+                    </div>
+
+                    <h4>従来のORMとの比較</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>機能</th>
+                                    <th>SQLModel</th>
+                                    <th>SQLAlchemy Core</th>
+                                    <th>Django ORM</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>型ヒント</td>
+                                    <td>✅ ネイティブサポート</td>
+                                    <td>⚠️ 限定的</td>
+                                    <td>❌ 非対応</td>
+                                </tr>
+                                <tr>
+                                    <td>自動バリデーション</td>
+                                    <td>✅ Pydantic統合</td>
+                                    <td>❌ 手動実装</td>
+                                    <td>✅ Form/Serializer</td>
+                                </tr>
+                                <tr>
+                                    <td>エディタサポート</td>
+                                    <td>✅ 優秀</td>
+                                    <td>⚠️ 基本的</td>
+                                    <td>⚠️ 基本的</td>
+                                </tr>
+                                <tr>
+                                    <td>学習コスト</td>
+                                    <td>✅ 低い</td>
+                                    <td>⚠️ 中程度</td>
+                                    <td>⚠️ 中程度</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- セクション2: データベース接続設定 -->
+                    <h3 class="section-title">2.2 データベース接続の設定</h3>
+                    
+                    <p>SQLModelを使用してPostgreSQLデータベースに接続するための設定を実装します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 2-1: データベース接続モジュールの作成</h5>
+                        <p>SQLModelエンジンとセッション管理を行うconnection.pyファイルを作成します。</p>
+                        
+                        <h6>手順</h6>
+                        <ol>
+                            <li>app/database/connection.pyファイルを作成</li>
+                            <li>SQLAlchemyエンジンの設定</li>
+                            <li>セッション管理の実装</li>
+                            <li>接続プールの設定</li>
+                            <li>接続テスト関数の実装</li>
+                        </ol>
+
+                        <h6>app/database/connection.py作成</h6>
+                        <pre><code>"""
+データベース接続管理モジュール
+SQLModelエンジンとセッション管理を行います。
+"""
+
+from typing import Generator
+from sqlmodel import SQLModel, Session, create_engine
+from sqlalchemy.pool import StaticPool
+import logging
+from app.config import settings
+
+# ログ設定
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+class DatabaseManager:
+    """データベース管理クラス"""
+    
+    def __init__(self):
+        self._engine = None
+        self._initialize_engine()
+    
+    def _initialize_engine(self) -> None:
+        """SQLAlchemyエンジンを初期化"""
+        try:
+            # PostgreSQL接続用エンジン作成
+            self._engine = create_engine(
+                settings.database_url,
+                # 接続プール設定
+                pool_size=20,           # 基本接続数
+                max_overflow=30,        # 最大追加接続数
+                pool_pre_ping=True,     # 接続の事前確認
+                pool_recycle=3600,      # 接続の再利用時間（秒）
+                
+                # PostgreSQL最適化設定
+                connect_args={
+                    "options": "-c timezone=Asia/Tokyo"
+                },
+                
+                # デバッグ用（本番では無効化）
+                echo=settings.DEBUG
+            )
+            
+            logger.info("✅ データベースエンジンを初期化しました")
+            
+        except Exception as e:
+            logger.error(f"❌ データベースエンジン初期化エラー: {e}")
+            raise
+    
+    @property
+    def engine(self):
+        """SQLAlchemyエンジンを取得"""
+        if self._engine is None:
+            self._initialize_engine()
+        return self._engine
+    
+    def create_tables(self) -> None:
+        """テーブルを作成"""
+        try:
+            SQLModel.metadata.create_all(self.engine)
+            logger.info("✅ データベーステーブルを作成しました")
+        except Exception as e:
+            logger.error(f"❌ テーブル作成エラー: {e}")
+            raise
+    
+    def get_session(self) -> Generator[Session, None, None]:
+        """データベースセッションを取得（ジェネレータ）"""
+        with Session(self.engine) as session:
+            try:
+                yield session
+            except Exception as e:
+                session.rollback()
+                logger.error(f"❌ セッションエラー: {e}")
+                raise
+            finally:
+                session.close()
+    
+    def test_connection(self) -> bool:
+        """データベース接続テスト"""
+        try:
+            with Session(self.engine) as session:
+                # 簡単なクエリで接続確認
+                result = session.exec("SELECT 1").first()
+                if result:
+                    logger.info("✅ データベース接続テスト成功")
+                    return True
+                else:
+                    logger.warning("⚠️ データベース接続テスト結果が不正です")
+                    return False
+                    
+        except Exception as e:
+            logger.error(f"❌ データベース接続テストエラー: {e}")
+            return False
+    
+    def close(self) -> None:
+        """エンジンを閉じる"""
+        if self._engine:
+            self._engine.dispose()
+            logger.info("✅ データベースエンジンを閉じました")
+
+# データベースマネージャーのシングルトンインスタンス
+db_manager = DatabaseManager()
+
+# セッション取得関数（依存性注入用）
+def get_db_session() -> Generator[Session, None, None]:
+    """データベースセッションを取得する関数"""
+    yield from db_manager.get_session()
+
+# エンジン取得関数
+def get_engine():
+    """エンジンを取得する関数"""
+    return db_manager.engine
+
+# 初期化関数
+def init_database() -> None:
+    """データベースを初期化"""
+    logger.info("データベース初期化開始...")
+    
+    # 接続テスト
+    if not db_manager.test_connection():
+        raise ConnectionError("データベースに接続できません")
+    
+    # テーブル作成
+    db_manager.create_tables()
+    
+    logger.info("✅ データベース初期化完了")
+
+if __name__ == "__main__":
+    # 単体テスト用
+    print("データベース接続テスト開始...")
+    
+    # 接続テスト
+    if db_manager.test_connection():
+        print("✅ 接続テスト成功")
+        
+        # テーブル作成テスト
+        try:
+            db_manager.create_tables()
+            print("✅ テーブル作成テスト成功")
+        except Exception as e:
+            print(f"❌ テーブル作成テストエラー: {e}")
+    else:
+        print("❌ 接続テスト失敗")</code></pre>
+
+                        <h6>接続モジュールテスト</h6>
+                        <pre><code># PostgreSQLコンテナが起動していることを確認
+docker-compose ps
+
+# 接続テスト実行
+cd app/database
+python connection.py
+
+# 期待される出力:
+# データベース接続テスト開始...
+# ✅ データベースエンジンを初期化しました
+# ✅ データベース接続テスト成功
+# ✅ 接続テスト成功
+# ✅ データベーステーブルを作成しました
+# ✅ テーブル作成テスト成功</code></pre>
+
+                        <h6>期待される結果</h6>
+                        <p>データベース接続が成功し、エラーなく接続プールが設定されることを確認してください。</p>
+                    </div>
+
+                    <!-- セクション3: Userモデル設計 -->
+                    <h3 class="section-title">2.3 Userモデルクラスの設計</h3>
+                    
+                    <p>SQLModelを使用して、型安全なUserモデルクラスを設計します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 2-2: Userモデルクラスの実装</h5>
+                        <p>型ヒントとバリデーションを活用したUserモデルを作成します。</p>
+                        
+                        <h6>手順</h6>
+                        <ol>
+                            <li>app/models/user.pyファイルを作成</li>
+                            <li>基本Userモデルクラスの定義</li>
+                            <li>フィールド制約とバリデーションの設定</li>
+                            <li>作成・更新用モデルの定義</li>
+                            <li>レスポンス用モデルの定義</li>
+                        </ol>
+
+                        <h6>app/models/user.py作成</h6>
+                        <pre><code>"""
+ユーザーモデル定義
+SQLModelを使用した型安全なユーザーモデル
+"""
+
+from typing import Optional
+from datetime import datetime
+from sqlmodel import SQLModel, Field, Relationship
+from pydantic import EmailStr, validator
+import re
+
+class UserBase(SQLModel):
+    """ユーザーベースモデル（共通フィールド）"""
+    username: str = Field(
+        min_length=3,
+        max_length=50,
+        regex=r"^[a-zA-Z0-9_-]+$",
+        description="ユーザー名（3-50文字、英数字とハイフン・アンダースコアのみ）"
+    )
+    email: EmailStr = Field(
+        description="メールアドレス"
+    )
+    full_name: str = Field(
+        min_length=1,
+        max_length=100,
+        description="氏名（1-100文字）"
+    )
+    age: Optional[int] = Field(
+        default=None,
+        ge=0,
+        le=150,
+        description="年齢（0-150歳）"
+    )
+    department: Optional[str] = Field(
+        default=None,
+        max_length=100,
+        description="所属部署（最大100文字）"
+    )
+    is_active: bool = Field(
+        default=True,
+        description="アクティブ状態"
+    )
+
+class User(UserBase, table=True):
+    """ユーザーテーブルモデル"""
+    __tablename__ = "users"
+    
+    id: Optional[int] = Field(
+        default=None, 
+        primary_key=True,
+        description="ユーザーID（自動採番）"
+    )
+    created_at: datetime = Field(
+        default_factory=datetime.utcnow,
+        description="作成日時"
+    )
+    updated_at: datetime = Field(
+        default_factory=datetime.utcnow,
+        description="更新日時"
+    )
+    
+    # インデックス設定（パフォーマンス向上）
+    username: str = Field(
+        unique=True,
+        index=True,
+        min_length=3,
+        max_length=50,
+        regex=r"^[a-zA-Z0-9_-]+$"
+    )
+    email: EmailStr = Field(
+        unique=True,
+        index=True
+    )
+    
+    class Config:
+        # JSON Schema用の設定
+        schema_extra = {
+            "example": {
+                "username": "john_doe",
+                "email": "john@example.com",
+                "full_name": "John Doe",
+                "age": 30,
+                "department": "Engineering",
+                "is_active": True
+            }
+        }
+    
+    @validator('username')
+    def validate_username(cls, v):
+        """ユーザー名のカスタムバリデーション"""
+        if not re.match(r"^[a-zA-Z0-9_-]+$", v):
+            raise ValueError('ユーザー名は英数字、ハイフン、アンダースコアのみ使用可能です')
+        
+        # 予約語チェック
+        reserved_words = ['admin', 'root', 'system', 'null', 'undefined']
+        if v.lower() in reserved_words:
+            raise ValueError(f'"{v}"は予約語のため使用できません')
+        
+        return v
+    
+    @validator('full_name')
+    def validate_full_name(cls, v):
+        """氏名のカスタムバリデーション"""
+        if not v.strip():
+            raise ValueError('氏名は空白のみにできません')
+        return v.strip()
+    
+    @validator('department')
+    def validate_department(cls, v):
+        """部署名のカスタムバリデーション"""
+        if v is not None and not v.strip():
+            return None  # 空白の場合はNoneに変換
+        return v.strip() if v else None
+
+class UserCreate(UserBase):
+    """ユーザー作成用モデル"""
+    pass
+
+class UserUpdate(SQLModel):
+    """ユーザー更新用モデル（部分更新対応）"""
+    username: Optional[str] = Field(
+        default=None,
+        min_length=3,
+        max_length=50,
+        regex=r"^[a-zA-Z0-9_-]+$"
+    )
+    email: Optional[EmailStr] = None
+    full_name: Optional[str] = Field(
+        default=None,
+        min_length=1,
+        max_length=100
+    )
+    age: Optional[int] = Field(
+        default=None,
+        ge=0,
+        le=150
+    )
+    department: Optional[str] = Field(
+        default=None,
+        max_length=100
+    )
+    is_active: Optional[bool] = None
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class UserRead(UserBase):
+    """ユーザー読み取り用モデル（レスポンス用）"""
+    id: int
+    created_at: datetime
+    updated_at: datetime
+
+class UserResponse(UserRead):
+    """APIレスポンス用ユーザーモデル"""
+    class Config:
+        from_attributes = True  # SQLModel -> Pydantic変換を有効化
+
+# 統計情報用モデル
+class UserStats(SQLModel):
+    """ユーザー統計情報モデル"""
+    total_users: int = Field(description="総ユーザー数")
+    active_users: int = Field(description="アクティブユーザー数")
+    inactive_users: int = Field(description="非アクティブユーザー数")
+    average_age: Optional[float] = Field(description="平均年齢")
+    departments: list[str] = Field(description="部署一覧")
+
+# 検索条件用モデル
+class UserSearch(SQLModel):
+    """ユーザー検索条件モデル"""
+    username: Optional[str] = None
+    email: Optional[str] = None
+    full_name: Optional[str] = None
+    department: Optional[str] = None
+    is_active: Optional[bool] = None
+    min_age: Optional[int] = Field(default=None, ge=0)
+    max_age: Optional[int] = Field(default=None, le=150)
+
+# 型エイリアス
+UserID = int</code></pre>
+
+                        <h6>モデルの動作確認</h6>
+                        <pre><code># モデルテスト用スクリプト（test_models.py）
+from app.models.user import User, UserCreate, UserUpdate, UserResponse
+from datetime import datetime
+import json
+
+def test_user_models():
+    """ユーザーモデルのテスト"""
+    
+    # ユーザー作成データ
+    user_data = {
+        "username": "test_user",
+        "email": "test@example.com",
+        "full_name": "Test User",
+        "age": 25,
+        "department": "IT",
+        "is_active": True
+    }
+    
+    # UserCreateモデルのテスト
+    print("=== UserCreate モデルテスト ===")
+    try:
+        user_create = UserCreate(**user_data)
+        print(f"✅ UserCreate作成成功: {user_create}")
+        print(f"JSON: {user_create.json()}")
+    except Exception as e:
+        print(f"❌ UserCreateエラー: {e}")
+    
+    # Userモデルのテスト
+    print("\n=== User モデルテスト ===")
+    try:
+        user = User(**user_data)
+        user.id = 1
+        user.created_at = datetime.utcnow()
+        user.updated_at = datetime.utcnow()
+        print(f"✅ User作成成功: {user}")
+    except Exception as e:
+        print(f"❌ Userエラー: {e}")
+    
+    # バリデーションテスト
+    print("\n=== バリデーションテスト ===")
+    
+    # 不正なユーザー名テスト
+    try:
+        invalid_user = UserCreate(
+            username="admin",  # 予約語
+            email="test@example.com",
+            full_name="Test User"
+        )
+        print(f"❌ バリデーション失敗: {invalid_user}")
+    except Exception as e:
+        print(f"✅ バリデーション成功: {e}")
+    
+    # 不正なメールアドレステスト
+    try:
+        invalid_email = UserCreate(
+            username="test_user2",
+            email="invalid-email",  # 不正なメールアドレス
+            full_name="Test User"
+        )
+        print(f"❌ メールバリデーション失敗: {invalid_email}")
+    except Exception as e:
+        print(f"✅ メールバリデーション成功: {e}")
+
+if __name__ == "__main__":
+    test_user_models()</code></pre>
+
+                        <h6>モデルテスト実行</h6>
+                        <pre><code># モデルテスト実行
+cd app/models
+python test_models.py
+
+# 期待される出力例:
+# === UserCreate モデルテスト ===
+# ✅ UserCreate作成成功: username='test_user' email='test@example.com' ...
+# === User モデルテスト ===
+# ✅ User作成成功: id=1 username='test_user' ...
+# === バリデーションテスト ===
+# ✅ バリデーション成功: "admin"は予約語のため使用できません
+# ✅ メールバリデーション成功: value is not a valid email address</code></pre>
+
+                        <h6>期待される結果</h6>
+                        <p>ユーザーモデルが正常に作成され、バリデーションが適切に動作することを確認してください。</p>
+                    </div>
+
+                    <!-- セクション4: CRUD操作実装 -->
+                    <h3 class="section-title">2.4 基本CRUD操作の実装</h3>
+                    
+                    <p>ユーザーモデルに対する基本的なCRUD（Create, Read, Update, Delete）操作を実装します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 2-3: CRUD操作モジュールの作成</h5>
+                        <p>型安全なCRUD操作を提供するcrud.pyファイルを作成します。</p>
+                        
+                        <h6>手順</h6>
+                        <ol>
+                            <li>app/database/crud.pyファイルを作成</li>
+                            <li>ユーザー作成（Create）機能の実装</li>
+                            <li>ユーザー取得（Read）機能の実装</li>
+                            <li>ユーザー更新（Update）機能の実装</li>
+                            <li>ユーザー削除（Delete）機能の実装</li>
+                            <li>検索・統計機能の実装</li>
+                        </ol>
+
+                        <h6>app/database/crud.py作成</h6>
+                        <pre><code>"""
+ユーザーCRUD操作モジュール
+型安全なデータベース操作を提供します。
+"""
+
+from typing import List, Optional
+from sqlmodel import Session, select, func, and_, or_
+from sqlalchemy.exc import IntegrityError
+from datetime import datetime
+import logging
+
+from app.models.user import (
+    User, UserCreate, UserUpdate, UserSearch, UserStats
+)
+
+logger = logging.getLogger(__name__)
+
+class UserCRUD:
+    """ユーザーCRUD操作クラス"""
+    
+    @staticmethod
+    def create_user(session: Session, user_data: UserCreate) -> User:
+        """
+        新しいユーザーを作成
+        
+        Args:
+            session: データベースセッション
+            user_data: ユーザー作成データ
+            
+        Returns:
+            作成されたユーザー
+            
+        Raises:
+            IntegrityError: ユーザー名またはメールアドレスが重複
+            ValueError: バリデーションエラー
+        """
+        try:
+            # 新しいユーザーインスタンスを作成
+            db_user = User.from_orm(user_data)
+            db_user.created_at = datetime.utcnow()
+            db_user.updated_at = datetime.utcnow()
+            
+            # データベースに追加
+            session.add(db_user)
+            session.commit()
+            session.refresh(db_user)
+            
+            logger.info(f"✅ ユーザー作成成功: {db_user.username} (ID: {db_user.id})")
+            return db_user
+            
+        except IntegrityError as e:
+            session.rollback()
+            if "users_username_key" in str(e):
+                raise ValueError(f"ユーザー名 '{user_data.username}' は既に使用されています")
+            elif "users_email_key" in str(e):
+                raise ValueError(f"メールアドレス '{user_data.email}' は既に使用されています")
+            else:
+                raise ValueError(f"データベース制約エラー: {e}")
+        except Exception as e:
+            session.rollback()
+            logger.error(f"❌ ユーザー作成エラー: {e}")
+            raise
+    
+    @staticmethod
+    def get_user_by_id(session: Session, user_id: int) -> Optional[User]:
+        """
+        IDでユーザーを取得
+        
+        Args:
+            session: データベースセッション
+            user_id: ユーザーID
+            
+        Returns:
+            ユーザー（存在しない場合はNone）
+        """
+        try:
+            statement = select(User).where(User.id == user_id)
+            user = session.exec(statement).first()
+            
+            if user:
+                logger.info(f"✅ ユーザー取得成功: {user.username} (ID: {user_id})")
+            else:
+                logger.warning(f"⚠️ ユーザーが見つかりません: ID {user_id}")
+                
+            return user
+            
+        except Exception as e:
+            logger.error(f"❌ ユーザー取得エラー (ID: {user_id}): {e}")
+            raise
+    
+    @staticmethod
+    def get_user_by_username(session: Session, username: str) -> Optional[User]:
+        """
+        ユーザー名でユーザーを取得
+        
+        Args:
+            session: データベースセッション
+            username: ユーザー名
+            
+        Returns:
+            ユーザー（存在しない場合はNone）
+        """
+        try:
+            statement = select(User).where(User.username == username)
+            user = session.exec(statement).first()
+            return user
+            
+        except Exception as e:
+            logger.error(f"❌ ユーザー取得エラー (username: {username}): {e}")
+            raise
+    
+    @staticmethod
+    def get_user_by_email(session: Session, email: str) -> Optional[User]:
+        """
+        メールアドレスでユーザーを取得
+        
+        Args:
+            session: データベースセッション
+            email: メールアドレス
+            
+        Returns:
+            ユーザー（存在しない場合はNone）
+        """
+        try:
+            statement = select(User).where(User.email == email)
+            user = session.exec(statement).first()
+            return user
+            
+        except Exception as e:
+            logger.error(f"❌ ユーザー取得エラー (email: {email}): {e}")
+            raise
+    
+    @staticmethod
+    def get_users(
+        session: Session, 
+        skip: int = 0, 
+        limit: int = 100,
+        search: Optional[UserSearch] = None
+    ) -> List[User]:
+        """
+        ユーザー一覧を取得（検索・ページング対応）
+        
+        Args:
+            session: データベースセッション
+            skip: スキップする件数
+            limit: 取得する最大件数
+            search: 検索条件
+            
+        Returns:
+            ユーザーリスト
+        """
+        try:
+            statement = select(User)
+            
+            # 検索条件を適用
+            if search:
+                conditions = []
+                
+                if search.username:
+                    conditions.append(User.username.ilike(f"%{search.username}%"))
+                if search.email:
+                    conditions.append(User.email.ilike(f"%{search.email}%"))
+                if search.full_name:
+                    conditions.append(User.full_name.ilike(f"%{search.full_name}%"))
+                if search.department:
+                    conditions.append(User.department.ilike(f"%{search.department}%"))
+                if search.is_active is not None:
+                    conditions.append(User.is_active == search.is_active)
+                if search.min_age is not None:
+                    conditions.append(User.age >= search.min_age)
+                if search.max_age is not None:
+                    conditions.append(User.age <= search.max_age)
+                
+                if conditions:
+                    statement = statement.where(and_(*conditions))
+            
+            # ソートとページング
+            statement = statement.order_by(User.created_at.desc()).offset(skip).limit(limit)
+            
+            users = session.exec(statement).all()
+            logger.info(f"✅ ユーザー一覧取得成功: {len(users)}件")
+            return users
+            
+        except Exception as e:
+            logger.error(f"❌ ユーザー一覧取得エラー: {e}")
+            raise
+    
+    @staticmethod
+    def update_user(session: Session, user_id: int, user_data: UserUpdate) -> Optional[User]:
+        """
+        ユーザー情報を更新
+        
+        Args:
+            session: データベースセッション
+            user_id: ユーザーID
+            user_data: 更新データ
+            
+        Returns:
+            更新されたユーザー（存在しない場合はNone）
+        """
+        try:
+            # 既存ユーザーを取得
+            db_user = UserCRUD.get_user_by_id(session, user_id)
+            if not db_user:
+                return None
+            
+            # 更新データを適用（Noneでない値のみ）
+            user_dict = user_data.dict(exclude_unset=True)
+            for field, value in user_dict.items():
+                if field != "updated_at":  # updated_atは自動設定
+                    setattr(db_user, field, value)
+            
+            # 更新日時を設定
+            db_user.updated_at = datetime.utcnow()
+            
+            # データベースにコミット
+            session.add(db_user)
+            session.commit()
+            session.refresh(db_user)
+            
+            logger.info(f"✅ ユーザー更新成功: {db_user.username} (ID: {user_id})")
+            return db_user
+            
+        except IntegrityError as e:
+            session.rollback()
+            if "users_username_key" in str(e):
+                raise ValueError(f"ユーザー名は既に使用されています")
+            elif "users_email_key" in str(e):
+                raise ValueError(f"メールアドレスは既に使用されています")
+            else:
+                raise ValueError(f"データベース制約エラー: {e}")
+        except Exception as e:
+            session.rollback()
+            logger.error(f"❌ ユーザー更新エラー (ID: {user_id}): {e}")
+            raise
+    
+    @staticmethod
+    def delete_user(session: Session, user_id: int) -> bool:
+        """
+        ユーザーを削除
+        
+        Args:
+            session: データベースセッション
+            user_id: ユーザーID
+            
+        Returns:
+            削除成功時True、ユーザーが存在しない場合False
+        """
+        try:
+            # 既存ユーザーを取得
+            db_user = UserCRUD.get_user_by_id(session, user_id)
+            if not db_user:
+                return False
+            
+            # ユーザーを削除
+            username = db_user.username
+            session.delete(db_user)
+            session.commit()
+            
+            logger.info(f"✅ ユーザー削除成功: {username} (ID: {user_id})")
+            return True
+            
+        except Exception as e:
+            session.rollback()
+            logger.error(f"❌ ユーザー削除エラー (ID: {user_id}): {e}")
+            raise
+    
+    @staticmethod
+    def get_user_stats(session: Session) -> UserStats:
+        """
+        ユーザー統計情報を取得
+        
+        Args:
+            session: データベースセッション
+            
+        Returns:
+            統計情報
+        """
+        try:
+            # 総ユーザー数
+            total_users = session.exec(select(func.count(User.id))).first()
+            
+            # アクティブユーザー数
+            active_users = session.exec(
+                select(func.count(User.id)).where(User.is_active == True)
+            ).first()
+            
+            # 非アクティブユーザー数
+            inactive_users = total_users - active_users
+            
+            # 平均年齢（年齢が設定されているユーザーのみ）
+            avg_age = session.exec(
+                select(func.avg(User.age)).where(User.age.is_not(None))
+            ).first()
+            
+            # 部署一覧（重複除去、NULL除外）
+            departments = session.exec(
+                select(User.department).where(
+                    User.department.is_not(None)
+                ).distinct()
+            ).all()
+            
+            stats = UserStats(
+                total_users=total_users or 0,
+                active_users=active_users or 0,
+                inactive_users=inactive_users or 0,
+                average_age=float(avg_age) if avg_age else None,
+                departments=[dept for dept in departments if dept]
+            )
+            
+            logger.info(f"✅ 統計情報取得成功: {stats}")
+            return stats
+            
+        except Exception as e:
+            logger.error(f"❌ 統計情報取得エラー: {e}")
+            raise
+
+# CRUD操作のインスタンス
+user_crud = UserCRUD()</code></pre>
+
+                        <h6>期待される結果</h6>
+                        <p>CRUD操作モジュールが作成され、型安全なデータベース操作が提供されることを確認してください。</p>
+                    </div>
+
+                    <!-- セクション5: データベース初期化 -->
+                    <h3 class="section-title">2.5 データベースの初期化とテスト</h3>
+                    
+                    <p>作成したモデルとCRUD操作を使用して、実際にデータベースを初期化し、動作確認を行います。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 2-4: データベース初期化とCRUD操作テスト</h5>
+                        <p>実際のデータベースでモデルとCRUD操作をテストします。</p>
+                        
+                        <h6>手順</h6>
+                        <ol>
+                            <li>データベース初期化スクリプトの作成</li>
+                            <li>テーブル作成の確認</li>
+                            <li>CRUD操作の動作テスト</li>
+                            <li>エラーハンドリングの確認</li>
+                            <li>統計情報の取得テスト</li>
+                        </ol>
+
+                        <h6>データベース初期化・テストスクリプト作成</h6>
+                        <pre><code># test_database.py
+"""
+データベース初期化とCRUD操作のテストスクリプト
+"""
+
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from app.database.connection import db_manager, get_db_session
+from app.database.crud import user_crud
+from app.models.user import UserCreate, UserUpdate, UserSearch
+from datetime import datetime
+
+def test_database_operations():
+    """データベース操作の総合テスト"""
+    
+    print("🔄 データベース初期化テスト開始...")
+    
+    # 1. データベース接続テスト
+    print("\n=== 1. データベース接続テスト ===")
+    if not db_manager.test_connection():
+        print("❌ データベース接続失敗")
+        return False
+    
+    # 2. テーブル作成テスト
+    print("\n=== 2. テーブル作成テスト ===")
+    try:
+        db_manager.create_tables()
+        print("✅ テーブル作成成功")
+    except Exception as e:
+        print(f"❌ テーブル作成エラー: {e}")
+        return False
+    
+    # 3. CRUD操作テスト
+    print("\n=== 3. CRUD操作テスト ===")
+    
+    # セッションを取得
+    session_gen = get_db_session()
+    session = next(session_gen)
+    
+    try:
+        # Create テスト
+        print("\n--- Create テスト ---")
+        test_users = [
+            UserCreate(
+                username="alice_smith",
+                email="alice@example.com",
+                full_name="Alice Smith",
+                age=28,
+                department="Engineering",
+                is_active=True
+            ),
+            UserCreate(
+                username="bob_jones",
+                email="bob@example.com",
+                full_name="Bob Jones",
+                age=35,
+                department="Marketing",
+                is_active=True
+            ),
+            UserCreate(
+                username="charlie_brown",
+                email="charlie@example.com",
+                full_name="Charlie Brown",
+                age=42,
+                department="Engineering",
+                is_active=False
+            )
+        ]
+        
+        created_users = []
+        for user_data in test_users:
+            try:
+                user = user_crud.create_user(session, user_data)
+                created_users.append(user)
+                print(f"✅ ユーザー作成: {user.username} (ID: {user.id})")
+            except Exception as e:
+                print(f"❌ ユーザー作成エラー: {e}")
+        
+        # Read テスト
+        print("\n--- Read テスト ---")
+        if created_users:
+            first_user = created_users[0]
+            
+            # IDで取得
+            user_by_id = user_crud.get_user_by_id(session, first_user.id)
+            if user_by_id:
+                print(f"✅ ID取得成功: {user_by_id.username}")
+            
+            # ユーザー名で取得
+            user_by_username = user_crud.get_user_by_username(session, first_user.username)
+            if user_by_username:
+                print(f"✅ ユーザー名取得成功: {user_by_username.email}")
+            
+            # 一覧取得
+            all_users = user_crud.get_users(session, limit=10)
+            print(f"✅ 一覧取得成功: {len(all_users)}件")
+        
+        # Update テスト
+        print("\n--- Update テスト ---")
+        if created_users:
+            user_to_update = created_users[0]
+            update_data = UserUpdate(
+                department="Data Science",
+                age=29
+            )
+            
+            updated_user = user_crud.update_user(session, user_to_update.id, update_data)
+            if updated_user:
+                print(f"✅ 更新成功: {updated_user.department}, Age: {updated_user.age}")
+        
+        # Search テスト
+        print("\n--- Search テスト ---")
+        search_criteria = UserSearch(
+            department="Engineering",
+            is_active=True
+        )
+        
+        search_results = user_crud.get_users(session, search=search_criteria)
+        print(f"✅ 検索成功: Engineering部のアクティブユーザー {len(search_results)}件")
+        
+        # Stats テスト
+        print("\n--- Stats テスト ---")
+        stats = user_crud.get_user_stats(session)
+        print(f"✅ 統計取得成功:")
+        print(f"   総ユーザー数: {stats.total_users}")
+        print(f"   アクティブ: {stats.active_users}")
+        print(f"   非アクティブ: {stats.inactive_users}")
+        print(f"   平均年齢: {stats.average_age}")
+        print(f"   部署: {stats.departments}")
+        
+        # Delete テスト（最後のユーザーを削除）
+        print("\n--- Delete テスト ---")
+        if created_users:
+            user_to_delete = created_users[-1]
+            delete_success = user_crud.delete_user(session, user_to_delete.id)
+            if delete_success:
+                print(f"✅ 削除成功: {user_to_delete.username}")
+            
+            # 削除確認
+            deleted_user = user_crud.get_user_by_id(session, user_to_delete.id)
+            if not deleted_user:
+                print("✅ 削除確認: ユーザーが正常に削除されました")
+        
+        print("\n🎉 全てのテストが成功しました！")
+        return True
+        
+    except Exception as e:
+        print(f"❌ テスト中にエラーが発生: {e}")
+        return False
+    
+    finally:
+        session.close()
+
+def test_error_handling():
+    """エラーハンドリングのテスト"""
+    print("\n=== 4. エラーハンドリングテスト ===")
+    
+    session_gen = get_db_session()
+    session = next(session_gen)
+    
+    try:
+        # 重複ユーザー名テスト
+        print("\n--- 重複ユーザー名テスト ---")
+        try:
+            user1 = UserCreate(
+                username="duplicate_test",
+                email="test1@example.com",
+                full_name="Test User 1"
+            )
+            user_crud.create_user(session, user1)
+            print("✅ 最初のユーザー作成成功")
+            
+            user2 = UserCreate(
+                username="duplicate_test",  # 同じユーザー名
+                email="test2@example.com",
+                full_name="Test User 2"
+            )
+            user_crud.create_user(session, user2)
+            print("❌ 重複チェック失敗")
+            
+        except ValueError as e:
+            print(f"✅ 重複エラー正常検出: {e}")
+        
+        # 存在しないユーザーの取得テスト
+        print("\n--- 存在しないユーザーテスト ---")
+        non_existent_user = user_crud.get_user_by_id(session, 99999)
+        if non_existent_user is None:
+            print("✅ 存在しないユーザーの処理正常")
+        
+        # 不正な更新テスト
+        print("\n--- 存在しないユーザーの更新テスト ---")
+        update_result = user_crud.update_user(
+            session, 99999, UserUpdate(full_name="Updated Name")
+        )
+        if update_result is None:
+            print("✅ 存在しないユーザーの更新処理正常")
+        
+        print("✅ エラーハンドリングテスト完了")
+        
+    except Exception as e:
+        print(f"❌ エラーハンドリングテストエラー: {e}")
+    
+    finally:
+        session.close()
+
+if __name__ == "__main__":
+    print("🚀 データベース総合テスト開始")
+    print("=" * 50)
+    
+    # メインテスト実行
+    main_test_success = test_database_operations()
+    
+    # エラーハンドリングテスト実行
+    test_error_handling()
+    
+    print("\n" + "=" * 50)
+    if main_test_success:
+        print("🎉 全てのテストが正常に完了しました！")
+    else:
+        print("❌ 一部のテストが失敗しました")
+    
+    print("\n次は Step 3 でStreamlitアプリケーションを作成します。")</code></pre>
+
+                        <h6>データベーステスト実行</h6>
+                        <pre><code># PostgreSQLコンテナが起動していることを確認
+docker-compose ps
+
+# テストスクリプト実行
+python test_database.py
+
+# 期待される出力例:
+# 🚀 データベース総合テスト開始
+# ==================================================
+# 🔄 データベース初期化テスト開始...
+# 
+# === 1. データベース接続テスト ===
+# ✅ データベースエンジンを初期化しました
+# ✅ データベース接続テスト成功
+# 
+# === 2. テーブル作成テスト ===
+# ✅ データベーステーブルを作成しました
+# ✅ テーブル作成成功
+# 
+# === 3. CRUD操作テスト ===
+# 
+# --- Create テスト ---
+# ✅ ユーザー作成: alice_smith (ID: 1)
+# ✅ ユーザー作成: bob_jones (ID: 2)
+# ✅ ユーザー作成: charlie_brown (ID: 3)
+# ...
+# 🎉 全てのテストが正常に完了しました！</code></pre>
+
+                        <h6>Adminerでテーブル確認</h6>
+                        <p>ブラウザで <code>http://localhost:8080</code> にアクセスし、作成されたテーブルとデータを確認してください：</p>
+                        <ul>
+                            <li>テーブル「users」が作成されていること</li>
+                            <li>適切なカラムと制約が設定されていること</li>
+                            <li>テストデータが挿入されていること</li>
+                            <li>インデックスが正しく作成されていること</li>
+                        </ul>
+
+                        <h6>期待される結果</h6>
+                        <p>データベーステーブルが正常に作成され、CRUD操作が全て成功し、エラーハンドリングも適切に動作することを確認してください。</p>
+                    </div>
+
+                    <!-- 理解度確認クイズ -->
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li><strong>SQLModel</strong>が<strong>SQLAlchemy</strong>と<strong>Pydantic</strong>を統合する利点を3つ挙げてください。</li>
+                            <li><strong>Field</strong>関数で設定できる制約の種類を5つ挙げてください。</li>
+                            <li><strong>データベース接続プール</strong>の設定で<code>pool_pre_ping=True</code>の目的は何ですか？</li>
+                            <li><strong>UserCreate</strong>、<strong>UserUpdate</strong>、<strong>UserRead</strong>モデルを分離する理由は何ですか？</li>
+                            <li><strong>IntegrityError</strong>が発生する典型的なケースを2つ挙げてください。</li>
+                            <li><strong>セッション管理</strong>でtry-except-finallyパターンを使用する理由は何ですか？</li>
+                            <li><strong>型ヒント</strong>を使用することで得られる開発上の利点を3つ挙げてください。</li>
+                            <li><strong>バリデーター（validator）</strong>でカスタムバリデーションを実装する利点は何ですか？</li>
+                        </ol>
+                        
+                        <details>
+                            <summary>解答例</summary>
+                            <ol>
+                                <li>型安全性の向上、自動バリデーション、エディタでの補完とエラー検出</li>
+                                <li>unique（一意制約）、index（インデックス）、min_length/max_length（文字数制限）、ge/le（数値範囲）、regex（正規表現）</li>
+                                <li>接続が切断されていないか事前に確認し、デッドコネクションを防ぐため</li>
+                                <li>API設計の明確化、セキュリティ向上（必要な項目のみ公開）、バリデーションルールの分離</li>
+                                <li>一意制約違反（重複データ挿入）、外部キー制約違反（存在しない関連データ参照）</li>
+                                <li>エラー時の適切なロールバック、リソースの確実な解放、データ整合性の保証</li>
+                                <li>IDE/エディタでの補完、コンパイル時エラー検出、コードの可読性向上</li>
+                                <li>ビジネスロジックに特化したバリデーション、複雑な条件チェック、エラーメッセージのカスタマイズ</li>
+                            </ol>
+                        </details>
+                    </div>
+
+                    <!-- まとめ -->
+                    <h3 class="section-title">2.6 Step 2のまとめ</h3>
+                    
+                    <div class="highlight">
+                        <h5>Step 2で習得したスキル</h5>
+                        <ul>
+                            <li>SQLModelによる型安全なモデル設計</li>
+                            <li>データベース接続プールの設定と管理</li>
+                            <li>Pydanticバリデーションの活用</li>
+                            <li>完全なCRUD操作の実装パターン</li>
+                            <li>エラーハンドリングとロールバック処理</li>
+                            <li>複数モデルによるAPI設計のベストプラクティス</li>
+                            <li>データベースセッション管理</li>
+                            <li>統計情報とデータ集計の実装</li>
+                        </ul>
+                    </div>
+
+                    <div class="warning">
+                        <h6>次のStepに進む前に確認すること</h6>
+                        <ul>
+                            <li>✅ PostgreSQLコンテナが正常に動作している</li>
+                            <li>✅ usersテーブルが作成されている</li>
+                            <li>✅ CRUD操作が全て正常に動作している</li>
+                            <li>✅ バリデーションが適切に機能している</li>
+                            <li>✅ エラーハンドリングが正しく実装されている</li>
+                            <li>✅ データベース接続プールが設定されている</li>
+                            <li>✅ 統計情報の取得が可能である</li>
+                        </ul>
+                    </div>
+
+                    <div class="info">
+                        <h6>発展的な学習のヒント</h6>
+                        <ul>
+                            <li><strong>リレーションシップ</strong>: 他のテーブルとの関連を定義する</li>
+                            <li><strong>マイグレーション</strong>: Alembicを使用したスキーマ変更管理</li>
+                            <li><strong>インデックス最適化</strong>: 複合インデックスとクエリパフォーマンス</li>
+                            <li><strong>トランザクション</strong>: 複雑なビジネスロジックでの一貫性保証</li>
+                            <li><strong>接続監視</strong>: ヘルスチェックと接続状態の監視</li>
+                        </ul>
+                    </div>
+
+                    <!-- 章間ナビゲーション -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="step1-environment-setup.html" class="btn btn-secondary">← Step 1: 環境構築</a>
+                        <a href="step3-user-registration.html" class="btn btn-primary">Step 3: ユーザー登録機能 →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
