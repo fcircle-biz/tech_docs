@@ -16,15 +16,30 @@
     <!-- Google Fonts - Noto Sans JP -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
     
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    
     <style>
         /* カスタムCSS（技術分野別カラーテーマ適用） */
+        .code-block {
+            background-color: #1e1e1e;
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
     </style>
 </head>
 <body>
     <!-- ナビゲーションバー -->
     <!-- サイドバー -->
     <!-- メインコンテンツ -->
+    
     <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Highlight.js 初期化 -->
+    <script>hljs.highlightAll();</script>
 </body>
 </html>
 ```
@@ -65,7 +80,7 @@
                 <li>[手順2]</li>
             </ol>
             <h6>実行例</h6>
-            <pre><code>[コード例]</code></pre>
+            <pre class="code-block"><code class="language-[言語名]">[コード例]</code></pre>
             <h6>期待される結果</h6>
             <p>[結果の説明]</p>
         </div>
@@ -86,4 +101,37 @@
         </div>
     </div>
 </main>
+```
+
+## コードハイライト使用例
+
+### 基本的な使用方法
+```html
+<pre class="code-block"><code class="language-javascript">
+function hello() {
+    console.log('Hello World!');
+}
+</code></pre>
+```
+
+### 対応言語例
+- `language-javascript` - JavaScript
+- `language-python` - Python
+- `language-java` - Java
+- `language-csharp` - C#
+- `language-vbnet` - VB.NET
+- `language-sql` - SQL
+- `language-html` - HTML
+- `language-css` - CSS
+- `language-json` - JSON
+- `language-xml` - XML
+- `language-bash` - Bash/Shell
+
+### テーマの変更
+デフォルトはAtom One Dark（黒背景）テーマ、その他も利用可能：
+```html
+<!-- その他のテーマ例 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/stackoverflow-light.min.css">
 ```
