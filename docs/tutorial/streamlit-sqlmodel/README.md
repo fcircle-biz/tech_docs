@@ -10,7 +10,6 @@ Streamlit と SQLModel を使用したモダンなWebアプリケーション開
 - DockerでのPostgreSQL環境構築（Windows環境）
 - CRUD操作を含む実践的なユーザー管理システムの開発
 - セッション管理とステート管理の基本
-- データ可視化とダッシュボード作成の基礎
 
 ### 対象読者
 - Python基礎文法を理解している方
@@ -65,7 +64,7 @@ Streamlit と SQLModel を使用したモダンなWebアプリケーション開
 
 ### Step 3: [Streamlit基礎とユーザー登録機能](https://fcircle-biz.github.io/tech_docs/tutorial/streamlit-sqlmodel/step3-user-registration.html)
 - Streamlitの基本コンポーネント
-- フォーム入力とバリデーション
+- フォーム入力と基本的なバリデーション
 - SQLModelを使用したデータ保存
 - エラーハンドリングとフィードバック
 - セッションステートの基本
@@ -75,10 +74,7 @@ Streamlit と SQLModel を使用したモダンなWebアプリケーション開
 
 ### Step 4: [ユーザー一覧とデータ表示](https://fcircle-biz.github.io/tech_docs/tutorial/streamlit-sqlmodel/step4-user-list-display.html)
 - データフレームでの一覧表示
-- 検索・フィルタリング機能
-- ページネーションの実装
-- カラムのソート機能
-- データのエクスポート機能
+- 検索機能
 
 **所要時間**: 2.5時間  
 **習得内容**: st.dataframe、st.columns、Pandas連携、クエリ最適化
@@ -86,32 +82,21 @@ Streamlit と SQLModel を使用したモダンなWebアプリケーション開
 ### Step 5: [ユーザー詳細・編集・削除機能](https://fcircle-biz.github.io/tech_docs/tutorial/streamlit-sqlmodel/step5-user-crud-operations.html)
 - サイドバーでのナビゲーション
 - ユーザー詳細表示
-- インライン編集機能
 - 確認ダイアログ付き削除
 - トランザクション管理
 
 **所要時間**: 3時間  
 **習得内容**: st.sidebar、st.modal、トランザクション、状態管理
 
-### Step 6: [ダッシュボードと可視化](https://fcircle-biz.github.io/tech_docs/tutorial/streamlit-sqlmodel/step6-dashboard-visualization.html)
-- 統計情報の集計
-- グラフ・チャートの作成
-- リアルタイムデータ更新
-- メトリクス表示
-- PDFレポート生成
-
-**所要時間**: 2.5時間  
-**習得内容**: st.metric、Plotly連携、データ集計、レポート生成
-
-### Step 7: [セキュリティとデプロイ準備](https://fcircle-biz.github.io/tech_docs/tutorial/streamlit-sqlmodel/step7-security-deployment.html)
+### Step 6: [セキュリティとデプロイ準備](https://fcircle-biz.github.io/tech_docs/tutorial/streamlit-sqlmodel/step7-security-deployment.html)
 - 環境変数での設定管理
 - 認証機能の追加
 - SQLインジェクション対策
 - パフォーマンス最適化
-- Docker Composeでの本番環境構築
+- PostgreSQLでの本番環境構築
 
 **所要時間**: 2時間  
-**習得内容**: セキュリティ基礎、環境設定、Docker Compose、デプロイ準備
+**習得内容**: セキュリティ基礎、環境設定、PostgreSQL最適化、デプロイ準備
 
 ## 作成するアプリケーション概要
 
@@ -122,8 +107,7 @@ Streamlit と SQLModel を使用したモダンなWebアプリケーション開
 2. **ユーザー一覧** - 検索・フィルタ・ソート機能付き一覧
 3. **ユーザー詳細** - 詳細情報の表示と編集
 4. **ユーザー削除** - 確認ダイアログ付き安全な削除
-5. **ダッシュボード** - 統計情報とグラフ表示
-6. **データエクスポート** - CSV/Excel形式でのエクスポート
+5. **統計情報** - 基本的な統計情報表示
 
 #### データベース設計
 ```python
@@ -148,7 +132,6 @@ class User(SQLModel, table=True):
 - **ORM**: SQLModel 0.0.14+
 - **データベース**: PostgreSQL 15+ (Docker)
 - **データ処理**: Pandas 2.0+
-- **可視化**: Plotly 5.0+
 - **環境管理**: Docker Desktop for Windows
 - **Python**: 3.11+
 
@@ -178,7 +161,6 @@ streamlit-user-management/
 │  ├─pages/
 │  │      1_👥_User_List.py
 │  │      2_➕_Add_User.py
-│  │      3_📊_Dashboard.py
 │  │      __init__.py
 │  │
 │  └─utils/
@@ -192,7 +174,7 @@ streamlit-user-management/
 ```
 
 ## 総所要時間
-**約17時間**（個人の習熟度により変動）
+**約14.5時間**（個人の習熟度により変動）
 
 ## 学習の特徴
 
@@ -203,8 +185,7 @@ streamlit-user-management/
 - **Step 3**: インタラクティブなUI構築とフォーム処理
 - **Step 4**: データ表示と検索機能の実装
 - **Step 5**: 完全なCRUD操作とステート管理
-- **Step 6**: データ可視化とダッシュボード作成
-- **Step 7**: セキュリティ対策と本番環境準備
+- **Step 6**: セキュリティ対策と本番環境準備
 
 ### Windows環境での開発最適化
 - **WSL2統合**: Docker DesktopのWSL2バックエンド設定
@@ -223,7 +204,6 @@ streamlit-user-management/
 ### 関連技術
 - [Pydantic公式ドキュメント](https://docs.pydantic.dev/)
 - [Pandas公式ドキュメント](https://pandas.pydata.org/docs/)
-- [Plotly公式ドキュメント](https://plotly.com/python/)
 
 ## チュートリアルの進め方
 
@@ -237,7 +217,7 @@ streamlit-user-management/
 
 - **SQLインジェクション対策**: SQLModelのORMによる自動エスケープ
 - **環境変数管理**: .envファイルでの機密情報管理
-- **入力検証**: Pydanticベースの型検証
+- **入力検証**: 基本的な型検証
 - **セッション管理**: Streamlitのセキュアなセッション機能
 - **HTTPS対応**: 本番環境でのSSL/TLS設定
 
@@ -254,7 +234,7 @@ streamlit-user-management/
 - **FastAPI連携**: バックエンドAPIとの統合
 - **機械学習統合**: scikit-learn、TensorFlowとの連携
 - **リアルタイム処理**: WebSocketを使用したリアルタイム更新
-- **マイクロサービス**: コンテナオーケストレーション
+- **データベース拡張**: 高度なPostgreSQL機能の活用
 - **CI/CD**: GitHub ActionsでのDevOps実践
 
 ## トラブルシューティング
