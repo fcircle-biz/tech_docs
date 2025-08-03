@@ -222,9 +222,9 @@ from typing import List, Dict, Any
 from datetime import datetime
 import io
 
-from app.models.user import User, UserStatus, Department
+from app.models.user import UserStatus, Department
 
-def users_to_dataframe(users: List[User]) -> pd.DataFrame:
+def users_to_dataframe(users: List[dict]) -> pd.DataFrame:
     """ユーザーリストをDataFrameに変換"""
     if not users:
         return pd.DataFrame()
@@ -232,17 +232,17 @@ def users_to_dataframe(users: List[User]) -> pd.DataFrame:
     data = []
     for user in users:
         user_data = {
-            'ID': user.id,
-            'ユーザー名': user.username,
-            'メールアドレス': user.email,
-            'フルネーム': user.full_name,
-            '年齢': user.age if user.age else '未設定',
-            '部署': get_department_display_name(user.department),
-            'ステータス': get_status_display_name(user.status),
-            'アクティブ': '✅' if user.is_active else '❌',
-            '作成日': user.created_at.strftime('%Y-%m-%d') if user.created_at else '',
-            '更新日': user.updated_at.strftime('%Y-%m-%d') if user.updated_at else '',
-            '最終ログイン': user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login else '未ログイン'
+            'ID': user.get('id'),
+            'ユーザー名': user.get('username'),
+            'メールアドレス': user.get('email'),
+            'フルネーム': user.get('full_name'),
+            '年齢': user.get('age') if user.get('age') else '未設定',
+            '部署': get_department_display_name(Department(user.get('department'))),
+            'ステータス': get_status_display_name(UserStatus(user.get('status'))),
+            'アクティブ': '✅' if user.get('is_active') else '❌',
+            '作成日': user.get('created_at')[:10] if user.get('created_at') else '',
+            '更新日': user.get('updated_at')[:10] if user.get('updated_at') else '',
+            '最終ログイン': user.get('last_login')[:16] if user.get('last_login') else '未ログイン'
         }
         data.append(user_data)
     
@@ -423,7 +423,9 @@ def main():
     @st.cache_data(ttl=30)  # 30秒間キャッシュ
     def load_users():
         """ユーザーデータを読み込み（キャッシュ付き）"""
-        return UserCRUD.get_users(limit=1000)
+        users = UserCRUD.get_users(limit=1000)
+        # SQLModelオブジェクトを辞書に変換してキャッシュ可能にする
+        return [user.model_dump() for user in users]
     
     users = load_users()
     
