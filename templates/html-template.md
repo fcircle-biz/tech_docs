@@ -120,7 +120,17 @@ function hello() {
 - `language-css` - CSS
 - `language-json` - JSON
 - `language-xml` - XML
-- `language-bash` - Bash/Shell
+- `language-bash` - Bash/Shell, Dockerfile, Gradle build files
+- `language-ini` - Properties files（.properties）
+
+### 重要な注意事項
+**特定ファイルのコードハイライト指定：**
+- build.gradleファイル：`language-bash`を使用
+- application.propertiesファイル：`language-ini`を使用
+- Dockerfileファイル：`language-bash`を使用
+
+これにより、コードが白い文字色で正しく表示されます。
+
 
 ### HTMLコードの表示について
 HTMLコードブロックを作成する際は、HTMLタグを適切にエスケープする必要があります：
