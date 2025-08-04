@@ -21,10 +21,12 @@
 
 ### Java・Web開発
 
+- **[JSP/Servlet/JDBC実践チュートリアル](docs/tutorial/jsp-servlet-jdbc/README.md)** - Eclipse IDEを使用したJavaのWebアプリケーション開発基礎技術（JSP、Servlet、JDBC）を学ぶ実践的なチュートリアル。MVCパターンに基づいたユーザー管理システム開発（7章構成）
 - **[Struts 1.x実践チュートリアル](docs/tutorial/struts1/README.md)** - Apache Struts 1.xフレームワークを使用したWebアプリケーション開発の実践的なチュートリアル（6章構成）
 
-### Python・データ分析
+### Python・Web開発
 
+- **[FastAPI + SQLAlchemy実践チュートリアル](docs/tutorial/fastapi-sqlalchemy/README.md)** - FastAPIとSQLAlchemyを使用したモダンなWebアプリケーション開発の実践的なチュートリアル（7章構成）
 - **[Streamlit + SQLModel実践チュートリアル](docs/tutorial/streamlit-sqlmodel/README.md)** - StreamlitとSQLModelを使用したモダンなWebアプリケーション開発の実践的なチュートリアル（6章構成）
 
 ---
