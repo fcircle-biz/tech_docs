@@ -21,6 +21,7 @@
 
 ### Java・Web開発
 
+- **[Spring Boot + Gradle実践チュートリアル](docs/tutorial/spring-boot-gradle/README.md)** - Spring BootとGradleを使用したモダンなJava Webアプリケーション開発の実践的なチュートリアル。Docker環境でのPostgreSQL連携、Spring MVC、Spring Data JPA、Thymeleafによるユーザー管理システム開発（10章構成）
 - **[JSP/Servlet/JDBC実践チュートリアル](docs/tutorial/jsp-servlet-jdbc/README.md)** - Eclipse IDEを使用したJavaのWebアプリケーション開発基礎技術（JSP、Servlet、JDBC）を学ぶ実践的なチュートリアル。MVCパターンに基づいたユーザー管理システム開発（7章構成）
 - **[Struts 1.x実践チュートリアル](docs/tutorial/struts1/README.md)** - Apache Struts 1.xフレームワークを使用したWebアプリケーション開発の実践的なチュートリアル（6章構成）
 
@@ -70,6 +71,8 @@
 ### Pythonエコシステム
 
 - **[Python学習ガイド](docs/guide/python-ecosystem/python/README.md)** - Python基礎から高度なプログラミング技術まで10章完成カリキュラム
+- **[Python SQLAlchemy学習ガイド](docs/guide/python-ecosystem/python-sqlalchemy/README.md)** - SQLAlchemyを使用したPythonデータベースプログラミングの基礎から実践まで8章完成カリキュラム
+- **[Python SQLModel学習ガイド](docs/guide/python-ecosystem/python-sqlmodel/README.md)** - SQLModelを使用したモダンなPythonデータベースプログラミング8章完成カリキュラム
 - **[Streamlit学習ガイド](docs/guide/python-ecosystem/streamlit/README.md)** - Streamlitを使用したWebアプリケーション開発の基礎から実践まで10章完成カリキュラム
 
 ### データ分析
