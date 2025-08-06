@@ -174,18 +174,6 @@
                     <h3 class="section-title">8.1 イテレータ（Iterator）</h3>
                     <p><strong>イテレータ</strong>は、コレクション内の要素を順番に処理するための統一的なインターフェースです。拡張for文（for-each文）の内部でも使用されており、コレクションの種類に関係なく同じ方法で要素にアクセスできます。</p>
 
-                    <div class="mermaid">
-                        graph TD
-                            A[コレクション] --> B[Iterator取得]
-                            B --> C{hasNext?}
-                            C -->|true| D[next要素取得]
-                            D --> E[要素処理]
-                            E --> F{削除が必要?}
-                            F -->|yes| G[remove実行]
-                            F -->|no| C
-                            G --> C
-                            C -->|false| H[処理完了]
-                    </div>
 
                     <h4>イテレータの主要メソッド</h4>
                     <div class="collection-table">
@@ -219,124 +207,20 @@
 
                     <!-- 実習 -->
                     <div class="exercise-container">
-                        <h5>実習 8-1: イテレータを使った安全なコレクション操作</h5>
-                        <p>イテレータを使って、ループ中の要素削除などの複雑な操作を安全に実行しましょう。</p>
+                        <h5>実習 8-1: イテレータの基本的な使用</h5>
+                        <p>イテレータを使ってコレクションの要素を順番に処理しましょう。</p>
 
                         <pre class="code-block"><code class="language-java">import java.util.*;
 
 public class IteratorExample {
     public static void main(String[] args) {
-        System.out.println("=== 基本的なイテレータの使用 ===");
-        demonstrateBasicIterator();
+        List&lt;String&gt; fruits = Arrays.asList("りんご", "バナナ", "オレンジ");
         
-        System.out.println("\n=== 安全な要素削除 ===");
-        demonstrateSafeRemoval();
-        
-        System.out.println("\n=== ListIterator の双方向操作 ===");
-        demonstrateListIterator();
-        
-        System.out.println("\n=== 様々なコレクション型でのイテレータ ===");
-        demonstrateDifferentCollections();
-    }
-    
-    private static void demonstrateBasicIterator() {
-        List&lt;String&gt; fruits = Arrays.asList("りんご", "バナナ", "オレンジ", "ぶどう", "メロン");
-        
-        System.out.println("拡張for文での処理:");
-        for (String fruit : fruits) {
-            System.out.println("- " + fruit);
-        }
-        
-        System.out.println("\nイテレータでの処理:");
+        // イテレータを使った要素の取得
         Iterator&lt;String&gt; iterator = fruits.iterator();
         while (iterator.hasNext()) {
             String fruit = iterator.next();
-            System.out.println("- " + fruit);
-        }
-    }
-    
-    private static void demonstrateSafeRemoval() {
-        List&lt;Integer&gt; numbers = new ArrayList&lt;&gt;(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-        
-        System.out.println("削除前: " + numbers);
-        
-        // 危険な方法（ConcurrentModificationExceptionが発生する可能性）
-        /*
-        for (Integer num : numbers) {
-            if (num % 2 == 0) {
-                numbers.remove(num);  // これは危険！
-            }
-        }
-        */
-        
-        // 安全な方法：イテレータを使用
-        Iterator&lt;Integer&gt; iterator = numbers.iterator();
-        while (iterator.hasNext()) {
-            Integer num = iterator.next();
-            if (num % 2 == 0) {
-                System.out.println("偶数 " + num + " を削除");
-                iterator.remove();  // これは安全
-            }
-        }
-        
-        System.out.println("削除後: " + numbers);
-    }
-    
-    private static void demonstrateListIterator() {
-        List&lt;String&gt; list = new ArrayList&lt;&gt;(Arrays.asList("A", "B", "C", "D", "E"));
-        
-        System.out.println("元のリスト: " + list);
-        
-        ListIterator&lt;String&gt; listIterator = list.listIterator();
-        
-        // 前進しながら要素を変更
-        System.out.println("前進しながら要素を変更:");
-        while (listIterator.hasNext()) {
-            String element = listIterator.next();
-            System.out.println("現在の要素: " + element + " (インデックス: " + (listIterator.nextIndex() - 1) + ")");
-            
-            if ("C".equals(element)) {
-                listIterator.set("C_MODIFIED");  // 要素を変更
-                listIterator.add("INSERTED");    // 新しい要素を挿入
-            }
-        }
-        
-        System.out.println("変更後: " + list);
-        
-        // 後退しながら要素を表示
-        System.out.println("後退しながら要素を表示:");
-        while (listIterator.hasPrevious()) {
-            String element = listIterator.previous();
-            System.out.println("- " + element);
-        }
-    }
-    
-    private static void demonstrateDifferentCollections() {
-        // ArrayList
-        List&lt;String&gt; arrayList = new ArrayList&lt;&gt;(Arrays.asList("AL1", "AL2", "AL3"));
-        System.out.println("ArrayList:");
-        printWithIterator(arrayList);
-        
-        // LinkedList
-        List&lt;String&gt; linkedList = new LinkedList&lt;&gt;(Arrays.asList("LL1", "LL2", "LL3"));
-        System.out.println("LinkedList:");
-        printWithIterator(linkedList);
-        
-        // HashSet
-        Set&lt;String&gt; hashSet = new HashSet&lt;&gt;(Arrays.asList("HS1", "HS2", "HS3"));
-        System.out.println("HashSet:");
-        printWithIterator(hashSet);
-        
-        // TreeSet
-        Set&lt;String&gt; treeSet = new TreeSet&lt;&gt;(Arrays.asList("TS3", "TS1", "TS2"));
-        System.out.println("TreeSet:");
-        printWithIterator(treeSet);
-    }
-    
-    private static void printWithIterator(Collection&lt;String&gt; collection) {
-        Iterator&lt;String&gt; iterator = collection.iterator();
-        while (iterator.hasNext()) {
-            System.out.println("  - " + iterator.next());
+            System.out.println("果物: " + fruit);
         }
     }
 }</code></pre>
@@ -358,55 +242,45 @@ public class IteratorExample {
 
                     <!-- 実習 -->
                     <div class="exercise-container">
-                        <h5>実習 8-2: ジェネリクスによる型安全なプログラミング</h5>
-                        <p>独自のジェネリッククラスを作成し、型安全なプログラミングを実践しましょう。</p>
+                        <h5>実習 8-2: ジェネリクスの基本的な使用</h5>
+                        <p>ジェネリックコレクションを使って型安全なプログラムを作成しましょう。</p>
 
                         <pre class="code-block"><code class="language-java">import java.util.*;
 
-// ジェネリッククラスの定義
-class Pair&lt;T, U&gt; {
-    private T first;
-    private U second;
-    
-    public Pair(T first, U second) {
-        this.first = first;
-        this.second = second;
+public class GenericsExample {
+    public static void main(String[] args) {
+        // 文字列のリスト
+        List&lt;String&gt; names = new ArrayList&lt;&gt;();
+        names.add("田中");
+        names.add("佐藤");
+        names.add("鈴木");
+        
+        // 整数のリスト
+        List&lt;Integer&gt; scores = new ArrayList&lt;&gt;();
+        scores.add(85);
+        scores.add(92);
+        scores.add(78);
+        
+        // 結果表示
+        for (String name : names) {
+            System.out.println("名前: " + name);
+        }
+        
+        for (Integer score : scores) {
+            System.out.println("点数: " + score);
+        }
     }
-    
-    public T getFirst() { return first; }
-    public U getSecond() { return second; }
-    
-    public void setFirst(T first) { this.first = first; }
-    public void setSecond(U second) { this.second = second; }
-    
-    @Override
-    public String toString() {
-        return "(" + first + ", " + second + ")";
-    }
-}
+}</code></pre>
+                    </div>
 
-// 制約付きジェネリクス
-class NumberContainer&lt;T extends Number&gt; {
-    private List&lt;T&gt; numbers;
-    
-    public NumberContainer() {
-        this.numbers = new ArrayList&lt;&gt;();
-    }
-    
-    public void add(T number) {
-        numbers.add(number);
-    }
-    
-    public double getSum() {
-        return numbers.stream().mapToDouble(Number::doubleValue).sum();
-    }
-    
-    public double getAverage() {
-        return numbers.isEmpty() ? 0 : getSum() / numbers.size();
-    }
-    
-    public T getMax() {
-        return numbers.stream()
+                    <!-- 8.3 ラムダ式とStream API -->
+                    <h3 class="section-title">8.3 ラムダ式とStream API</h3>
+                    <p><strong>ラムダ式</strong>はJava 8で導入された関数型プログラミングの要素で、匿名関数を簡潔に記述できます。<strong>Stream API</strong>と組み合わせることで、コレクションの操作を宣言的かつ効率的に行えます。</p>
+
+                    <!-- 実習 -->
+                    <div class="exercise-container">
+                        <h5>実習 8-3: ラムダ式とStream APIの活用</h5>
+                        <p>現代的なJavaプログラミングの核心であるラムダ式とStream APIを実践しましょう。</p>
                      .max((a, b) -&gt; Double.compare(a.doubleValue(), b.doubleValue()))
                      .orElse(null);
     }
@@ -638,23 +512,6 @@ public class GenericsExample {
                     <h3 class="section-title">8.3 ラムダ式とStream API</h3>
                     <p><strong>ラムダ式</strong>はJava 8で導入された関数型プログラミングの要素で、匿名関数を簡潔に記述できます。<strong>Stream API</strong>と組み合わせることで、コレクションの操作を宣言的かつ効率的に行えます。</p>
 
-                    <div class="mermaid">
-                        graph LR
-                            A[コレクション] --> B[stream]
-                            B --> C[中間操作]
-                            C --> D[中間操作]
-                            C --> E[中間操作]
-                            D --> F[終端操作]
-                            E --> F
-                            F --> G[結果]
-                            
-                            H[filter] --> C
-                            I[map] --> D
-                            J[sorted] --> E
-                            K[collect] --> F
-                            L[forEach] --> F
-                            M[reduce] --> F
-                    </div>
 
                     <!-- 実習 -->
                     <div class="exercise-container">
