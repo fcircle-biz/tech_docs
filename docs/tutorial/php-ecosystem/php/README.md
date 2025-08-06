@@ -40,7 +40,7 @@ PHP言語を使用したWebアプリケーション開発の実践的なチュ�
 
 ## チュートリアル構成
 
-### Step 1: [環境構築とPHP基礎](https://fcircle-biz.github.io/tech_docs/tutorial/php/step1-environment-setup.html)
+### Step 1: [環境構築とPHP基礎](https://fcircle-biz.github.io/tech_docs/tutorial/php-ecosystem/php/step1-environment-setup.html)
 - Eclipse IDE for PHP Developersの設定
 - XAMPPとPostgreSQLの環境構築
 - PHPの基本構文（変数、出力、配列）
@@ -49,7 +49,7 @@ PHP言語を使用したWebアプリケーション開発の実践的なチュ�
 **所要時間**: 1.5時間  
 **習得内容**: PHP基本構文、開始タグ、コメント、変数宣言
 
-### Step 2: [データベース設計と接続](https://fcircle-biz.github.io/tech_docs/tutorial/php/step2-database-connection.html)
+### Step 2: [データベース設計と接続](https://fcircle-biz.github.io/tech_docs/tutorial/php-ecosystem/php/step2-database-connection.html)
 - PostgreSQLデータベースの作成
 - PHPからのデータベース接続（PDO使用）
 - UserDAOクラスの基本実装
@@ -58,7 +58,7 @@ PHP言語を使用したWebアプリケーション開発の実践的なチュ�
 **所要時間**: 2時間  
 **習得内容**: PDOクラス、try-catch文、クラス定義、require_once
 
-### Step 3: [ユーザー登録機能の実装](https://fcircle-biz.github.io/tech_docs/tutorial/php/step3-user-registration.html)
+### Step 3: [ユーザー登録機能の実装](https://fcircle-biz.github.io/tech_docs/tutorial/php-ecosystem/php/step3-user-registration.html)
 - ユーザー登録フォームの作成
 - POSTデータの処理とバリデーション
 - データベースへのINSERT処理
@@ -67,7 +67,7 @@ PHP言語を使用したWebアプリケーション開発の実践的なチュ�
 **所要時間**: 2時間  
 **習得内容**: $_POST、trim()、if文、連想配列、header()、htmlspecialchars()
 
-### Step 4: [ユーザー一覧・詳細表示機能](https://fcircle-biz.github.io/tech_docs/tutorial/php/step4-user-list-detail.html)
+### Step 4: [ユーザー一覧・詳細表示機能](https://fcircle-biz.github.io/tech_docs/tutorial/php-ecosystem/php/step4-user-list-detail.html)
 - データベースからのデータ取得（SELECT）
 - 一覧画面の基本実装
 - 詳細画面の実装
@@ -76,7 +76,7 @@ PHP言語を使用したWebアプリケーション開発の実践的なチュ�
 **所要時間**: 2時間  
 **習得内容**: $_GET、foreach文、アロー演算子、型キャスト、empty()、count()
 
-### Step 5: [ユーザー情報更新・削除機能](https://fcircle-biz.github.io/tech_docs/tutorial/php/step5-user-update-delete.html)
+### Step 5: [ユーザー情報更新・削除機能](https://fcircle-biz.github.io/tech_docs/tutorial/php-ecosystem/php/step5-user-update-delete.html)
 - UserDAOクラスの拡張（update/deleteメソッド）
 - 編集フォームの実装
 - UPDATE・DELETE処理の実装
@@ -85,7 +85,7 @@ PHP言語を使用したWebアプリケーション開発の実践的なチュ�
 **所要時間**: 2.5時間  
 **習得内容**: $_SERVER、条件分岐、論理演算子、PDOメソッド、オブジェクト操作
 
-### Step 6: [ブラウザでの動作確認](https://fcircle-biz.github.io/tech_docs/tutorial/php/step6-testing-debug.html)
+### Step 6: [ブラウザでの動作確認](https://fcircle-biz.github.io/tech_docs/tutorial/php-ecosystem/php/step6-testing-debug.html)
 - ブラウザでの動作確認手順
 - 各機能のテスト方法
 - 基本的なエラー対処法
@@ -216,4 +216,4 @@ user-management
 
 ---
 
-[Step 1: 環境構築とPHP基礎](https://fcircle-biz.github.io/tech_docs/tutorial/php/step1-environment-setup.html)
+[Step 1: 環境構築とPHP基礎](https://fcircle-biz.github.io/tech_docs/tutorial/php-ecosystem/php/step1-environment-setup.html)

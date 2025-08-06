@@ -41,7 +41,7 @@ ASP.NET Core MVC と Entity Framework Core を使用した、VB.NETによるモ�
 
 ## チュートリアル構成
 
-### Step 1: [環境構築とプロジェクト作成](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-core-mvc-vb/step1-environment-setup.html)
+### Step 1: [環境構築とプロジェクト作成](https://fcircle-biz.github.io/tech_docs/tutorial/dotnet-ecosystem/aspnet-core-mvc-vb/step1-environment-setup.html)
 - Visual Studio 2022 での ASP.NET Core プロジェクト作成
 - VB.NET プロジェクトテンプレートの選択
 - プロジェクト構造の理解（Controllers、Models、Views）
@@ -51,7 +51,7 @@ ASP.NET Core MVC と Entity Framework Core を使用した、VB.NETによるモ�
 **所要時間**: 1.5時間  
 **習得内容**: プロジェクト構造、パッケージ管理、基本設定
 
-### Step 2: [MVCアーキテクチャとルーティング](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-core-mvc-vb/step2-mvc-architecture.html)
+### Step 2: [MVCアーキテクチャとルーティング](https://fcircle-biz.github.io/tech_docs/tutorial/dotnet-ecosystem/aspnet-core-mvc-vb/step2-mvc-architecture.html)
 - MVC パターンの概念理解
 - コントローラーの作成と基本的なアクション
 - ビューの作成と Razor 構文の基礎
@@ -61,7 +61,7 @@ ASP.NET Core MVC と Entity Framework Core を使用した、VB.NETによるモ�
 **所要時間**: 2時間  
 **習得内容**: MVC基礎、ルーティング、Razor構文
 
-### Step 3: [Entity Framework Core とデータベース設計](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-core-mvc-vb/step3-database-design.html)
+### Step 3: [Entity Framework Core とデータベース設計](https://fcircle-biz.github.io/tech_docs/tutorial/dotnet-ecosystem/aspnet-core-mvc-vb/step3-database-design.html)
 - Entity Framework Core の基本概念
 - コードファーストアプローチによるモデル作成
 - DbContext の作成と設定
@@ -71,7 +71,7 @@ ASP.NET Core MVC と Entity Framework Core を使用した、VB.NETによるモ�
 **所要時間**: 2.5時間  
 **習得内容**: EF Core基礎、コードファースト、マイグレーション
 
-### Step 4: [ユーザー登録機能の実装](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-core-mvc-vb/step4-user-registration.html)
+### Step 4: [ユーザー登録機能の実装](https://fcircle-biz.github.io/tech_docs/tutorial/dotnet-ecosystem/aspnet-core-mvc-vb/step4-user-registration.html)
 - 登録フォームの作成（Razor構文）
 - モデルバインディングの仕組み
 - データアノテーションによるバリデーション
@@ -81,7 +81,7 @@ ASP.NET Core MVC と Entity Framework Core を使用した、VB.NETによるモ�
 **所要時間**: 2.5時間  
 **習得内容**: フォーム処理、バリデーション、データ保存
 
-### Step 5: [ユーザー一覧と詳細表示](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-core-mvc-vb/step5-user-list-detail.html)
+### Step 5: [ユーザー一覧と詳細表示](https://fcircle-biz.github.io/tech_docs/tutorial/dotnet-ecosystem/aspnet-core-mvc-vb/step5-user-list-detail.html)
 - 一覧表示の実装（テーブル表示）
 - ページング機能の追加
 - 検索・フィルター機能
@@ -91,7 +91,7 @@ ASP.NET Core MVC と Entity Framework Core を使用した、VB.NETによるモ�
 **所要時間**: 2.5時間  
 **習得内容**: データ表示、ページング、検索機能
 
-### Step 6: [ユーザー編集・削除機能](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-core-mvc-vb/step6-user-update-delete.html)
+### Step 6: [ユーザー編集・削除機能](https://fcircle-biz.github.io/tech_docs/tutorial/dotnet-ecosystem/aspnet-core-mvc-vb/step6-user-update-delete.html)
 - 編集フォームの実装
 - 既存データの読み込みと表示
 - 更新処理と楽観的同時実行制御
@@ -101,7 +101,7 @@ ASP.NET Core MVC と Entity Framework Core を使用した、VB.NETによるモ�
 **所要時間**: 3時間  
 **習得内容**: CRUD完成、同時実行制御、トランザクション
 
-### Step 7: [セキュリティと最適化](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-core-mvc-vb/step7-security-optimization.html)
+### Step 7: [セキュリティと最適化](https://fcircle-biz.github.io/tech_docs/tutorial/dotnet-ecosystem/aspnet-core-mvc-vb/step7-security-optimization.html)
 - 認証・認可の基礎（Identity Framework）
 - CSRF対策とAntiForgeryToken
 - SQLインジェクション対策
@@ -302,4 +302,4 @@ UserManagerPro/
 
 ---
 
-[Step 1: 環境構築とプロジェクト作成](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-core-mvc-vb/step1-environment-setup.html)
+[Step 1: 環境構築とプロジェクト作成](https://fcircle-biz.github.io/tech_docs/tutorial/dotnet-ecosystem/aspnet-core-mvc-vb/step1-environment-setup.html)

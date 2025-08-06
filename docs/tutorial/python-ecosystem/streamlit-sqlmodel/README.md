@@ -42,7 +42,7 @@ Streamlit と SQLModel を使用したモダンなWebアプリケーション開
 
 ## チュートリアル構成
 
-### Step 1: [環境構築とDockerセットアップ](https://fcircle-biz.github.io/tech_docs/tutorial/streamlit-sqlmodel/step1-environment-setup.html)
+### Step 1: [環境構築とDockerセットアップ](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/streamlit-sqlmodel/step1-environment-setup.html)
 - Windows環境でのDocker Desktop設定
 - PostgreSQLコンテナの起動と設定
 - Python仮想環境の作成
@@ -52,7 +52,7 @@ Streamlit と SQLModel を使用したモダンなWebアプリケーション開
 **所要時間**: 2時間  
 **習得内容**: Docker基本操作、Python仮想環境、パッケージ管理
 
-### Step 2: [SQLModelでのデータベース設計](https://fcircle-biz.github.io/tech_docs/tutorial/streamlit-sqlmodel/step2-database-design.html)
+### Step 2: [SQLModelでのデータベース設計](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/streamlit-sqlmodel/step2-database-design.html)
 - SQLModelの基本概念とPydanticとの関係
 - Userモデルクラスの作成
 - データベース接続の設定
@@ -62,7 +62,7 @@ Streamlit と SQLModel を使用したモダンなWebアプリケーション開
 **所要時間**: 2.5時間  
 **習得内容**: SQLModel基礎、型ヒント、ORM概念、データベース接続
 
-### Step 3: [Streamlit基礎とユーザー登録機能](https://fcircle-biz.github.io/tech_docs/tutorial/streamlit-sqlmodel/step3-user-registration.html)
+### Step 3: [Streamlit基礎とユーザー登録機能](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/streamlit-sqlmodel/step3-user-registration.html)
 - Streamlitの基本コンポーネント
 - フォーム入力と基本的なバリデーション
 - SQLModelを使用したデータ保存
@@ -72,14 +72,14 @@ Streamlit と SQLModel を使用したモダンなWebアプリケーション開
 **所要時間**: 2.5時間  
 **習得内容**: st.form、st.text_input、セッション管理、エラー処理
 
-### Step 4: [ユーザー一覧とデータ表示](https://fcircle-biz.github.io/tech_docs/tutorial/streamlit-sqlmodel/step4-user-list-display.html)
+### Step 4: [ユーザー一覧とデータ表示](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/streamlit-sqlmodel/step4-user-list-display.html)
 - データフレームでの一覧表示
 - 検索機能
 
 **所要時間**: 2.5時間  
 **習得内容**: st.dataframe、st.columns、Pandas連携、クエリ最適化
 
-### Step 5: [ユーザー詳細・編集・削除機能](https://fcircle-biz.github.io/tech_docs/tutorial/streamlit-sqlmodel/step5-user-crud-operations.html)
+### Step 5: [ユーザー詳細・編集・削除機能](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/streamlit-sqlmodel/step5-user-crud-operations.html)
 - サイドバーでのナビゲーション
 - ユーザー詳細表示
 - 確認ダイアログ付き削除
@@ -88,7 +88,7 @@ Streamlit と SQLModel を使用したモダンなWebアプリケーション開
 **所要時間**: 3時間  
 **習得内容**: st.sidebar、st.modal、トランザクション、状態管理
 
-### Step 6: [セキュリティとデプロイ準備](https://fcircle-biz.github.io/tech_docs/tutorial/streamlit-sqlmodel/step7-security-deployment.html)
+### Step 6: [セキュリティとデプロイ準備](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/streamlit-sqlmodel/step7-security-deployment.html)
 - 環境変数での設定管理
 - 認証機能の追加
 - SQLインジェクション対策
@@ -251,4 +251,4 @@ streamlit-user-management/
 
 ---
 
-[Step 1: 環境構築とDockerセットアップ](https://fcircle-biz.github.io/tech_docs/tutorial/streamlit-sqlmodel/step1-environment-setup.html)
+[Step 1: 環境構築とDockerセットアップ](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/streamlit-sqlmodel/step1-environment-setup.html)

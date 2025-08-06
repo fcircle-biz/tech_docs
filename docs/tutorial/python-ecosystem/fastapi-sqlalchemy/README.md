@@ -39,7 +39,7 @@ FastAPI、SQLAlchemy、Jinja2、PostgreSQLを使用した、初心者向けのWe
 
 ## チュートリアル構成
 
-### Step 1: [環境構築とプロジェクトセットアップ](https://fcircle-biz.github.io/tech_docs/tutorial/fastapi-sqlalchemy/step1-environment-setup.html)
+### Step 1: [環境構築とプロジェクトセットアップ](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/fastapi-sqlalchemy/step1-environment-setup.html)
 - Python仮想環境の作成
 - PostgreSQLのインストールと設定
 - 必要なパッケージのインストール
@@ -49,7 +49,7 @@ FastAPI、SQLAlchemy、Jinja2、PostgreSQLを使用した、初心者向けのWe
 **所要時間**: 1.5時間  
 **習得内容**: 仮想環境、パッケージ管理、基本的なプロジェクト構造
 
-### Step 2: [データベース設計とSQLAlchemy基礎](https://fcircle-biz.github.io/tech_docs/tutorial/fastapi-sqlalchemy/step2-database-design.html)
+### Step 2: [データベース設計とSQLAlchemy基礎](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/fastapi-sqlalchemy/step2-database-design.html)
 - SQLAlchemyの基本概念
 - Userモデルの作成
 - データベース接続の設定
@@ -59,7 +59,7 @@ FastAPI、SQLAlchemy、Jinja2、PostgreSQLを使用した、初心者向けのWe
 **所要時間**: 2時間  
 **習得内容**: ORM基礎、モデル定義、データベース接続
 
-### Step 3: [FastAPIルーティングとJinja2テンプレート](https://fcircle-biz.github.io/tech_docs/tutorial/fastapi-sqlalchemy/step3-routing-templates.html)
+### Step 3: [FastAPIルーティングとJinja2テンプレート](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/fastapi-sqlalchemy/step3-routing-templates.html)
 - FastAPIのルーティング基礎
 - Jinja2テンプレートの設定
 - 基本的なHTMLテンプレート作成
@@ -69,7 +69,7 @@ FastAPI、SQLAlchemy、Jinja2、PostgreSQLを使用した、初心者向けのWe
 **所要時間**: 2時間  
 **習得内容**: ルーティング、テンプレート、静的ファイル
 
-### Step 4: [ユーザー登録機能の実装](https://fcircle-biz.github.io/tech_docs/tutorial/fastapi-sqlalchemy/step4-user-registration.html)
+### Step 4: [ユーザー登録機能の実装](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/fastapi-sqlalchemy/step4-user-registration.html)
 - 登録フォームの作成
 - POSTリクエストの処理
 - データベースへの保存
@@ -79,7 +79,7 @@ FastAPI、SQLAlchemy、Jinja2、PostgreSQLを使用した、初心者向けのWe
 **所要時間**: 2.5時間  
 **習得内容**: フォーム処理、データ保存、バリデーション基礎
 
-### Step 5: [ユーザー一覧と詳細表示](https://fcircle-biz.github.io/tech_docs/tutorial/fastapi-sqlalchemy/step5-user-list-detail.html)
+### Step 5: [ユーザー一覧と詳細表示](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/fastapi-sqlalchemy/step5-user-list-detail.html)
 - ユーザー一覧ページの作成
 - テーブル形式でのデータ表示
 - ユーザー詳細ページの実装
@@ -88,7 +88,7 @@ FastAPI、SQLAlchemy、Jinja2、PostgreSQLを使用した、初心者向けのWe
 **所要時間**: 2時間  
 **習得内容**: データ取得、一覧表示、詳細表示、基本的なCSS
 
-### Step 6: [ユーザー情報の編集と削除](https://fcircle-biz.github.io/tech_docs/tutorial/fastapi-sqlalchemy/step6-user-update-delete.html)
+### Step 6: [ユーザー情報の編集と削除](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/fastapi-sqlalchemy/step6-user-update-delete.html)
 - 編集フォームの作成
 - 更新処理の実装
 - 削除機能の実装
@@ -98,7 +98,7 @@ FastAPI、SQLAlchemy、Jinja2、PostgreSQLを使用した、初心者向けのWe
 **所要時間**: 3時間  
 **習得内容**: 更新処理、削除処理、エラーハンドリング
 
-### Step 7: [基本的な検索機能とまとめ](https://fcircle-biz.github.io/tech_docs/tutorial/fastapi-sqlalchemy/step7-search-summary.html)
+### Step 7: [基本的な検索機能とまとめ](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/fastapi-sqlalchemy/step7-search-summary.html)
 - 名前検索機能の実装
 - 検索フォームの作成
 - 検索結果の表示
@@ -249,4 +249,4 @@ simple-user-manager/
 
 ---
 
-[Step 1: 環境構築とプロジェクトセットアップ](https://fcircle-biz.github.io/tech_docs/tutorial/fastapi-sqlalchemy/step1-environment-setup.html)
+[Step 1: 環境構築とプロジェクトセットアップ](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/fastapi-sqlalchemy/step1-environment-setup.html)

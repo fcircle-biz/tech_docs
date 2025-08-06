@@ -43,7 +43,7 @@ Eclipse IDEを使用したJavaのWebアプリケーション開発の基礎技�
 
 ## チュートリアル構成
 
-### Step 1: [開発環境の構築](https://fcircle-biz.github.io/tech_docs/tutorial/jsp-servlet-jdbc/step1-environment-setup.html)
+### Step 1: [開発環境の構築](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/jsp-servlet-jdbc/step1-environment-setup.html)
 - JDKとEclipse IDEのインストール
 - Eclipse内でのApache Tomcatサーバーの設定
 - PostgreSQLのインストールと初期設定
@@ -54,7 +54,7 @@ Eclipse IDEを使用したJavaのWebアプリケーション開発の基礎技�
 **所要時間**: 1.5時間  
 **習得内容**: 開発環境構築、Dynamic Web Project作成、Tomcatサーバー設定
 
-### Step 2: [MVCアーキテクチャとプロジェクト構成](https://fcircle-biz.github.io/tech_docs/tutorial/jsp-servlet-jdbc/step2-mvc-architecture.html)
+### Step 2: [MVCアーキテクチャとプロジェクト構成](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/jsp-servlet-jdbc/step2-mvc-architecture.html)
 - MVCパターンの基本概念
 - Dynamic Web Projectのディレクトリ構造
 - web.xmlの基本設定
@@ -64,7 +64,7 @@ Eclipse IDEを使用したJavaのWebアプリケーション開発の基礎技�
 **所要時間**: 2時間  
 **習得内容**: MVCパターン、Servlet基礎、JSP基礎、web.xml設定
 
-### Step 3: [データベース設計とJDBC接続](https://fcircle-biz.github.io/tech_docs/tutorial/jsp-servlet-jdbc/step3-database-jdbc.html)
+### Step 3: [データベース設計とJDBC接続](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/jsp-servlet-jdbc/step3-database-jdbc.html)
 - PgAdminを使用したデータベース作成
 - usersテーブルの設計と作成
 - JDBCドライバーの配置と設定
@@ -74,7 +74,7 @@ Eclipse IDEを使用したJavaのWebアプリケーション開発の基礎技�
 **所要時間**: 2時間  
 **習得内容**: JDBC接続、PreparedStatement、DAOパターン、例外処理
 
-### Step 4: [ユーザー登録機能の実装](https://fcircle-biz.github.io/tech_docs/tutorial/jsp-servlet-jdbc/step4-user-registration.html)
+### Step 4: [ユーザー登録機能の実装](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/jsp-servlet-jdbc/step4-user-registration.html)
 - ユーザー登録フォーム（JSP）の作成
 - 登録処理用Servletの実装
 - UserDAOのinsertメソッド実装
@@ -84,7 +84,7 @@ Eclipse IDEを使用したJavaのWebアプリケーション開発の基礎技�
 **所要時間**: 2.5時間  
 **習得内容**: フォーム処理、POSTリクエスト、データ挿入、リダイレクト
 
-### Step 5: [ユーザー一覧・詳細表示機能](https://fcircle-biz.github.io/tech_docs/tutorial/jsp-servlet-jdbc/step5-user-list-detail.html)
+### Step 5: [ユーザー一覧・詳細表示機能](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/jsp-servlet-jdbc/step5-user-list-detail.html)
 - ユーザー一覧画面（JSP）の作成
 - 一覧表示用Servletの実装
 - UserDAOのfindAllメソッド実装
@@ -94,7 +94,7 @@ Eclipse IDEを使用したJavaのWebアプリケーション開発の基礎技�
 **所要時間**: 2.5時間  
 **習得内容**: データ取得、リスト表示、スクリプトレット、GETパラメータ処理
 
-### Step 6: [ユーザー更新・削除機能](https://fcircle-biz.github.io/tech_docs/tutorial/jsp-servlet-jdbc/step6-user-update-delete.html)
+### Step 6: [ユーザー更新・削除機能](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/jsp-servlet-jdbc/step6-user-update-delete.html)
 - ユーザー編集フォームの作成
 - 更新処理用Servletの実装
 - UserDAOのupdateメソッド実装
@@ -104,7 +104,7 @@ Eclipse IDEを使用したJavaのWebアプリケーション開発の基礎技�
 **所要時間**: 3時間  
 **習得内容**: データ更新、データ削除、トランザクション基礎、エラー処理
 
-### Step 7: [検索機能とアプリケーションの仕上げ](https://fcircle-biz.github.io/tech_docs/tutorial/jsp-servlet-jdbc/step7-search-finalization.html)
+### Step 7: [検索機能とアプリケーションの仕上げ](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/jsp-servlet-jdbc/step7-search-finalization.html)
 - ユーザー検索機能の実装
 - 共通レイアウトの作成
 - エラーページの実装

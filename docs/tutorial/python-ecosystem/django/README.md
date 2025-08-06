@@ -51,7 +51,7 @@ DjangoフレームワークとPostgreSQL（Docker環境）を使用した、モ�
 
 ## チュートリアル構成
 
-### Step 1: [Windows環境での開発環境構築](https://fcircle-biz.github.io/tech_docs/tutorial/django/step1-environment-setup.html)
+### Step 1: [Windows環境での開発環境構築](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/django/step1-environment-setup.html)
 - Python 3.12のインストールと環境変数設定
 - Visual Studio Codeのセットアップと必要な拡張機能
 - 仮想環境（venv）の作成と有効化
@@ -62,7 +62,7 @@ DjangoフレームワークとPostgreSQL（Docker環境）を使用した、モ�
 **所要時間**: 1.5時間  
 **習得内容**: Python環境構築、仮想環境管理、Django基本設定
 
-### Step 2: [Docker DesktopとPostgreSQL環境構築](https://fcircle-biz.github.io/tech_docs/tutorial/django/step2-docker-postgresql.html)
+### Step 2: [Docker DesktopとPostgreSQL環境構築](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/django/step2-docker-postgresql.html)
 - Docker Desktop for Windowsのインストール
 - WSL2の設定と最適化
 - Docker Composeファイルの作成
@@ -74,7 +74,7 @@ DjangoフレームワークとPostgreSQL（Docker環境）を使用した、モ�
 **所要時間**: 2時間  
 **習得内容**: Docker基礎、PostgreSQL設定、データベース接続
 
-### Step 3: [Djangoプロジェクトの初期化と基本設定](https://fcircle-biz.github.io/tech_docs/tutorial/django/step3-django-project-init.html)
+### Step 3: [Djangoプロジェクトの初期化と基本設定](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/django/step3-django-project-init.html)
 - Djangoプロジェクト構造の理解
 - settings.pyの詳細設定
 - PostgreSQLデータベース設定
@@ -85,7 +85,7 @@ DjangoフレームワークとPostgreSQL（Docker環境）を使用した、モ�
 **所要時間**: 1.5時間  
 **習得内容**: Django設定、プロジェクト構造、データベース接続
 
-### Step 4: [モデル設計とマイグレーション](https://fcircle-biz.github.io/tech_docs/tutorial/django/step4-models-migration.html)
+### Step 4: [モデル設計とマイグレーション](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/django/step4-models-migration.html)
 - Djangoモデルの基本概念
 - Userモデルの設計と実装
 - フィールドタイプと制約の設定
@@ -96,7 +96,7 @@ DjangoフレームワークとPostgreSQL（Docker環境）を使用した、モ�
 **所要時間**: 2.5時間  
 **習得内容**: モデル設計、マイグレーション、ORM基礎
 
-### Step 5: [ビュー、テンプレート、URLルーティング](https://fcircle-biz.github.io/tech_docs/tutorial/django/step5-views-templates-urls.html)
+### Step 5: [ビュー、テンプレート、URLルーティング](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/django/step5-views-templates-urls.html)
 - MVTアーキテクチャの理解
 - 関数ベースビューとクラスベースビュー
 - URLパターンの設定と名前付きURL
@@ -107,7 +107,7 @@ DjangoフレームワークとPostgreSQL（Docker環境）を使用した、モ�
 **所要時間**: 3時間  
 **習得内容**: ビュー実装、URLルーティング、テンプレート構築
 
-### Step 6: [Django管理サイトのセットアップ](https://fcircle-biz.github.io/tech_docs/tutorial/django/step6-admin-interface.html)
+### Step 6: [Django管理サイトのセットアップ](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/django/step6-admin-interface.html)
 - 管理サイトの有効化
 - スーパーユーザーの作成
 - モデルの管理サイト登録
@@ -118,7 +118,7 @@ DjangoフレームワークとPostgreSQL（Docker環境）を使用した、モ�
 **所要時間**: 2時間  
 **習得内容**: 管理サイト活用、カスタマイズ、管理機能実装
 
-### Step 7: [基本的なCRUD操作の実装](https://fcircle-biz.github.io/tech_docs/tutorial/django/step7-crud-operations.html)
+### Step 7: [基本的なCRUD操作の実装](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/django/step7-crud-operations.html)
 - ユーザー一覧表示（ListView）
 - ユーザー詳細表示（DetailView）
 - ユーザー登録フォーム（CreateView）
@@ -129,7 +129,7 @@ DjangoフレームワークとPostgreSQL（Docker環境）を使用した、モ�
 **所要時間**: 4時間  
 **習得内容**: CRUD操作、ジェネリックビュー、フォーム処理
 
-### Step 8: [フォームバリデーションとセキュリティ](https://fcircle-biz.github.io/tech_docs/tutorial/django/step8-validation-security.html)
+### Step 8: [フォームバリデーションとセキュリティ](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/django/step8-validation-security.html)
 - Djangoフォームの作成
 - フィールドバリデーション
 - カスタムバリデータの実装
@@ -141,7 +141,7 @@ DjangoフレームワークとPostgreSQL（Docker環境）を使用した、モ�
 **所要時間**: 3時間  
 **習得内容**: フォーム検証、セキュリティ対策、安全な実装
 
-### Step 9: [テストとデバッグ](https://fcircle-biz.github.io/tech_docs/tutorial/django/step9-testing-debugging.html)
+### Step 9: [テストとデバッグ](https://fcircle-biz.github.io/tech_docs/tutorial/python-ecosystem/django/step9-testing-debugging.html)
 - Djangoテストフレームワークの基礎
 - モデルテストの作成
 - ビューテストの実装

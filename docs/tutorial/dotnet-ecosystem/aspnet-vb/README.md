@@ -42,7 +42,7 @@ ASP.NET Web FormsとVB.NETを使用したWebアプリケーション開発の実
 
 ## チュートリアル構成
 
-### Step 1: [環境構築とASP.NET基礎](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-vb/step1-environment-setup.html)
+### Step 1: [環境構築とASP.NET基礎](https://fcircle-biz.github.io/tech_docs/tutorial/dotnet-ecosystem/aspnet-vb/step1-environment-setup.html)
 - Visual Studio Community 2022の設定
 - SQL Server LocalDBの環境構築
 - ASP.NET Web Formsプロジェクトの作成
@@ -52,7 +52,7 @@ ASP.NET Web FormsとVB.NETを使用したWebアプリケーション開発の実
 **所要時間**: 2時間  
 **習得内容**: VB.NET基本構文、ASP.NETページライフサイクル、サーバーコントロール基礎
 
-### Step 2: [データベース設計と接続](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-vb/step2-database-connection.html)
+### Step 2: [データベース設計と接続](https://fcircle-biz.github.io/tech_docs/tutorial/dotnet-ecosystem/aspnet-vb/step2-database-connection.html)
 - SQL Server LocalDBの起動と設定
 - SSMS(日本語版)による接続確認
 - データベースとテーブルの作成
@@ -63,7 +63,7 @@ ASP.NET Web FormsとVB.NETを使用したWebアプリケーション開発の実
 **所要時間**: 2.5時間  
 **習得内容**: SqlConnection、SqlCommand、Try-Catch文、クラス定義、Imports
 
-### Step 3: [ユーザー登録機能の実装](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-vb/step3-user-registration.html)
+### Step 3: [ユーザー登録機能の実装](https://fcircle-biz.github.io/tech_docs/tutorial/dotnet-ecosystem/aspnet-vb/step3-user-registration.html)
 - ユーザー登録フォーム（.aspx）の作成
 - サーバーコントロール（TextBox、Button等）の配置
 - POSTバック処理とバリデーション
@@ -73,7 +73,7 @@ ASP.NET Web FormsとVB.NETを使用したWebアプリケーション開発の実
 **所要時間**: 2.5時間  
 **習得内容**: Page_Load、Button_Click、バリデーション、Response.Redirect、Server.HtmlEncode
 
-### Step 4: [ユーザー一覧・詳細表示機能](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-vb/step4-user-list-detail.html)
+### Step 4: [ユーザー一覧・詳細表示機能](https://fcircle-biz.github.io/tech_docs/tutorial/dotnet-ecosystem/aspnet-vb/step4-user-list-detail.html)
 - データベースからのデータ取得（SELECT）
 - GridViewコントロールによる基本的な一覧表示
 - 詳細画面の実装とクエリストリング処理
@@ -82,7 +82,7 @@ ASP.NET Web FormsとVB.NETを使用したWebアプリケーション開発の実
 **所要時間**: 1.5時間  
 **習得内容**: GridView、QueryString、LinkButton、Response.Redirect、Integer.TryParse
 
-### Step 5: [ユーザー情報更新・削除機能](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-vb/step5-user-update-delete.html)
+### Step 5: [ユーザー情報更新・削除機能](https://fcircle-biz.github.io/tech_docs/tutorial/dotnet-ecosystem/aspnet-vb/step5-user-update-delete.html)
 - UserDAOクラスの基本的なUpdate/Deleteメソッド実装
 - 編集フォームの実装とデータバインディング
 - 基本的なUPDATE・DELETE処理の実装
@@ -91,7 +91,7 @@ ASP.NET Web FormsとVB.NETを使用したWebアプリケーション開発の実
 **所要時間**: 2時間  
 **習得内容**: ViewState、OnClientClick、データバインディング、ADO.NETパラメータ
 
-### Step 6: [ブラウザでの動作確認とデバッグ](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-vb/step6-testing-debug.html)
+### Step 6: [ブラウザでの動作確認とデバッグ](https://fcircle-biz.github.io/tech_docs/tutorial/dotnet-ecosystem/aspnet-vb/step6-testing-debug.html)
 - Visual Studioの基本的なデバッグ操作
 - ブレークポイントとステップ実行
 - 基本的な動作確認とテスト
@@ -265,4 +265,4 @@ A: Step 1の環境構築セクションで詳細なトラブルシューティ�
 
 ---
 
-[Step 1: 環境構築とASP.NET基礎](https://fcircle-biz.github.io/tech_docs/tutorial/aspnet-vb/step1-environment-setup.html)
+[Step 1: 環境構築とASP.NET基礎](https://fcircle-biz.github.io/tech_docs/tutorial/dotnet-ecosystem/aspnet-vb/step1-environment-setup.html)

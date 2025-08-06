@@ -49,7 +49,7 @@ GradleビルドツールとSpring Bootフレームワークを使用した、モ
 
 ## チュートリアル構成
 
-### Step 1: [開発環境構築とプロジェクト作成](https://fcircle-biz.github.io/tech_docs/tutorial/spring-boot-gradle/step1-environment-setup.html)
+### Step 1: [開発環境構築とプロジェクト作成](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/spring-boot-gradle/step1-environment-setup.html)
 - JDK 17のインストールと環境変数設定
 - Visual Studio Codeのセットアップと必要な拡張機能
 - Docker Desktopのインストールと動作確認
@@ -60,7 +60,7 @@ GradleビルドツールとSpring Bootフレームワークを使用した、モ
 **所要時間**: 1.5時間  
 **習得内容**: Spring Boot環境構築、Gradleビルド、プロジェクト構造理解
 
-### Step 2: [DockerでPostgreSQL環境構築](https://fcircle-biz.github.io/tech_docs/tutorial/spring-boot-gradle/step2-docker-postgresql.html)
+### Step 2: [DockerでPostgreSQL環境構築](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/spring-boot-gradle/step2-docker-postgresql.html)
 - Docker Composeファイルの作成
 - PostgreSQLコンテナの起動と管理
 - pgAdminコンテナの設定と接続
@@ -71,7 +71,7 @@ GradleビルドツールとSpring Bootフレームワークを使用した、モ
 **所要時間**: 2時間  
 **習得内容**: Docker Compose、PostgreSQL設定、データベース接続
 
-### Step 3: [Spring MVCとWebコントローラー](https://fcircle-biz.github.io/tech_docs/tutorial/spring-boot-gradle/step3-spring-mvc-web.html)
+### Step 3: [Spring MVCとWebコントローラー](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/spring-boot-gradle/step3-spring-mvc-web.html)
 - Spring MVCアーキテクチャの理解
 - @Controllerアノテーションの使用
 - リクエストマッピングの基本
@@ -82,7 +82,7 @@ GradleビルドツールとSpring Bootフレームワークを使用した、モ
 **所要時間**: 2時間  
 **習得内容**: Webコントローラー実装、画面表示、フォーム処理
 
-### Step 4: [Spring Data JPAとエンティティ設計](https://fcircle-biz.github.io/tech_docs/tutorial/spring-boot-gradle/step4-spring-data-jpa.html)
+### Step 4: [Spring Data JPAとエンティティ設計](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/spring-boot-gradle/step4-spring-data-jpa.html)
 - JPAエンティティの作成（User）
 - アノテーションによるマッピング設定
 - Spring Data JPAリポジトリの作成
@@ -93,7 +93,7 @@ GradleビルドツールとSpring Bootフレームワークを使用した、モ
 **所要時間**: 3時間  
 **習得内容**: JPA基礎、エンティティ設計、リポジトリパターン
 
-### Step 5: [ユーザー登録機能の実装](https://fcircle-biz.github.io/tech_docs/tutorial/spring-boot-gradle/step5-user-registration.html)
+### Step 5: [ユーザー登録機能の実装](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/spring-boot-gradle/step5-user-registration.html)
 - ユーザー登録フォームの作成
 - 基本的なバリデーションの使用
 - サービス層の実装
@@ -104,7 +104,7 @@ GradleビルドツールとSpring Bootフレームワークを使用した、モ
 **所要時間**: 2.5時間  
 **習得内容**: フォーム処理、基本バリデーション、サービス層
 
-### Step 6: [Thymeleafによる画面実装](https://fcircle-biz.github.io/tech_docs/tutorial/spring-boot-gradle/step6-thymeleaf-ui.html)
+### Step 6: [Thymeleafによる画面実装](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/spring-boot-gradle/step6-thymeleaf-ui.html)
 - Thymeleafテンプレートエンジンの設定
 - レイアウト共通化（ヘッダー、フッター）
 - ユーザー登録フォームの作成
@@ -115,7 +115,7 @@ GradleビルドツールとSpring Bootフレームワークを使用した、モ
 **所要時間**: 2.5時間  
 **習得内容**: Thymeleaf基礎、フォーム処理、画面レイアウト
 
-### Step 7: [ユーザー一覧・詳細表示機能](https://fcircle-biz.github.io/tech_docs/tutorial/spring-boot-gradle/step7-user-list-detail.html)
+### Step 7: [ユーザー一覧・詳細表示機能](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/spring-boot-gradle/step7-user-list-detail.html)
 - ユーザー一覧画面の実装
 - ページネーション機能の追加
 - ユーザー詳細画面の作成
@@ -126,7 +126,7 @@ GradleビルドツールとSpring Bootフレームワークを使用した、モ
 **所要時間**: 3時間  
 **習得内容**: データ表示、ページング、検索機能、UI/UX改善
 
-### Step 8: [ユーザー更新・削除機能](https://fcircle-biz.github.io/tech_docs/tutorial/spring-boot-gradle/step8-user-update-delete.html)
+### Step 8: [ユーザー更新・削除機能](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/spring-boot-gradle/step8-user-update-delete.html)
 - ユーザー編集フォームの作成
 - 更新処理の実装（楽観的ロック）
 - 削除確認ダイアログの実装
@@ -137,7 +137,7 @@ GradleビルドツールとSpring Bootフレームワークを使用した、モ
 **所要時間**: 3時間  
 **習得内容**: CRUD完成、トランザクション、楽観的ロック、監査
 
-### Step 9: [セキュリティとエラーハンドリング](https://fcircle-biz.github.io/tech_docs/tutorial/spring-boot-gradle/step9-security-error.html)
+### Step 9: [セキュリティとエラーハンドリング](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/spring-boot-gradle/step9-security-error.html)
 - 基本的な入力値検証
 - SQLインジェクション対策の基礎
 - 簡単なエラーページの作成
@@ -147,7 +147,7 @@ GradleビルドツールとSpring Bootフレームワークを使用した、モ
 **所要時間**: 2時間  
 **習得内容**: セキュリティ基礎、例外処理、ロギング
 
-### Step 10: [デプロイメントと運用設定](https://fcircle-biz.github.io/tech_docs/tutorial/spring-boot-gradle/step10-deployment.html)
+### Step 10: [デプロイメントと運用設定](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/spring-boot-gradle/step10-deployment.html)
 - アプリケーションプロパティの外部化
 - プロファイル別設定（開発/本番）
 - 実行可能JARの作成

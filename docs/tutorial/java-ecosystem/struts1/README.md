@@ -41,7 +41,7 @@ Apache Struts 1.x フレームワークを使用したWebアプリケーショ�
 
 ## チュートリアル構成
 
-### Step 1: [環境構築とプロジェクト作成](https://fcircle-biz.github.io/tech_docs/tutorial/struts1/step1-environment-setup.html)
+### Step 1: [環境構築とプロジェクト作成](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/struts1/step1-environment-setup.html)
 - 開発環境の構築（Pleiades Eclipse、Tomcat設定）
 - Struts 1.x プロジェクトの初期化
 - 基本的なMVCコンポーネントの実装
@@ -50,7 +50,7 @@ Apache Struts 1.x フレームワークを使用したWebアプリケーショ�
 
 **所要時間**: 1.5時間
 
-### Step 2: [Struts設定とMVCアーキテクチャ](https://fcircle-biz.github.io/tech_docs/tutorial/struts1/step2-struts-config-mvc.html)
+### Step 2: [Struts設定とMVCアーキテクチャ](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/struts1/step2-struts-config-mvc.html)
 - struts-config.xmlによる設定管理
 - ActionクラスとActionFormの実装
 - JSPとタグライブラリの活用
@@ -59,7 +59,7 @@ Apache Struts 1.x フレームワークを使用したWebアプリケーショ�
 
 **所要時間**: 2.5時間
 
-### Step 3: [データベース接続とDAO設計](https://fcircle-biz.github.io/tech_docs/tutorial/struts1/step3-database-dao.html)
+### Step 3: [データベース接続とDAO設計](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/struts1/step3-database-dao.html)
 - JDBCによるデータベース接続管理
 - DAOパターンの設計と実装
 - JDBCドライバーの手動設定
@@ -68,7 +68,7 @@ Apache Struts 1.x フレームワークを使用したWebアプリケーショ�
 
 **所要時間**: 2.5時間
 
-### Step 4: [CRUD機能の実装 - 作成・参照](https://fcircle-biz.github.io/tech_docs/tutorial/struts1/step4-user-create-read.html)
+### Step 4: [CRUD機能の実装 - 作成・参照](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/struts1/step4-user-create-read.html)
 - エンティティクラスの設計
 - ユーザー登録機能の実装
 - データ検索・一覧表示機能
@@ -77,7 +77,7 @@ Apache Struts 1.x フレームワークを使用したWebアプリケーショ�
 
 **所要時間**: 3時間
 
-### Step 5: [CRUD機能の拡張 - 更新・削除](https://fcircle-biz.github.io/tech_docs/tutorial/struts1/step5-user-update-delete.html)
+### Step 5: [CRUD機能の拡張 - 更新・削除](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/struts1/step5-user-update-delete.html)
 - データ更新機能の実装
 - 論理削除・物理削除の実装
 - 楽観的排他制御
@@ -86,7 +86,7 @@ Apache Struts 1.x フレームワークを使用したWebアプリケーショ�
 
 **所要時間**: 3時間
 
-### Step 6: [ブラウザ動作確認](https://fcircle-biz.github.io/tech_docs/tutorial/struts1/step6-testing-debug.html)
+### Step 6: [ブラウザ動作確認](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/struts1/step6-testing-debug.html)
 - ブラウザでの動作確認手順
 - 各機能のテスト手法
 - バリデーション機能の確認
@@ -167,4 +167,4 @@ CREATE TABLE users (
 
 ---
 
-[Step 1: 環境構築とプロジェクト作成](https://fcircle-biz.github.io/tech_docs/tutorial/struts1/step1-environment-setup.html)
+[Step 1: 環境構築とプロジェクト作成](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/struts1/step1-environment-setup.html)
