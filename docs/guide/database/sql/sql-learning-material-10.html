@@ -3,1040 +3,385 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SQL初心者向け学習教材 - PostgreSQL入門</title>
+    <title>SQL学習教材 第10章 - 実践的なデータベース設計</title>
+    
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Google Fonts - Noto Sans JP -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    
     <style>
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            padding-top: 56px;
-        }
-        .navbar {
-            background-color: #1565c0;
-        }
-        .sidebar {
-            position: sticky;
-            top: 70px;
-            height: calc(100vh - 70px);
-            overflow-y: auto;
-        }
-        .chapter-title {
-            color: #1565c0;
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #1565c0;
-            padding-bottom: 0.5rem;
-        }
-        .section-title {
-            color: #1976d2;
-            margin-top: 1.2rem;
-            margin-bottom: 0.8rem;
-        }
-        code {
-            display: block;
-            background-color: #f5f5f5;
-            border-radius: 4px;
-            padding: 1rem;
-            margin: 1rem 0;
-            font-family: Consolas, Monaco, 'Andale Mono', monospace;
-            white-space: pre;
-            overflow-x: auto;
-        }
-        .sql-explanation {
-            background-color: #f1f8e9;
-            border-left: 4px solid #8bc34a;
-            padding: 1rem;
-            margin: 0 0 1.5rem 0;
-            border-radius: 0 4px 4px 0;
-        }
-        .quiz-container {
-            background-color: #e3f2fd;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 2rem 0;
-        }
-        .quiz-question {
-            font-weight: 500;
-            margin-bottom: 1rem;
-        }
-        .diagram {
-            max-width: 100%;
-            height: auto;
-            margin: 1.5rem 0;
-            text-align: center;
-        }
-        .exercise {
-            background-color: #fff8e1;
-            border-left: 4px solid #ffc107;
-            padding: 1rem;
-            margin: 1.5rem 0;
-        }
-        .note {
-            background-color: #e8f5e9;
-            border-left: 4px solid #4caf50;
-            padding: 1rem;
-            margin: 1.5rem 0;
-        }
-        #table-of-contents .list-group-item {
-            border: none;
-            padding: 0.5rem 1rem;
-        }
-        #table-of-contents .list-group-item-action {
-            color: #1976d2;
-        }
-        /* 選択された目次項目のスタイル */
-        #table-of-contents .list-group-item-action.active,
-        .list-group-item.active {
-            color: white !important; /* テキストを白色にして青い背景に対してコントラストをつける */
-            background-color: #1976d2;
-            border-color: #1976d2;
-        }
-        .section-nav {
-            padding-left: 1rem;
-        }
-        .inline-code {
-            background-color: #f5f5f5;
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            font-family: Consolas, Monaco, 'Andale Mono', monospace;
-            display: inline;
-        }
-        footer {
-            background-color: #1565c0;
-            color: white;
-            padding: 1rem 0;
-            margin-top: 2rem;
-        }
-        .sql-diagram {
-            display: block;
-            margin: 2rem auto;
-            max-width: 100%;
-            background-color: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            border: 1px solid #dee2e6;
-        }
+        body { font-family: 'Noto Sans JP', sans-serif; padding-top: 56px; }
+        .navbar { background-color: #1976d2; }
+        .sidebar { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; }
+        .chapter-title { color: #1976d2; margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #1976d2; padding-bottom: 0.5rem; }
+        .section-title { color: #42a5f5; margin-top: 1.2rem; margin-bottom: 0.8rem; }
+        .quiz-container { background-color: #e1f5fe; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #1976d2; }
+        .exercise-container { background-color: #f3e5f5; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #9c27b0; }
+        .highlight { background-color: #ffecb3; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #ffc107; }
+        .warning { background-color: #ffebee; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #f44336; }
+        .code-block { background-color: #1e1e1e; border-radius: 5px; padding: 1rem; margin: 1rem 0; }
+        .nav-link.active { background-color: #1976d2 !important; color: white !important; }
     </style>
 </head>
-<body data-bs-spy="scroll" data-bs-target="#tableOfContents">
-    <!-- Navbar -->
+<body>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="#">SQL初心者向け学習教材</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#introduction">はじめに</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#special-chapter">特別章: 模擬プロジェクト</a>
-                    </li>
-                </ul>
-            </div>
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">SQL学習教材</a>
         </div>
     </nav>
 
-    <div class="container my-4">
+    <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar - Table of Contents -->
-            <div class="col-lg-3">
-                <div class="sidebar">
-                    <div class="card">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0">目次</h5>
-                        </div>
-                        <div id="table-of-contents" class="list-group list-group-flush">
-                            <a href="#introduction" class="list-group-item list-group-item-action">はじめに</a>
-                            <a href="#special-chapter" class="list-group-item list-group-item-action">特別章: 模擬プロジェクト</a>
-                            <div class="section-nav">
-                                <a href="#project-overview" class="list-group-item list-group-item-action">概要</a>
-                                <a href="#project-design" class="list-group-item list-group-item-action">データベース設計</a>
-                                <a href="#project-implementation" class="list-group-item list-group-item-action">実装手順</a>
-                                <a href="#project-operations" class="list-group-item list-group-item-action">商品管理操作</a>
-                                <a href="#project-advanced" class="list-group-item list-group-item-action">発展課題</a>
-                            </div>
-                            <a href="#next-steps" class="list-group-item list-group-item-action">次のステップ</a>
-                        </div>
-                    </div>
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-1.html">第1章: 基礎概念</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-2.html">第2章: データ型</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-3.html">第3章: CRUD操作</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-4.html">第4章: SELECT文の詳細</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-5.html">第5章: 結合（JOIN）</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-6.html">第6章: 集計とグループ化</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-7.html">第7章: サブクエリ</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-8.html">第8章: パフォーマンス</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-9.html">第9章: トランザクション</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="sql-learning-material-10.html">第10章: DB設計</a></li>
+                    </ul>
                 </div>
-            </div>
-            
-            <!-- Main Content -->
-            <div class="col-lg-9">
-                <section id="introduction">
-                    <h1 class="display-5 mb-4">SQL初心者向け学習教材</h1>
-                    <p class="lead">この教材では、SQLの基礎からPostgreSQLを使ったデータベース操作まで、段階的に学習していきます。実践的な例と演習問題を通じて、データベース操作のスキルを身につけましょう。</p>
-                    <div class="note">
-                        <h5>この教材で学ぶこと</h5>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第10章: 実践的なデータベース設計</h1>
+                </div>
+
+                <div id="chapter10">
+                    <h2 class="chapter-title">実践的なデータベース設計</h2>
+                    
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
                         <ul>
-                            <li>SQLの基本概念と構文</li>
-                            <li>PostgreSQLの特徴と基本操作</li>
-                            <li>データベースの設計と作成</li>
-                            <li>データの挿入、取得、更新、削除（CRUD操作）</li>
-                            <li>実践的なデータベース設計と実装</li>
+                            <li>正規化の基本概念（第1〜第3正規形）</li>
+                            <li>ER図の作成方法</li>
+                            <li>実践的なデータベース設計演習</li>
+                            <li>アンチパターンとベストプラクティス</li>
+                            <li>スケーラブルなデータベース設計</li>
                         </ul>
                     </div>
-                </section>
 
+                    <h3 class="section-title">10.1 正規化の基本概念</h3>
+                    <p>正規化は、データの冗長性を排除し、データの整合性を保つための設計手法です。</p>
 
-                    <section id="special-chapter">
-                        <h2 class="chapter-title">特別章：模擬プロジェクト - 商品管理システム</h2>
-                        <p>この章では、これまでに学んだSQLの知識を活用して、簡単な商品管理システムを構築します。テーブル設計からデータ操作まで、一連の流れを体験しましょう。</p>
-
-                        <section id="project-overview">
-                            <h3 class="section-title">概要</h3>
-                            <p>このプロジェクトでは、以下の機能を持つ商品管理システムを作成します：</p>
-                            <ul>
-                                <li>商品の登録・管理</li>
-                                <li>カテゴリの管理</li>
-                                <li>在庫の管理</li>
-                                <li>注文の記録と管理</li>
-                                <li>売上レポートの作成</li>
-                            </ul>
-                            <p>このシステムを通して、データベース設計、テーブル作成、データ操作の実践的なスキルを身につけます。</p>
-                        </section>
-
-                        <section id="project-design">
-                            <h3 class="section-title">データベース設計</h3>
-                            <p>まず、必要なテーブルとその関連性を設計します。</p>
-
-                            <h4>エンティティ関連図（ER図）</h4>
-                            <div class="diagram">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" class="sql-diagram">
-                                    <!-- Categories Table -->
-                                    <rect x="50" y="50" width="160" height="100" fill="#bbdefb" stroke="#1976d2" stroke-width="2" rx="5" />
-                                    <text x="130" y="80" text-anchor="middle" font-size="16" font-weight="bold">categories</text>
-                                    <line x1="50" y1="90" x2="210" y2="90" stroke="#1976d2" stroke-width="2" />
-                                    <text x="60" y="110" font-size="12">id (PK)</text>
-                                    <text x="60" y="130" font-size="12">name</text>
-                                    
-                                    <!-- Products Table -->
-                                    <rect x="320" y="50" width="160" height="160" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5" />
-                                    <text x="400" y="80" text-anchor="middle" font-size="16" font-weight="bold">products</text>
-                                    <line x1="320" y1="90" x2="480" y2="90" stroke="#388e3c" stroke-width="2" />
-                                    <text x="330" y="110" font-size="12">id (PK)</text>
-                                    <text x="330" y="130" font-size="12">name</text>
-                                    <text x="330" y="150" font-size="12">price</text>
-                                    <text x="330" y="170" font-size="12">stock</text>
-                                    <text x="330" y="190" font-size="12">category_id (FK)</text>
-                                    
-                                    <!-- Customers Table -->
-                                    <rect x="50" y="200" width="160" height="140" fill="#ffe0b2" stroke="#e65100" stroke-width="2" rx="5" />
-                                    <text x="130" y="230" text-anchor="middle" font-size="16" font-weight="bold">customers</text>
-                                    <line x1="50" y1="240" x2="210" y2="240" stroke="#e65100" stroke-width="2" />
-                                    <text x="60" y="260" font-size="12">id (PK)</text>
-                                    <text x="60" y="280" font-size="12">name</text>
-                                    <text x="60" y="300" font-size="12">email</text>
-                                    <text x="60" y="320" font-size="12">phone</text>
-                                    
-                                    <!-- Orders Table -->
-                                    <rect x="320" y="250" width="160" height="140" fill="#ffcdd2" stroke="#d32f2f" stroke-width="2" rx="5" />
-                                    <text x="400" y="280" text-anchor="middle" font-size="16" font-weight="bold">orders</text>
-                                    <line x1="320" y1="290" x2="480" y2="290" stroke="#d32f2f" stroke-width="2" />
-                                    <text x="330" y="310" font-size="12">id (PK)</text>
-                                    <text x="330" y="330" font-size="12">customer_id (FK)</text>
-                                    <text x="330" y="350" font-size="12">order_date</text>
-                                    <text x="330" y="370" font-size="12">total_amount</text>
-                                    
-                                    <!-- Order Items Table -->
-                                    <rect x="590" y="150" width="160" height="140" fill="#d1c4e9" stroke="#673ab7" stroke-width="2" rx="5" />
-                                    <text x="670" y="180" text-anchor="middle" font-size="16" font-weight="bold">order_items</text>
-                                    <line x1="590" y1="190" x2="750" y2="190" stroke="#673ab7" stroke-width="2" />
-                                    <text x="600" y="210" font-size="12">id (PK)</text>
-                                    <text x="600" y="230" font-size="12">order_id (FK)</text>
-                                    <text x="600" y="250" font-size="12">product_id (FK)</text>
-                                    <text x="600" y="270" font-size="12">quantity</text>
-                                    <text x="600" y="290" font-size="12">price</text>
-                                    
-                                    <!-- Relationships -->
-                                    <line x1="210" y1="100" x2="320" y2="160" stroke="#333" stroke-width="1.5" stroke-dasharray="5,5" />
-                                    <polygon points="320,160 310,155 305,165" fill="#333" />
-                                    
-                                    <line x1="210" y1="280" x2="320" y2="330" stroke="#333" stroke-width="1.5" stroke-dasharray="5,5" />
-                                    <polygon points="320,330 310,325 305,335" fill="#333" />
-                                    
-                                    <line x1="480" y1="130" x2="590" y2="230" stroke="#333" stroke-width="1.5" stroke-dasharray="5,5" />
-                                    <polygon points="590,230 580,225 575,235" fill="#333" />
-                                    
-                                    <line x1="480" y1="330" x2="590" y2="230" stroke="#333" stroke-width="1.5" stroke-dasharray="5,5" />
-                                    <polygon points="590,230 580,235 585,225" fill="#333" />
-                                </svg>
-                                <p class="text-center">図S.1: 商品管理システムのER図</p>
+                    <h4>正規化のレベル</h4>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white"><h6>第1正規形（1NF）</h6></div>
+                                <div class="card-body"><p>繰り返し項目を排除し、各セルに単一の値を格納</p></div>
                             </div>
-
-                            <h4>テーブル定義</h4>
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover">
-                                    <thead class="table-primary">
-                                        <tr>
-                                            <th>テーブル名</th>
-                                            <th>説明</th>
-                                            <th>主な列</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>categories</td>
-                                            <td>商品カテゴリの情報</td>
-                                            <td>id, name, description</td>
-                                        </tr>
-                                        <tr>
-                                            <td>products</td>
-                                            <td>商品の基本情報</td>
-                                            <td>id, name, description, price, stock, category_id</td>
-                                        </tr>
-                                        <tr>
-                                            <td>customers</td>
-                                            <td>顧客情報</td>
-                                            <td>id, name, email, phone, address</td>
-                                        </tr>
-                                        <tr>
-                                            <td>orders</td>
-                                            <td>注文の基本情報</td>
-                                            <td>id, customer_id, order_date, status, total_amount</td>
-                                        </tr>
-                                        <tr>
-                                            <td>order_items</td>
-                                            <td>注文に含まれる商品の詳細</td>
-                                            <td>id, order_id, product_id, quantity, price</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-header bg-success text-white"><h6>第2正規形（2NF）</h6></div>
+                                <div class="card-body"><p>部分関数従属を排除し、完全関数従属のみを保持</p></div>
                             </div>
-                        </section>
-
-                        <section id="project-implementation">
-                            <h3 class="section-title">実装手順</h3>
-                            <p>では、実際にデータベースとテーブルを作成し、データを操作していきましょう。</p>
-
-                            <h4>1. データベースの作成</h4>
-                            <code>-- データベースの作成
-CREATE DATABASE product_management;
-
--- データベースに接続
-\c product_management</code>
-                            <div class="sql-explanation">
-                                <p><strong>解説:</strong></p>
-                                <ul>
-                                    <li><code>CREATE DATABASE</code>はPostgreSQLで新しいデータベースを作成するコマンドです。名前は<code>product_management</code>としています。</li>
-                                    <li><code>\c product_management</code>はpsqlコマンドライン専用のコマンドで、作成したデータベースに接続します。</li>
-                                    <li>これらのコマンドは管理者権限（またはCREATE DATABASE権限）を持つユーザーで実行する必要があります。</li>
-                                </ul>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-header bg-info text-white"><h6>第3正規形（3NF）</h6></div>
+                                <div class="card-body"><p>推移的関数従属を排除し、非キー属性間の依存を除去</p></div>
                             </div>
+                        </div>
+                    </div>
 
-                            <h4>2. テーブルの作成</h4>
-                            <code>-- カテゴリテーブルの作成
-CREATE TABLE categories (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE,
-    description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    <div class="exercise-container">
+                        <h5>実習 10-1: 正規化の実践</h5>
+                        <p>非正規化されたテーブルを正規化する過程を実践します。</p>
+                        <h6>正規化前（非正規形）</h6>
+                        <pre class="code-block"><code class="language-sql">-- 非正規化されたテーブル例
+CREATE TABLE order_summary (
+    order_id INTEGER,
+    customer_name VARCHAR(100),
+    customer_email VARCHAR(255),
+    customer_address VARCHAR(500),
+    product1_name VARCHAR(200),
+    product1_price DECIMAL(10,2),
+    product1_quantity INTEGER,
+    product2_name VARCHAR(200),
+    product2_price DECIMAL(10,2),
+    product2_quantity INTEGER
+);</code></pre>
+
+                        <h6>正規化後（第3正規形）</h6>
+                        <pre class="code-block"><code class="language-sql">-- 顧客テーブル
+CREATE TABLE customers_normalized (
+    customer_id SERIAL PRIMARY KEY,
+    customer_name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    address VARCHAR(500)
 );
 
--- 商品テーブルの作成
-CREATE TABLE products (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(200) NOT NULL,
-    description TEXT,
-    price NUMERIC(10, 2) NOT NULL CHECK (price >= 0),
-    stock INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0),
-    category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- 商品テーブル
+CREATE TABLE products_normalized (
+    product_id SERIAL PRIMARY KEY,
+    product_name VARCHAR(200) NOT NULL,
+    price DECIMAL(10,2) NOT NULL
 );
 
--- 顧客テーブルの作成
-CREATE TABLE customers (
-    id SERIAL PRIMARY KEY,
+-- 注文テーブル
+CREATE TABLE orders_normalized (
+    order_id SERIAL PRIMARY KEY,
+    customer_id INTEGER REFERENCES customers_normalized(customer_id),
+    order_date TIMESTAMP DEFAULT NOW()
+);
+
+-- 注文詳細テーブル
+CREATE TABLE order_details (
+    detail_id SERIAL PRIMARY KEY,
+    order_id INTEGER REFERENCES orders_normalized(order_id),
+    product_id INTEGER REFERENCES products_normalized(product_id),
+    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    unit_price DECIMAL(10,2) NOT NULL
+);</code></pre>
+                    </div>
+
+                    <h3 class="section-title">10.2 ER図による設計</h3>
+                    <p>Entity-Relationship図は、データベースの構造を視覚的に表現する重要なツールです。</p>
+
+                    <div class="mermaid">
+                        erDiagram
+                            CUSTOMERS {
+                                int customer_id PK
+                                string name
+                                string email UK
+                                string phone
+                                date created_at
+                            }
+                            
+                            ORDERS {
+                                int order_id PK
+                                int customer_id FK
+                                date order_date
+                                string status
+                                decimal total_amount
+                            }
+                            
+                            ORDER_DETAILS {
+                                int detail_id PK
+                                int order_id FK
+                                int product_id FK
+                                int quantity
+                                decimal unit_price
+                            }
+                            
+                            PRODUCTS {
+                                int product_id PK
+                                string product_name
+                                decimal price
+                                int stock_quantity
+                                int category_id FK
+                            }
+                            
+                            CATEGORIES {
+                                int category_id PK
+                                string category_name
+                                string description
+                            }
+                            
+                            CUSTOMERS ||--o{ ORDERS : "places"
+                            ORDERS ||--o{ ORDER_DETAILS : "contains"
+                            PRODUCTS ||--o{ ORDER_DETAILS : "listed in"
+                            CATEGORIES ||--o{ PRODUCTS : "includes"
+                    </div>
+
+                    <div class="exercise-container">
+                        <h5>実習 10-2: 図書館システムの設計</h5>
+                        <p>図書館管理システムのデータベース設計を実践します。</p>
+                        <h6>要件定義</h6>
+                        <ul>
+                            <li>書籍の管理（書籍情報、著者、出版社）</li>
+                            <li>利用者の管理（利用者情報、貸出履歴）</li>
+                            <li>貸出・返却の管理（貸出日、返却予定日、返却日）</li>
+                        </ul>
+
+                        <h6>実装例</h6>
+                        <pre class="code-block"><code class="language-sql">-- 著者テーブル
+CREATE TABLE authors (
+    author_id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE,
+    birth_date DATE,
+    nationality VARCHAR(50)
+);
+
+-- 出版社テーブル
+CREATE TABLE publishers (
+    publisher_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    address VARCHAR(200),
+    phone VARCHAR(20)
+);
+
+-- 書籍テーブル
+CREATE TABLE books (
+    book_id SERIAL PRIMARY KEY,
+    title VARCHAR(200) NOT NULL,
+    isbn VARCHAR(13) UNIQUE,
+    publisher_id INTEGER REFERENCES publishers(publisher_id),
+    publication_date DATE,
+    pages INTEGER,
+    available_copies INTEGER DEFAULT 1
+);
+
+-- 書籍著者関係テーブル（多対多）
+CREATE TABLE book_authors (
+    book_id INTEGER REFERENCES books(book_id),
+    author_id INTEGER REFERENCES authors(author_id),
+    PRIMARY KEY (book_id, author_id)
+);
+
+-- 利用者テーブル
+CREATE TABLE members (
+    member_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE,
+    phone VARCHAR(20),
+    address VARCHAR(300),
+    registration_date DATE DEFAULT CURRENT_DATE
+);
+
+-- 貸出テーブル
+CREATE TABLE loans (
+    loan_id SERIAL PRIMARY KEY,
+    book_id INTEGER REFERENCES books(book_id),
+    member_id INTEGER REFERENCES members(member_id),
+    loan_date DATE DEFAULT CURRENT_DATE,
+    due_date DATE NOT NULL,
+    return_date DATE,
+    status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'returned', 'overdue'))
+);</code></pre>
+                    </div>
+
+                    <h3 class="section-title">10.3 設計のベストプラクティス</h3>
+                    <div class="highlight">
+                        <h6>データベース設計の原則</h6>
+                        <ul>
+                            <li><strong>適切な正規化</strong>: 冗長性を排除しつつ、パフォーマンスを考慮</li>
+                            <li><strong>命名規則の統一</strong>: 一貫した命名でメンテナンス性を向上</li>
+                            <li><strong>制約の活用</strong>: データ品質を自動的に保証</li>
+                            <li><strong>インデックス戦略</strong>: 検索パフォーマンスの最適化</li>
+                            <li><strong>将来の拡張性</strong>: 要件変更に対する柔軟性</li>
+                        </ul>
+                    </div>
+
+                    <div class="warning">
+                        <h6>よくある設計アンチパターン</h6>
+                        <ul>
+                            <li><strong>神テーブル</strong>: 一つのテーブルにあまりにも多くの情報を詰め込む</li>
+                            <li><strong>マジック値</strong>: 意味を持つ数値やコードをそのまま格納</li>
+                            <li><strong>EAV構造</strong>: Entity-Attribute-Value構造の濫用</li>
+                            <li><strong>不適切な外部キー</strong>: 参照整合性制約の不備</li>
+                        </ul>
+                    </div>
+
+                    <div class="exercise-container">
+                        <h5>実習 10-3: 設計改善の実践</h5>
+                        <p>問題のある設計を改善する演習を行います。</p>
+                        
+                        <h6>改善前（問題のある設計）</h6>
+                        <pre class="code-block"><code class="language-sql">-- 問題のあるテーブル設計
+CREATE TABLE user_data (
+    id SERIAL PRIMARY KEY,
+    user_info TEXT,  -- JSON形式で全ユーザー情報
+    type INTEGER,    -- 1=顧客, 2=管理者, 3=スタッフ（マジック値）
+    data1 VARCHAR(255),  -- 用途不明
+    data2 VARCHAR(255),  -- 用途不明
+    data3 VARCHAR(255)   -- 用途不明
+);</code></pre>
+
+                        <h6>改善後（適切な設計）</h6>
+                        <pre class="code-block"><code class="language-sql">-- ユーザー種別マスタ
+CREATE TABLE user_types (
+    type_id SERIAL PRIMARY KEY,
+    type_name VARCHAR(50) NOT NULL UNIQUE,
+    description TEXT
+);
+
+INSERT INTO user_types (type_name, description) VALUES
+    ('customer', '一般顧客'),
+    ('admin', '管理者'),
+    ('staff', 'スタッフ');
+
+-- 改善されたユーザーテーブル
+CREATE TABLE users_improved (
+    user_id SERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    full_name VARCHAR(100) NOT NULL,
     phone VARCHAR(20),
     address TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- 注文テーブルの作成
-CREATE TABLE orders (
-    id SERIAL PRIMARY KEY,
-    customer_id INTEGER REFERENCES customers(id) ON DELETE SET NULL,
-    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'cancelled')),
-    total_amount NUMERIC(12, 2) DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- 注文商品テーブルの作成
-CREATE TABLE order_items (
-    id SERIAL PRIMARY KEY,
-    order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
-    product_id INTEGER REFERENCES products(id) ON DELETE SET NULL,
-    quantity INTEGER NOT NULL CHECK (quantity > 0),
-    price NUMERIC(10, 2) NOT NULL CHECK (price >= 0),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);</code>
-                            <div class="sql-explanation">
-                                <p><strong>解説:</strong></p>
-                                <h5>各テーブルの重要な特徴:</h5>
-                                
-                                <p><strong>categories テーブル:</strong></p>
-                                <ul>
-                                    <li><code>id SERIAL PRIMARY KEY</code>: 自動採番される主キー</li>
-                                    <li><code>name VARCHAR(100) NOT NULL UNIQUE</code>: カテゴリ名は必須かつ一意</li>
-                                    <li><code>description TEXT</code>: 任意の長さのテキスト型</li>
-                                </ul>
-                                
-                                <p><strong>products テーブル:</strong></p>
-                                <ul>
-                                    <li><code>price NUMERIC(10, 2) NOT NULL CHECK (price >= 0)</code>: 商品価格は必須、小数点以下2桁まで対応、0より大きい値のみ許可</li>
-                                    <li><code>stock INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0)</code>: 在庫数は初期値0で負数は不可</li>
-                                    <li><code>category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL</code>: カテゴリテーブルへの外部キー参照、カテゴリが削除されると対応する商品のカテゴリIDはNULLに</li>
-                                </ul>
-                                
-                                <p><strong>customers テーブル:</strong></p>
-                                <ul>
-                                    <li><code>email VARCHAR(100) UNIQUE</code>: メールアドレスは一意だが必須ではない</li>
-                                </ul>
-                                
-                                <p><strong>orders テーブル:</strong></p>
-                                <ul>
-                                    <li><code>status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'cancelled'))</code>: 注文ステータスは3つの値のみ許可</li>
-                                    <li><code>total_amount NUMERIC(12, 2) DEFAULT 0</code>: 注文の合計金額、初期値は0</li>
-                                </ul>
-                                
-                                <p><strong>order_items テーブル:</strong></p>
-                                <ul>
-                                    <li><code>order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE</code>: 注文テーブルへの外部キー参照、注文が削除されると関連する注文商品も削除</li>
-                                    <li><code>quantity INTEGER NOT NULL CHECK (quantity > 0)</code>: 数量は必須かつ0より大きい値</li>
-                                </ul>
-                            </div>
-
-                            <h4>3. トリガーの作成</h4>
-                            <p>在庫が減ったときに自動的に更新する機能や、注文合計金額を自動計算する機能などを実装します。</p>
-                            <code>-- 注文時に在庫を減らす関数とトリガー
-CREATE OR REPLACE FUNCTION decrease_product_stock()
-RETURNS TRIGGER AS $$
-BEGIN
-    UPDATE products
-    SET stock = stock - NEW.quantity
-    WHERE id = NEW.product_id;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER after_order_item_insert
-    AFTER INSERT ON order_items
-    FOR EACH ROW
-    EXECUTE FUNCTION decrease_product_stock();
-
--- 注文アイテムが追加されたときに注文の合計金額を更新する関数とトリガー
-CREATE OR REPLACE FUNCTION update_order_total()
-RETURNS TRIGGER AS $$
-BEGIN
-    UPDATE orders
-    SET total_amount = (
-        SELECT SUM(price * quantity)
-        FROM order_items
-        WHERE order_id = NEW.order_id
-    )
-    WHERE id = NEW.order_id;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER after_order_item_insert_update_total
-    AFTER INSERT OR UPDATE ON order_items
-    FOR EACH ROW
-    EXECUTE FUNCTION update_order_total();</code>
-                            <div class="sql-explanation">
-                                <p><strong>解説:</strong></p>
-                                <p><strong>1. 在庫減少トリガー:</strong></p>
-                                <ul>
-                                    <li>関数 <code>decrease_product_stock()</code> は注文が入った際に、対応する商品の在庫を自動的に減らします</li>
-                                    <li><code>RETURNS TRIGGER</code> はこれがトリガー関数であることを示します</li>
-                                    <li><code>UPDATE products SET stock = stock - NEW.quantity</code> で注文された数量分だけ在庫を減らします</li>
-                                    <li><code>WHERE id = NEW.product_id</code> で注文された商品のみに絞り込みます</li>
-                                    <li><code>RETURN NEW</code> はトリガーイベントを続行させます</li>
-                                </ul>
-                                
-                                <p><strong>2. 注文合計更新トリガー:</strong></p>
-                                <ul>
-                                    <li>関数 <code>update_order_total()</code> は注文商品が追加/更新されたときに、注文の合計金額を自動計算します</li>
-                                    <li>サブクエリ <code>SELECT SUM(price * quantity) FROM order_items WHERE order_id = NEW.order_id</code> で各注文商品の小計（価格×数量）の合計を計算します</li>
-                                    <li>このトリガーは <code>AFTER INSERT OR UPDATE</code> で指定されており、注文商品の追加または更新の両方のイベントで発動します</li>
-                                </ul>
-                                
-                                <p><strong>トリガーの重要性:</strong></p>
-                                <ul>
-                                    <li>トリガーは「ビジネスルール」をデータベースレベルで自動的に適用できるため、アプリケーション側のコードが簡素化され、データの整合性が保証されます</li>
-                                    <li>クライアントアプリケーションが異なっても、同じルールが適用されます</li>
-                                    <li>メンテナンス性が向上し、ミスを減らすことができます</li>
-                                </ul>
-                            </div>
-                        </section>
-
-                        <section id="project-operations">
-                            <h3 class="section-title">商品管理操作</h3>
-                            <p>ここでは、商品管理システムの主要な操作を実装します。</p>
-
-                            <h4>1. カテゴリと商品のデータ挿入</h4>
-                            <code>-- カテゴリの追加
-INSERT INTO categories (name, description) VALUES
-    ('電子機器', '電子機器とガジェット'),
-    ('家具', 'インテリアと家具'),
-    ('衣類', '衣類とアクセサリー'),
-    ('食品', '食品と飲料'),
-    ('書籍', '書籍と電子書籍');</code>
-                            <div class="sql-explanation">
-                                <p><strong>解説:</strong></p>
-                                <ul>
-                                    <li><code>INSERT INTO</code> 文は指定したテーブルにデータを挿入するコマンドです</li>
-                                    <li><code>categories (name, description)</code> で挿入する列を明示的に指定しています</li>
-                                    <li><code>VALUES</code> キーワードの後に各行のデータを括弧内にカンマ区切りで指定しています</li>
-                                    <li>複数行を一度に挿入する「バルクインサート」形式を使用しており、これはパフォーマンス面で個別のINSERT文より効率的です</li>
-                                    <li><code>name</code> 列には各カテゴリの名前、<code>description</code> 列には説明を入れています</li>
-                                    <li><code>id</code> 列はテーブル作成時に <code>SERIAL PRIMARY KEY</code> と定義されているため、自動的に採番されます</li>
-                                </ul>
-                            </div>
-
-                            <code>-- 商品の追加
-INSERT INTO products (name, description, price, stock, category_id) VALUES
-    ('スマートフォン', '最新モデルのスマートフォン', 80000, 50, 1),
-    ('ノートパソコン', '高性能ノートパソコン', 120000, 30, 1),
-    ('ダイニングテーブル', '4人用ダイニングテーブル', 35000, 10, 2),
-    ('ソファ', '3人掛けソファ', 48000, 8, 2),
-    ('Tシャツ', '綿100%Tシャツ', 2500, 100, 3),
-    ('ジーンズ', 'デニムジーンズ', 5800, 50, 3),
-    ('有機野菜セット', '新鮮な有機野菜の詰め合わせ', 3800, 30, 4),
-    ('プログラミング入門書', 'SQL学習に最適な入門書', 2800, 20, 5);</code>
-                            <div class="sql-explanation">
-                                <p><strong>解説:</strong></p>
-                                <ul>
-                                    <li>ここでは <code>products</code> テーブルに8つの商品データを挿入しています</li>
-                                    <li><code>category_id</code> の値は前のステップで挿入した <code>categories</code> テーブルの <code>id</code> を参照しています（外部キー）</li>
-                                    <li>例えば、<code>category_id = 1</code> は「電子機器」、<code>category_id = 3</code> は「衣類」を意味します</li>
-                                    <li>商品ごとに適切な価格(<code>price</code>)と在庫数(<code>stock</code>)を設定しています</li>
-                                    <li><code>created_at</code> と <code>updated_at</code> 列は明示的に指定していないため、テーブル定義のデフォルト値（<code>CURRENT_TIMESTAMP</code>）が使用されます</li>
-                                </ul>
-                            </div>
-
-                            <h4>2. 顧客データの挿入</h4>
-                            <code>-- 顧客の追加
-INSERT INTO customers (name, email, phone, address) VALUES
-    ('山田太郎', 'yamada@example.com', '090-1234-5678', '東京都新宿区1-1-1'),
-    ('佐藤花子', 'sato@example.com', '080-8765-4321', '大阪府大阪市北区2-2-2'),
-    ('鈴木一郎', 'suzuki@example.com', '070-2345-6789', '福岡県福岡市博多区3-3-3');</code>
-                            <div class="sql-explanation">
-                                <p><strong>解説:</strong></p>
-                                <ul>
-                                    <li><code>customers</code> テーブルに3人の顧客データを挿入しています</li>
-                                    <li>各顧客の名前、メールアドレス、電話番号、住所を指定しています</li>
-                                    <li>メールアドレスはテーブル定義で <code>UNIQUE</code> 制約があるため、重複するメールアドレスは挿入できません</li>
-                                    <li>こちらも <code>id</code> と <code>created_at</code> は自動的に設定されます</li>
-                                </ul>
-                            </div>
-
-                            <h4>3. 注文処理</h4>
-                            <code>-- トランザクションを開始
-BEGIN;
-
--- 新しい注文を作成
-INSERT INTO orders (customer_id, status) VALUES (1, 'pending') RETURNING id;
--- 返されたIDを使用して注文アイテムを追加（ここでは1と仮定）
-INSERT INTO order_items (order_id, product_id, quantity, price) 
-VALUES (1, 1, 2, (SELECT price FROM products WHERE id = 1));
-
-INSERT INTO order_items (order_id, product_id, quantity, price) 
-VALUES (1, 5, 3, (SELECT price FROM products WHERE id = 5));
-
--- 注文を完了状態に更新
-UPDATE orders SET status = 'completed' WHERE id = 1;
-
--- トランザクションをコミット
-COMMIT;</code>
-                            <div class="sql-explanation">
-                                <p><strong>解説:</strong></p>
-                                <p>この一連の操作はトランザクションで囲まれています（<code>BEGIN</code> と <code>COMMIT</code>）：</p>
-                                <ul>
-                                    <li>トランザクションを使用することで、すべての操作が成功するか、すべて失敗するかのどちらかになります（原子性）</li>
-                                    <li>エラーが発生した場合は <code>ROLLBACK</code> でトランザクションを取り消すことができます</li>
-                                </ul>
-                                
-                                <p>処理の流れ：</p>
-                                <ol>
-                                    <li>最初に <code>orders</code> テーブルに新しい注文レコードを作成しています
-                                        <ul>
-                                            <li><code>customer_id = 1</code> は山田太郎さんの注文であることを意味します</li>
-                                            <li><code>status = 'pending'</code> は注文が処理中であることを示します</li>
-                                            <li><code>RETURNING id</code> は挿入されたレコードの <code>id</code> 値を返します（ここでは説明のため1と仮定）</li>
-                                        </ul>
-                                    </li>
-                                    <li>次に <code>order_items</code> テーブルに注文内容（注文商品）を2つ挿入しています
-                                        <ul>
-                                            <li>1つ目の注文商品は、商品ID=1（スマートフォン）を2個注文</li>
-                                            <li>2つ目の注文商品は、商品ID=5（Tシャツ）を3個注文</li>
-                                            <li>価格はサブクエリ <code>(SELECT price FROM products WHERE id = ...)</code> で商品テーブルから取得しています（価格を常に最新の状態に保つため）</li>
-                                        </ul>
-                                    </li>
-                                    <li>最後に注文ステータスを <code>'completed'</code>（完了）に更新しています
-                                        <ul>
-                                            <li>これにより注文が確定されます</li>
-                                        </ul>
-                                    </li>
-                                </ol>
-                                
-                                <p><strong>トリガーの自動実行：</strong></p>
-                                <p>この操作の後、前のステップで作成したトリガーが自動的に動作します：</p>
-                                <ul>
-                                    <li><code>decrease_product_stock</code> トリガー: 在庫を減らします（スマートフォンが2個、Tシャツが3個減少）</li>
-                                    <li><code>update_order_total</code> トリガー: 注文の合計金額を計算します（80000×2 + 2500×3 = 167,500円）</li>
-                                </ul>
-                            </div>
-
-                            <h4>4. 在庫管理</h4>
-                            <code>-- 在庫状況の確認
-SELECT id, name, stock, 
-    CASE 
-        WHEN stock > 20 THEN '十分'
-        WHEN stock > 5 THEN '注意'
-        ELSE '要発注'
-    END AS stock_status
-FROM products
-ORDER BY stock;</code>
-                            <div class="sql-explanation">
-                                <p><strong>解説:</strong></p>
-                                <ul>
-                                    <li>この <code>SELECT</code> 文は商品の在庫状況をチェックするためのクエリです</li>
-                                    <li><code>CASE</code> 式を使用して在庫数に基づいた在庫ステータスを動的に生成しています:
-                                        <ul>
-                                            <li>在庫が20個を超える場合: 「十分」</li>
-                                            <li>在庫が5個を超え20個以下の場合: 「注意」</li>
-                                            <li>在庫が5個以下の場合: 「要発注」</li>
-                                        </ul>
-                                    </li>
-                                    <li><code>AS stock_status</code> で生成された値に列名を付けています</li>
-                                    <li><code>ORDER BY stock</code> で在庫数の少ない順に結果を並べ替えています（在庫切れリスクの高い商品が上に表示される）</li>
-                                </ul>
-                            </div>
-
-                            <code>-- 在庫の更新（入荷）
-UPDATE products
-SET stock = stock + 10, updated_at = CURRENT_TIMESTAMP
-WHERE id = 4;</code>
-                            <div class="sql-explanation">
-                                <p><strong>解説:</strong></p>
-                                <ul>
-                                    <li>この <code>UPDATE</code> 文は特定の商品（id=4、ソファ）の在庫を10個増やしています</li>
-                                    <li><code>stock = stock + 10</code> は現在の在庫数に10を加算する式です</li>
-                                    <li>同時に <code>updated_at</code> フィールドを現在の日時に更新しています</li>
-                                    <li>これは新しい商品が入荷したときの処理を模擬しています</li>
-                                </ul>
-                            </div>
-
-                            <h4>5. 売上レポート</h4>
-                            <code>-- カテゴリ別売上集計
-SELECT c.name AS category_name, COUNT(oi.id) AS total_items, SUM(oi.price * oi.quantity) AS total_sales
-FROM order_items oi
-JOIN products p ON oi.product_id = p.id
-JOIN categories c ON p.category_id = c.id
-JOIN orders o ON oi.order_id = o.id
-WHERE o.status = 'completed'
-GROUP BY c.name
-ORDER BY total_sales DESC;</code>
-                            <div class="sql-explanation">
-                                <p><strong>解説:</strong></p>
-                                <ul>
-                                    <li>このクエリはカテゴリ別の売上を集計しています</li>
-                                    <li><code>JOIN</code> を使用して4つのテーブルを結合しています:
-                                        <ul>
-                                            <li><code>order_items</code> (oi): 注文商品の情報</li>
-                                            <li><code>products</code> (p): 商品の情報</li>
-                                            <li><code>categories</code> (c): カテゴリの情報</li>
-                                            <li><code>orders</code> (o): 注文の情報</li>
-                                        </ul>
-                                    </li>
-                                    <li><code>WHERE o.status = 'completed'</code> で完了した注文のみを対象としています</li>
-                                    <li>以下の集計値を取得しています:
-                                        <ul>
-                                            <li><code>COUNT(oi.id) AS total_items</code>: 販売された商品アイテムの総数</li>
-                                            <li><code>SUM(oi.price * oi.quantity) AS total_sales</code>: 総売上金額（金額×数量の合計）</li>
-                                        </ul>
-                                    </li>
-                                    <li><code>GROUP BY c.name</code> でカテゴリ名ごとにグループ化しています</li>
-                                    <li><code>ORDER BY total_sales DESC</code> で売上金額の多い順に結果を並べ替えています</li>
-                                </ul>
-                            </div>
-
-                            <code>-- 期間別売上集計
-SELECT DATE_TRUNC('month', o.order_date) AS month, SUM(o.total_amount) AS monthly_sales
-FROM orders o
-WHERE o.status = 'completed'
-GROUP BY DATE_TRUNC('month', o.order_date)
-ORDER BY month;</code>
-                            <div class="sql-explanation">
-                                <p><strong>解説:</strong></p>
-                                <ul>
-                                    <li>このクエリは月別の売上を集計しています</li>
-                                    <li><code>DATE_TRUNC('month', o.order_date)</code> は注文日を月単位で切り捨てる関数です（日付の日部分を削除）
-                                        <ul>
-                                            <li>例: '2023-04-15 14:30:00' → '2023-04-01 00:00:00'</li>
-                                        </ul>
-                                    </li>
-                                    <li>これにより同じ月の注文をグループ化できます</li>
-                                    <li><code>SUM(o.total_amount) AS monthly_sales</code> で月ごとの売上合計を計算しています</li>
-                                    <li><code>GROUP BY DATE_TRUNC('month', o.order_date)</code> で月ごとにグループ化しています</li>
-                                    <li><code>ORDER BY month</code> で月の古い順に結果を並べ替えています</li>
-                                </ul>
-                            </div>
-
-                            <div class="exercise">
-                                <h5>Exercise S.1: 商品管理システムの拡張</h5>
-                                <p>以下の拡張機能を実装してみましょう：</p>
-                                <ol>
-                                    <li>商品の価格履歴を記録するテーブルを作成する</li>
-                                    <li>価格が変更されたときに履歴を記録するトリガーを作成する</li>
-                                    <li>商品ごとの販売個数と売上金額を表示するビューを作成する</li>
-                                    <li>顧客ごとの購入履歴と合計金額を表示するクエリを作成する</li>
-                                </ol>
-                            </div>
-                        </section>
-
-                        <section id="project-advanced">
-                            <h3 class="section-title">発展課題</h3>
-                            <p>商品管理システムをさらに高度なものにするために、以下の課題に挑戦してみましょう。</p>
-
-                            <h4>1. 価格履歴管理システム</h4>
-                            <code>-- 価格履歴テーブルの作成
-CREATE TABLE price_history (
-    id SERIAL PRIMARY KEY,
-    product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
-    old_price NUMERIC(10, 2),
-    new_price NUMERIC(10, 2),
-    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);</code>
-                            <div class="sql-explanation">
-                                <p><strong>解説:</strong></p>
-                                <ul>
-                                    <li>商品の価格変更履歴を記録するための新しいテーブル <code>price_history</code> を作成しています</li>
-                                    <li><code>id</code>: 主キー、自動採番</li>
-                                    <li><code>product_id</code>: 価格が変更された商品のID（外部キー）
-                                        <ul>
-                                            <li><code>ON DELETE CASCADE</code> 指定により、商品が削除された場合、関連する価格履歴も自動的に削除されます</li>
-                                        </ul>
-                                    </li>
-                                    <li><code>old_price</code>: 変更前の価格</li>
-                                    <li><code>new_price</code>: 変更後の価格</li>
-                                    <li><code>changed_at</code>: 価格変更が行われた日時（デフォルトで現在時刻）</li>
-                                </ul>
-                            </div>
-
-                            <code>-- 価格変更トリガー関数
-CREATE OR REPLACE FUNCTION log_price_change()
-RETURNS TRIGGER AS $$
-BEGIN
-    IF OLD.price <> NEW.price THEN
-        INSERT INTO price_history (product_id, old_price, new_price)
-        VALUES (NEW.id, OLD.price, NEW.price);
-    END IF;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- トリガーの作成
-CREATE TRIGGER after_product_price_update
-    AFTER UPDATE ON products
-    FOR EACH ROW
-    EXECUTE FUNCTION log_price_change();</code>
-                            <div class="sql-explanation">
-                                <p><strong>解説:</strong></p>
-                                <p><strong>トリガー関数:</strong></p>
-                                <ul>
-                                    <li>これは価格変更を検知して履歴に記録するためのトリガー関数です</li>
-                                    <li><code>IF OLD.price <> NEW.price THEN</code> で価格が実際に変更されたかチェックしています
-                                        <ul>
-                                            <li>変更があった場合のみ履歴を記録します</li>
-                                        </ul>
-                                    </li>
-                                    <li><code>INSERT INTO price_history</code> で価格変更履歴をテーブルに記録しています:
-                                        <ul>
-                                            <li><code>product_id</code>: 更新された商品のID</li>
-                                            <li><code>old_price</code>: 更新前の価格 (<code>OLD.price</code>)</li>
-                                            <li><code>new_price</code>: 更新後の価格 (<code>NEW.price</code>)</li>
-                                        </ul>
-                                    </li>
-                                    <li><code>RETURN NEW;</code> で更新操作を続行します（トリガーは元の更新操作を阻止しません）</li>
-                                    <li><code>LANGUAGE plpgsql</code> はこの関数がPL/pgSQL言語で書かれていることを示しています</li>
-                                </ul>
-                                
-                                <p><strong>トリガー作成:</strong></p>
-                                <ul>
-                                    <li><code>AFTER UPDATE ON products</code> は商品テーブルの更新後に実行されることを指定</li>
-                                    <li><code>FOR EACH ROW</code> は更新される各行ごとにトリガーが実行されることを意味します</li>
-                                    <li><code>EXECUTE FUNCTION log_price_change()</code> で実行するトリガー関数を指定しています</li>
-                                </ul>
-                                
-                                <p><strong>使用例:</strong></p>
-                                <pre class="bg-light p-2 rounded">-- 商品の価格を更新
-UPDATE products SET price = 85000 WHERE id = 1;</pre>
-                                <p>上記のSQLを実行すると、スマートフォンの価格が80000から85000に更新され、同時にトリガーが作動して価格履歴テーブルに記録が追加されます。</p>
-                            </div>
-
-                            <h4>2. ビューの作成</h4>
-                            <code>-- 商品販売統計ビューの作成
-CREATE VIEW product_sales_stats AS
-SELECT 
-    p.id,
-    p.name,
-    p.category_id,
-    c.name AS category_name,
-    SUM(oi.quantity) AS total_sold,
-    SUM(oi.price * oi.quantity) AS total_revenue,
-    COUNT(DISTINCT o.customer_id) AS unique_customers
-FROM products p
-LEFT JOIN order_items oi ON p.id = oi.product_id
-LEFT JOIN orders o ON oi.order_id = o.id AND o.status = 'completed'
-LEFT JOIN categories c ON p.category_id = c.id
-GROUP BY p.id, p.name, p.category_id, c.name;
-
--- ビューの使用例
-SELECT * FROM product_sales_stats ORDER BY total_revenue DESC LIMIT 5;</code>
-                            <div class="sql-explanation">
-                                <p><strong>解説:</strong></p>
-                                <ul>
-                                    <li><code>CREATE VIEW</code> は仮想テーブル（ビュー）を作成するコマンドです</li>
-                                    <li>ビューは保存されたSQLクエリで、実際のデータは格納せず、クエリが実行されるたびに最新の結果を返します</li>
-                                    <li>このビューは商品ごとの販売統計データを提供します:
-                                        <ul>
-                                            <li><code>p.id</code>, <code>p.name</code>: 商品IDと名前</li>
-                                            <li><code>p.category_id</code>, <code>c.name AS category_name</code>: カテゴリIDとカテゴリ名</li>
-                                            <li><code>SUM(oi.quantity) AS total_sold</code>: 販売総数量</li>
-                                            <li><code>SUM(oi.price * oi.quantity) AS total_revenue</code>: 総売上金額</li>
-                                            <li><code>COUNT(DISTINCT o.customer_id) AS unique_customers</code>: その商品を購入したユニーク顧客数</li>
-                                        </ul>
-                                    </li>
-                                    <li><code>LEFT JOIN</code> を使用しているため、販売実績のない商品も結果に含まれます（売上は0として表示）</li>
-                                    <li><code>GROUP BY</code> 句には <code>SELECT</code> 句で使用している非集計列をすべて含める必要があります</li>
-                                </ul>
-                                
-                                <p><strong>ビューの利点:</strong></p>
-                                <ul>
-                                    <li>複雑なクエリをシンプルな名前で再利用できます</li>
-                                    <li>基になるテーブルの構造を隠蔽し、必要な情報だけを提供できます</li>
-                                    <li>アクセス制御を簡素化できます（ビューに対して権限を設定可能）</li>
-                                    <li>ビジネスロジックをデータベースレベルで一元管理できます</li>
-                                </ul>
-                            </div>
-
-                            <h4>3. インデックスの最適化</h4>
-                            <code>-- よく検索される列にインデックスを作成
-CREATE INDEX idx_products_category_id ON products(category_id);
-CREATE INDEX idx_order_items_product_id ON order_items(product_id);
-CREATE INDEX idx_orders_customer_id ON orders(customer_id);
-CREATE INDEX idx_orders_order_date ON orders(order_date);
-
--- 複合インデックスの作成（複数の列を使った検索を高速化）
-CREATE INDEX idx_order_items_order_product ON order_items(order_id, product_id);</code>
-                            <div class="sql-explanation">
-                                <p><strong>解説:</strong></p>
-                                <ul>
-                                    <li>インデックスはデータベースのパフォーマンスを向上させるための重要な機能です</li>
-                                    <li>適切なインデックスを作成することで、検索や結合操作が高速化されます</li>
-                                    <li>このコードでは5つのインデックスを作成しています:
-                                        <ol>
-                                            <li><code>idx_products_category_id</code>: 商品テーブルのカテゴリIDにインデックスを設定</li>
-                                            <li><code>idx_order_items_product_id</code>: 注文商品テーブルの商品IDにインデックスを設定</li>
-                                            <li><code>idx_orders_customer_id</code>: 注文テーブルの顧客IDにインデックスを設定</li>
-                                            <li><code>idx_orders_order_date</code>: 注文テーブルの注文日にインデックスを設定</li>
-                                            <li><code>idx_order_items_order_product</code>: 注文商品テーブルの注文IDと商品IDの組み合わせにインデックスを設定（複合インデックス）</li>
-                                        </ol>
-                                    </li>
-                                </ul>
-                                
-                                <p><strong>インデックスの選択基準:</strong></p>
-                                <ul>
-                                    <li>外部キー列には通常インデックスを設定します（結合操作が高速化されるため）</li>
-                                    <li><code>WHERE</code>句や<code>ORDER BY</code>句でよく使用される列にインデックスを設定します</li>
-                                    <li>複数の列を組み合わせて検索することが多い場合は、複合インデックスを検討します</li>
-                                </ul>
-                                
-                                <p><strong>注意点:</strong></p>
-                                <ul>
-                                    <li>インデックスはデータベースのスペースを消費し、更新操作（INSERT/UPDATE/DELETE）の速度が低下する可能性があります</li>
-                                    <li>必要なインデックスのみを作成し、使用されていないインデックスは定期的に見直すことをお勧めします</li>
-                                </ul>
-                            </div>
-
-                            <h4>4. 高度な集計クエリ</h4>
-                            <code>-- 顧客ごとの購入分析
-SELECT 
-    c.id,
-    c.name,
-    COUNT(DISTINCT o.id) AS order_count,
-    SUM(o.total_amount) AS total_spent,
-    MAX(o.order_date) AS last_order_date,
-    AVG(o.total_amount) AS avg_order_value,
-    STRING_AGG(DISTINCT cat.name, ', ') AS purchased_categories
-FROM customers c
-JOIN orders o ON c.id = o.customer_id AND o.status = 'completed'
-JOIN order_items oi ON o.id = oi.order_id
-JOIN products p ON oi.product_id = p.id
-JOIN categories cat ON p.category_id = cat.id
-GROUP BY c.id, c.name
-ORDER BY total_spent DESC;</code>
-                            <div class="sql-explanation">
-                                <p><strong>解説:</strong></p>
-                                <p>このクエリは顧客ごとの購入分析を行います。以下の情報を取得しています：</p>
-                                <ul>
-                                    <li><code>c.id, c.name</code>: 顧客IDと名前</li>
-                                    <li><code>COUNT(DISTINCT o.id) AS order_count</code>: 顧客ごとの注文回数</li>
-                                    <li><code>SUM(o.total_amount) AS total_spent</code>: 顧客の総支出額</li>
-                                    <li><code>MAX(o.order_date) AS last_order_date</code>: 最後に注文した日付</li>
-                                    <li><code>AVG(o.total_amount) AS avg_order_value</code>: 注文1回あたりの平均金額</li>
-                                    <li><code>STRING_AGG(DISTINCT cat.name, ', ') AS purchased_categories</code>: 購入したカテゴリをカンマ区切りで列挙</li>
-                                </ul>
-                                
-                                <p><strong>特徴的な関数:</strong></p>
-                                <ul>
-                                    <li><code>STRING_AGG</code>はPostgreSQLの集約関数で、グループごとの値を連結します
-                                        <ul>
-                                            <li><code>DISTINCT</code>を使用することで重複を排除しています</li>
-                                            <li>第2引数の<code>', '</code>は区切り文字を指定しています</li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                                
-                                <p><strong>JOINの連鎖:</strong></p>
-                                <ul>
-                                    <li>このクエリでは5つのテーブルを結合しています:
-                                        <ol>
-                                            <li>customers → orders → order_items → products → categories</li>
-                                        </ol>
-                                    </li>
-                                    <li>複数テーブルの結合では、適切なインデックスが特に重要になります</li>
-                                </ul>
-                            </div>
-
-                            <code>-- 月次売上トレンド
-SELECT 
-    TO_CHAR(DATE_TRUNC('month', o.order_date), 'YYYY-MM') AS month,
-    COUNT(DISTINCT o.id) AS order_count,
-    SUM(o.total_amount) AS total_sales,
-    COUNT(DISTINCT o.customer_id) AS unique_customers,
-    SUM(o.total_amount) / COUNT(DISTINCT o.id) AS avg_order_value
-FROM orders o
-WHERE o.status = 'completed'
-GROUP BY DATE_TRUNC('month', o.order_date)
-ORDER BY DATE_TRUNC('month', o.order_date);</code>
-                            <div class="sql-explanation">
-                                <p><strong>解説:</strong></p>
-                                <p>このクエリは月別の売上トレンドを分析します。以下の情報を取得しています：</p>
-                                <ul>
-                                    <li><code>TO_CHAR(DATE_TRUNC('month', o.order_date), 'YYYY-MM')</code>: 注文日を年月の形式に変換
-                                        <ul>
-                                            <li><code>DATE_TRUNC</code>関数で日を切り捨て</li>
-                                            <li><code>TO_CHAR</code>関数で「YYYY-MM」形式（例: 2023-04）にフォーマット</li>
-                                        </ul>
-                                    </li>
-                                    <li><code>COUNT(DISTINCT o.id) AS order_count</code>: 月ごとの注文数</li>
-                                    <li><code>SUM(o.total_amount) AS total_sales</code>: 月ごとの総売上</li>
-                                    <li><code>COUNT(DISTINCT o.customer_id) AS unique_customers</code>: 月ごとのユニーク顧客数</li>
-                                    <li><code>SUM(o.total_amount) / COUNT(DISTINCT o.id) AS avg_order_value</code>: 注文1回あたりの平均金額</li>
-                                </ul>
-                                
-                                <p><strong>計算列（導出列）:</strong></p>
-                                <ul>
-                                    <li><code>avg_order_value</code>は他の集計値から計算される派生値です</li>
-                                    <li>このような計算はデータベース側で行うことでアプリケーション側の処理を減らすことができます</li>
-                                </ul>
-                                
-                                <p><strong>ORDER BY句:</strong></p>
-                                <ul>
-                                    <li><code>ORDER BY DATE_TRUNC('month', o.order_date)</code>でソートしていることに注意してください</li>
-                                    <li>これは<code>ORDER BY month</code>ではなく、実際の日付値でソートしています（表示用にフォーマットされた文字列でなく）</li>
-                                </ul>
-                            </div>
-
-                            <div class="note">
-                                <h5>実務での応用</h5>
-                                <p>この模擬プロジェクトで学んだ技術は、実際のビジネスシーンで以下のように応用できます：</p>
-                                <ul>
-                                    <li><strong>ECサイト</strong>: 商品管理、在庫管理、注文処理、顧客管理</li>
-                                    <li><strong>販売分析</strong>: 売上傾向分析、顧客行動分析、商品カテゴリ分析</li>
-                                    <li><strong>在庫最適化</strong>: 在庫回転率分析、発注点管理</li>
-                                    <li><strong>顧客関係管理</strong>: 顧客購買履歴分析、優良顧客特定</li>
-                                </ul>
-                                <p>これらの知識をベースに、より複雑なシステムや分析にも取り組んでみましょう。</p>
-                            </div>
-                        </section>
-                    </section>
-                
-                <section id="next-steps">
-                    <h3 class="section-title">次のステップ</h3>
-                    <p>この教材ではSQLの基本と、商品管理システムの模擬プロジェクトを通して実践的なデータベース操作を学びました。ここからさらにスキルを発展させるためのヒントをいくつか紹介します。</p>
-                    
-                    <div class="row mt-4">
-                        <div class="col-md-6">
-                            <div class="card mb-3">
-                                <div class="card-header bg-primary text-white">より高度なSQLスキル</div>
-                                <div class="card-body">
-                                    <ul>
-                                        <li>ウィンドウ関数（ROW_NUMBER, RANK, LAG, LEAD など）</li>
-                                        <li>共通テーブル式（WITH句）</li>
-                                        <li>再帰クエリ</li>
-                                        <li>高度なJOIN技術（LATERAL JOIN など）</li>
-                                        <li>パフォーマンスチューニング</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card mb-3">
-                                <div class="card-header bg-primary text-white">PostgreSQL特有の機能</div>
-                                <div class="card-body">
-                                    <ul>
-                                        <li>JSONデータ型とJSONB操作</li>
-                                        <li>全文検索機能</li>
-                                        <li>地理情報システム（PostGIS）</li>
-                                        <li>テーブル継承</li>
-                                        <li>マテリアライズドビュー</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+    type_id INTEGER REFERENCES user_types(type_id),
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);</code></pre>
                     </div>
-                    
-                    <div class="note mt-4">
-                        <h5>実践的な学習プロジェクト</h5>
-                        <p>以下のプロジェクトに取り組むことで、SQLスキルをさらに向上させることができます：</p>
+
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
                         <ol>
-                            <li><strong>ブログシステム</strong>: ユーザー、記事、コメント、カテゴリなどのテーブル設計と実装</li>
-                            <li><strong>図書館管理システム</strong>: 書籍、会員、貸出、予約などの管理</li>
-                            <li><strong>学校情報システム</strong>: 生徒、教師、クラス、成績などの管理</li>
-                            <li><strong>ダッシュボード用データウェアハウス</strong>: 異なるソースからのデータ統合と分析用ビュー作成</li>
+                            <li><strong>問題1:</strong> 第3正規形の条件を説明してください。</li>
+                            <li><strong>問題2:</strong> 多対多の関係をデータベースで表現する方法は？</li>
+                            <li><strong>問題3:</strong> データベース設計でマジック値を避けるべき理由は？</li>
+                            <li><strong>問題4:</strong> 正規化の利点と欠点を挙げてください。</li>
+                            <li><strong>問題5:</strong> ER図で表現される主な要素は何ですか？</li>
                         </ol>
+                        
+                        <details class="mt-3">
+                            <summary>解答を表示</summary>
+                            <div class="mt-2">
+                                <strong>解答:</strong>
+                                <ol>
+                                    <li>第2正規形の条件を満たし、かつ推移的関数従属が存在しない状態</li>
+                                    <li>中間テーブル（連関エンティティ）を使用して両方のエンティティの主キーを外部キーとして持つ</li>
+                                    <li>コードの意味が不明確になり、保守性が低下するため</li>
+                                    <li>利点：冗長性排除、整合性向上。欠点：結合コスト、複雑性増加</li>
+                                    <li>エンティティ（実体）、アトリビュート（属性）、リレーションシップ（関係）</li>
+                                </ol>
+                            </div>
+                        </details>
                     </div>
-                </section>
-            </div>
+
+                    <div class="highlight">
+                        <h5>SQL学習の完了</h5>
+                        <p>お疲れさまでした！これでSQL学習教材の全10章が完了しました。</p>
+                        <p>これまでに学習した内容：</p>
+                        <ul>
+                            <li>SQLの基礎概念とデータベース操作</li>
+                            <li>効果的なクエリ作成技法</li>
+                            <li>パフォーマンス最適化</li>
+                            <li>データ整合性の保持</li>
+                            <li>実践的なデータベース設計</li>
+                        </ul>
+                        <p>次のステップとして、実際のプロジェクトでの実践や、より高度なデータベース技術の学習をお勧めします。</p>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="sql-learning-material-9.html" class="btn btn-secondary">← 前の章: トランザクション</a>
+                        <a href="../README.md" class="btn btn-primary">SQLガイドTOPに戻る →</a>
+                    </div>
+                </div>
+            </main>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="text-center py-4">
-        <div class="container">
-            <p class="mb-0">Copyright © 2025 F-Circle All rights reserved.</p>
-        </div>
-    </footer>
-
-    <!-- Bootstrap JS and Popper.js -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>hljs.highlightAll();</script>
     <script>
-        // 理解度テストの回答確認ボタンの処理
-        document.getElementById('checkAnswers')?.addEventListener('click', function() {
-            document.getElementById('quizResults')?.classList.remove('d-none');
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default'
         });
     </script>
 </body>

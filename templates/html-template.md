@@ -20,6 +20,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    
     <!-- カスタムCSS（templates/css-styles.mdを参照） -->
     <style>
         /* CSSスタイルはtemplates/css-styles.mdに定義されています */
@@ -35,6 +38,14 @@
     
     <!-- Highlight.js 初期化 -->
     <script>hljs.highlightAll();</script>
+    
+    <!-- Mermaid.js 初期化 -->
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default'
+        });
+    </script>
 </body>
 </html>
 ```
@@ -155,7 +166,62 @@ HTMLコードブロックを作成する際は、HTMLタグを適切にエスケ
 - `&` → `&amp;`
 - `"` → `&quot;`（属性値内で必要に応じて）
 
-### テーマの変更
+## Mermaid.js 図表作成
+
+### 基本的な使用方法
+Mermaid.jsを使用してフローチャート、シーケンス図、ガントチャートなどを作成できます：
+
+```html
+<!-- フローチャート例（デフォルトテーマ） -->
+<div class="mermaid">
+    flowchart TD
+        A[開始] --> B{条件判定}
+        B -->|Yes| C[処理A]
+        B -->|No| D[処理B]
+        C --> E[終了]
+        D --> E
+</div>
+```
+
+### 利用可能な図表タイプ
+- `flowchart` - フローチャート
+- `sequenceDiagram` - シーケンス図
+- `classDiagram` - クラス図
+- `stateDiagram` - 状態遷移図
+- `erDiagram` - ER図
+- `gantt` - ガントチャート
+- `pie` - 円グラフ
+- `gitgraph` - Gitブランチ図
+
+### Mermaidテーマの種類と個別指定方法
+
+#### 利用可能なテーマ
+- `default` - 標準テーマ（白背景、黒文字）**【推奨】**
+- `forest` - グリーン系テーマ
+- `neutral` - ニュートラルテーマ
+- `base` - カスタマイズ可能なベーステーマ
+
+**注意：darkテーマは使用しないでください。**
+
+#### 図ごとのテーマ指定方法
+図の先頭に`%%{init: {'theme':'テーマ名'}}%%`を追加してテーマを指定できます：
+
+```html
+<!-- デフォルトテーマを使用（推奨） -->
+<div class="mermaid">
+    flowchart TD
+        A[開始] --> B[終了]
+</div>
+
+<!-- カスタムカラーを使用 -->
+<div class="mermaid">
+    %%{init: {'theme':'base', 'themeVariables': { 'primaryColor': '#0d6efd', 'primaryTextColor': '#fff'}}}%%
+    flowchart TD
+        A[開始] --> B[終了]
+</div>
+```
+
+### Highlight.jsテーマの変更
 デフォルトはAtom One Dark（黒背景）テーマ、その他も利用可能：
 ```html
 <!-- その他のテーマ例 -->
