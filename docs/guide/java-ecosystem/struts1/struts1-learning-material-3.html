@@ -4,53 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Struts 1.x学習教材 第3章 - ActionクラスとActionForm</title>
+    
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <!-- Google Fonts - Noto Sans JP -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    
+    <!-- カスタムCSS -->
     <style>
+        /* ベースレイアウト */
         body {
             font-family: 'Noto Sans JP', sans-serif;
             padding-top: 56px;
         }
+
+        /* ナビゲーション */
         .navbar {
-            background-color: #795548;
+            background-color: #f57c00;
         }
+
+        /* サイドバー */
         .sidebar {
             position: sticky;
             top: 70px;
             height: calc(100vh - 70px);
             overflow-y: auto;
         }
+
+        /* タイトル */
         .chapter-title {
-            color: #795548;
+            color: #f57c00;
             margin-top: 1.5rem;
             margin-bottom: 1rem;
-            border-bottom: 2px solid #795548;
+            border-bottom: 2px solid #f57c00;
             padding-bottom: 0.5rem;
         }
+
         .section-title {
-            color: #8d6e63;
+            color: #ff9800;
             margin-top: 1.2rem;
             margin-bottom: 0.8rem;
         }
-        code {
-            display: block;
-            background-color: #f5f5f5;
-            border-radius: 4px;
-            padding: 1rem;
-            margin: 1rem 0;
-            font-family: Consolas, Monaco, 'Andale Mono', monospace;
-            white-space: pre;
-            overflow-x: auto;
-        }
+
+        /* コンテンツボックス */
         .quiz-container {
-            background-color: #efebe9;
+            background-color: #fff3e0;
             border-radius: 8px;
             padding: 1.5rem;
             margin: 1.5rem 0;
-            border-left: 4px solid #795548;
+            border-left: 4px solid #f57c00;
         }
+
         .exercise-container {
             background-color: #f3e5f5;
             border-radius: 8px;
@@ -58,6 +70,7 @@
             margin: 1.5rem 0;
             border-left: 4px solid #9c27b0;
         }
+
         .highlight {
             background-color: #ffecb3;
             border-radius: 8px;
@@ -65,6 +78,7 @@
             margin: 1rem 0;
             border-left: 4px solid #ffc107;
         }
+
         .warning {
             background-color: #ffebee;
             border-radius: 8px;
@@ -72,9 +86,51 @@
             margin: 1rem 0;
             border-left: 4px solid #f44336;
         }
+
+        /* コードハイライト */
+        .code-block {
+            background-color: #1e1e1e;
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        /* ナビゲーション */
         .nav-link.active {
-            background-color: #795548 !important;
+            background-color: #f57c00 !important;
             color: white !important;
+        }
+
+        .nav-link:hover {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        /* 理論説明ボックス */
+        .theory-box {
+            background-color: #e8f5e8;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #4caf50;
+        }
+
+        /* 設計パターンボックス */
+        .pattern-box {
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #1976d2;
+        }
+
+        /* データフローボックス */
+        .dataflow-box {
+            background-color: #fafafa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #607d8b;
         }
     </style>
 </head>
@@ -82,8 +138,10 @@
     <!-- ナビゲーションバー -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="README.md">Struts 1.x学習ガイド</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <a class="navbar-brand">
+                <strong>Struts 1.x学習教材</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
         </div>
@@ -92,552 +150,552 @@
     <div class="container-fluid">
         <div class="row">
             <!-- サイドバー -->
-            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse" role="navigation" aria-label="Chapter navigation">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
                 <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>学習章</span>
+                    </h6>
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link" href="struts1-learning-material-1.html">第1章: Struts 1.xの基本概念とMVCアーキテクチャ</a>
+                            <a class="nav-link" href="struts1-learning-material-1.html">
+                                第1章: 基本概念とMVCアーキテクチャ
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="struts1-learning-material-2.html">第2章: 環境構築とプロジェクト作成</a>
+                            <a class="nav-link" href="struts1-learning-material-2.html">
+                                第2章: 環境構築とプロジェクト作成
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="struts1-learning-material-3.html">第3章: ActionクラスとActionForm</a>
+                            <a class="nav-link active" href="struts1-learning-material-3.html">
+                                第3章: ActionクラスとActionForm
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="struts1-learning-material-4.html">第4章: struts-config.xmlの設定と管理</a>
+                            <a class="nav-link" href="struts1-learning-material-4.html">
+                                第4章: struts-config.xmlの設定と管理
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="struts1-learning-material-5.html">第5章: JSPとの連携とTagライブラリ</a>
+                            <a class="nav-link" href="struts1-learning-material-5.html">
+                                第5章: JSPとの連携とTagライブラリ
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="struts1-learning-material-6.html">第6章: バリデーション機能とエラーハンドリング</a>
+                            <a class="nav-link" href="struts1-learning-material-6.html">
+                                第6章: バリデーション機能とエラーハンドリング
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="struts1-learning-material-7.html">第7章: セッション管理とセキュリティ</a>
+                            <a class="nav-link" href="struts1-learning-material-7.html">
+                                第7章: セッション管理とセキュリティ
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="struts1-learning-material-8.html">第8章: 国際化（i18n）とプロパティファイル</a>
+                            <a class="nav-link" href="struts1-learning-material-8.html">
+                                第8章: 国際化（i18n）とプロパティファイル
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="struts1-learning-material-9.html">第9章: データベース連携と実践的開発</a>
+                            <a class="nav-link" href="struts1-learning-material-9.html">
+                                第9章: データベース連携と実践的開発
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="struts1-learning-material-10.html">第10章: デバッグ・テスト・デプロイメント</a>
+                            <a class="nav-link" href="struts1-learning-material-10.html">
+                                第10章: デバッグ・テスト・デプロイメント
+                            </a>
                         </li>
                     </ul>
                 </div>
             </nav>
 
             <!-- メインコンテンツ -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" role="main">
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- 章ヘッダー -->
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">第3章: ActionクラスとActionForm</h1>
                 </div>
 
                 <div id="chapter3">
-                    <h2 class="chapter-title">Struts 1.x の核となるコンポーネント</h2>
+                    <!-- 章タイトル -->
+                    <h2 class="chapter-title">MVCの心臓部：ControllerとModelの実装理論</h2>
                     
+                    <!-- 学習目標 -->
                     <div class="highlight">
                         <h5>この章で学ぶこと</h5>
                         <ul>
-                            <li>Actionクラスの役割と実装方法</li>
-                            <li>ActionFormによるフォームデータの管理</li>
-                            <li>リクエスト処理の基本的な流れ</li>
-                            <li>ActionForwardによる画面遷移制御</li>
-                            <li>実践的なアクション開発</li>
+                            <li>Actionクラスがコントローラー層で果たす本質的役割</li>
+                            <li>ActionFormがデータ転送オブジェクトとして必要な理由</li>
+                            <li>リクエスト処理の抽象化とコマンドパターンの理解</li>
+                            <li>データバインディングの仕組みとその価値</li>
+                            <li>責任分離による保守性向上の具体的メカニズム</li>
+                            <li>Webアプリケーション特有の課題とその解決方法</li>
                         </ul>
                     </div>
 
-                    <h3 class="section-title">3.1 Action クラスの基本</h3>
-                    <p>
-                        Actionクラスは、Struts 1.xにおけるController層の中核となるコンポーネントです。
-                        HTTPリクエストを受け取り、ビジネスロジックを実行して、適切なViewに制御を移します。
-                    </p>
-
-                    <h4>Actionクラスの特徴</h4>
-                    <ul>
-                        <li><strong>継承必須</strong>: org.apache.struts.action.Action を継承</li>
-                        <li><strong>Singletonパターン</strong>: ActionServletによってインスタンスが管理</li>
-                        <li><strong>execute()メソッド</strong>: 処理のエントリーポイント</li>
-                        <li><strong>ActionForward</strong>: 戻り値で次の画面を指定</li>
-                        <li><strong>スレッドセーフ</strong>: 複数リクエストで共有されるため注意が必要</li>
-                    </ul>
-
-                    <div class="exercise-container">
-                        <h5>実習 3-1: 基本的なActionクラスの作成</h5>
-                        <p>Hello World を表示する基本的なActionクラスを作成しましょう：</p>
-                        <code>package com.example.action;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.struts.action.Action;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-
-/**
- * Hello World を表示する基本的なAction
- */
-public class HelloAction extends Action {
-    
-    @Override
-    public ActionForward execute(
-            ActionMapping mapping,
-            ActionForm form,
-            HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        
-        // メッセージをリクエスト属性に設定
-        String message = "Hello Struts 1.x World!";
-        request.setAttribute("helloMessage", message);
-        
-        // 現在日時も設定
-        request.setAttribute("currentTime", new java.util.Date());
-        
-        // 次の画面へフォワード
-        return mapping.findForward("success");
-    }
-}</code>
-                    </div>
-
-                    <h4>execute() メソッドのパラメータ</h4>
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>パラメータ</th>
-                                    <th>型</th>
-                                    <th>役割</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>mapping</strong></td>
-                                    <td>ActionMapping</td>
-                                    <td>struts-config.xmlでの設定情報</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>form</strong></td>
-                                    <td>ActionForm</td>
-                                    <td>フォームデータを格納したBean</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>request</strong></td>
-                                    <td>HttpServletRequest</td>
-                                    <td>HTTPリクエスト情報</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>response</strong></td>
-                                    <td>HttpServletResponse</td>
-                                    <td>HTTPレスポンス情報</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <h3 class="section-title">3.2 ActionForm の基本</h3>
-                    <p>
-                        ActionFormは、HTMLフォームから送信されたデータを格納するJavaBeanです。
-                        リクエストパラメータが自動的にActionFormのプロパティにマッピングされます。
-                    </p>
-
-                    <div class="exercise-container">
-                        <h5>実習 3-2: 基本的なActionFormの作成</h5>
-                        <p>ユーザー情報を扱うActionFormを作成しましょう：</p>
-                        <code>package com.example.form;
-
-import org.apache.struts.action.ActionForm;
-
-/**
- * ユーザー情報を格納するActionForm
- */
-public class UserForm extends ActionForm {
-    
-    private String name;
-    private String email;
-    private String age;
-    private String department;
-    
-    // デフォルトコンストラクタ
-    public UserForm() {
-        reset();
-    }
-    
-    // プロパティのgetter/setter
-    public String getName() {
-        return name;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    public String getEmail() {
-        return email;
-    }
-    
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    
-    public String getAge() {
-        return age;
-    }
-    
-    public void setAge(String age) {
-        this.age = age;
-    }
-    
-    public String getDepartment() {
-        return department;
-    }
-    
-    public void setDepartment(String department) {
-        this.department = department;
-    }
-    
-    /**
-     * フォームデータのリセット
-     */
-    public void reset() {
-        this.name = "";
-        this.email = "";
-        this.age = "";
-        this.department = "";
-    }
-    
-    /**
-     * デバッグ用のtoString
-     */
-    @Override
-    public String toString() {
-        return "UserForm{" +
-                "name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", age='" + age + '\'' +
-                ", department='" + department + '\'' +
-                '}';
-    }
-}</code>
-                    </div>
-
-                    <h4>ActionFormの重要なメソッド</h4>
-                    <ul>
-                        <li><strong>reset()</strong>: フォームデータの初期化</li>
-                        <li><strong>validate()</strong>: 入力データの検証（次章で詳細解説）</li>
-                        <li><strong>getter/setter</strong>: プロパティアクセスメソッド</li>
-                    </ul>
-
-                    <h3 class="section-title">3.3 ActionとActionFormの連携</h3>
-                    
-                    <div class="exercise-container">
-                        <h5>実習 3-3: ユーザー登録処理のAction</h5>
-                        <p>UserFormと連携してユーザー登録処理を行うActionを作成：</p>
-                        <code>package com.example.action;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.struts.action.Action;
-import org.apache.struts.action.ActionForm;
-import org.apache.struts.action.ActionForward;
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionMessage;
-import org.apache.struts.action.ActionMessages;
-
-import com.example.form.UserForm;
-
-/**
- * ユーザー登録処理を行うAction
- */
-public class UserRegistrationAction extends Action {
-    
-    @Override
-    public ActionForward execute(
-            ActionMapping mapping,
-            ActionForm form,
-            HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        
-        // ActionFormをキャスト
-        UserForm userForm = (UserForm) form;
-        
-        // ログ出力（デバッグ用）
-        System.out.println("受信したユーザー情報: " + userForm.toString());
-        
-        try {
-            // ビジネスロジックの実行
-            if (registerUser(userForm)) {
-                // 成功メッセージの設定
-                ActionMessages messages = new ActionMessages();
-                messages.add(ActionMessages.GLOBAL_MESSAGE, 
-                    new ActionMessage("message.registration.success", userForm.getName()));
-                saveMessages(request, messages);
-                
-                // 成功画面へフォワード
-                return mapping.findForward("success");
-            } else {
-                // エラーメッセージの設定
-                ActionMessages errors = new ActionMessages();
-                errors.add(ActionMessages.GLOBAL_MESSAGE, 
-                    new ActionMessage("error.registration.failed"));
-                saveErrors(request, errors);
-                
-                // 入力画面に戻る
-                return mapping.findForward("input");
-            }
-            
-        } catch (Exception e) {
-            // 例外処理
-            System.err.println("ユーザー登録エラー: " + e.getMessage());
-            e.printStackTrace();
-            
-            ActionMessages errors = new ActionMessages();
-            errors.add(ActionMessages.GLOBAL_MESSAGE, 
-                new ActionMessage("error.system.error"));
-            saveErrors(request, errors);
-            
-            return mapping.findForward("error");
-        }
-    }
-    
-    /**
-     * ユーザー登録のビジネスロジック
-     * 実際の実装では、DAOやServiceクラスを呼び出す
-     */
-    private boolean registerUser(UserForm userForm) {
-        // 簡単なバリデーション
-        if (userForm.getName() == null || userForm.getName().trim().isEmpty()) {
-            return false;
-        }
-        if (userForm.getEmail() == null || userForm.getEmail().trim().isEmpty()) {
-            return false;
-        }
-        
-        // ここで実際の登録処理を行う
-        // 例: UserDAO.save(userForm);
-        System.out.println("ユーザー登録処理を実行: " + userForm.getName());
-        
-        return true; // 成功を想定
-    }
-}</code>
-                    </div>
-
-                    <h3 class="section-title">3.4 ActionForward による画面遷移</h3>
-                    <p>ActionForwardは、Actionクラスから次に表示する画面を指定するためのオブジェクトです：</p>
-
-                    <h4>ActionForwardの種類</h4>
-                    <ul>
-                        <li><strong>Global Forward</strong>: アプリケーション全体で共通の遷移先</li>
-                        <li><strong>Local Forward</strong>: 特定のActionでのみ使用する遷移先</li>
-                        <li><strong>Dynamic Forward</strong>: 動的に作成する遷移先</li>
-                    </ul>
-
-                    <div class="exercise-container">
-                        <h5>実習 3-4: 動的なActionForwardの作成</h5>
-                        <code>// 設定ファイルで定義済みのForwardを使用
-return mapping.findForward("success");
-
-// 動的にActionForwardを作成
-ActionForward forward = new ActionForward();
-forward.setPath("/user/detail.jsp");
-forward.setRedirect(false); // forward (true の場合は redirect)
-return forward;
-
-// 他のActionにチェーン
-return mapping.findForward("nextAction");
-
-// リダイレクト指定
-ActionForward redirect = mapping.findForward("success");
-redirect.setRedirect(true);
-return redirect;</code>
-                    </div>
-
-                    <h3 class="section-title">3.5 実践的なアクション開発パターン</h3>
-                    
-                    <h4>1. CRUD操作の実装パターン</h4>
-                    <div class="exercise-container">
-                        <h5>実習 3-5: CRUD操作の基本パターン</h5>
-                        <code>/**
- * ユーザー管理のCRUD操作を行うAction
- */
-public class UserManagementAction extends Action {
-    
-    @Override
-    public ActionForward execute(
-            ActionMapping mapping,
-            ActionForm form,
-            HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        
-        // パラメータから操作種別を取得
-        String operation = request.getParameter("operation");
-        
-        if ("create".equals(operation)) {
-            return handleCreate(mapping, form, request, response);
-        } else if ("read".equals(operation)) {
-            return handleRead(mapping, form, request, response);
-        } else if ("update".equals(operation)) {
-            return handleUpdate(mapping, form, request, response);
-        } else if ("delete".equals(operation)) {
-            return handleDelete(mapping, form, request, response);
-        } else {
-            // 一覧表示（デフォルト）
-            return handleList(mapping, form, request, response);
-        }
-    }
-    
-    private ActionForward handleCreate(ActionMapping mapping, ActionForm form,
-            HttpServletRequest request, HttpServletResponse response) {
-        // Create処理
-        return mapping.findForward("create");
-    }
-    
-    private ActionForward handleRead(ActionMapping mapping, ActionForm form,
-            HttpServletRequest request, HttpServletResponse response) {
-        // Read処理
-        String userId = request.getParameter("id");
-        // User user = userService.findById(userId);
-        // request.setAttribute("user", user);
-        return mapping.findForward("detail");
-    }
-    
-    private ActionForward handleUpdate(ActionMapping mapping, ActionForm form,
-            HttpServletRequest request, HttpServletResponse response) {
-        // Update処理
-        return mapping.findForward("update");
-    }
-    
-    private ActionForward handleDelete(ActionMapping mapping, ActionForm form,
-            HttpServletRequest request, HttpServletResponse response) {
-        // Delete処理
-        return mapping.findForward("list");
-    }
-    
-    private ActionForward handleList(ActionMapping mapping, ActionForm form,
-            HttpServletRequest request, HttpServletResponse response) {
-        // List処理
-        // List&lt;User&gt; users = userService.findAll();
-        // request.setAttribute("users", users);
-        return mapping.findForward("list");
-    }
-}</code>
-                    </div>
-
-                    <h4>2. エラーハンドリングのベストプラクティス</h4>
-                    <div class="exercise-container">
-                        <h5>実習 3-6: 堅牢なエラーハンドリング</h5>
-                        <code>public class RobustAction extends Action {
-    
-    @Override
-    public ActionForward execute(
-            ActionMapping mapping,
-            ActionForm form,
-            HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        
-        try {
-            // メイン処理
-            return executeBusinessLogic(mapping, form, request, response);
-            
-        } catch (ValidationException e) {
-            // バリデーションエラー
-            return handleValidationError(mapping, request, e);
-            
-        } catch (BusinessException e) {
-            // ビジネスロジックエラー
-            return handleBusinessError(mapping, request, e);
-            
-        } catch (Exception e) {
-            // システムエラー
-            return handleSystemError(mapping, request, e);
-        }
-    }
-    
-    private ActionForward executeBusinessLogic(
-            ActionMapping mapping, ActionForm form,
-            HttpServletRequest request, HttpServletResponse response) 
-            throws Exception {
-        // ビジネスロジックの実装
-        return mapping.findForward("success");
-    }
-    
-    private ActionForward handleValidationError(
-            ActionMapping mapping, HttpServletRequest request, 
-            ValidationException e) {
-        
-        ActionMessages errors = new ActionMessages();
-        errors.add(ActionMessages.GLOBAL_MESSAGE, 
-            new ActionMessage("error.validation", e.getMessage()));
-        saveErrors(request, errors);
-        
-        return mapping.findForward("input");
-    }
-    
-    private ActionForward handleBusinessError(
-            ActionMapping mapping, HttpServletRequest request, 
-            BusinessException e) {
-        
-        ActionMessages errors = new ActionMessages();
-        errors.add(ActionMessages.GLOBAL_MESSAGE, 
-            new ActionMessage("error.business", e.getMessage()));
-        saveErrors(request, errors);
-        
-        return mapping.findForward("error");
-    }
-    
-    private ActionForward handleSystemError(
-            ActionMapping mapping, HttpServletRequest request, 
-            Exception e) {
-        
-        // ログ出力
-        System.err.println("システムエラーが発生しました: " + e.getMessage());
-        e.printStackTrace();
-        
-        ActionMessages errors = new ActionMessages();
-        errors.add(ActionMessages.GLOBAL_MESSAGE, 
-            new ActionMessage("error.system"));
-        saveErrors(request, errors);
-        
-        return mapping.findForward("systemError");
-    }
-}</code>
-                    </div>
-
-                    <div class="warning">
-                        <h5>Actionクラス開発時の注意点</h5>
-                        <ul>
-                            <li><strong>スレッドセーフ</strong>: インスタンス変数は使用しない</li>
-                            <li><strong>例外処理</strong>: 適切な例外ハンドリングを実装</li>
-                            <li><strong>責務の分離</strong>: ビジネスロジックは別クラスに委譲</li>
-                            <li><strong>リソース管理</strong>: DB接続などのリソースは適切にクローズ</li>
-                            <li><strong>セキュリティ</strong>: 入力値の検証とサニタイズ</li>
-                        </ul>
-                    </div>
-
-                    <div class="quiz-container">
-                        <h5>理解度確認クイズ</h5>
+                    <!-- ActionクラスとActionFormの本質的理解 -->
+                    <div class="theory-box">
+                        <h5>🧠 なぜActionクラスとActionFormが必要なのか？</h5>
+                        
+                        <p>Webアプリケーション開発における根本的な課題を理解することで、ActionクラスとActionFormの存在意義が明確になります。</p>
+                        
+                        <h6>Web開発特有の課題：</h6>
                         <ol>
-                            <li>Actionクラスのexecute()メソッドが受け取る4つのパラメータとその役割を説明してください。</li>
-                            <li>ActionFormクラスで必須のメソッドは何ですか？また、その役割を説明してください。</li>
-                            <li>Actionクラスでインスタンス変数を使用してはいけない理由を説明してください。</li>
-                            <li>ActionForwardのforward（転送）とredirect（リダイレクト）の違いを説明してください。</li>
-                            <li>Action内でビジネスロジックを直接実装せず、別クラスに委譲すべき理由を2つ挙げてください。</li>
+                            <li><strong>ステートレス性への対応</strong>
+                                <ul>
+                                    <li>HTTPはステートレスプロトコル（各リクエストは独立）</li>
+                                    <li>ユーザーの操作状態を適切に管理する必要</li>
+                                    <li>フォームデータの受け渡しと検証が複雑</li>
+                                </ul>
+                            </li>
+                            
+                            <li><strong>型安全性の確保</strong>
+                                <ul>
+                                    <li>HTMLフォームの値はすべて文字列として送信</li>
+                                    <li>Javaの強い型システムとの整合性が必要</li>
+                                    <li>データ変換とバリデーションの自動化が重要</li>
+                                </ul>
+                            </li>
+                            
+                            <li><strong>処理の標準化</strong>
+                                <ul>
+                                    <li>各種HTTPリクエストに対する統一的な処理フロー</li>
+                                    <li>例外処理とエラーハンドリングの一貫性</li>
+                                    <li>ビジネスロジックとプレゼンテーション層の分離</li>
+                                </ul>
+                            </li>
+                        </ol>
+                        
+                        <p><strong>解決のアプローチ：</strong>Strutsは<strong>「コマンドパターン」</strong>と<strong>「データ転送オブジェクト（DTO）パターン」</strong>を組み合わせることで、これらの課題を体系的に解決します。</p>
+                    </div>
+
+                    <h3 class="section-title">3.1 Actionクラス：コントローラーの具現化</h3>
+                    
+                    <p>Actionクラスは、<strong>「特定のユーザー操作に対応する処理を実装したコントローラークラス」</strong>です。これは設計パターンの「コマンドパターン」を Web アプリケーションに適用したものです。</p>
+
+                    <!-- Action処理フロー図 -->
+                    <div class="mermaid">
+                        sequenceDiagram
+                            participant User as 👤 ユーザー
+                            participant Browser as 🌐 ブラウザ
+                            participant ActionServlet as ⚙️ ActionServlet
+                            participant Action as 🎯 Actionクラス
+                            participant BusinessLogic as 💼 ビジネスロジック
+                            participant Database as 🗄️ データベース
+                            participant JSP as 📄 JSP
+                            
+                            User->>Browser: フォーム送信
+                            Browser->>ActionServlet: HTTPリクエスト
+                            ActionServlet->>ActionServlet: ルーティング解決
+                            ActionServlet->>Action: execute()呼び出し
+                            
+                            Note over Action: リクエスト解析<br/>データ検証<br/>処理判定
+                            
+                            Action->>BusinessLogic: ビジネス処理委譲
+                            BusinessLogic->>Database: データ操作
+                            Database-->>BusinessLogic: 結果返却
+                            BusinessLogic-->>Action: 処理結果
+                            
+                            Note over Action: 結果判定<br/>次画面決定<br/>データ設定
+                            
+                            Action-->>ActionServlet: ActionForward返却
+                            ActionServlet->>JSP: フォワード
+                            JSP-->>Browser: HTML応答
+                            Browser-->>User: 画面表示
+                    </div>
+
+                    <div class="pattern-box">
+                        <h5>🏗️ コマンドパターンとしてのActionクラス</h5>
+                        
+                        <p>Actionクラスは、<strong>コマンドパターン（Command Pattern）</strong>の実装です。このパターンの価値を理解しましょう。</p>
+                        
+                        <h6>コマンドパターンの核心概念：</h6>
+                        <ul>
+                            <li><strong>リクエストのオブジェクト化</strong>：各ユーザー操作を独立したオブジェクトとして表現</li>
+                            <li><strong>呼び出し元と処理の分離</strong>：ActionServletは具体的な処理内容を知らない</li>
+                            <li><strong>統一されたインターフェース</strong>：すべてのActionクラスは同じexecute()メソッドを持つ</li>
+                            <li><strong>処理のカプセル化</strong>：各Actionは特定の機能に特化した処理を実装</li>
+                        </ul>
+                        
+                        <h6>具体的な利点：</h6>
+                        <ol>
+                            <li><strong>拡張性</strong>：新しい機能はActionクラスを追加するだけで実現</li>
+                            <li><strong>テスト性</strong>：各Actionを独立してユニットテストできる</li>
+                            <li><strong>再利用性</strong>：共通処理を親クラスに切り出し可能</li>
+                            <li><strong>保守性</strong>：機能ごとにクラスが分離されているため、影響範囲が限定</li>
+                        </ol>
+                        
+                        <p><strong>実世界の例：</strong>レストランでのオーダーシステムに例えると、Actionクラスは「料理の注文票」のようなものです。ウェイター（ActionServlet）は注文票の内容を理解する必要はなく、適切なシェフ（ビジネスロジック）に渡すだけです。</p>
+                    </div>
+
+                    <h3 class="section-title">3.2 ActionFormクラス：データ転送オブジェクトの理論</h3>
+                    
+                    <p>ActionFormクラスは、<strong>「HTMLフォームデータとJavaオブジェクト間の橋渡し役」</strong>として機能するデータ転送オブジェクト（DTO: Data Transfer Object）です。</p>
+
+                    <div class="dataflow-box">
+                        <h5>🔄 データフローにおけるActionFormの役割</h5>
+                        
+                        <p>WebアプリケーションでのデータフローにおいてActionFormが果たす重要な役割を理解しましょう。</p>
+                        
+                        <h6>従来のサーブレット開発での問題：</h6>
+                        <pre class="code-block"><code class="language-java">// 従来のサーブレットでの問題のあるコード例
+String name = request.getParameter("name");
+String ageStr = request.getParameter("age");
+int age = Integer.parseInt(ageStr); // nullや不正値でエラーの危険
+String email = request.getParameter("email");
+// バリデーション、型変換が散在し、エラー処理が複雑</code></pre>
+                        
+                        <h6>ActionFormによる解決：</h6>
+                        <ol>
+                            <li><strong>自動データバインディング</strong>
+                                <ul>
+                                    <li>HTMLフォームの name属性とJavaオブジェクトのプロパティを自動対応</li>
+                                    <li>リフレクションを使用した動的プロパティ設定</li>
+                                    <li>型変換の自動化（String→int, String→Date等）</li>
+                                </ul>
+                            </li>
+                            
+                            <li><strong>データ検証の統合</strong>
+                                <ul>
+                                    <li>validate()メソッドによる集約的なバリデーション</li>
+                                    <li>エラーメッセージの一元管理</li>
+                                    <li>サーバーサイド検証の体系化</li>
+                                </ul>
+                            </li>
+                            
+                            <li><strong>スコープ管理</strong>
+                                <ul>
+                                    <li>リクエストスコープとセッションスコープの選択</li>
+                                    <li>フォーム状態の自動保持</li>
+                                    <li>エラー時の入力値復元</li>
+                                </ul>
+                            </li>
                         </ol>
                     </div>
 
+                    <!-- データバインディング図解 -->
+                    <div class="mermaid">
+                        flowchart TD
+                            subgraph "HTMLフォーム"
+                                Form["&lt;form&gt;<br/>name='userName'<br/>age='25'<br/>email='user@example.com'<br/>&lt;/form&gt;"]
+                            end
+                            
+                            subgraph "Struts Framework"
+                                Binding["🔄 データバインディング<br/>自動型変換<br/>プロパティ設定"]
+                            end
+                            
+                            subgraph "ActionForm"
+                                AF["📋 UserForm<br/>String userName<br/>int age<br/>String email<br/>validate() method"]
+                            end
+                            
+                            subgraph "Action"
+                                AC["🎯 UserAction<br/>処理ロジック<br/>ビジネス処理呼び出し"]
+                            end
+                            
+                            Form --> Binding
+                            Binding --> AF
+                            AF --> AC
+                            
+                            style Form fill:#e3f2fd
+                            style Binding fill:#ffecb3
+                            style AF fill:#e8f5e8
+                            style AC fill:#fff3e0
+                    </div>
+
+                    <h3 class="section-title">3.3 責任分離の具体的実現</h3>
+                    
+                    <p>ActionクラスとActionFormの組み合わせにより、<strong>単一責任原則（Single Responsibility Principle）</strong>がどのように実現されるかを理解しましょう。</p>
+
+                    <div class="theory-box">
+                        <h5>🎯 各クラスの責任分担設計</h5>
+                        
+                        <h6>ActionFormの責任範囲：</h6>
+                        <ul>
+                            <li><strong>データ保持</strong>：フォームから送信されたデータの構造化保持</li>
+                            <li><strong>基本検証</strong>：フォーマット検証、必須項目チェック等</li>
+                            <li><strong>型変換</strong>：文字列からJavaオブジェクトへの基本的な変換</li>
+                            <li><strong>状態管理</strong>：複数画面間でのデータ保持</li>
+                        </ul>
+                        
+                        <h6>Actionクラスの責任範囲：</h6>
+                        <ul>
+                            <li><strong>処理制御</strong>：リクエストの解析と適切な処理の実行</li>
+                            <li><strong>ビジネスロジック委譲</strong>：サービス層やDAO層への処理委譲</li>
+                            <li><strong>結果判定</strong>：処理結果に基づく次画面決定</li>
+                            <li><strong>エラーハンドリング</strong>：例外処理と適切なエラー画面への遷移</li>
+                        </ul>
+                        
+                        <h6>責任分離による利点：</h6>
+                        <ol>
+                            <li><strong>単体テストの容易さ</strong>
+                                <ul>
+                                    <li>ActionFormのデータ検証は独立してテスト可能</li>
+                                    <li>Actionのビジネスロジックをモック化してテスト可能</li>
+                                    <li>各クラスの責任が明確なためテストケースが書きやすい</li>
+                                </ul>
+                            </li>
+                            
+                            <li><strong>保守性の向上</strong>
+                                <ul>
+                                    <li>データ構造変更時はActionFormのみ修正</li>
+                                    <li>処理ロジック変更時はActionのみ修正</li>
+                                    <li>変更の影響範囲が限定される</li>
+                                </ul>
+                            </li>
+                            
+                            <li><strong>再利用性の向上</strong>
+                                <ul>
+                                    <li>同じActionFormを複数のActionで利用可能</li>
+                                    <li>共通的な処理をBaseActionクラスとして共有可能</li>
+                                    <li>検証ルールの共通化と再利用</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <h3 class="section-title">3.4 ライフサイクルとスコープの理解</h3>
+                    
+                    <p>ActionクラスとActionFormのライフサイクルを理解することは、<strong>適切なスコープ選択とメモリ管理</strong>に重要です。</p>
+
+                    <!-- ライフサイクル図 -->
+                    <div class="mermaid">
+                        flowchart TD
+                            subgraph "リクエスト受信"
+                                Start["🚀 リクエスト開始"]
+                            end
+                            
+                            subgraph "ActionForm処理"
+                                FormCreation["📋 ActionForm生成"]
+                                DataBinding["🔄 データバインディング"]
+                                Validation["✅ validate()実行"]
+                            end
+                            
+                            subgraph "Action処理"
+                                ActionExecution["🎯 Action.execute()実行"]
+                                BusinessLogic["💼 ビジネスロジック実行"]
+                                ForwardDecision["🔄 ActionForward決定"]
+                            end
+                            
+                            subgraph "レスポンス"
+                                JSPForward["📄 JSP転送"]
+                                ResponseSent["📤 レスポンス送信"]
+                                End["🏁 リクエスト完了"]
+                            end
+                            
+                            subgraph "オブジェクト管理"
+                                FormScope["📊 ActionFormスコープ<br/>request または session"]
+                                ActionScope["⚡ Actionスコープ<br/>通常はシングルトン"]
+                            end
+                            
+                            Start --> FormCreation
+                            FormCreation --> DataBinding
+                            DataBinding --> Validation
+                            Validation --> ActionExecution
+                            ActionExecution --> BusinessLogic
+                            BusinessLogic --> ForwardDecision
+                            ForwardDecision --> JSPForward
+                            JSPForward --> ResponseSent
+                            ResponseSent --> End
+                            
+                            FormCreation -.-> FormScope
+                            ActionExecution -.-> ActionScope
+                            
+                            style Start fill:#e8f5e8
+                            style End fill=#ffebee
+                            style FormScope fill:#e3f2fd
+                            style ActionScope fill:#fff3e0
+                    </div>
+
+                    <div class="theory-box">
+                        <h5>⏰ スコープ選択の設計原則</h5>
+                        
+                        <h6>ActionFormのスコープ選択基準：</h6>
+                        
+                        <p><strong>Request Scope（推奨）</strong></p>
+                        <ul>
+                            <li><strong>適用場面</strong>：単一画面での処理、一般的なフォーム送信</li>
+                            <li><strong>利点</strong>：メモリ効率が良い、セッション汚染なし</li>
+                            <li><strong>欠点</strong>：複数画面間でのデータ保持不可</li>
+                        </ul>
+                        
+                        <p><strong>Session Scope（特殊用途）</strong></p>
+                        <ul>
+                            <li><strong>適用場面</strong>：ウィザード形式、複数ステップ処理</li>
+                            <li><strong>利点</strong>：複数画面間でのデータ永続化</li>
+                            <li><strong>欠点</strong>：メモリ使用量増加、セッション管理の複雑化</li>
+                            <li><strong>注意点</strong>：明示的なクリーンアップが必要</li>
+                        </ul>
+                        
+                        <h6>Actionクラスのライフサイクル：</h6>
+                        <ul>
+                            <li><strong>シングルトンパターン</strong>：通常、Actionクラスは1インスタンスのみ作成</li>
+                            <li><strong>スレッドセーフ性</strong>：インスタンス変数の使用は避ける</li>
+                            <li><strong>ステートレス設計</strong>：すべての状態はActionFormまたはリクエスト属性で管理</li>
+                        </ul>
+                        
+                        <p><strong>重要な設計原則：</strong>Actionクラスはスレッドセーフでなければなりません。複数のユーザーリクエストが同じActionインスタンスを並行実行するため、インスタンス変数でstate を保持してはいけません。</p>
+                    </div>
+
+                    <h3 class="section-title">3.5 エラーハンドリングと例外処理の体系</h3>
+                    
+                    <p>Struts 1.xにおけるエラーハンドリングは、<strong>統一されたエラー管理と適切なユーザーエクスペリエンス</strong>を実現するための重要な仕組みです。</p>
+
+                    <div class="pattern-box">
+                        <h5>🛡️ 階層的エラーハンドリングの設計</h5>
+                        
+                        <h6>エラーハンドリングの階層構造：</h6>
+                        <ol>
+                            <li><strong>入力検証エラー（ActionForm.validate()）</strong>
+                                <ul>
+                                    <li>フォーマットエラー、必須項目エラー</li>
+                                    <li>ユーザーが修正可能なエラー</li>
+                                    <li>元の画面に戻って再入力を促す</li>
+                                </ul>
+                            </li>
+                            
+                            <li><strong>ビジネスロジックエラー（Action.execute()）</strong>
+                                <ul>
+                                    <li>業務ルール違反、データ整合性エラー</li>
+                                    <li>ユーザーに分かりやすいメッセージを表示</li>
+                                    <li>適切な代替フローを提示</li>
+                                </ul>
+                            </li>
+                            
+                            <li><strong>システムエラー（例外処理）</strong>
+                                <ul>
+                                    <li>データベース接続エラー、システム障害</li>
+                                    <li>ログ記録とシステム管理者への通知</li>
+                                    <li>ユーザーには一般的なエラーページを表示</li>
+                                </ul>
+                            </li>
+                        </ol>
+                        
+                        <h6>エラー管理の統一化：</h6>
+                        <ul>
+                            <li><strong>ActionErrors</strong>：エラー情報の構造化保持</li>
+                            <li><strong>ActionMessages</strong>：成功メッセージや情報メッセージ</li>
+                            <li><strong>MessageResources</strong>：エラーメッセージの外部化と国際化</li>
+                            <li><strong>Exception Handling</strong>：予期しない例外の統一処理</li>
+                        </ul>
+                    </div>
+
+                    <!-- 実習課題 -->
+                    <div class="exercise-container">
+                        <h5>実習 3-1: MVCコンポーネント設計演習</h5>
+                        <p>理論的な理解を深めるため、具体的なビジネス要件に基づいてActionクラスとActionFormを設計してみましょう。</p>
+                        
+                        <h6>課題：「図書貸出システム」のMVCコンポーネント設計</h6>
+                        <p>以下の要件に基づいて、図書貸出機能のActionクラスとActionFormを設計してください。</p>
+                        
+                        <h6>業務要件</h6>
+                        <ul>
+                            <li>利用者が図書検索画面で検索条件を入力</li>
+                            <li>検索結果から貸出したい図書を選択</li>
+                            <li>図書の在庫確認と貸出可能性判定</li>
+                            <li>貸出処理の実行と貸出票の発行</li>
+                        </ul>
+                        
+                        <h6>設計項目</h6>
+                        <ol>
+                            <li><strong>ActionForm設計</strong>
+                                <ul>
+                                    <li>必要なプロパティの定義と型の選択</li>
+                                    <li>検証が必要な項目とその検証ルール</li>
+                                    <li>スコープの選択（request/session）とその理由</li>
+                                </ul>
+                            </li>
+                            
+                            <li><strong>Actionクラス設計</strong>
+                                <ul>
+                                    <li>execute()メソッドでの処理フロー設計</li>
+                                    <li>ビジネスロジック層への委譲方法</li>
+                                    <li>成功時と失敗時のActionForward設計</li>
+                                </ul>
+                            </li>
+                            
+                            <li><strong>エラーハンドリング設計</strong>
+                                <ul>
+                                    <li>想定されるエラーケースの分類</li>
+                                    <li>各エラーケースでの処理方針</li>
+                                    <li>ユーザーへのフィードバック方法</li>
+                                </ul>
+                            </li>
+                            
+                            <li><strong>責任分離の確認</strong>
+                                <ul>
+                                    <li>各クラスが持つべき責任の明確化</li>
+                                    <li>密結合を避ける設計のポイント</li>
+                                    <li>将来の変更に対する拡張性の確保</li>
+                                </ul>
+                            </li>
+                        </ol>
+                        
+                        <h6>期待される結果</h6>
+                        <p>MVCアーキテクチャの原則に従った設計ができること。各コンポーネントの責任が明確に分離され、保守しやすく拡張可能な設計になっていること。エラーハンドリングが適切に設計されていること。</p>
+                    </div>
+
+                    <!-- 理解度確認クイズ -->
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li><strong>Actionクラスがコマンドパターンの実装であることの利点を3つ挙げ、それぞれについて具体例とともに説明してください。</strong></li>
+                            
+                            <li><strong>ActionFormがなぜデータ転送オブジェクト（DTO）として重要なのか、従来のサーブレット開発での問題点と比較して説明してください。</strong></li>
+                            
+                            <li><strong>ActionFormのスコープをrequest とsession のどちらにするか、どのような基準で判断すべきですか？それぞれのメリット・デメリットを含めて説明してください。</strong></li>
+                            
+                            <li><strong>なぜActionクラスでインスタンス変数を使用してはいけないのですか？スレッドセーフ性の観点から説明してください。</strong></li>
+                            
+                            <li><strong>Struts 1.xのエラーハンドリングが階層化されている理由は何ですか？各階層の役割と処理方針の違いを説明してください。</strong></li>
+                            
+                            <li><strong>単一責任原則（SRP）の観点から、ActionクラスとActionFormの責任分離がどのように保守性の向上に貢献するか説明してください。</strong></li>
+                        </ol>
+                        
+                        <div class="mt-3">
+                            <h6>解答のヒント：</h6>
+                            <ul>
+                                <li>設計パターンの観点から理論的に考えてください</li>
+                                <li>Webアプリケーション特有の課題を念頭に置いてください</li>
+                                <li>保守性、拡張性、テスタビリティの観点を含めてください</li>
+                                <li>具体的なビジネス例を交えると理解が深まります</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 章間ナビゲーション -->
                     <div class="d-flex justify-content-between mt-4">
-                        <a href="struts1-learning-material-2.html" class="btn btn-secondary">← 前の章</a>
-                        <a href="struts1-learning-material-4.html" class="btn btn-primary">次の章 →</a>
+                        <a href="struts1-learning-material-2.html" class="btn btn-secondary">← 前の章：環境構築とプロジェクト作成</a>
+                        <a href="struts1-learning-material-4.html" class="btn btn-primary">次の章：struts-config.xmlの設定と管理 →</a>
                     </div>
                 </div>
             </main>
         </div>
     </div>
-
+    
+    <!-- フッター -->
+    <footer class="bg-dark text-white mt-5">
+        <div class="container-fluid py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="mb-0">&copy; 2025 F-Circle All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Highlight.js 初期化 -->
+    <script>hljs.highlightAll();</script>
+    
+    <!-- Mermaid.js 初期化 -->
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default'
+        });
+    </script>
 </body>
 </html>
