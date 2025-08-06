@@ -47,17 +47,17 @@
 - **[Spring Framework学習ガイド](docs/guide/java-ecosystem/spring/README.md)** - Spring基礎からSecurity機能まで11ステップ
 - **[Struts 1.x学習ガイド](docs/guide/java-ecosystem/struts1/README.md)** - Apache Struts 1.x基礎からデプロイメントまで10章完成カリキュラム
 
-### フロントエンド
+### JavaScriptエコシステム
 
 - **[JavaScript完全初心者向け学習ガイド](docs/guide/javascript-ecosystem/javascript-beginner/README.md)** - プログラミング未経験者向けJavaScript入門8章構成カリキュラム
 - **[JavaScript中級学習ガイド](docs/guide/javascript-ecosystem/javascript-intermediate/README.md)** - JavaScript基礎知識から実践的なSPA開発まで9週間完成カリキュラム
 
-### .NET・Windows開発
+### .NETエコシステム
 
 - **[VB.NET学習ガイド](docs/guide/dotnet-ecosystem/vbnet/README.md)** - VB.NET言語基礎からオブジェクト指向プログラミングまで10章完成カリキュラム
 - **[ASP.NET(VB.NET)学習ガイド](docs/guide/dotnet-ecosystem/aspnet-vb/README.md)** - ASP.NET Web Forms基礎から実践的なユーザー管理システム開発まで10章完成カリキュラム
 
-### Web開発
+### PHPエコシステム
 
 - **[PHP学習ガイド](docs/guide/php-ecosystem/php/README.md)** - PHP基礎から実践的なWebアプリケーション開発まで10章完成カリキュラム
 
@@ -68,7 +68,7 @@
 - **[PL/SQL学習ガイド](docs/guide/database/plsql/README.md)** - Oracle PL/SQLの基礎から応用まで10ステップ
 - **[DB2学習ガイド](docs/guide/database/db2/README.md)** - IBM DB2データベース入門からDocker環境での運用管理まで8ステップ
 
-### Office・自動化
+### Microsoft Office
 
 - **[VBA学習ガイド](docs/guide/microsoft-office/vba/README.md)** - VBA基礎からExcel自動化まで10ステップ
 
@@ -79,15 +79,15 @@
 - **[Python SQLModel学習ガイド](docs/guide/python-ecosystem/python-sqlmodel/README.md)** - SQLModelを使用したモダンなPythonデータベースプログラミング8章完成カリキュラム
 - **[Streamlit学習ガイド](docs/guide/python-ecosystem/streamlit/README.md)** - Streamlitを使用したWebアプリケーション開発の基礎から実践まで10章完成カリキュラム
 
-### R言語
+### Rエコシステム
 
 - **[R言語学習ガイド](docs/guide/r-ecosystem/r/README.md)** - R言語基礎から統計解析・データビジュアライゼーションまで10章完成カリキュラム
 
-### SAS
+### SASエコシステム
 
 - **[SAS学習ガイド](docs/guide/sas-ecosystem/sas/README.md)** - SASによるデータ分析と統計処理の基礎から実践的な応用まで10章完成カリキュラム
 
-### システム・環境
+### COBOLエコシステム
 
 - **[COBOL学習ガイド](docs/guide/cobol-ecosystem/cobol/README.md)** - COBOL基礎から実践的なビジネスロジックまで10章完成カリキュラム
 
