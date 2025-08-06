@@ -67,7 +67,7 @@
 
 ### Office・自動化
 
-- **[VBA学習ガイド](docs/guide/office/vba/README.md)** - VBA基礎からExcel自動化まで10ステップ
+- **[VBA学習ガイド](docs/guide/microsoft-office/vba/README.md)** - VBA基礎からExcel自動化まで10ステップ
 
 ### Pythonエコシステム
 
