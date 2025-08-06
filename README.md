@@ -83,7 +83,7 @@
 
 ### システム・環境
 
-- **[COBOL学習ガイド](docs/guide/systems-environments/cobol/README.md)** - COBOL基礎から実践的なビジネスロジックまで10章完成カリキュラム
+- **[COBOL学習ガイド](docs/guide/cobol-ecosystem/cobol/README.md)** - COBOL基礎から実践的なビジネスロジックまで10章完成カリキュラム
 
 ---
 

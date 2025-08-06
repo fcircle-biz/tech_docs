@@ -20,34 +20,34 @@
 
 ## 学習コンテンツ
 
-### [1. COBOL概要と環境設定](https://fcircle-biz.github.io/tech_docs/guide/systems-environments/cobol/cobol-learning-material-1.html)
+### [1. COBOL概要と環境設定](https://fcircle-biz.github.io/tech_docs/guide/cobol-ecosystem/cobol/cobol-learning-material-1.html)
 COBOLの歴史、特徴、実行環境の設定方法を学習します。
 
-### [2. 基本構文とプログラム構造](https://fcircle-biz.github.io/tech_docs/guide/systems-environments/cobol/cobol-learning-material-2.html)
+### [2. 基本構文とプログラム構造](https://fcircle-biz.github.io/tech_docs/guide/cobol-ecosystem/cobol/cobol-learning-material-2.html)
 COBOLの基本的なプログラム構造と記述ルールを理解します。
 
-### [3. データ項目と変数定義](https://fcircle-biz.github.io/tech_docs/guide/systems-environments/cobol/cobol-learning-material-3.html)
+### [3. データ項目と変数定義](https://fcircle-biz.github.io/tech_docs/guide/cobol-ecosystem/cobol/cobol-learning-material-3.html)
 データ項目の定義方法と様々なデータ型の使用方法を学習します。
 
-### [4. 基本的な計算と演算](https://fcircle-biz.github.io/tech_docs/guide/systems-environments/cobol/cobol-learning-material-4.html)
+### [4. 基本的な計算と演算](https://fcircle-biz.github.io/tech_docs/guide/cobol-ecosystem/cobol/cobol-learning-material-4.html)
 四則演算、関数、数値処理の基本を習得します。
 
-### [5. 条件分岐とループ処理](https://fcircle-biz.github.io/tech_docs/guide/systems-environments/cobol/cobol-learning-material-5.html)
+### [5. 条件分岐とループ処理](https://fcircle-biz.github.io/tech_docs/guide/cobol-ecosystem/cobol/cobol-learning-material-5.html)
 IF文、PERFORM文を使った制御構造を学習します。
 
-### [6. ファイル処理の基本](https://fcircle-biz.github.io/tech_docs/guide/systems-environments/cobol/cobol-learning-material-6.html)
+### [6. ファイル処理の基本](https://fcircle-biz.github.io/tech_docs/guide/cobol-ecosystem/cobol/cobol-learning-material-6.html)
 ファイルの読み書き、レコード処理の基本を習得します。
 
-### [7. 表（テーブル）処理](https://fcircle-biz.github.io/tech_docs/guide/systems-environments/cobol/cobol-learning-material-7.html)
+### [7. 表（テーブル）処理](https://fcircle-biz.github.io/tech_docs/guide/cobol-ecosystem/cobol/cobol-learning-material-7.html)
 配列的なデータ構造である表の定義と操作を学習します。
 
-### [8. サブプログラムと関数](https://fcircle-biz.github.io/tech_docs/guide/systems-environments/cobol/cobol-learning-material-8.html)
+### [8. サブプログラムと関数](https://fcircle-biz.github.io/tech_docs/guide/cobol-ecosystem/cobol/cobol-learning-material-8.html)
 プログラムの分割と再利用性を高めるためのサブプログラムを学習します。
 
-### [9. 実践的なプログラム作成](https://fcircle-biz.github.io/tech_docs/guide/systems-environments/cobol/cobol-learning-material-9.html)
+### [9. 実践的なプログラム作成](https://fcircle-biz.github.io/tech_docs/guide/cobol-ecosystem/cobol/cobol-learning-material-9.html)
 実際のビジネスロジックを含むプログラムを作成します。
 
-### [10. 応用とまとめ](https://fcircle-biz.github.io/tech_docs/guide/systems-environments/cobol/cobol-learning-material-10.html)
+### [10. 応用とまとめ](https://fcircle-biz.github.io/tech_docs/guide/cobol-ecosystem/cobol/cobol-learning-material-10.html)
 これまでの学習内容の総復習と実践的な課題に取り組みます。
 
 ## 学習の進め方
@@ -67,7 +67,7 @@ IF文、PERFORM文を使った制御構造を学習します。
 ## 関連リソース
 
 - [COBOLチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/systems-environments/cobol-cheatsheet.html)
-- [レガシーシステム学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/systems-environments/)
+- [レガシーシステム学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/cobol-ecosystem/)
 
 ## 学習目標
 
@@ -88,5 +88,5 @@ IF文、PERFORM文を使った制御構造を学習します。
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
 
 - [データベース連携（SQL）](https://fcircle-biz.github.io/tech_docs/guide/database/sql/)
-- [システム設計・運用](https://fcircle-biz.github.io/tech_docs/guide/systems-environments/)
-- [レガシーシステム移行技術](https://fcircle-biz.github.io/tech_docs/guide/systems-environments/)
+- [システム設計・運用](https://fcircle-biz.github.io/tech_docs/guide/cobol-ecosystem/)
+- [レガシーシステム移行技術](https://fcircle-biz.github.io/tech_docs/guide/cobol-ecosystem/)
