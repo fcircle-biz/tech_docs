@@ -27,6 +27,7 @@
 
 ### Python・Web開発
 
+- **[Django + PostgreSQL実践チュートリアル](docs/tutorial/django/README.md)** - DjangoフレームワークとPostgreSQL（Docker環境）を使用したモダンなPython Webアプリケーション開発の実践的なチュートリアル。Windows環境での開発を前提に、Docker DesktopによるPostgreSQLコンテナ管理からDjangoの基本機能、実用的なユーザー管理システムまでを段階的に実装（9章構成）
 - **[FastAPI + SQLAlchemy実践チュートリアル](docs/tutorial/fastapi-sqlalchemy/README.md)** - FastAPIとSQLAlchemyを使用したモダンなWebアプリケーション開発の実践的なチュートリアル（7章構成）
 - **[Streamlit + SQLModel実践チュートリアル](docs/tutorial/streamlit-sqlmodel/README.md)** - StreamlitとSQLModelを使用したモダンなWebアプリケーション開発の実践的なチュートリアル（6章構成）
 
