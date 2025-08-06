@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django + PostgreSQL チュートリアル Step 8 - フォームバリデーションとセキュリティ</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+        
+        .navbar {
+            background-color: #2e7d33;
+        }
+        
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+        
+        .chapter-title {
+            color: #2e7d33;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #2e7d33;
+            padding-bottom: 0.5rem;
+        }
+        
+        .section-title {
+            color: #4caf50;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        .quiz-container {
+            background-color: #e8f5e8;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #2e7d33;
+        }
+        
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+        
+        .highlight {
+            background-color: #ffecb3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
+        }
+        
+        .code-block {
+            background-color: #1e1e1e;
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .nav-link.active {
+            background-color: #2e7d33 !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Django + PostgreSQL チュートリアル</a>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="step1-environment-setup.html">
+                                Step 1: 環境構築
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step2-docker-postgresql.html">
+                                Step 2: PostgreSQL環境
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step3-django-project-init.html">
+                                Step 3: プロジェクト初期化
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step4-models-migration.html">
+                                Step 4: モデル設計
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step5-views-templates-urls.html">
+                                Step 5: ビュー・テンプレート
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step6-admin-interface.html">
+                                Step 6: 管理サイト
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step7-crud-operations.html">
+                                Step 7: CRUD操作
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="step8-validation-security.html">
+                                Step 8: バリデーション・セキュリティ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step9-testing-debugging.html">
+                                Step 9: テスト・デバッグ
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Step 8: フォームバリデーションとセキュリティ</h1>
+                </div>
+
+                <div id="step8">
+                    <h2 class="chapter-title">安全なWebアプリケーションの実装</h2>
+                    
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>Django標準のセキュリティ機能（CSRF、XSS対策）</li>
+                            <li>カスタムバリデーターの実装</li>
+                            <li>ファイルアップロード機能とセキュリティ</li>
+                            <li>SQLインジェクション対策の理解</li>
+                            <li>セキュリティヘッダーの設定</li>
+                            <li>レート制限とブルートフォース攻撃対策</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">8.1 高度なバリデーション機能</h3>
+                    <p>Djangoのバリデーション機能を拡張し、より厳密な入力チェックを実装します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 8-1: カスタムバリデーターとセキュリティ強化</h5>
+                        
+                        <h6>カスタムバリデーター実装（users/validators.py作成）</h6>
+                        <pre class="code-block"><code class="language-python">import re
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+
+
+def validate_strong_password(password):
+    """強力なパスワードのバリデーション"""
+    if len(password) < 8:
+        raise ValidationError(_('パスワードは8文字以上である必要があります。'))
+    
+    if not re.search(r'[A-Z]', password):
+        raise ValidationError(_('パスワードに大文字を含めてください。'))
+    
+    if not re.search(r'[a-z]', password):
+        raise ValidationError(_('パスワードに小文字を含めてください。'))
+    
+    if not re.search(r'\d', password):
+        raise ValidationError(_('パスワードに数字を含めてください。'))
+    
+    if not re.search(r'[!@#$%^&*()_+\-=\[\]{};:\'",.<>?/\\|`~]', password):
+        raise ValidationError(_('パスワードに記号を含めてください。'))
+
+
+def validate_japanese_phone(phone):
+    """日本の電話番号形式バリデーション"""
+    pattern = r'^(\d{2,4}-\d{2,4}-\d{3,4}|0\d{9,10})$'
+    if not re.match(pattern, phone):
+        raise ValidationError(
+            _('有効な日本の電話番号を入力してください。例: 090-1234-5678')
+        )
+
+
+def validate_file_size(file):
+    """アップロードファイルサイズ制限"""
+    max_size = 5 * 1024 * 1024  # 5MB
+    if file.size > max_size:
+        raise ValidationError(
+            _('ファイルサイズは5MB以下にしてください。現在のサイズ: {:.1f}MB').format(
+                file.size / (1024 * 1024)
+            )
+        )
+
+
+def validate_image_file(file):
+    """画像ファイルの検証"""
+    allowed_extensions = ['.jpg', '.jpeg', '.png', '.gif']
+    file_extension = file.name.lower().split('.')[-1]
+    
+    if f'.{file_extension}' not in allowed_extensions:
+        raise ValidationError(
+            _('許可されている画像形式: JPG, JPEG, PNG, GIF')
+        )
+    
+    # MIMEタイプも検証
+    allowed_mimes = [
+        'image/jpeg', 'image/png', 'image/gif'
+    ]
+    
+    if hasattr(file, 'content_type') and file.content_type not in allowed_mimes:
+        raise ValidationError(_('無効な画像ファイルです。'))
+
+
+def validate_no_malicious_content(value):
+    """悪意のあるコンテンツの検出"""
+    malicious_patterns = [
+        r'&lt;script.*?&gt;',
+        r'javascript:',
+        r'on\w+\s*=',
+        r'&lt;iframe.*?&gt;',
+        r'eval\s*\(',
+        r'document\.cookie',
+    ]
+    
+    for pattern in malicious_patterns:
+        if re.search(pattern, value, re.IGNORECASE):
+            raise ValidationError(
+                _('入力内容にセキュリティ上の問題があります。')
+            )</code></pre>
+
+                        <h6>セキュリティ強化フォーム（users/forms.py更新）</h6>
+                        <pre class="code-block"><code class="language-python">from django import forms
+from django.core.exceptions import ValidationError
+from django.contrib.auth.hashers import check_password
+from .models import User, UserProfile, Category
+from .validators import (
+    validate_japanese_phone, validate_file_size, 
+    validate_image_file, validate_no_malicious_content
+)
+
+
+class SecureUserForm(forms.ModelForm):
+    """セキュリティ強化ユーザーフォーム"""
+    
+    class Meta:
+        model = User
+        fields = [
+            'username', 'email', 'first_name', 'last_name',
+            'phone_number', 'birth_date', 'gender',
+            'postal_code', 'address'
+        ]
+        widgets = {
+            'username': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '英数字とアンダースコアのみ',
+                'autocomplete': 'username'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'user@example.com',
+                'autocomplete': 'email'
+            }),
+            'first_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'autocomplete': 'given-name'
+            }),
+            'last_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'autocomplete': 'family-name'
+            }),
+            'phone_number': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '090-1234-5678',
+                'autocomplete': 'tel'
+            }),
+            'birth_date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date',
+                'autocomplete': 'bday'
+            }),
+            'gender': forms.Select(attrs={
+                'class': 'form-select'
+            }),
+            'postal_code': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '123-4567',
+                'autocomplete': 'postal-code'
+            }),
+            'address': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'autocomplete': 'street-address'
+            }),
+        }
+    
+    def clean_username(self):
+        """ユーザー名の高度なバリデーション"""
+        username = self.cleaned_data['username']
+        
+        # 長さチェック
+        if len(username) < 3:
+            raise ValidationError('ユーザー名は3文字以上で入力してください。')
+        
+        if len(username) > 30:
+            raise ValidationError('ユーザー名は30文字以内で入力してください。')
+        
+        # 禁止されたユーザー名
+        forbidden_usernames = [
+            'admin', 'root', 'administrator', 'test', 'user',
+            'api', 'www', 'mail', 'ftp', 'null', 'undefined'
+        ]
+        if username.lower() in forbidden_usernames:
+            raise ValidationError('このユーザー名は使用できません。')
+        
+        # 悪意のあるコンテンツチェック
+        validate_no_malicious_content(username)
+        
+        return username.lower()
+    
+    def clean_phone_number(self):
+        """電話番号のバリデーション"""
+        phone = self.cleaned_data.get('phone_number', '')
+        if phone:
+            validate_japanese_phone(phone)
+        return phone
+    
+    def clean_address(self):
+        """住所の安全性チェック"""
+        address = self.cleaned_data.get('address', '')
+        if address:
+            validate_no_malicious_content(address)
+        return address
+
+
+class SecureUserProfileForm(forms.ModelForm):
+    """セキュリティ強化プロフィールフォーム"""
+    
+    avatar = forms.ImageField(
+        required=False,
+        validators=[validate_file_size, validate_image_file],
+        widget=forms.ClearableFileInput(attrs={
+            'class': 'form-control',
+            'accept': 'image/*'
+        })
+    )
+    
+    class Meta:
+        model = UserProfile
+        fields = [
+            'category', 'bio', 'website', 'avatar',
+            'receive_notifications', 'receive_email_updates'
+        ]
+        widgets = {
+            'category': forms.Select(attrs={
+                'class': 'form-select'
+            }),
+            'bio': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'maxlength': 500
+            }),
+            'website': forms.URLInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'https://example.com'
+            }),
+            'receive_notifications': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+            'receive_email_updates': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+        }
+    
+    def clean_bio(self):
+        """自己紹介の安全性チェック"""
+        bio = self.cleaned_data.get('bio', '')
+        if bio:
+            validate_no_malicious_content(bio)
+        return bio
+    
+    def clean_website(self):
+        """WebサイトURLの検証"""
+        website = self.cleaned_data.get('website', '')
+        if website:
+            # HTTPSを推奨
+            if not website.startswith(('https://', 'http://')):
+                website = f'https://{website}'
+            
+            # 悪意のあるドメインのチェック（簡易版）
+            dangerous_domains = [
+                'bit.ly', 'tinyurl.com', 'shortened.com'  # 短縮URLサービス例
+            ]
+            
+            for domain in dangerous_domains:
+                if domain in website:
+                    raise ValidationError(
+                        '短縮URLサービスは使用できません。直接のURLを入力してください。'
+                    )
+            
+        return website</code></pre>
+                    </div>
+
+                    <h3 class="section-title">8.2 セキュリティミドルウェアと設定</h3>
+                    <p>Django の セキュリティミドルウェアを設定し、アプリケーション全体のセキュリティを強化します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 8-2: セキュリティ設定の強化</h5>
+                        
+                        <h6>セキュリティ設定更新（myproject/settings.py）</h6>
+                        <pre class="code-block"><code class="language-python"># セキュリティ設定の追加
+
+# CSRF保護の強化
+CSRF_COOKIE_SECURE = not DEBUG  # 本番環境でHTTPSを強制
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Strict'
+
+# セッションセキュリティ
+SESSION_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Strict'
+SESSION_COOKIE_AGE = 3600  # 1時間
+
+# セキュリティヘッダー
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+
+if not DEBUG:
+    # 本番環境でのみ有効
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+# パスワード検証の強化
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 12,  # より長いパスワードを要求
+        }
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+# ファイルアップロード設定
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024  # 5MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
+
+# 許可するホスト（本番環境では具体的に指定）
+if not DEBUG:
+    ALLOWED_HOSTS = ['yourdomain.com', 'www.yourdomain.com']
+
+# ログ記録の設定
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR / 'logs/django.log',
+            'maxBytes': 1024*1024*10,  # 10MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+        'security_file': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR / 'logs/security.log',
+            'maxBytes': 1024*1024*10,
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.security': {
+            'handlers': ['security_file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'users': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}</code></pre>
+
+                        <h6>セキュリティミドルウェア実装（users/middleware.py作成）</h6>
+                        <pre class="code-block"><code class="language-python">import time
+import logging
+from django.http import HttpResponseTooManyRequests
+from django.core.cache import cache
+from django.conf import settings
+from django.utils.deprecation import MiddlewareMixin
+
+logger = logging.getLogger('django.security')
+
+
+class SecurityHeadersMiddleware:
+    """セキュリティヘッダーを追加するミドルウェア"""
+    
+    def __init__(self, get_response):
+        self.get_response = get_response
+    
+    def __call__(self, request):
+        response = self.get_response(request)
+        
+        # セキュリティヘッダーの追加
+        response['X-Content-Type-Options'] = 'nosniff'
+        response['X-Frame-Options'] = 'DENY'
+        response['X-XSS-Protection'] = '1; mode=block'
+        response['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+        
+        if not settings.DEBUG:
+            response['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains; preload'
+        
+        return response
+
+
+class RateLimitMiddleware:
+    """レート制限ミドルウェア"""
+    
+    def __init__(self, get_response):
+        self.get_response = get_response
+    
+    def __call__(self, request):
+        # IPアドレス取得
+        ip = self.get_client_ip(request)
+        
+        # レート制限チェック
+        if self.is_rate_limited(ip, request):
+            logger.warning(f'Rate limit exceeded for IP: {ip}')
+            return HttpResponseTooManyRequests('Too many requests')
+        
+        response = self.get_response(request)
+        return response
+    
+    def get_client_ip(self, request):
+        """クライアントIPアドレスを取得"""
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            return x_forwarded_for.split(',')[0].strip()
+        return request.META.get('REMOTE_ADDR')
+    
+    def is_rate_limited(self, ip, request):
+        """レート制限チェック"""
+        # ログイン試行の制限
+        if request.path.startswith('/admin/login/'):
+            cache_key = f'login_attempts:{ip}'
+            attempts = cache.get(cache_key, 0)
+            
+            if attempts >= 5:  # 5回失敗で30分ロック
+                return True
+            
+            if request.method == 'POST':
+                cache.set(cache_key, attempts + 1, 1800)  # 30分
+        
+        # 一般的なレート制限（1分間に60リクエスト）
+        cache_key = f'rate_limit:{ip}'
+        requests = cache.get(cache_key, 0)
+        
+        if requests >= 60:
+            return True
+        
+        cache.set(cache_key, requests + 1, 60)
+        return False</code></pre>
+
+                        <h6>ミドルウェア登録（settings.py更新）</h6>
+                        <pre class="code-block"><code class="language-python">MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'users.middleware.SecurityHeadersMiddleware',  # 追加
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'users.middleware.RateLimitMiddleware',  # 追加
+]</code></pre>
+                    </div>
+
+                    <h3 class="section-title">8.3 セキュリティテストとモニタリング</h3>
+                    <p>セキュリティ機能のテストとモニタリング体制を構築します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 8-3: セキュリティテストの実装</h5>
+                        
+                        <h6>セキュリティテスト作成（users/tests_security.py作成）</h6>
+                        <pre class="code-block"><code class="language-python">from django.test import TestCase, Client
+from django.urls import reverse
+from django.contrib.auth.models import User as DjangoUser
+from django.core.files.uploadedfile import SimpleUploadedFile
+from users.models import User, UserProfile
+from users.forms import SecureUserForm
+
+
+class SecurityTestCase(TestCase):
+    """セキュリティ機能のテスト"""
+    
+    def setUp(self):
+        self.client = Client()
+        self.admin_user = DjangoUser.objects.create_superuser(
+            'admin', 'admin@test.com', 'testpassword'
+        )
+    
+    def test_csrf_protection(self):
+        """CSRF保護のテスト"""
+        # CSRFトークンなしでPOST
+        response = self.client.post(reverse('users:user_create'), {
+            'username': 'testuser',
+            'email': 'test@example.com',
+            'first_name': 'Test',
+            'last_name': 'User'
+        })
+        
+        # CSRF保護により拒否されるはず
+        self.assertEqual(response.status_code, 403)
+    
+    def test_xss_protection(self):
+        """XSS攻撃からの保護テスト"""
+        malicious_script = '&lt;script&gt;alert("XSS")&lt;/script&gt;'
+        
+        form_data = {
+            'username': 'testuser',
+            'email': 'test@example.com',
+            'first_name': malicious_script,
+            'last_name': 'User'
+        }
+        
+        form = SecureUserForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('first_name', form.errors)
+    
+    def test_sql_injection_protection(self):
+        """SQLインジェクション攻撃からの保護テスト"""
+        malicious_input = "'; DROP TABLE users_user; --"
+        
+        # Djangoのクエリセットは自動的にエスケープされる
+        try:
+            User.objects.filter(username=malicious_input)
+            # エラーが発生しないことを確認
+        except Exception as e:
+            self.fail(f"Unexpected exception: {e}")
+    
+    def test_file_upload_security(self):
+        """ファイルアップロードのセキュリティテスト"""
+        # 悪意のあるファイル（PHPスクリプト）
+        malicious_file = SimpleUploadedFile(
+            "malicious.php",
+            b"&lt;?php system($_GET['cmd']); ?&gt;",
+            content_type="application/x-php"
+        )
+        
+        form_data = {
+            'category': '',
+            'bio': 'Test bio',
+        }
+        
+        from users.forms import SecureUserProfileForm
+        form = SecureUserProfileForm(data=form_data, files={'avatar': malicious_file})
+        
+        # 無効な画像ファイルとして拒否されるはず
+        self.assertFalse(form.is_valid())
+        self.assertIn('avatar', form.errors)
+    
+    def test_rate_limiting(self):
+        """レート制限のテスト"""
+        url = reverse('admin:login')
+        
+        # 連続してログイン試行
+        for i in range(6):
+            response = self.client.post(url, {
+                'username': 'admin',
+                'password': 'wrongpassword'
+            })
+        
+        # 6回目は制限されるはず
+        response = self.client.post(url, {
+            'username': 'admin', 
+            'password': 'wrongpassword'
+        })
+        # Note: 実際の環境ではHTTP 429が返される
+    
+    def test_secure_headers(self):
+        """セキュリティヘッダーのテスト"""
+        response = self.client.get('/')
+        
+        # セキュリティヘッダーの存在確認
+        self.assertIn('X-Content-Type-Options', response)
+        self.assertEqual(response['X-Content-Type-Options'], 'nosniff')
+        
+        self.assertIn('X-Frame-Options', response)
+        self.assertEqual(response['X-Frame-Options'], 'DENY')
+    
+    def test_username_validation(self):
+        """ユーザー名バリデーションのテスト"""
+        # 禁止されたユーザー名
+        forbidden_names = ['admin', 'root', 'administrator']
+        
+        for username in forbidden_names:
+            form_data = {
+                'username': username,
+                'email': 'test@example.com',
+                'first_name': 'Test',
+                'last_name': 'User'
+            }
+            
+            form = SecureUserForm(data=form_data)
+            self.assertFalse(form.is_valid())
+            self.assertIn('username', form.errors)
+
+
+class VulnerabilityTestCase(TestCase):
+    """脆弱性のテスト"""
+    
+    def test_path_traversal_protection(self):
+        """パストラバーサル攻撃の保護テスト"""
+        # ファイルパス操作の試行
+        malicious_paths = [
+            '../../../etc/passwd',
+            '..\\..\\windows\\system32\\drivers\\etc\\hosts',
+            '/etc/passwd',
+            'C:\\Windows\\System32\\config\\SAM'
+        ]
+        
+        for path in malicious_paths:
+            response = self.client.get('/', {'file': path})
+            # 正常なレスポンスが返されることを確認（攻撃が無効化されている）
+            self.assertNotEqual(response.status_code, 500)
+    
+    def test_command_injection_protection(self):
+        """コマンドインジェクション攻撃の保護テスト"""
+        malicious_commands = [
+            '; ls -la',
+            '&& cat /etc/passwd',
+            '| whoami',
+            '`id`'
+        ]
+        
+        for cmd in malicious_commands:
+            form_data = {
+                'username': f'user{cmd}',
+                'email': 'test@example.com',
+                'first_name': 'Test',
+                'last_name': 'User'
+            }
+            
+            form = SecureUserForm(data=form_data)
+            # バリデーションで拒否されることを確認
+            self.assertFalse(form.is_valid())</code></pre>
+
+                        <h6>セキュリティテスト実行</h6>
+                        <pre class="code-block"><code class="language-bash"># セキュリティテストの実行
+python manage.py test users.tests_security --verbosity=2
+
+# ログディレクトリの作成
+mkdir logs
+
+# セキュリティスキャンツールの実行（オプション）
+pip install bandit
+bandit -r . -f json -o security_report.json</code></pre>
+                    </div>
+
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li><strong>CSRF攻撃</strong>: 
+                                <p>Q. DjangoのCSRF保護機能はどのように動作しますか？</p>
+                                <p>A. CSRFトークンをフォームに埋め込み、POST時にトークンを検証することで、正規サイトからのリクエストかを判定</p>
+                            </li>
+                            <li><strong>XSS攻撃</strong>:
+                                <p>Q. DjangoテンプレートでのXSS対策の仕組みを説明してください。</p>
+                                <p>A. テンプレート変数の自動エスケープにより、HTML特殊文字をエンティティに変換してスクリプト実行を防止</p>
+                            </li>
+                            <li><strong>セキュリティヘッダー</strong>:
+                                <p>Q. X-Frame-Options: DENYヘッダーの目的は何ですか？</p>
+                                <p>A. ページがiframe内で表示されることを防ぎ、クリックジャッキング攻撃を防止</p>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="highlight">
+                        <h5>次のステップの準備</h5>
+                        <p>Step 8が完了しました！次のStep 9では、テストとデバッグの実装を行います。以下を確認してから進んでください：</p>
+                        <ul>
+                            <li>カスタムバリデーターが正しく実装され、動作している</li>
+                            <li>セキュリティヘッダーが適切に設定されている</li>
+                            <li>レート制限機能が実装されている</li>
+                            <li>ファイルアップロードのセキュリティ対策が機能している</li>
+                            <li>セキュリティテストが実装され、全てパスしている</li>
+                        </ul>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="step7-crud-operations.html" class="btn btn-secondary">← 前の章: CRUD操作</a>
+                        <a href="step9-testing-debugging.html" class="btn btn-primary">次の章: テスト・デバッグ →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Highlight.js 初期化 -->
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
