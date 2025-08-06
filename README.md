@@ -51,8 +51,8 @@
 
 ### .NET・Windows開発
 
-- **[VB.NET学習ガイド](docs/guide/dotnet/vbnet/README.md)** - VB.NET言語基礎からオブジェクト指向プログラミングまで10章完成カリキュラム
-- **[ASP.NET(VB.NET)学習ガイド](docs/guide/dotnet/aspnet-vb/README.md)** - ASP.NET Web Forms基礎から実践的なユーザー管理システム開発まで10章完成カリキュラム
+- **[VB.NET学習ガイド](docs/guide/dotnet-ecosystem/vbnet/README.md)** - VB.NET言語基礎からオブジェクト指向プログラミングまで10章完成カリキュラム
+- **[ASP.NET(VB.NET)学習ガイド](docs/guide/dotnet-ecosystem/aspnet-vb/README.md)** - ASP.NET Web Forms基礎から実践的なユーザー管理システム開発まで10章完成カリキュラム
 
 ### Web開発
 
