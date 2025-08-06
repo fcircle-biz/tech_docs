@@ -34,12 +34,12 @@ color: green
 - 可読性と学習体験を最適化する
 
 **技術標準:**
-- templates/html-template.mdに従いhighlight.js CDN（Atom One Darkテーマ）を含め、`hljs.highlightAll()`で初期化する
+- @templates/html-template.mdに従いhighlight.js CDN（Atom One Darkテーマ）を含め、`hljs.highlightAll()`で初期化する
 - 技術に応じた適切な言語識別子を使用する（例：`language-vbnet`, `language-csharp`, `language-python`, `language-java`等）
 - Bootstrap 5フレームワークとGoogle Fonts (Noto Sans JP)を統合する
 - レスポンシブデザインとアクセシビリティガイドラインに従う
 - **黒背景コードブロック**: `.code-block`クラスで黒背景（#1e1e1e）と白文字を適用し、Atom One Darkテーマと調和させる
-- **Mermaid.js統合**: 図表作成にはtemplates/html-template.mdに従いMermaid.js CDNを含め、`<div class="mermaid">`タグ内にフローチャート、シーケンス図、クラス図等を作成（**デフォルトテーマを使用、darkテーマは使用しない**）
+- **Mermaid.js統合**: 図表作成には@templates/html-template.mdに従いMermaid.js CDNを含め、`<div class="mermaid">`タグ内にフローチャート、シーケンス図、クラス図等を作成（**デフォルトテーマを使用、darkテーマは使用しない**）
 
 **品質保証:**
 - すべてのコードブロックが`.code-block`クラスと適切な言語クラスを持ち、Atom One Darkテーマによる構文ハイライトが黒背景で正しく機能する
