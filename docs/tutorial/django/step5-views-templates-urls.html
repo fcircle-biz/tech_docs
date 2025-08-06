@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django + PostgreSQL チュートリアル Step 5 - ビュー、テンプレート、URLルーティング</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+        
+        .navbar {
+            background-color: #2e7d33;
+        }
+        
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+        
+        .chapter-title {
+            color: #2e7d33;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #2e7d33;
+            padding-bottom: 0.5rem;
+        }
+        
+        .section-title {
+            color: #4caf50;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        .quiz-container {
+            background-color: #e8f5e8;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #2e7d33;
+        }
+        
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+        
+        .highlight {
+            background-color: #ffecb3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
+        }
+        
+        .code-block {
+            background-color: #1e1e1e;
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .nav-link.active {
+            background-color: #2e7d33 !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Django + PostgreSQL チュートリアル</a>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="step1-environment-setup.html">
+                                Step 1: 環境構築
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step2-docker-postgresql.html">
+                                Step 2: PostgreSQL環境
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step3-django-project-init.html">
+                                Step 3: プロジェクト初期化
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step4-models-migration.html">
+                                Step 4: モデル設計
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="step5-views-templates-urls.html">
+                                Step 5: ビュー・テンプレート
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step6-admin-interface.html">
+                                Step 6: 管理サイト
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step7-crud-operations.html">
+                                Step 7: CRUD操作
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step8-validation-security.html">
+                                Step 8: バリデーション・セキュリティ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step9-testing-debugging.html">
+                                Step 9: テスト・デバッグ
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Step 5: ビュー、テンプレート、URLルーティング</h1>
+                </div>
+
+                <div id="step5">
+                    <h2 class="chapter-title">MVTアーキテクチャの実装</h2>
+                    
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>DjangoのMVT（Model-View-Template）アーキテクチャの理解</li>
+                            <li>関数ベースビュー（FBV）とクラスベースビュー（CBV）の実装</li>
+                            <li>URLパターンの設定と名前付きURL</li>
+                            <li>テンプレートシステムとコンテキスト変数</li>
+                            <li>テンプレート継承とブロック機能</li>
+                            <li>静的ファイルの組み込みと管理</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">5.1 usersアプリケーションのURL設定</h3>
+                    <p>作成したusersアプリケーションにアクセスするためのURL設定を実装します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 5-1: usersアプリのURL設定作成</h5>
+                        <p>ユーザー関連機能へのルーティングを設定し、アプリケーション単位でのURL管理を実装します。</p>
+                        
+                        <h6>usersアプリURL設定（users/urls.py作成）</h6>
+                        <pre class="code-block"><code class="language-python">from django.urls import path
+from . import views
+
+app_name = 'users'
+
+urlpatterns = [
+    # ユーザー一覧
+    path('', views.user_list, name='user_list'),
+    
+    # ユーザー詳細
+    path('&lt;int:pk&gt;/', views.user_detail, name='user_detail'),
+    
+    # ユーザー作成
+    path('create/', views.user_create, name='user_create'),
+    
+    # ユーザー編集
+    path('&lt;int:pk&gt;/edit/', views.user_edit, name='user_edit'),
+    
+    # ユーザー削除
+    path('&lt;int:pk&gt;/delete/', views.user_delete, name='user_delete'),
+    
+    # カテゴリ管理
+    path('categories/', views.category_list, name='category_list'),
+]</code></pre>
+
+                        <h6>プロジェクトURL設定更新（myproject/urls.py）</h6>
+                        <pre class="code-block"><code class="language-python">from django.contrib import admin
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+from django.views.generic import RedirectView
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('hello/', include('hello.urls')),
+    path('users/', include('users.urls')),  # 追加
+    path('', RedirectView.as_view(url='/users/', permanent=True)),  # ルートを users にリダイレクト
+]
+
+# 開発環境でのメディアファイル配信設定
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+admin.site.site_header = "Django Tutorial 管理サイト"
+admin.site.site_title = "Django Tutorial Admin"
+admin.site.index_title = "管理サイトホーム"</code></pre>
+                    </div>
+
+                    <h3 class="section-title">5.2 関数ベースビューの実装</h3>
+                    <p>ユーザー管理機能の基本的なビュー関数を実装します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 5-2: ユーザー管理ビュー関数の実装</h5>
+                        <p>CRUD操作に対応したビュー関数を作成し、テンプレートとの連携を実装します。</p>
+                        
+                        <h6>ビュー関数実装（users/views.py）</h6>
+                        <pre class="code-block"><code class="language-python">from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from django.core.paginator import Paginator
+from django.db.models import Q
+from .models import User, Category, UserProfile
+
+
+def user_list(request):
+    """ユーザー一覧表示"""
+    # 検索パラメータの取得
+    search_query = request.GET.get('search', '')
+    category_filter = request.GET.get('category', '')
+    
+    # ベースクエリセット
+    users = User.objects.select_related('profile', 'profile__category').filter(is_active=True)
+    
+    # 検索機能
+    if search_query:
+        users = users.filter(
+            Q(username__icontains=search_query) |
+            Q(first_name__icontains=search_query) |
+            Q(last_name__icontains=search_query) |
+            Q(email__icontains=search_query)
+        )
+    
+    # カテゴリフィルター
+    if category_filter:
+        users = users.filter(profile__category_id=category_filter)
+    
+    # ページネーション
+    paginator = Paginator(users, 10)  # 1ページ10件
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # カテゴリ一覧（フィルター用）
+    categories = Category.objects.filter(is_active=True)
+    
+    context = {
+        'page_obj': page_obj,
+        'search_query': search_query,
+        'category_filter': category_filter,
+        'categories': categories,
+        'total_users': users.count(),
+    }
+    
+    return render(request, 'users/user_list.html', context)
+
+
+def user_detail(request, pk):
+    """ユーザー詳細表示"""
+    user = get_object_or_404(User.objects.select_related('profile'), pk=pk)
+    
+    # プロフィールが存在しない場合は作成
+    profile, created = UserProfile.objects.get_or_create(user=user)
+    
+    context = {
+        'user': user,
+        'profile': profile,
+    }
+    
+    return render(request, 'users/user_detail.html', context)
+
+
+def user_create(request):
+    """ユーザー作成"""
+    if request.method == 'POST':
+        # フォームデータの処理（後のステップで改良）
+        username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        
+        # 基本バリデーション
+        if not all([username, email, first_name, last_name]):
+            messages.error(request, 'すべての必須フィールドを入力してください。')
+        else:
+            try:
+                user = User.objects.create(
+                    username=username,
+                    email=email,
+                    first_name=first_name,
+                    last_name=last_name
+                )
+                messages.success(request, f'ユーザー「{user.get_full_name()}」を作成しました。')
+                return redirect('users:user_detail', pk=user.pk)
+            except Exception as e:
+                messages.error(request, f'ユーザー作成中にエラーが発生しました: {e}')
+    
+    categories = Category.objects.filter(is_active=True)
+    context = {
+        'categories': categories,
+    }
+    
+    return render(request, 'users/user_form.html', context)
+
+
+def user_edit(request, pk):
+    """ユーザー編集"""
+    user = get_object_or_404(User, pk=pk)
+    
+    if request.method == 'POST':
+        # フォームデータの処理
+        user.first_name = request.POST.get('first_name', '').strip()
+        user.last_name = request.POST.get('last_name', '').strip()
+        user.email = request.POST.get('email', '').strip()
+        user.phone_number = request.POST.get('phone_number', '').strip()
+        
+        try:
+            user.save()
+            messages.success(request, f'ユーザー「{user.get_full_name()}」を更新しました。')
+            return redirect('users:user_detail', pk=user.pk)
+        except Exception as e:
+            messages.error(request, f'更新中にエラーが発生しました: {e}')
+    
+    categories = Category.objects.filter(is_active=True)
+    context = {
+        'user': user,
+        'categories': categories,
+        'is_edit': True,
+    }
+    
+    return render(request, 'users/user_form.html', context)
+
+
+def user_delete(request, pk):
+    """ユーザー削除（論理削除）"""
+    user = get_object_or_404(User, pk=pk)
+    
+    if request.method == 'POST':
+        user.is_active = False
+        user.save()
+        messages.success(request, f'ユーザー「{user.get_full_name()}」を削除しました。')
+        return redirect('users:user_list')
+    
+    context = {
+        'user': user,
+    }
+    
+    return render(request, 'users/user_confirm_delete.html', context)
+
+
+def category_list(request):
+    """カテゴリ一覧表示"""
+    categories = Category.objects.annotate(
+        user_count=models.Count('users', filter=models.Q(users__is_active=True))
+    ).filter(is_active=True)
+    
+    context = {
+        'categories': categories,
+    }
+    
+    return render(request, 'users/category_list.html', context)</code></pre>
+                    </div>
+
+                    <h3 class="section-title">5.3 テンプレートの作成</h3>
+                    <p>ビュー関数に対応するHTMLテンプレートを作成します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 5-3: ユーザー管理テンプレートの作成</h5>
+                        <p>テンプレート継承を活用した効率的なHTMLテンプレートを作成します。</p>
+                        
+                        <h6>テンプレートディレクトリ作成</h6>
+                        <pre class="code-block"><code class="language-bash"># テンプレートディレクトリの作成
+mkdir users\templates
+mkdir users\templates\users</code></pre>
+
+                        <h6>ユーザー一覧テンプレート（users/templates/users/user_list.html）</h6>
+                        <pre class="code-block"><code class="language-html">{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ユーザー一覧 - Django Tutorial{% endblock %}
+
+{% block content %}
+&lt;div class="d-flex justify-content-between align-items-center mb-4"&gt;
+    &lt;h2&gt;ユーザー一覧&lt;/h2&gt;
+    &lt;div&gt;
+        &lt;a href="{% url 'users:user_create' %}" class="btn btn-success"&gt;
+            ✚ 新しいユーザーを追加
+        &lt;/a&gt;
+        &lt;a href="{% url 'users:category_list' %}" class="btn btn-info"&gt;
+            カテゴリ管理
+        &lt;/a&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 検索・フィルター機能 --&gt;
+&lt;div class="row mb-4"&gt;
+    &lt;div class="col-md-8"&gt;
+        &lt;form method="get" class="d-flex"&gt;
+            &lt;input type="text" name="search" value="{{ search_query }}" 
+                   placeholder="ユーザー名、氏名、メールアドレスで検索" 
+                   class="form-control me-2"&gt;
+            &lt;select name="category" class="form-select me-2" style="width: auto;"&gt;
+                &lt;option value=""&gt;全カテゴリ&lt;/option&gt;
+                {% for category in categories %}
+                &lt;option value="{{ category.pk }}" 
+                        {% if category.pk|stringformat:"s" == category_filter %}selected{% endif %}&gt;
+                    {{ category.name }}
+                &lt;/option&gt;
+                {% endfor %}
+            &lt;/select&gt;
+            &lt;button type="submit" class="btn btn-primary"&gt;検索&lt;/button&gt;
+            {% if search_query or category_filter %}
+                &lt;a href="{% url 'users:user_list' %}" class="btn btn-secondary ms-2"&gt;クリア&lt;/a&gt;
+            {% endif %}
+        &lt;/form&gt;
+    &lt;/div&gt;
+    &lt;div class="col-md-4 text-end"&gt;
+        &lt;small class="text-muted"&gt;総ユーザー数: {{ total_users }} 件&lt;/small&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- ユーザーテーブル --&gt;
+{% if page_obj %}
+&lt;div class="table-responsive"&gt;
+    &lt;table class="table table-hover"&gt;
+        &lt;thead class="table-dark"&gt;
+            &lt;tr&gt;
+                &lt;th&gt;ユーザー名&lt;/th&gt;
+                &lt;th&gt;氏名&lt;/th&gt;
+                &lt;th&gt;メールアドレス&lt;/th&gt;
+                &lt;th&gt;カテゴリ&lt;/th&gt;
+                &lt;th&gt;作成日&lt;/th&gt;
+                &lt;th&gt;操作&lt;/th&gt;
+            &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+            {% for user in page_obj %}
+            &lt;tr&gt;
+                &lt;td&gt;&lt;strong&gt;{{ user.username }}&lt;/strong&gt;&lt;/td&gt;
+                &lt;td&gt;{{ user.get_full_name }}&lt;/td&gt;
+                &lt;td&gt;{{ user.email }}&lt;/td&gt;
+                &lt;td&gt;
+                    {% if user.profile.category %}
+                        &lt;span class="badge" style="background-color: {{ user.profile.category.color }};"&gt;
+                            {{ user.profile.category.name }}
+                        &lt;/span&gt;
+                    {% else %}
+                        &lt;span class="badge bg-secondary"&gt;未設定&lt;/span&gt;
+                    {% endif %}
+                &lt;/td&gt;
+                &lt;td&gt;{{ user.created_at|date:"Y-m-d" }}&lt;/td&gt;
+                &lt;td&gt;
+                    &lt;a href="{% url 'users:user_detail' user.pk %}" class="btn btn-sm btn-outline-primary"&gt;詳細&lt;/a&gt;
+                    &lt;a href="{% url 'users:user_edit' user.pk %}" class="btn btn-sm btn-outline-warning"&gt;編集&lt;/a&gt;
+                    &lt;a href="{% url 'users:user_delete' user.pk %}" class="btn btn-sm btn-outline-danger"&gt;削除&lt;/a&gt;
+                &lt;/td&gt;
+            &lt;/tr&gt;
+            {% endfor %}
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+&lt;/div&gt;
+
+&lt;!-- ページネーション --&gt;
+{% if page_obj.has_other_pages %}
+&lt;nav aria-label="ページネーション"&gt;
+    &lt;ul class="pagination justify-content-center"&gt;
+        {% if page_obj.has_previous %}
+            &lt;li class="page-item"&gt;
+                &lt;a class="page-link" href="?page=1{% if search_query %}&amp;search={{ search_query }}{% endif %}{% if category_filter %}&amp;category={{ category_filter }}{% endif %}"&gt;最初&lt;/a&gt;
+            &lt;/li&gt;
+            &lt;li class="page-item"&gt;
+                &lt;a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&amp;search={{ search_query }}{% endif %}{% if category_filter %}&amp;category={{ category_filter }}{% endif %}"&gt;前へ&lt;/a&gt;
+            &lt;/li&gt;
+        {% endif %}
+        
+        &lt;li class="page-item active"&gt;
+            &lt;span class="page-link"&gt;{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}&lt;/span&gt;
+        &lt;/li&gt;
+        
+        {% if page_obj.has_next %}
+            &lt;li class="page-item"&gt;
+                &lt;a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&amp;search={{ search_query }}{% endif %}{% if category_filter %}&amp;category={{ category_filter }}{% endif %}"&gt;次へ&lt;/a&gt;
+            &lt;/li&gt;
+            &lt;li class="page-item"&gt;
+                &lt;a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&amp;search={{ search_query }}{% endif %}{% if category_filter %}&amp;category={{ category_filter }}{% endif %}"&gt;最後&lt;/a&gt;
+            &lt;/li&gt;
+        {% endif %}
+    &lt;/ul&gt;
+&lt;/nav&gt;
+{% endif %}
+
+{% else %}
+&lt;div class="text-center py-5"&gt;
+    &lt;h4&gt;ユーザーが見つかりませんでした&lt;/h4&gt;
+    &lt;p class="text-muted"&gt;検索条件を変更するか、新しいユーザーを追加してください。&lt;/p&gt;
+    &lt;a href="{% url 'users:user_create' %}" class="btn btn-success"&gt;新しいユーザーを追加&lt;/a&gt;
+&lt;/div&gt;
+{% endif %}
+{% endblock %}</code></pre>
+
+                        <h6>ユーザー詳細テンプレート（users/templates/users/user_detail.html）</h6>
+                        <pre class="code-block"><code class="language-html">{% extends 'base.html' %}
+
+{% block title %}{{ user.get_full_name }} - ユーザー詳細{% endblock %}
+
+{% block content %}
+&lt;div class="d-flex justify-content-between align-items-center mb-4"&gt;
+    &lt;h2&gt;{{ user.get_full_name }} の詳細情報&lt;/h2&gt;
+    &lt;div&gt;
+        &lt;a href="{% url 'users:user_edit' user.pk %}" class="btn btn-warning"&gt;編集&lt;/a&gt;
+        &lt;a href="{% url 'users:user_list' %}" class="btn btn-secondary"&gt;一覧に戻る&lt;/a&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="row"&gt;
+    &lt;div class="col-md-8"&gt;
+        &lt;div class="card"&gt;
+            &lt;div class="card-header"&gt;
+                &lt;h5 class="mb-0"&gt;基本情報&lt;/h5&gt;
+            &lt;/div&gt;
+            &lt;div class="card-body"&gt;
+                &lt;dl class="row"&gt;
+                    &lt;dt class="col-sm-3"&gt;ユーザー名:&lt;/dt&gt;
+                    &lt;dd class="col-sm-9"&gt;&lt;strong&gt;{{ user.username }}&lt;/strong&gt;&lt;/dd&gt;
+                    
+                    &lt;dt class="col-sm-3"&gt;氏名:&lt;/dt&gt;
+                    &lt;dd class="col-sm-9"&gt;{{ user.get_full_name }}&lt;/dd&gt;
+                    
+                    &lt;dt class="col-sm-3"&gt;メールアドレス:&lt;/dt&gt;
+                    &lt;dd class="col-sm-9"&gt;
+                        &lt;a href="mailto:{{ user.email }}"&gt;{{ user.email }}&lt;/a&gt;
+                    &lt;/dd&gt;
+                    
+                    {% if user.phone_number %}
+                    &lt;dt class="col-sm-3"&gt;電話番号:&lt;/dt&gt;
+                    &lt;dd class="col-sm-9"&gt;{{ user.phone_number }}&lt;/dd&gt;
+                    {% endif %}
+                    
+                    {% if user.birth_date %}
+                    &lt;dt class="col-sm-3"&gt;生年月日:&lt;/dt&gt;
+                    &lt;dd class="col-sm-9"&gt;
+                        {{ user.birth_date|date:"Y年m月d日" }}
+                        {% if user.get_age %}
+                            ({{ user.get_age }}歳)
+                        {% endif %}
+                    &lt;/dd&gt;
+                    {% endif %}
+                    
+                    {% if user.gender %}
+                    &lt;dt class="col-sm-3"&gt;性別:&lt;/dt&gt;
+                    &lt;dd class="col-sm-9"&gt;{{ user.get_gender_display }}&lt;/dd&gt;
+                    {% endif %}
+                &lt;/dl&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        
+        {% if profile %}
+        &lt;div class="card mt-4"&gt;
+            &lt;div class="card-header"&gt;
+                &lt;h5 class="mb-0"&gt;プロフィール情報&lt;/h5&gt;
+            &lt;/div&gt;
+            &lt;div class="card-body"&gt;
+                &lt;dl class="row"&gt;
+                    {% if profile.category %}
+                    &lt;dt class="col-sm-3"&gt;カテゴリ:&lt;/dt&gt;
+                    &lt;dd class="col-sm-9"&gt;
+                        &lt;span class="badge" style="background-color: {{ profile.category.color }};"&gt;
+                            {{ profile.category.name }}
+                        &lt;/span&gt;
+                    &lt;/dd&gt;
+                    {% endif %}
+                    
+                    {% if profile.bio %}
+                    &lt;dt class="col-sm-3"&gt;自己紹介:&lt;/dt&gt;
+                    &lt;dd class="col-sm-9"&gt;{{ profile.bio|linebreaks }}&lt;/dd&gt;
+                    {% endif %}
+                    
+                    {% if profile.website %}
+                    &lt;dt class="col-sm-3"&gt;ウェブサイト:&lt;/dt&gt;
+                    &lt;dd class="col-sm-9"&gt;
+                        &lt;a href="{{ profile.website }}" target="_blank"&gt;{{ profile.website }}&lt;/a&gt;
+                    &lt;/dd&gt;
+                    {% endif %}
+                    
+                    &lt;dt class="col-sm-3"&gt;ログイン回数:&lt;/dt&gt;
+                    &lt;dd class="col-sm-9"&gt;{{ profile.login_count }}回&lt;/dd&gt;
+                &lt;/dl&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        {% endif %}
+    &lt;/div&gt;
+    
+    &lt;div class="col-md-4"&gt;
+        &lt;div class="card"&gt;
+            &lt;div class="card-header"&gt;
+                &lt;h5 class="mb-0"&gt;システム情報&lt;/h5&gt;
+            &lt;/div&gt;
+            &lt;div class="card-body"&gt;
+                &lt;dl&gt;
+                    &lt;dt&gt;作成日時:&lt;/dt&gt;
+                    &lt;dd&gt;{{ user.created_at|date:"Y-m-d H:i" }}&lt;/dd&gt;
+                    
+                    &lt;dt&gt;最終更新:&lt;/dt&gt;
+                    &lt;dd&gt;{{ user.updated_at|date:"Y-m-d H:i" }}&lt;/dd&gt;
+                    
+                    &lt;dt&gt;状態:&lt;/dt&gt;
+                    &lt;dd&gt;
+                        {% if user.is_active %}
+                            &lt;span class="badge bg-success"&gt;アクティブ&lt;/span&gt;
+                        {% else %}
+                            &lt;span class="badge bg-danger"&gt;無効&lt;/span&gt;
+                        {% endif %}
+                    &lt;/dd&gt;
+                &lt;/dl&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+{% endblock %}</code></pre>
+                    </div>
+
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li><strong>MVTアーキテクチャ</strong>: 
+                                <p>Q. DjangoのMVTパターンにおけるModel、View、Templateの役割を説明してください。</p>
+                                <p>A. Model（データ層：データベースとの連携）、View（制御層：ビジネスロジックの処理）、Template（表示層：HTMLの生成）</p>
+                            </li>
+                            <li><strong>URLルーティング</strong>:
+                                <p>Q. 名前付きURLの利点は何ですか？</p>
+                                <p>A. URLパターンが変更されてもテンプレート内のリンクが自動更新される、コードの保守性が向上する</p>
+                            </li>
+                            <li><strong>テンプレート継承</strong>:
+                                <p>Q. テンプレート継承でのblockタグの使用方法を説明してください。</p>
+                                <p>A. 親テンプレートでblockタグでセクションを定義し、子テンプレートで同名のblockを使ってコンテンツをオーバーライド</p>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="highlight">
+                        <h5>次のステップの準備</h5>
+                        <p>Step 5が完了しました！次のStep 6では、Django管理サイトのセットアップを行います。以下を確認してから進んでください：</p>
+                        <ul>
+                            <li>usersアプリのURL設定が完了し、アクセス可能な状態</li>
+                            <li>ユーザー一覧、詳細、作成、編集、削除のビュー関数が実装されている</li>
+                            <li>対応するHTMLテンプレートが作成され、ページが正常に表示される</li>
+                            <li>テンプレート継承が正しく動作している</li>
+                            <li>静的ファイルが適切に読み込まれている</li>
+                        </ul>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="step4-models-migration.html" class="btn btn-secondary">← 前の章: モデル設計</a>
+                        <a href="step6-admin-interface.html" class="btn btn-primary">次の章: 管理サイト →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Highlight.js 初期化 -->
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
