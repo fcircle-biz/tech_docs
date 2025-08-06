@@ -56,7 +56,7 @@
 
 ### Web開発
 
-- **[PHP学習ガイド](docs/guide/web/php/README.md)** - PHP基礎から実践的なWebアプリケーション開発まで10章完成カリキュラム
+- **[PHP学習ガイド](docs/guide/php-ecosystem/php/README.md)** - PHP基礎から実践的なWebアプリケーション開発まで10章完成カリキュラム
 
 ### データベース
 
