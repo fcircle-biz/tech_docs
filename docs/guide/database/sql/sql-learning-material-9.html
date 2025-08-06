@@ -3,815 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SQL初心者向け学習教材 - よく使う便利な機能</title>
+    <title>SQL学習教材 第9章 - トランザクションとデータの整合性</title>
+    
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Google Fonts - Noto Sans JP -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    
     <style>
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            padding-top: 56px;
-        }
-        .navbar {
-            background-color: #1565c0;
-        }
-        .sidebar {
-            position: sticky;
-            top: 70px;
-            height: calc(100vh - 70px);
-            overflow-y: auto;
-        }
-        .chapter-title {
-            color: #1565c0;
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #1565c0;
-            padding-bottom: 0.5rem;
-        }
-        .section-title {
-            color: #1976d2;
-            margin-top: 1.2rem;
-            margin-bottom: 0.8rem;
-        }
-        code {
-            display: block;
-            background-color: #f5f5f5;
-            border-radius: 4px;
-            padding: 1rem;
-            margin: 1rem 0;
-            font-family: Consolas, Monaco, 'Andale Mono', monospace;
-            white-space: pre;
-            overflow-x: auto;
-        }
-        .quiz-container {
-            background-color: #e3f2fd;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 2rem 0;
-        }
-        .quiz-question {
-            font-weight: 500;
-            margin-bottom: 1rem;
-        }
-        .diagram {
-            max-width: 100%;
-            height: auto;
-            margin: 1.5rem 0;
-            text-align: center;
-        }
-        .exercise {
-            background-color: #fff8e1;
-            border-left: 4px solid #ffc107;
-            padding: 1rem;
-            margin: 1.5rem 0;
-        }
-        .note {
-            background-color: #e8f5e9;
-            border-left: 4px solid #4caf50;
-            padding: 1rem;
-            margin: 1.5rem 0;
-        }
-        #table-of-contents .list-group-item {
-            border: none;
-            padding: 0.5rem 1rem;
-        }
-        #table-of-contents .list-group-item-action {
-            color: #1976d2;
-        }
-        /* 選択された目次項目のスタイル */
-        #table-of-contents .list-group-item-action.active,
-        .list-group-item.active {
-            color: white !important; /* テキストを白色にして青い背景に対してコントラストをつける */
-            background-color: #1976d2;
-            border-color: #1976d2;
-        }
-        .section-nav {
-            padding-left: 1rem;
-        }
-        .inline-code {
-            background-color: #f5f5f5;
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            font-family: Consolas, Monaco, 'Andale Mono', monospace;
-            display: inline;
-        }
-        footer {
-            background-color: #1565c0;
-            color: white;
-            padding: 1rem 0;
-            margin-top: 2rem;
-            text-align: center;
-        }
+        body { font-family: 'Noto Sans JP', sans-serif; padding-top: 56px; }
+        .navbar { background-color: #1976d2; }
+        .sidebar { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; }
+        .chapter-title { color: #1976d2; margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #1976d2; padding-bottom: 0.5rem; }
+        .section-title { color: #42a5f5; margin-top: 1.2rem; margin-bottom: 0.8rem; }
+        .quiz-container { background-color: #e1f5fe; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #1976d2; }
+        .exercise-container { background-color: #f3e5f5; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #9c27b0; }
+        .highlight { background-color: #ffecb3; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #ffc107; }
+        .warning { background-color: #ffebee; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #f44336; }
+        .code-block { background-color: #1e1e1e; border-radius: 5px; padding: 1rem; margin: 1rem 0; }
+        .nav-link.active { background-color: #1976d2 !important; color: white !important; }
     </style>
 </head>
-<body data-bs-spy="scroll" data-bs-target="#tableOfContents">
-    <!-- Navbar -->
+<body>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="#">SQL初心者向け学習教材</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#introduction">はじめに</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#chapter9">第9章: よく使う便利な機能</a>
-                    </li>
-                </ul>
-            </div>
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">SQL学習教材</a>
         </div>
     </nav>
 
-    <div class="container my-4">
+    <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar - Table of Contents -->
-            <div class="col-lg-3">
-                <div class="sidebar">
-                    <div class="card">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0">目次</h5>
-                        </div>
-                        <div id="table-of-contents" class="list-group list-group-flush">
-                            <a href="#introduction" class="list-group-item list-group-item-action">はじめに</a>
-                            <a href="#chapter9" class="list-group-item list-group-item-action">第9章: よく使う便利な機能</a>
-                            <div class="section-nav">
-                                <a href="#limit-offset" class="list-group-item list-group-item-action">9.1 LIMIT / OFFSETによるページング</a>
-                                <a href="#null-handling" class="list-group-item list-group-item-action">9.2 NULLの扱いとIS NULL / IS NOT NULL</a>
-                                <a href="#case-expression" class="list-group-item list-group-item-action">9.3 CASE式（条件分岐）</a>
-                                <a href="#exercise" class="list-group-item list-group-item-action">9.4 演習：在庫なしの場合は"売切"と表示する</a>
-                                <a href="#chapter9-quiz" class="list-group-item list-group-item-action">9.5 理解度確認テスト</a>
-                            </div>
-                            <a href="#next-steps" class="list-group-item list-group-item-action">次のステップ</a>
-                        </div>
-                    </div>
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-1.html">第1章: 基礎概念</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-2.html">第2章: データ型</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-3.html">第3章: CRUD操作</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-4.html">第4章: SELECT文の詳細</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-5.html">第5章: 結合（JOIN）</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-6.html">第6章: 集計とグループ化</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-7.html">第7章: サブクエリ</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-8.html">第8章: パフォーマンス</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="sql-learning-material-9.html">第9章: トランザクション</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-10.html">第10章: DB設計</a></li>
+                    </ul>
                 </div>
-            </div>
-            
-            <!-- Main Content -->
-            <div class="col-lg-9">
-                <section id="introduction">
-                    <h1 class="display-5 mb-4">SQL初心者向け学習教材</h1>
-                    <p class="lead">この第9章では、PostgreSQLでよく使用される便利な機能について学習します。結果セットの制限やページング処理、NULL値の適切な取り扱い方、条件分岐を行うCASE式など、実務でとても役立つ機能を解説します。</p>
-                    <img src="img/sql_09.png" class="img-fluid mt-3 mb-4" style="max-width: 50%; height: auto;" alt="PostgreSQL Logo">
-                    <div class="note">
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第9章: トランザクションとデータの整合性</h1>
+                </div>
+
+                <div id="chapter9">
+                    <h2 class="chapter-title">トランザクションとデータの整合性</h2>
+                    
+                    <div class="highlight">
                         <h5>この章で学ぶこと</h5>
                         <ul>
-                            <li>LIMIT / OFFSETを使った効率的なページング処理</li>
-                            <li>NULL値の正しい扱い方とIS NULL / IS NOT NULL演算子</li>
-                            <li>CASE式を使った条件分岐の実装方法</li>
-                            <li>実践的な例を通じたSQL応用技術</li>
+                            <li>トランザクションの基本概念とACID特性</li>
+                            <li>BEGIN、COMMIT、ROLLBACKの使用方法</li>
+                            <li>制約による整合性の保持</li>
+                            <li>分離レベルとロック機構</li>
+                            <li>実践的なトランザクション処理</li>
                         </ul>
                     </div>
-                </section>
 
-                <section id="chapter9">
-                    <h2 class="chapter-title">第9章：よく使う便利な機能</h2>
-                    <p>データベース操作を行う上で、頻繁に使用される便利な機能について学びます。これらの機能を習得することで、より効率的なクエリが書けるようになり、実務でのデータベース操作が格段に向上します。</p>
+                    <h3 class="section-title">9.1 トランザクションとACID特性</h3>
+                    <p>トランザクションは、一連のデータベース操作をひとつの論理単位として扱う仕組みです。</p>
 
-                    <section id="limit-offset">
-                        <h3 class="section-title">9.1 LIMIT / OFFSETによるページング</h3>
-                        <p>大量のデータを一度に取得すると、アプリケーションのパフォーマンスが低下する可能性があります。特にWebアプリケーションなどでは、ユーザーに必要な分だけを少しずつ表示する「ページング」という手法がよく使われます。PostgreSQLでは、<span class="inline-code">LIMIT</span>と<span class="inline-code">OFFSET</span>句を使用して効率的にページングを実装できます。</p>
-
-                        <h4>LIMITの基本</h4>
-                        <p><span class="inline-code">LIMIT</span>句は、クエリの結果セットから返される行数を制限します。</p>
-                        <code>-- 商品テーブルから最初の10件のみを取得
-SELECT product_id, product_name, price
-FROM products
-ORDER BY product_id
-LIMIT 10;</code>
-
-                        <h4>OFFSETの基本</h4>
-                        <p><span class="inline-code">OFFSET</span>句は、結果セットの何行目から取得を開始するかを指定します。</p>
-                        <code>-- 商品テーブルから11件目から20件目を取得
-SELECT product_id, product_name, price
-FROM products
-ORDER BY product_id
-LIMIT 10 OFFSET 10;</code>
-
-                        <div class="note">
-                            <h5>ページング実装のポイント</h5>
-                            <p>効果的なページングのためには、以下のポイントを押さえましょう：</p>
-                            <ul>
-                                <li>必ず<span class="inline-code">ORDER BY</span>句を使用して結果を安定的に並べ替える</li>
-                                <li>ページサイズ（1ページあたりの行数）は適切に設定する（通常10〜50程度）</li>
-                                <li>ページ番号が<span class="inline-code">p</span>で、ページサイズが<span class="inline-code">s</span>の場合、<span class="inline-code">OFFSET</span>は <span class="inline-code">(p-1) * s</span> となる</li>
-                            </ul>
+                    <h4>ACID特性</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-primary text-white"><h6>原子性（Atomicity）</h6></div>
+                                <div class="card-body"><p>トランザクション内の処理は全て実行されるか、全て実行されない</p></div>
+                            </div>
                         </div>
-
-                        <h4>ページング処理の具体例</h4>
-                        <code>-- 1ページ目（最初の15件）
-SELECT product_id, product_name, price
-FROM products
-ORDER BY product_id
-LIMIT 15 OFFSET 0;
-
--- 2ページ目（16〜30件目）
-SELECT product_id, product_name, price
-FROM products
-ORDER BY product_id
-LIMIT 15 OFFSET 15;
-
--- 3ページ目（31〜45件目）
-SELECT product_id, product_name, price
-FROM products
-ORDER BY product_id
-LIMIT 15 OFFSET 30;</code>
-
-                        <div class="diagram">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300">
-                                <!-- Database Table Visualization -->
-                                <rect x="50" y="50" width="500" height="200" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="10" />
-                                
-                                <!-- Headers -->
-                                <rect x="50" y="50" width="500" height="30" fill="#1976d2" stroke="#1976d2" stroke-width="0" rx="10 10 0 0" />
-                                <text x="130" y="70" text-anchor="middle" font-size="14" fill="white">product_id</text>
-                                <text x="300" y="70" text-anchor="middle" font-size="14" fill="white">product_name</text>
-                                <text x="470" y="70" text-anchor="middle" font-size="14" fill="white">price</text>
-                                
-                                <!-- Page 1 - LIMIT 5 OFFSET 0 -->
-                                <rect x="50" y="80" width="500" height="40" fill="#bbdefb" stroke="#1976d2" stroke-width="1" />
-                                <text x="300" y="105" text-anchor="middle" font-size="14" fill="#0d47a1">Page 1: LIMIT 5 OFFSET 0</text>
-                                
-                                <!-- Page 2 - LIMIT 5 OFFSET 5 -->
-                                <rect x="50" y="120" width="500" height="40" fill="#e3f2fd" stroke="#1976d2" stroke-width="1" />
-                                <text x="300" y="145" text-anchor="middle" font-size="14" fill="#0d47a1">Page 2: LIMIT 5 OFFSET 5</text>
-                                
-                                <!-- Page 3 - LIMIT 5 OFFSET 10 -->
-                                <rect x="50" y="160" width="500" height="40" fill="#bbdefb" stroke="#1976d2" stroke-width="1" />
-                                <text x="300" y="185" text-anchor="middle" font-size="14" fill="#0d47a1">Page 3: LIMIT 5 OFFSET 10</text>
-                                
-                                <!-- More Data -->
-                                <rect x="50" y="200" width="500" height="50" fill="#e3f2fd" stroke="#1976d2" stroke-width="1" rx="0 0 10 10" />
-                                <text x="300" y="230" text-anchor="middle" font-size="14" fill="#0d47a1">残りのデータ...</text>
-                            </svg>
-                            <p class="text-center">図9.1: LIMIT/OFFSETによるページング処理のイメージ</p>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-success text-white"><h6>一貫性（Consistency）</h6></div>
+                                <div class="card-body"><p>データベースの整合性制約を常に満たす</p></div>
+                            </div>
                         </div>
-                        
-                        <div class="exercise">
-                            <h5>Exercise 9.1: ページング処理の実装</h5>
-                            <p>以下の要件を満たすSQL文を作成してください：</p>
-                            <ol>
-                                <li><strong>顧客</strong>テーブル（customers）から、顧客ID（customer_id）、名前（name）、メールアドレス（email）を取得</li>
-                                <li>名前の昇順で並べ替え</li>
-                                <li>1ページあたり5件表示</li>
-                                <li>3ページ目のデータを取得するSQLを記述</li>
-                            </ol>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-info text-white"><h6>独立性（Isolation）</h6></div>
+                                <div class="card-body"><p>同時実行される他のトランザクションから影響を受けない</p></div>
+                            </div>
                         </div>
-                    </section>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-warning text-white"><h6>持続性（Durability）</h6></div>
+                                <div class="card-body"><p>コミットされた変更は永続的に保存される</p></div>
+                            </div>
+                        </div>
+                    </div>
 
-                    <section id="null-handling">
-                        <h3 class="section-title">9.2 NULLの扱いとIS NULL / IS NOT NULL</h3>
-                        <p>データベースにおける<span class="inline-code">NULL</span>は「値がない」または「不明」を表します。通常の比較演算子（=, &lt;, &gt;など）ではNULLを適切に扱えないため、特別な演算子が必要です。</p>
+                    <div class="exercise-container">
+                        <h5>実習 9-1: 基本的なトランザクション制御</h5>
+                        <pre class="code-block"><code class="language-sql">-- トランザクションの開始
+BEGIN;
 
-                        <h4>NULLの特性</h4>
+-- 複数の操作を実行
+INSERT INTO customers (name, email) VALUES ('新規顧客', 'new@example.com');
+UPDATE products SET stock_quantity = stock_quantity - 1 WHERE product_id = 1;
+INSERT INTO orders (customer_id, product_id, quantity) VALUES (CURRVAL('customers_customer_id_seq'), 1, 1);
+
+-- 正常終了の場合
+COMMIT;
+
+-- 異常時のロールバック例
+BEGIN;
+UPDATE products SET price = price * 1.1;  -- 10%値上げ
+-- 何らかのエラーが発生した場合
+ROLLBACK;  -- 変更を取り消し
+
+-- セーブポイントの使用
+BEGIN;
+INSERT INTO categories (category_name) VALUES ('新カテゴリ1');
+SAVEPOINT sp1;
+INSERT INTO categories (category_name) VALUES ('新カテゴリ2');
+SAVEPOINT sp2;
+-- エラーが発生
+ROLLBACK TO sp1;  -- sp1まで戻る
+COMMIT;</code></pre>
+                    </div>
+
+                    <h3 class="section-title">9.2 制約による整合性保持</h3>
+                    <p>データベース制約は、データの整合性を自動的に保証する重要な仕組みです。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 9-2: 各種制約の活用</h5>
+                        <pre class="code-block"><code class="language-sql">-- CHECK制約の詳細例
+CREATE TABLE accounts (
+    account_id SERIAL PRIMARY KEY,
+    account_number VARCHAR(20) UNIQUE NOT NULL,
+    balance DECIMAL(15,2) DEFAULT 0,
+    status VARCHAR(10) DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT chk_balance_positive CHECK (balance >= 0),
+    CONSTRAINT chk_valid_status CHECK (status IN ('active', 'inactive', 'suspended'))
+);
+
+-- 外部キー制約でのCASCADE設定
+CREATE TABLE order_items (
+    item_id SERIAL PRIMARY KEY,
+    order_id INTEGER NOT NULL,
+    product_id INTEGER NOT NULL,
+    quantity INTEGER CHECK (quantity > 0),
+    unit_price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE RESTRICT
+);
+
+-- 制約違反のテスト
+BEGIN;
+INSERT INTO accounts (account_number, balance) VALUES ('ACC001', -100);  -- エラー：残高負数
+ROLLBACK;</code></pre>
+                    </div>
+
+                    <h3 class="section-title">9.3 実践的なトランザクション処理</h3>
+                    <p>実際のビジネス処理を想定した複合トランザクションを実装します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 9-3: 注文処理トランザクション</h5>
+                        <pre class="code-block"><code class="language-sql">-- 注文処理の複合トランザクション
+CREATE OR REPLACE FUNCTION process_order(
+    p_customer_id INTEGER,
+    p_product_id INTEGER,
+    p_quantity INTEGER
+) RETURNS BOOLEAN AS $$
+DECLARE
+    v_stock INTEGER;
+    v_price DECIMAL(10,2);
+    v_order_id INTEGER;
+BEGIN
+    -- トランザクション開始（関数内では自動的に開始）
+    
+    -- 在庫確認
+    SELECT stock_quantity, price INTO v_stock, v_price
+    FROM products 
+    WHERE product_id = p_product_id FOR UPDATE;
+    
+    IF v_stock < p_quantity THEN
+        RAISE EXCEPTION '在庫不足: 必要=%、在庫=%', p_quantity, v_stock;
+    END IF;
+    
+    -- 注文レコード作成
+    INSERT INTO orders (customer_id, product_id, quantity, status)
+    VALUES (p_customer_id, p_product_id, p_quantity, 'processing')
+    RETURNING order_id INTO v_order_id;
+    
+    -- 在庫減算
+    UPDATE products 
+    SET stock_quantity = stock_quantity - p_quantity,
+        updated_at = NOW()
+    WHERE product_id = p_product_id;
+    
+    -- 処理完了
+    UPDATE orders 
+    SET status = 'confirmed' 
+    WHERE order_id = v_order_id;
+    
+    RETURN TRUE;
+EXCEPTION
+    WHEN OTHERS THEN
+        -- エラー時は自動的にロールバック
+        RAISE;
+        RETURN FALSE;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 関数の実行
+SELECT process_order(1, 1, 2);</code></pre>
+                    </div>
+
+                    <div class="warning">
+                        <h6>トランザクション処理の注意点</h6>
                         <ul>
-                            <li>NULL = NULL は TRUE ではなく NULL（不明）を返す</li>
-                            <li>NULL &lt;&gt; NULL も TRUE ではなく NULL を返す</li>
-                            <li>NULL を含む算術演算の結果は NULL になる</li>
-                            <li>NULLを検査するには特別な演算子 IS NULL / IS NOT NULL を使用する</li>
+                            <li><strong>デッドロック</strong>: 複数のトランザクションが互いの資源を待機する状況を避ける</li>
+                            <li><strong>長時間トランザクション</strong>: ロックによる他の処理への影響を最小化</li>
+                            <li><strong>適切な分離レベル</strong>: 要件に応じた分離レベルの選択</li>
+                            <li><strong>エラーハンドリング</strong>: 適切な例外処理とロールバック</li>
                         </ul>
+                    </div>
 
-                        <h4>IS NULL演算子</h4>
-                        <p>値がNULLかどうかを確認するには、<span class="inline-code">IS NULL</span>演算子を使用します。</p>
-                        <code>-- 電話番号が登録されていない顧客を検索
-SELECT customer_id, name, email
-FROM customers
-WHERE phone_number IS NULL;</code>
-
-                        <h4>IS NOT NULL演算子</h4>
-                        <p>値がNULLでないことを確認するには、<span class="inline-code">IS NOT NULL</span>演算子を使用します。</p>
-                        <code>-- 電話番号が登録されている顧客を検索
-SELECT customer_id, name, email
-FROM customers
-WHERE phone_number IS NOT NULL;</code>
-
-                        <div class="note">
-                            <h5>NULLを含む条件式の注意点</h5>
-                            <p>NULL値を扱う際の一般的な間違いと正しい書き方：</p>
-                            <table class="table table-bordered">
-                                <thead class="table-primary">
-                                    <tr>
-                                        <th>間違い</th>
-                                        <th>正しい書き方</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><code>WHERE phone_number = NULL</code></td>
-                                        <td><code>WHERE phone_number IS NULL</code></td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>WHERE phone_number != NULL</code></td>
-                                        <td><code>WHERE phone_number IS NOT NULL</code></td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>WHERE phone_number = '' OR phone_number = NULL</code></td>
-                                        <td><code>WHERE phone_number = '' OR phone_number IS NULL</code></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <h4>COALESCEを使ったNULL値の置換</h4>
-                        <p><span class="inline-code">COALESCE</span>関数は、最初のNULLでない引数を返します。これを使って、NULL値を代替値で置き換えることができます。</p>
-                        <code>-- 電話番号がNULLの場合は「未登録」と表示
-SELECT 
-    customer_id, 
-    name, 
-    COALESCE(phone_number, '未登録') as phone
-FROM customers;</code>
-
-                        <div class="exercise">
-                            <h5>Exercise 9.2: NULLの扱い</h5>
-                            <p>以下の要件を満たすSQL文を作成してください：</p>
-                            <ol>
-                                <li><strong>従業員</strong>テーブル（employees）から、ID（employee_id）、名前（name）、部署（department）、上司ID（manager_id）を取得</li>
-                                <li>上司が設定されていない従業員（manager_idがNULL）は「部門責任者」と表示</li>
-                                <li>上司が設定されている従業員は「一般社員」と表示</li>
-                                <li>この「部門責任者」または「一般社員」という区分を「役職」（position）という列名で表示</li>
-                            </ol>
-                        </div>
-                    </section>
-
-                    <section id="case-expression">
-                        <h3 class="section-title">9.3 CASE式（条件分岐）</h3>
-                        <p>CASE式はSQLにおける条件分岐を可能にする強力な機能です。プログラミング言語における「if-else」や「switch」文に相当します。</p>
-
-                        <h4>単純CASE式</h4>
-                        <p>単純CASE式は、式の値と各WHEN句の値を比較します。</p>
-                        <code>-- 商品カテゴリに応じた表示名を設定
-SELECT 
-    product_id,
-    product_name,
-    category_id,
-    CASE category_id
-        WHEN 1 THEN '食品'
-        WHEN 2 THEN '飲料'
-        WHEN 3 THEN '日用品'
-        ELSE 'その他'
-    END AS category_name
-FROM products;</code>
-
-                        <h4>検索CASE式</h4>
-                        <p>検索CASE式では、各WHEN句に任意の条件式を指定できます。</p>
-                        <code>-- 価格帯に応じたラベルを設定
-SELECT 
-    product_id,
-    product_name,
-    price,
-    CASE 
-        WHEN price < 1000 THEN 'エコノミー'
-        WHEN price >= 1000 AND price < 5000 THEN 'スタンダード'
-        WHEN price >= 5000 THEN 'プレミアム'
-        ELSE '未分類'
-    END AS price_category
-FROM products;</code>
-
-                        <h4>CASE式の活用例</h4>
-                        <code>-- 集計におけるCASE式の活用
-SELECT 
-    CASE 
-        WHEN age < 20 THEN '10代'
-        WHEN age >= 20 AND age < 30 THEN '20代'
-        WHEN age >= 30 AND age < 40 THEN '30代'
-        WHEN age >= 40 AND age < 50 THEN '40代'
-        ELSE '50代以上'
-    END AS age_group,
-    COUNT(*) AS customer_count
-FROM customers
-GROUP BY age_group
-ORDER BY age_group;
-
--- 条件付き更新
-UPDATE employees
-SET salary = 
-    CASE 
-        WHEN department = '営業部' THEN salary * 1.10
-        WHEN department = '開発部' THEN salary * 1.08
-        ELSE salary * 1.05
-    END;</code>
-
-                        <div class="note">
-                            <h5>CASE式の注意点</h5>
-                            <ul>
-                                <li>CASE式は結果を一つ返すため、同じデータ型になるように注意</li>
-                                <li>WHEN句は上から順に評価され、最初に条件が一致したものが選ばれる</li>
-                                <li>どの条件にも一致しない場合はELSEの値が返される（ELSEがない場合はNULL）</li>
-                                <li>パフォーマンスを考慮すると、頻繁に一致する条件を上の方に配置するとよい</li>
-                            </ul>
-                        </div>
-
-                        <div class="diagram">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300">
-                                <!-- CASE Expression Flowchart -->
-                                <rect x="220" y="20" width="160" height="40" fill="#bbdefb" stroke="#1976d2" stroke-width="2" rx="5" />
-                                <text x="300" y="45" text-anchor="middle" font-size="16">CASE式の開始</text>
-                                
-                                <!-- When 1 -->
-                                <rect x="220" y="90" width="160" height="40" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5" />
-                                <text x="300" y="115" text-anchor="middle" font-size="14">WHEN 条件1</text>
-                                <line x1="300" y1="60" x2="300" y2="90" stroke="#1976d2" stroke-width="2" />
-                                <line x1="380" y1="110" x2="450" y2="110" stroke="#1976d2" stroke-width="2" />
-                                <polygon points="450,110 440,105 440,115" fill="#1976d2" />
-                                <rect x="450" y="90" width="100" height="40" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5" />
-                                <text x="500" y="115" text-anchor="middle" font-size="14">THEN 結果1</text>
-                                <text x="415" y="100" text-anchor="middle" font-size="12" fill="#388e3c">true</text>
-                                
-                                <!-- When 2 -->
-                                <rect x="220" y="160" width="160" height="40" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5" />
-                                <text x="300" y="185" text-anchor="middle" font-size="14">WHEN 条件2</text>
-                                <line x1="300" y1="130" x2="300" y2="160" stroke="#1976d2" stroke-width="2" />
-                                <text x="310" y="145" text-anchor="start" font-size="12" fill="#d32f2f">false</text>
-                                <line x1="380" y1="180" x2="450" y2="180" stroke="#1976d2" stroke-width="2" />
-                                <polygon points="450,180 440,175 440,185" fill="#1976d2" />
-                                <rect x="450" y="160" width="100" height="40" fill="#c8e6c9" stroke="#388e3c" stroke-width="2" rx="5" />
-                                <text x="500" y="185" text-anchor="middle" font-size="14">THEN 結果2</text>
-                                <text x="415" y="170" text-anchor="middle" font-size="12" fill="#388e3c">true</text>
-                                
-                                <!-- Else -->
-                                <rect x="220" y="230" width="160" height="40" fill="#ffecb3" stroke="#ffa000" stroke-width="2" rx="5" />
-                                <text x="300" y="255" text-anchor="middle" font-size="14">ELSE</text>
-                                <line x1="300" y1="200" x2="300" y2="230" stroke="#1976d2" stroke-width="2" />
-                                <text x="310" y="215" text-anchor="start" font-size="12" fill="#d32f2f">false</text>
-                                <line x1="380" y1="250" x2="450" y2="250" stroke="#ffa000" stroke-width="2" />
-                                <polygon points="450,250 440,245 440,255" fill="#ffa000" />
-                                <rect x="450" y="230" width="100" height="40" fill="#ffe0b2" stroke="#ffa000" stroke-width="2" rx="5" />
-                                <text x="500" y="255" text-anchor="middle" font-size="14">既定の結果</text>
-                            </svg>
-                            <p class="text-center">図9.2: CASE式の評価フロー</p>
-                        </div>
-
-                        <div class="exercise">
-                            <h5>Exercise 9.3: CASE式の活用</h5>
-                            <p>以下の要件を満たすSQL文を作成してください：</p>
-                            <ol>
-                                <li><strong>注文</strong>テーブル（orders）から、注文ID（order_id）、顧客ID（customer_id）、注文日（order_date）、合計金額（total_amount）を取得</li>
-                                <li>合計金額に応じて以下の区分を「ランク」（rank）という列名で表示：
-                                    <ul>
-                                        <li>5,000円未満：「ブロンズ」</li>
-                                        <li>5,000円以上20,000円未満：「シルバー」</li>
-                                        <li>20,000円以上50,000円未満：「ゴールド」</li>
-                                        <li>50,000円以上：「プラチナ」</li>
-                                    </ul>
-                                </li>
-                                <li>注文日が1ヶ月以内の場合は「最近の注文」、それ以外は「過去の注文」という区分を「状態」（status）という列名で表示</li>
-                            </ol>
-                        </div>
-                    </section>
-
-                    <section id="exercise">
-                        <h3 class="section-title">9.4 演習：在庫がない場合は"売切"と表示する</h3>
-                        <p>これまで学んだ知識を組み合わせて、在庫状況に応じた表示を行うクエリを作成しましょう。</p>
-
-                        <div class="exercise">
-                            <h5>総合演習</h5>
-                            <p>以下のような商品テーブル（products）があります：</p>
-                            <table class="table table-bordered">
-                                <thead class="table-primary">
-                                    <tr>
-                                        <th>product_id</th>
-                                        <th>product_name</th>
-                                        <th>price</th>
-                                        <th>stock_quantity</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>ノートパソコン</td>
-                                        <td>85000</td>
-                                        <td>10</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>タブレット</td>
-                                        <td>45000</td>
-                                        <td>0</td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td>スマートフォン</td>
-                                        <td>65000</td>
-                                        <td>5</td>
-                                    </tr>
-                                    <tr>
-                                        <td>4</td>
-                                        <td>ワイヤレスイヤホン</td>
-                                        <td>15000</td>
-                                        <td>0</td>
-                                    </tr>
-                                    <tr>
-                                        <td>5</td>
-                                        <td>スマートウォッチ</td>
-                                        <td>25000</td>
-                                        <td>3</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <p>以下の要件を満たすSQLクエリを作成してください：</p>
-                            <ol>
-                                <li>すべての商品について、商品ID、商品名、価格を取得</li>
-                                <li>在庫がある場合は「在庫: X個」と表示（Xは在庫数）</li>
-                                <li>在庫がない場合（stock_quantity = 0）は「売切」と表示</li>
-                                <li>この在庫情報を「在庫状況」（stock_status）という列名で表示</li>
-                                <li>さらに、価格に応じて「予算」（budget）という列を追加：
-                                    <ul>
-                                        <li>20,000円未満：「エコノミー」</li>
-                                        <li>20,000円以上50,000円未満：「ミドルレンジ」</li>
-                                        <li>50,000円以上：「ハイエンド」</li>
-                                    </ul>
-                                </li>
-                                <li>結果は商品名の昇順で表示</li>
-                            </ol>
-                            <p><strong>ヒント</strong>: CASE式とCOALESCE関数、または単にCASE式だけでこの問題は解決できます。</p>
-                        </div>
-
-                        <h4>解答例</h4>
-                        <code>SELECT 
-    product_id,
-    product_name,
-    price,
-    CASE 
-        WHEN stock_quantity = 0 THEN '売切'
-        ELSE '在庫: ' || stock_quantity || '個'
-    END AS stock_status,
-    CASE 
-        WHEN price < 20000 THEN 'エコノミー'
-        WHEN price >= 20000 AND price < 50000 THEN 'ミドルレンジ'
-        WHEN price >= 50000 THEN 'ハイエンド'
-    END AS budget
-FROM 
-    products
-ORDER BY 
-    product_name;</code>
-
-                        <p>実行結果は以下のようになります：</p>
-                        <table class="table table-bordered mt-3">
-                            <thead class="table-primary">
-                                <tr>
-                                    <th>product_id</th>
-                                    <th>product_name</th>
-                                    <th>price</th>
-                                    <th>stock_status</th>
-                                    <th>budget</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>ノートパソコン</td>
-                                    <td>85000</td>
-                                    <td>在庫: 10個</td>
-                                    <td>ハイエンド</td>
-                                </tr>
-                                <tr>
-                                    <td>5</td>
-                                    <td>スマートウォッチ</td>
-                                    <td>25000</td>
-                                    <td>在庫: 3個</td>
-                                    <td>ミドルレンジ</td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td>スマートフォン</td>
-                                    <td>65000</td>
-                                    <td>在庫: 5個</td>
-                                    <td>ハイエンド</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>タブレット</td>
-                                    <td>45000</td>
-                                    <td>売切</td>
-                                    <td>ミドルレンジ</td>
-                                </tr>
-                                <tr>
-                                    <td>4</td>
-                                    <td>ワイヤレスイヤホン</td>
-                                    <td>15000</td>
-                                    <td>売切</td>
-                                    <td>エコノミー</td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <div class="note mt-4">
-                            <h5>ポイント解説</h5>
-                            <ul>
-                                <li>文字列の連結には <span class="inline-code">||</span> 演算子を使用（PostgreSQLの場合）</li>
-                                <li>最初のCASE式では在庫状況を判定し、適切なメッセージを生成</li>
-                                <li>2つ目のCASE式では価格帯に応じたカテゴリを設定</li>
-                                <li>ORDER BY句で商品名の昇順に並べ替え</li>
-                            </ul>
-                            <p>このように、CASE式を使うことで、データの条件に応じた柔軟な表示が可能になります。</p>
-                        </div>
-                    </section>
-
-                    <section id="chapter9-quiz">
-                        <h3 class="section-title">9.5 理解度確認テスト</h3>
-                        <div class="quiz-container">
-                            <h4>第9章の理解度チェック</h4>
-                            <p>以下の問題に答えて、第9章の内容の理解度を確認しましょう。</p>
-                            
-                            <div class="quiz-question">
-                                <p><strong>問題1:</strong> テーブルから11件目から20件目のレコードを取得するSQLはどれですか？</p>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q1" id="q1a" value="a">
-                                    <label class="form-check-label" for="q1a">
-                                        SELECT * FROM products LIMIT 20;
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q1" id="q1b" value="b">
-                                    <label class="form-check-label" for="q1b">
-                                        SELECT * FROM products LIMIT 10 OFFSET 10;
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q1" id="q1c" value="c">
-                                    <label class="form-check-label" for="q1c">
-                                        SELECT * FROM products LIMIT 10 OFFSET 11;
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q1" id="q1d" value="d">
-                                    <label class="form-check-label" for="q1d">
-                                        SELECT * FROM products OFFSET 10 ROWS FETCH NEXT 10 ROWS ONLY;
-                                    </label>
-                                </div>
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li><strong>問題1:</strong> ACID特性の4つの要素を説明してください。</li>
+                            <li><strong>問題2:</strong> COMMITとROLLBACKの違いは何ですか？</li>
+                            <li><strong>問題3:</strong> 外部キー制約でCASCADEオプションを使用する場合の影響は？</li>
+                        </ol>
+                        
+                        <details class="mt-3">
+                            <summary>解答を表示</summary>
+                            <div class="mt-2">
+                                <strong>解答:</strong>
+                                <ol>
+                                    <li>原子性（全実行か全不実行）、一貫性（整合性維持）、独立性（他トランザクション非干渉）、持続性（永続保存）</li>
+                                    <li>COMMIT：変更を確定・永続化、ROLLBACK：変更を取り消し・初期状態に戻す</li>
+                                    <li>参照元レコード削除時に参照先レコードも自動削除される</li>
+                                </ol>
                             </div>
-                            
-                            <div class="quiz-question">
-                                <p><strong>問題2:</strong> NULL値を検索する正しいSQLはどれですか？</p>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q2" id="q2a" value="a">
-                                    <label class="form-check-label" for="q2a">
-                                        SELECT * FROM employees WHERE manager_id = NULL;
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q2" id="q2b" value="b">
-                                    <label class="form-check-label" for="q2b">
-                                        SELECT * FROM employees WHERE manager_id IS NULL;
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q2" id="q2c" value="c">
-                                        <label class="form-check-label" for="q2c">
-                                        SELECT * FROM employees WHERE manager_id = 'NULL';
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q2" id="q2d" value="d">
-                                    <label class="form-check-label" for="q2d">
-                                        SELECT * FROM employees WHERE manager_id = '';
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            <div class="quiz-question">
-                                <p><strong>問題3:</strong> COALESCE関数の正しい説明はどれですか？</p>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q3" id="q3a" value="a">
-                                    <label class="form-check-label" for="q3a">
-                                        すべての引数がNULLの場合にのみNULLを返す関数
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q3" id="q3b" value="b">
-                                    <label class="form-check-label" for="q3b">
-                                        最初のNULLでない引数を返す関数
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q3" id="q3c" value="c">
-                                        <label class="form-check-label" for="q3c">
-                                        すべての引数の合計を返す関数
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q3" id="q3d" value="d">
-                                    <label class="form-check-label" for="q3d">
-                                        最初の引数をNULLに置き換える関数
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            <div class="quiz-question">
-                                <p><strong>問題4:</strong> 以下のCASE式で、price = 3000の場合、どの値が返されますか？</p>
-                                <pre class="bg-light p-2 rounded">
-CASE 
-    WHEN price < 1000 THEN 'Low'
-    WHEN price < 5000 THEN 'Medium'
-    WHEN price < 10000 THEN 'High'
-    ELSE 'Premium'
-END</pre>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q4" id="q4a" value="a">
-                                    <label class="form-check-label" for="q4a">
-                                        Low
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q4" id="q4b" value="b">
-                                    <label class="form-check-label" for="q4b">
-                                        Medium
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q4" id="q4c" value="c">
-                                        <label class="form-check-label" for="q4c">
-                                        High
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q4" id="q4d" value="d">
-                                    <label class="form-check-label" for="q4d">
-                                        Premium
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            <div class="quiz-question">
-                                <p><strong>問題5:</strong> ページング実装で必須の句はどれですか？（複数選択可）</p>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="q5" id="q5a" value="a">
-                                    <label class="form-check-label" for="q5a">
-                                        ORDER BY
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="q5" id="q5b" value="b">
-                                    <label class="form-check-label" for="q5b">
-                                        LIMIT
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="q5" id="q5c" value="c">
-                                    <label class="form-check-label" for="q5c">
-                                        OFFSET
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="q5" id="q5d" value="d">
-                                    <label class="form-check-label" for="q5d">
-                                        GROUP BY
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            <button class="btn btn-primary mt-3" id="checkAnswers">回答を確認</button>
-                            <div id="quizResults" class="mt-3 d-none">
-                                <div class="alert alert-success">
-                                    <h5>正解:</h5>
-                                    <ol>
-                                        <li>b（LIMIT 10 OFFSET 10で11-20件目を取得）</li>
-                                        <li>b（IS NULL演算子を使用する）</li>
-                                        <li>b（最初のNULLでない引数を返す）</li>
-                                        <li>b（price = 3000は最初にprice < 5000の条件に一致するためMedium）</li>
-                                        <li>a, b, c（安定したページングにはORDER BY、LIMIT、OFFSETが必要）</li>
-                                    </ol>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
+                        </details>
+                    </div>
 
-                    <section id="next-steps">
-                        <h3 class="section-title">次のステップ</h3>
-                        <p>この章では、実務でよく使われるSQLの便利な機能について学びました。次の章では、より高度なトピックとして、サブクエリやウィンドウ関数、ビューなどを学んでいきます。</p>
-                        <p>練習問題に取り組み、実際にSQLを書いてみることで、今回学んだ機能をしっかりと身につけましょう。</p>
-                        <div class="note">
-                            <h5>推奨される練習プロジェクト</h5>
-                            <p>以下のミニプロジェクトに取り組んで、今回学んだ機能を総合的に活用してみましょう：</p>
-                            <ol>
-                                <li><strong>Eコマースサイトのデータ分析</strong>: 商品、顧客、注文データの分析レポート作成</li>
-                                <li><strong>従業員管理システム</strong>: 部署別、役職別の給与レポートの作成</li>
-                                <li><strong>在庫管理システム</strong>: 在庫状況レポートと要発注商品リストの作成</li>
-                            </ol>
-                        </div>
-                    </section>
-                </section>
-            </div>
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="sql-learning-material-8.html" class="btn btn-secondary">← 前の章: パフォーマンス</a>
+                        <a href="sql-learning-material-10.html" class="btn btn-primary">次の章: DB設計 →</a>
+                    </div>
+                </div>
+            </main>
         </div>
     </div>
 
-    <footer>
-        <div class="container">
-            <p>Copyright © 2025 F-Circle All rights reserved.</p>
-        </div>
-    </footer>
-
-    <!-- Bootstrap JS and Popper.js -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // 理解度テストの回答確認ボタンの処理
-        document.getElementById('checkAnswers').addEventListener('click', function() {
-            document.getElementById('quizResults').classList.remove('d-none');
-        });
-    </script>
+    <script>hljs.highlightAll();</script>
 </body>
 </html>

@@ -3,1381 +3,508 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SQL初心者向け学習教材 - 複数テーブルをつなげて使う（JOIN）</title>
+    <title>SQL学習教材 第7章 - サブクエリと高度なクエリ技法</title>
+    
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <!-- Google Fonts - Noto Sans JP -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    
     <style>
         body {
             font-family: 'Noto Sans JP', sans-serif;
             padding-top: 56px;
         }
+        
         .navbar {
-            background-color: #1565c0;
+            background-color: #1976d2;
         }
+        
         .sidebar {
             position: sticky;
             top: 70px;
             height: calc(100vh - 70px);
             overflow-y: auto;
         }
+        
         .chapter-title {
-            color: #1565c0;
+            color: #1976d2;
             margin-top: 1.5rem;
             margin-bottom: 1rem;
-            border-bottom: 2px solid #1565c0;
+            border-bottom: 2px solid #1976d2;
             padding-bottom: 0.5rem;
         }
+        
         .section-title {
-            color: #1976d2;
+            color: #42a5f5;
             margin-top: 1.2rem;
             margin-bottom: 0.8rem;
         }
-        code {
-            display: block;
-            background-color: #f5f5f5;
-            border-radius: 4px;
-            padding: 1rem;
-            margin: 1rem 0;
-            font-family: Consolas, Monaco, 'Andale Mono', monospace;
-            white-space: pre;
-            overflow-x: auto;
-        }
+        
         .quiz-container {
-            background-color: #e3f2fd;
+            background-color: #e1f5fe;
             border-radius: 8px;
             padding: 1.5rem;
-            margin: 2rem 0;
-        }
-        .quiz-question {
-            font-weight: 500;
-            margin-bottom: 1rem;
-        }
-        .diagram {
-            max-width: 100%;
-            height: auto;
             margin: 1.5rem 0;
-            text-align: center;
+            border-left: 4px solid #1976d2;
         }
-        .exercise {
-            background-color: #fff8e1;
+        
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+        
+        .highlight {
+            background-color: #ffecb3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
             border-left: 4px solid #ffc107;
+        }
+        
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
             padding: 1rem;
-            margin: 1.5rem 0;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
         }
-        .note {
-            background-color: #e8f5e9;
-            border-left: 4px solid #4caf50;
+        
+        .code-block {
+            background-color: #1e1e1e;
+            border-radius: 5px;
             padding: 1rem;
-            margin: 1.5rem 0;
+            margin: 1rem 0;
         }
-        #table-of-contents .list-group-item {
-            border: none;
-            padding: 0.5rem 1rem;
+        
+        .nav-link.active {
+            background-color: #1976d2 !important;
+            color: white !important;
         }
-        #table-of-contents .list-group-item-action {
-            color: #1976d2;
+        
+        .subquery-type {
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
         }
-        /* 選択された目次項目のスタイル */
-        #table-of-contents .list-group-item-action.active,
-        .list-group-item.active {
-            color: white !important; /* テキストを白色にして青い背景に対してコントラストをつける */
-            background-color: #1976d2;
-            border-color: #1976d2;
-        }
-        .section-nav {
-            padding-left: 1rem;
-        }
-        .inline-code {
-            background-color: #f5f5f5;
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            font-family: Consolas, Monaco, 'Andale Mono', monospace;
-            display: inline;
-        }
-        footer {
-            background-color: #1565c0;
-            color: white;
-            padding: 1.5rem 0;
-            margin-top: 2rem;
-        }
+        .scalar-subquery { background-color: #e8f5e8; border-left: 4px solid #4caf50; }
+        .table-subquery { background-color: #e3f2fd; border-left: 4px solid #2196f3; }
+        .correlated-subquery { background-color: #fff3e0; border-left: 4px solid #ff9800; }
+        .exists-subquery { background-color: #f3e5f5; border-left: 4px solid #9c27b0; }
     </style>
 </head>
-<body data-bs-spy="scroll" data-bs-target="#tableOfContents">
-    <!-- Navbar -->
+<body>
+    <!-- ナビゲーションバー -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="#">SQL初心者向け学習教材</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">SQL学習教材</a>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="#introduction">はじめに</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#chapter7">第7章: JOIN</a>
+                        <a class="nav-link" href="../../README.md">ガイドTOP</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <div class="container my-4">
+    <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar - Table of Contents -->
-            <div class="col-lg-3">
-                <div class="sidebar">
-                    <div class="card">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0">目次</h5>
-                        </div>
-                        <div id="table-of-contents" class="list-group list-group-flush">
-                            <a href="#introduction" class="list-group-item list-group-item-action">はじめに</a>
-                            <a href="#chapter7" class="list-group-item list-group-item-action">第7章: 複数テーブルをつなげて使う（JOIN）</a>
-                            <div class="section-nav">
-                                <a href="#join-overview" class="list-group-item list-group-item-action">7.1 JOINの概要</a>
-                                <a href="#inner-join" class="list-group-item list-group-item-action">7.2 テーブルの結合（INNER JOIN）</a>
-                                <a href="#left-join" class="list-group-item list-group-item-action">7.3 外部結合（LEFT JOIN）</a>
-                                <a href="#multi-table" class="list-group-item list-group-item-action">7.4 複数テーブルから必要な情報を取得</a>
-                                <a href="#exercise" class="list-group-item list-group-item-action">7.5 【演習】「誰がどの商品を買ったか？」を一覧表示しよう</a>
-                                <a href="#chapter7-quiz" class="list-group-item list-group-item-action">7.6 理解度確認テスト</a>
-                            </div>
-                            <a href="#next-steps" class="list-group-item list-group-item-action">次のステップ</a>
-                        </div>
-                    </div>
+            <!-- サイドバー -->
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-1.html">第1章: 基礎概念</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-2.html">第2章: データ型</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-3.html">第3章: CRUD操作</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-4.html">第4章: SELECT文の詳細</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-5.html">第5章: 結合（JOIN）</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-6.html">第6章: 集計とグループ化</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="sql-learning-material-7.html">第7章: サブクエリ</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-8.html">第8章: パフォーマンス</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-9.html">第9章: トランザクション</a></li>
+                        <li class="nav-item"><a class="nav-link" href="sql-learning-material-10.html">第10章: DB設計</a></li>
+                    </ul>
                 </div>
-            </div>
-            
-            <!-- Main Content -->
-            <div class="col-lg-9">
-                <section id="introduction">
-                    <h1 class="display-5 mb-4">SQL初心者向け学習教材</h1>
-                    <p class="lead">この第7章では、SQLの重要な機能である「JOIN」について学習します。複数のテーブルを結合して、より複雑なデータ検索や分析を行う方法を習得しましょう。</p>
-                    <img src="img/sql_07.png" class="img-fluid mt-3 mb-4" style="max-width: 50%; height: auto;">
-                    <div class="note">
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第7章: サブクエリと高度なクエリ技法</h1>
+                </div>
+
+                <div id="chapter7">
+                    <h2 class="chapter-title">サブクエリと高度なクエリ技法</h2>
+                    
+                    <div class="highlight">
                         <h5>この章で学ぶこと</h5>
                         <ul>
-                            <li>テーブル結合の基本概念とその重要性</li>
-                            <li>INNER JOINを使った内部結合の方法</li>
-                            <li>LEFT JOINを使った外部結合の方法</li>
-                            <li>3つ以上のテーブルを結合する方法</li>
-                            <li>実践的な例を通じたJOINの活用方法</li>
+                            <li>サブクエリの基本概念と種類</li>
+                            <li>スカラーサブクエリとテーブルサブクエリ</li>
+                            <li>相関サブクエリの理解と活用</li>
+                            <li>EXISTS句による存在チェック</li>
+                            <li>WITH句（CTE）による可読性の高いクエリ作成</li>
+                            <li>ウィンドウ関数の基本</li>
                         </ul>
                     </div>
-                </section>
 
-                <section id="chapter7">
-                    <h2 class="chapter-title">第7章：複数テーブルをつなげて使う（JOIN）</h2>
-                    <p>実際のデータベース設計では、データを複数のテーブルに分割して管理することが一般的です。この章では、それらの分割されたテーブルを必要に応じて結合し、意味のある情報を取得するためのJOIN操作について学びます。</p>
+                    <h3 class="section-title">7.1 サブクエリの基本概念</h3>
+                    <p>
+                        サブクエリは、SQL文の中に埋め込まれた別のSELECT文です。
+                        メインクエリの条件として使用し、複雑な検索条件を表現できます。
+                    </p>
 
-                    <section id="join-overview">
-                        <h3 class="section-title">7.1 JOINの概要</h3>
-                        <p>JOINは、複数のテーブルを結合してデータを取得するためのSQL機能です。正規化されたデータベースでは、情報が複数のテーブルに分散されているため、それらを結合して必要な情報を得ることが頻繁に必要となります。</p>
+                    <div class="mermaid">
+                        flowchart TD
+                            A[メインクエリ] --> B[サブクエリ1]
+                            A --> C[サブクエリ2]
+                            B --> D[結果1]
+                            C --> E[結果2]
+                            D --> F[最終結果]
+                            E --> F
+                    </div>
 
-                        <h4>なぜテーブルを結合する必要があるのか？</h4>
-                        <p>例えば、以下のような2つのテーブルを考えてみましょう：</p>
-
-                        <div class="row mt-3">
-                            <div class="col-md-6">
-                                <div class="card mb-3">
-                                    <div class="card-header bg-primary text-white">customers（顧客テーブル）</div>
-                                    <div class="card-body">
-                                        <table class="table table-striped table-sm">
-                                            <thead>
-                                                <tr>
-                                                    <th>customer_id</th>
-                                                    <th>name</th>
-                                                    <th>email</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>1</td>
-                                                    <td>山田太郎</td>
-                                                    <td>yamada@example.com</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>2</td>
-                                                    <td>佐藤花子</td>
-                                                    <td>sato@example.com</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>3</td>
-                                                    <td>鈴木一郎</td>
-                                                    <td>suzuki@example.com</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card mb-3">
-                                    <div class="card-header bg-primary text-white">orders（注文テーブル）</div>
-                                    <div class="card-body">
-                                        <table class="table table-striped table-sm">
-                                            <thead>
-                                                <tr>
-                                                    <th>order_id</th>
-                                                    <th>customer_id</th>
-                                                    <th>order_date</th>
-                                                    <th>amount</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>101</td>
-                                                    <td>1</td>
-                                                    <td>2023-01-15</td>
-                                                    <td>5000</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>102</td>
-                                                    <td>2</td>
-                                                    <td>2023-01-16</td>
-                                                    <td>3000</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>103</td>
-                                                    <td>1</td>
-                                                    <td>2023-01-20</td>
-                                                    <td>2000</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
+                    <h4>サブクエリの種類</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="scalar-subquery">
+                                <h6><strong>スカラーサブクエリ</strong></h6>
+                                <p>単一の値を返すサブクエリ</p>
+                                <small>SELECT, WHERE句で使用</small>
                             </div>
                         </div>
-
-                        <p>「どの顧客がいつ注文したか？」という情報が知りたい場合、customersテーブルとordersテーブルを結合する必要があります。両方のテーブルには「customer_id」という共通のカラムがあり、これを使って関連する行を結びつけることができます。</p>
-
-                        <h4>主なJOINの種類</h4>
-                        <div class="row mt-3">
-                            <div class="col-md-6">
-                                <div class="card mb-3">
-                                    <div class="card-header bg-primary text-white">INNER JOIN</div>
-                                    <div class="card-body">
-                                        <p class="card-text">両方のテーブルで一致する行のみを返します。一方のテーブルに対応するデータがない行は結果に含まれません。</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card mb-3">
-                                    <div class="card-header bg-primary text-white">LEFT JOIN（LEFT OUTER JOIN）</div>
-                                    <div class="card-body">
-                                        <p class="card-text">左側のテーブルのすべての行を返し、右側のテーブルの一致する行があればそれも返します。右側のテーブルに一致する行がない場合はNULLが返されます。</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card mb-3">
-                                    <div class="card-header bg-primary text-white">RIGHT JOIN（RIGHT OUTER JOIN）</div>
-                                    <div class="card-body">
-                                        <p class="card-text">右側のテーブルのすべての行を返し、左側のテーブルの一致する行があればそれも返します。左側のテーブルに一致する行がない場合はNULLが返されます。</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card mb-3">
-                                    <div class="card-header bg-primary text-white">FULL JOIN（FULL OUTER JOIN）</div>
-                                    <div class="card-body">
-                                        <p class="card-text">両方のテーブルのすべての行を返します。一致する行がない場合は、対応するテーブルの列にNULLが設定されます。</p>
-                                    </div>
-                                </div>
+                        <div class="col-md-6">
+                            <div class="table-subquery">
+                                <h6><strong>テーブルサブクエリ</strong></h6>
+                                <p>複数の行・列を返すサブクエリ</p>
+                                <small>FROM句、IN演算子で使用</small>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="diagram">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 250">
-                                <!-- JOIN Types Diagram -->
-                                <circle cx="150" cy="100" r="70" fill="none" stroke="#1976d2" stroke-width="2" />
-                                <text x="100" y="100" font-size="14">テーブルA</text>
-                                
-                                <circle cx="250" cy="100" r="70" fill="none" stroke="#4caf50" stroke-width="2" />
-                                <text x="250" y="100" font-size="14">テーブルB</text>
-                                
-                                <!-- INNER JOIN -->
-                                <path d="M 200 100 m -50 0 a 50 50 0 0 0 100 0 a 50 50 0 0 0 -100 0" fill="#bbdefb" />
-                                <text x="200" y="60" text-anchor="middle" font-size="12">INNER JOIN</text>
-                                
-                                <!-- LEFT JOIN -->
-                                <circle cx="150" cy="200" r="40" fill="#bbdefb" stroke="#1976d2" stroke-width="2" />
-                                <circle cx="210" cy="200" r="40" fill="none" stroke="#4caf50" stroke-width="2" />
-                                <path d="M 170 200 m -10 0 a 20 20 0 0 0 40 0 a 20 20 0 0 0 -40 0" fill="#bbdefb" />
-                                <text x="180" y="245" text-anchor="middle" font-size="12">LEFT JOIN</text>
-                                
-                                <!-- RIGHT JOIN -->
-                                <circle cx="390" cy="100" r="40" fill="none" stroke="#1976d2" stroke-width="2" />
-                                <circle cx="450" cy="100" r="40" fill="#c8e6c9" stroke="#4caf50" stroke-width="2" />
-                                <path d="M 410 100 m -10 0 a 20 20 0 0 0 40 0 a 20 20 0 0 0 -40 0" fill="#c8e6c9" />
-                                <text x="420" y="145" text-anchor="middle" font-size="12">RIGHT JOIN</text>
-                                
-                                <!-- FULL JOIN -->
-                                <circle cx="390" cy="200" r="40" fill="#bbdefb" stroke="#1976d2" stroke-width="2" />
-                                <circle cx="450" cy="200" r="40" fill="#c8e6c9" stroke="#4caf50" stroke-width="2" />
-                                <path d="M 410 200 m -10 0 a 20 20 0 0 0 40 0 a 20 20 0 0 0 -40 0" fill="#e1f5fe" />
-                                <text x="420" y="245" text-anchor="middle" font-size="12">FULL JOIN</text>
-                            </svg>
-                            <p class="text-center">図7.1: 各種JOINのイメージ図</p>
-                        </div>
-
-                        <div class="note">
-                            <h5>JOINの基本構文</h5>
-                            <p>JOINを使用するSQL文の基本的な構文は次のとおりです：</p>
-                            <code>SELECT column1, column2, ...
-FROM table1
-JOIN_TYPE table2
-ON table1.common_column = table2.common_column;</code>
-                            <p>JOIN_TYPEの部分には、INNER JOIN、LEFT JOIN、RIGHT JOIN、FULL JOINのいずれかが入ります。</p>
-                        </div>
-                    </section>
-
-                    <section id="inner-join">
-                        <h3 class="section-title">7.2 テーブルの結合（INNER JOIN）</h3>
-                        <p>INNER JOINは最も一般的なJOIN操作で、両方のテーブルで一致する行のみを返します。一致する行がない場合、その行は結果セットに含まれません。</p>
-
-                        <h4>INNER JOINの構文</h4>
-                        <code>SELECT column1, column2, ...
-FROM table1
-INNER JOIN table2
-ON table1.common_column = table2.common_column;</code>
-
-                        <p>「INNER」キーワードは省略可能で、単に「JOIN」と書くこともできます。</p>
-
-                        <h4>INNER JOINの例</h4>
-                        <p>先ほどの顧客テーブルと注文テーブルを使って、顧客名と注文情報を結合して表示してみましょう：</p>
-                        <code>SELECT 
-    customers.name, 
-    orders.order_date, 
-    orders.amount
-FROM 
-    customers
-INNER JOIN 
-    orders
-ON 
-    customers.customer_id = orders.customer_id;</code>
-
-                        <p>この結果は以下のようになります：</p>
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>name</th>
-                                    <th>order_date</th>
-                                    <th>amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>山田太郎</td>
-                                    <td>2023-01-15</td>
-                                    <td>5000</td>
-                                </tr>
-                                <tr>
-                                    <td>佐藤花子</td>
-                                    <td>2023-01-16</td>
-                                    <td>3000</td>
-                                </tr>
-                                <tr>
-                                    <td>山田太郎</td>
-                                    <td>2023-01-20</td>
-                                    <td>2000</td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <p>注意点として、鈴木一郎さん（customer_id = 3）は注文を行っていないため、結果に表示されていません。これがINNER JOINの特徴で、両方のテーブルに一致するデータがある場合のみ結果に含まれます。</p>
-
-                        <h4>テーブルの別名を使用したINNER JOIN</h4>
-                        <p>SQLでは、テーブルに別名（エイリアス）を付けて、クエリをより読みやすくすることができます：</p>
-                        <code>SELECT 
-    c.name, 
-    o.order_date, 
-    o.amount
-FROM 
-    customers AS c
-INNER JOIN 
-    orders AS o
-ON 
-    c.customer_id = o.customer_id;</code>
-
-                        <p>「AS」キーワードは省略可能です：</p>
-                        <code>SELECT 
-    c.name, 
-    o.order_date, 
-    o.amount
-FROM 
-    customers c
-INNER JOIN 
-    orders o
-ON 
-    c.customer_id = o.customer_id;</code>
-
-                        <div class="exercise">
-                            <h5>Exercise 7.1: INNER JOINを使ってみよう</h5>
-                            <p>以下の2つのテーブルを考えてください：</p>
-                            <p><strong>products（商品テーブル）</strong>:</p>
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>product_id</th>
-                                        <th>product_name</th>
-                                        <th>price</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>ノートPC</td>
-                                        <td>80000</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>スマートフォン</td>
-                                        <td>60000</td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td>ヘッドフォン</td>
-                                        <td>15000</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <p><strong>order_items（注文明細テーブル）</strong>:</p>
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>order_id</th>
-                                        <th>product_id</th>
-                                        <th>quantity</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>101</td>
-                                        <td>1</td>
-                                        <td>1</td>
-                                    </tr>
-                                    <tr>
-                                        <td>102</td>
-                                        <td>2</td>
-                                        <td>1</td>
-                                    </tr>
-                                    <tr>
-                                        <td>103</td>
-                                        <td>3</td>
-                                        <td>2</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <p>次のタスクを完了するSQLクエリを作成してください：</p>
-                            <ol>
-                                <li>各注文の注文ID、商品名、価格、数量を取得するSQLクエリを書いてください。</li>
-                                <li>各注文の注文ID、商品名、小計（価格×数量）を計算して取得するSQLクエリを書いてください。</li>
-                            </ol>
-                        </div>
-                    </section>
-
-                    <section id="left-join">
-                        <h3 class="section-title">7.3 外部結合（LEFT JOIN）</h3>
-                        <p>LEFT JOIN（または LEFT OUTER JOIN）は、左側のテーブル（FROM句で指定したテーブル）のすべての行を返し、右側のテーブルの一致する行があればそれも返します。右側のテーブルに一致する行がない場合は、右側のテーブルの列にNULLが設定されます。</p>
-
-                        <h4>LEFT JOINの構文</h4>
-                        <code>SELECT column1, column2, ...
-FROM table1
-LEFT JOIN table2
-ON table1.common_column = table2.common_column;</code>
-
-                        <h4>LEFT JOINの例</h4>
-                        <p>先ほどの顧客テーブルと注文テーブルを使って、すべての顧客と彼らの注文情報（注文がない場合もあり）を表示してみましょう：</p>
-                        <code>SELECT 
-    customers.name, 
-    orders.order_date, 
-    orders.amount
-FROM 
-    customers
-LEFT JOIN 
-    orders
-ON 
-    customers.customer_id = orders.customer_id;</code>
-
-                        <p>この結果は以下のようになります：</p>
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>name</th>
-                                    <th>order_date</th>
-                                    <th>amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>山田太郎</td>
-                                    <td>2023-01-15</td>
-                                    <td>5000</td>
-                                </tr>
-                                <tr>
-                                    <td>佐藤花子</td>
-                                    <td>2023-01-16</td>
-                                    <td>3000</td>
-                                </tr>
-                                <tr>
-                                    <td>山田太郎</td>
-                                    <td>2023-01-20</td>
-                                    <td>2000</td>
-                                </tr>
-                                <tr>
-                                    <td>鈴木一郎</td>
-                                    <td>NULL</td>
-                                    <td>NULL</td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <p>INNER JOINと異なり、鈴木一郎さん（customer_id = 3）も結果に含まれていますが、注文データがないため、order_dateとamountはNULLになっています。</p>
-
-                        <h4>LEFT JOINを使ったデータ分析の例</h4>
-                        <p>LEFT JOINは、「情報が欠けているレコードを見つける」ような分析に役立ちます。例えば、注文を行っていない顧客を探すクエリは次のようになります：</p>
-                        <code>SELECT 
-    customers.name, 
-    customers.email
-FROM 
-    customers
-LEFT JOIN 
-    orders
-ON 
-    customers.customer_id = orders.customer_id
-WHERE 
-    orders.order_id IS NULL;</code>
-
-                        <p>この結果は以下のようになります：</p>
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>name</th>
-                                    <th>email</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>鈴木一郎</td>
-                                    <td>suzuki@example.com</td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <div class="note">
-                            <h5>LEFT JOINとRIGHT JOINの選択</h5>
-                            <p>PostgreSQLではLEFT JOINとRIGHT JOINの両方がサポートされていますが、多くの場合、FROM句のテーブルの順序を変更することで、RIGHT JOINをLEFT JOINに置き換えることができます。読みやすさと一貫性のため、多くの開発者はLEFT JOINを好んで使用します。</p>
-                        </div>
-
-                        <div class="exercise">
-                            <h5>Exercise 7.2: LEFT JOINを使ってみよう</h5>
-                            <p>以下の3つのテーブルを考えてください：</p>
-                            <p><strong>students（学生テーブル）</strong>:</p>
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>student_id</th>
-                                        <th>name</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>山田太郎</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>佐藤花子</td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td>鈴木一郎</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <p><strong>courses（コーステーブル）</strong>:</p>
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>course_id</th>
-                                        <th>course_name</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>101</td>
-                                        <td>数学</td>
-                                    </tr>
-                                    <tr>
-                                        <td>102</td>
-                                        <td>物理</td>
-                                    </tr>
-                                    <tr>
-                                        <td>103</td>
-                                        <td>化学</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <p><strong>enrollments（履修登録テーブル）</strong>:</p>
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>student_id</th>
-                                        <th>course_id</th>
-                                        <th>grade</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>101</td>
-                                        <td>85</td>
-                                    </tr>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>102</td>
-                                        <td>90</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>101</td>
-                                        <td>78</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <p>次のタスクを完了するSQLクエリを作成してください：</p>
-                            <ol>
-                                <li>すべての学生とその履修科目（履修科目がない場合もあり）のリストを表示するSQLクエリを書いてください。</li>
-                                <li>どの科目も履修していない学生を見つけるSQLクエリを書いてください。</li>
-                                <li>すべての科目と履修登録した学生（履修登録がない場合もあり）のリストを表示するSQLクエリを書いてください。</li>
-                            </ol>
-                        </div>
-                    </section>
-
-                    <section id="multi-table">
-                        <h3 class="section-title">7.4 複数テーブルから必要な情報を取得</h3>
-                        <p>実際のデータベースでは、3つ以上のテーブルを結合する必要があることがよくあります。SQLでは、複数のJOIN句を使って3つ以上のテーブルを結合できます。</p>
-
-                        <h4>3つのテーブルを結合する例</h4>
-                        <p>先ほどの顧客テーブルと注文テーブルに、商品テーブルを追加して考えてみましょう：</p>
-
-                        <div class="row mt-3">
-                            <div class="col-md-4">
-                                <div class="card mb-3">
-                                    <div class="card-header bg-primary text-white">customers</div>
-                                    <div class="card-body">
-                                        <table class="table table-sm">
-                                            <thead>
-                                                <tr>
-                                                    <th>customer_id</th>
-                                                    <th>name</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>1</td>
-                                                    <td>山田太郎</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>2</td>
-                                                    <td>佐藤花子</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card mb-3">
-                                    <div class="card-header bg-primary text-white">orders</div>
-                                    <div class="card-body">
-                                        <table class="table table-sm">
-                                            <thead>
-                                                <tr>
-                                                    <th>order_id</th>
-                                                    <th>customer_id</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>101</td>
-                                                    <td>1</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>102</td>
-                                                    <td>2</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card mb-3">
-                                    <div class="card-header bg-primary text-white">order_items</div>
-                                    <div class="card-body">
-                                        <table class="table table-sm">
-                                            <thead>
-                                                <tr>
-                                                    <th>order_id</th>
-                                                    <th>product_id</th>
-                                                    <th>quantity</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>101</td>
-                                                    <td>1</td>
-                                                    <td>2</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>101</td>
-                                                    <td>2</td>
-                                                    <td>1</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>102</td>
-                                                    <td>2</td>
-                                                    <td>1</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="card mb-3">
-                                <div class="card-header bg-primary text-white">products</div>
-                                <div class="card-body">
-                                    <table class="table table-sm">
-                                        <thead>
-                                            <tr>
-                                                <th>product_id</th>
-                                                <th>product_name</th>
-                                                <th>price</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>ノートPC</td>
-                                                <td>80000</td>
-                                            </tr>
-                                            <tr>
-                                                <td>2</td>
-                                                <td>スマートフォン</td>
-                                                <td>60000</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-                        <p>「どの顧客がどの商品を何個注文したか？」という情報を取得するには、3つのテーブルを結合する必要があります：</p>
-                        <code>SELECT 
-    c.name AS 顧客名, 
-    p.product_name AS 商品名, 
-    oi.quantity AS 数量
-FROM 
-    customers c
-JOIN 
-    orders o ON c.customer_id = o.customer_id
-JOIN 
-    order_items oi ON o.order_id = oi.order_id
-JOIN 
-    products p ON oi.product_id = p.product_id;</code>
-
-                        <p>この結果は以下のようになります：</p>
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>顧客名</th>
-                                    <th>商品名</th>
-                                    <th>数量</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>山田太郎</td>
-                                    <td>ノートPC</td>
-                                    <td>2</td>
-                                </tr>
-                                <tr>
-                                    <td>山田太郎</td>
-                                    <td>スマートフォン</td>
-                                    <td>1</td>
-                                </tr>
-                                <tr>
-                                    <td>佐藤花子</td>
-                                    <td>スマートフォン</td>
-                                    <td>1</td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <h4>複数テーブル結合のヒント</h4>
-                        <ul>
-                            <li><strong>テーブルの結合順序</strong>: 論理的な順序でテーブルを結合し、FROM句の最初のテーブルを最も中心的なテーブルにすると読みやすくなります。</li>
-                            <li><strong>テーブルの別名</strong>: 複数のテーブルを使用する場合は、短い別名を使うと便利です。</li>
-                            <li><strong>結合条件</strong>: 各JOINにはON句で適切な結合条件を指定します。</li>
-                            <li><strong>結合の種類</strong>: 状況に応じて適切な種類のJOIN（INNER、LEFT、RIGHTなど）を選択します。</li>
-                        </ul>
-
-                        <div class="note">
-                            <h5>パフォーマンスの考慮事項</h5>
-                            <p>複数のテーブルを結合する場合、以下の点に注意してパフォーマンスを最適化できます：</p>
-                            <ul>
-                                <li>結合に使用する列にインデックスを作成する</li>
-                                <li>必要な列だけを選択する（「SELECT *」は避ける）</li>
-                                <li>結合するテーブルの数を最小限に抑える</li>
-                                <li>大きなテーブルを結合する場合は、適切なWHERE条件で結果セットを制限する</li>
-                            </ul>
-                        </div>
-
-                        <div class="exercise">
-                            <h5>Exercise 7.3: 複数テーブルを結合してみよう</h5>
-                            <p>以下の4つのテーブルを考えてください：</p>
-                            <p><strong>departments（部門テーブル）</strong>:</p>
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>dept_id</th>
-                                        <th>dept_name</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>営業部</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>開発部</td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td>人事部</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <p><strong>employees（従業員テーブル）</strong>:</p>
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>emp_id</th>
-                                        <th>name</th>
-                                        <th>dept_id</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>101</td>
-                                        <td>山田太郎</td>
-                                        <td>1</td>
-                                    </tr>
-                                    <tr>
-                                        <td>102</td>
-                                        <td>佐藤花子</td>
-                                        <td>2</td>
-                                    </tr>
-                                    <tr>
-                                        <td>103</td>
-                                        <td>鈴木一郎</td>
-                                        <td>2</td>
-                                    </tr>
-                                    <tr>
-                                        <td>104</td>
-                                        <td>高橋次郎</td>
-                                        <td>NULL</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <p><strong>projects（プロジェクトテーブル）</strong>:</p>
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>project_id</th>
-                                        <th>project_name</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>新製品開発</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>システム改善</td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td>マーケティング</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <p><strong>project_assignments（プロジェクト配属テーブル）</strong>:</p>
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>emp_id</th>
-                                        <th>project_id</th>
-                                        <th>role</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>101</td>
-                                        <td>3</td>
-                                        <td>リーダー</td>
-                                    </tr>
-                                    <tr>
-                                        <td>102</td>
-                                        <td>1</td>
-                                        <td>メンバー</td>
-                                    </tr>
-                                    <tr>
-                                        <td>102</td>
-                                        <td>2</td>
-                                        <td>リーダー</td>
-                                    </tr>
-                                    <tr>
-                                        <td>103</td>
-                                        <td>1</td>
-                                        <td>リーダー</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <p>次のタスクを完了するSQLクエリを作成してください：</p>
-                            <ol>
-                                <li>各従業員の名前、所属部門名、担当プロジェクト名、役割を表示するSQLクエリを書いてください。</li>
-                                <li>どのプロジェクトにも割り当てられていない従業員を見つけるSQLクエリを書いてください。</li>
-                                <li>各部門ごとに、その部門の従業員数と担当しているプロジェクト数を表示するSQLクエリを書いてください。</li>
-                            </ol>
-                        </div>
-                    </section>
-
-                    <section id="exercise">
-                        <h3 class="section-title">7.5 【演習】「誰がどの商品を買ったか？」を一覧表示しよう</h3>
-                        <p>ここでは、実際のECサイトに近いテーブル構造を使って、「誰がどの商品を買ったか？」という情報を一覧表示する演習を行います。</p>
-
-                        <h4>テーブル構造</h4>
-                        <p>以下の4つのテーブルがあるとします：</p>
-
-                        <div class="row mt-3">
-                            <div class="col-md-6">
-                                <div class="card mb-3">
-                                    <div class="card-header bg-primary text-white">users（ユーザーテーブル）</div>
-                                    <div class="card-body">
-                                        <code>CREATE TABLE users (
-    user_id SERIAL PRIMARY KEY,
-    username VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    registration_date DATE NOT NULL
-);</code>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card mb-3">
-                                    <div class="card-header bg-primary text-white">products（商品テーブル）</div>
-                                    <div class="card-body">
-                                        <code>CREATE TABLE products (
-    product_id SERIAL PRIMARY KEY,
-    product_name VARCHAR(100) NOT NULL,
-    description TEXT,
-    price DECIMAL(10, 2) NOT NULL,
-    category VARCHAR(50)
-);</code>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card mb-3">
-                                    <div class="card-header bg-primary text-white">orders（注文テーブル）</div>
-                                    <div class="card-body">
-                                        <code>CREATE TABLE orders (
-    order_id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(user_id),
-    order_date TIMESTAMP NOT NULL,
-    total_amount DECIMAL(10, 2),
-    status VARCHAR(20) NOT NULL
-);</code>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card mb-3">
-                                    <div class="card-header bg-primary text-white">order_items（注文明細テーブル）</div>
-                                    <div class="card-body">
-                                        <code>CREATE TABLE order_items (
-    order_item_id SERIAL PRIMARY KEY,
-    order_id INTEGER REFERENCES orders(order_id),
-    product_id INTEGER REFERENCES products(product_id),
-    quantity INTEGER NOT NULL,
-    price DECIMAL(10, 2) NOT NULL
-);</code>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <h4>サンプルデータ</h4>
-                        <p>テーブルに以下のようなサンプルデータが入っているとします：</p>
-                        <code>-- usersテーブルのサンプルデータ
-INSERT INTO users (user_id, username, email, registration_date) VALUES
-(1, 'tanaka_taro', 'tanaka@example.com', '2023-01-15'),
-(2, 'suzuki_hanako', 'suzuki@example.com', '2023-02-20'),
-(3, 'sato_jiro', 'sato@example.com', '2023-03-10');
-
--- productsテーブルのサンプルデータ
-INSERT INTO products (product_id, product_name, description, price, category) VALUES
-(1, 'ノートPC A', '高性能ノートパソコン', 120000.00, '電子機器'),
-(2, 'スマートフォン B', '最新モデルのスマートフォン', 85000.00, '電子機器'),
-(3, 'ヘッドフォン C', 'ノイズキャンセリング機能付き', 25000.00, 'オーディオ'),
-(4, '腕時計 D', '防水機能付き高級腕時計', 35000.00, 'アクセサリー');
-
--- ordersテーブルのサンプルデータ
-INSERT INTO orders (order_id, user_id, order_date, total_amount, status) VALUES
-(1, 1, '2023-04-05 10:30:00', 120000.00, '完了'),
-(2, 2, '2023-04-10 15:45:00', 110000.00, '完了'),
-(3, 1, '2023-04-15 09:20:00', 35000.00, '処理中'),
-(4, 3, '2023-04-20 14:15:00', 25000.00, '完了');
-
--- order_itemsテーブルのサンプルデータ
-INSERT INTO order_items (order_item_id, order_id, product_id, quantity, price) VALUES
-(1, 1, 1, 1, 120000.00),
-(2, 2, 2, 1, 85000.00),
-(3, 2, 3, 1, 25000.00),
-(4, 3, 4, 1, 35000.00),
-(5, 4, 3, 1, 25000.00);</code>
-
-                        <h4>課題</h4>
-                        <p>次の要件を満たすSQLクエリを作成してください：</p>
-                        <ol>
-                            <li>ユーザー名、注文日、商品名、数量、価格、注文状態を一覧表示する。</li>
-                            <li>ユーザーごとに購入した商品の合計金額を計算して表示する。</li>
-                            <li>各商品ごとに何人のユーザーが購入したかをカウントして表示する。</li>
-                            <li>まだ一度も注文されていない商品を表示する。</li>
-                        </ol>
-
-                        <h4>解答例</h4>
-                        <p>1. ユーザー名、注文日、商品名、数量、価格、注文状態を一覧表示する：</p>
-                        <code>SELECT 
-    u.username AS ユーザー名,
-    o.order_date AS 注文日,
-    p.product_name AS 商品名,
-    oi.quantity AS 数量,
-    oi.price AS 価格,
-    o.status AS 状態
-FROM 
-    users u
-JOIN 
-    orders o ON u.user_id = o.user_id
-JOIN 
-    order_items oi ON o.order_id = oi.order_id
-JOIN 
-    products p ON oi.product_id = p.product_id
-ORDER BY 
-    o.order_date;</code>
-
-                        <p>2. ユーザーごとに購入した商品の合計金額を計算して表示する：</p>
-                        <code>SELECT 
-    u.username AS ユーザー名,
-    SUM(oi.price * oi.quantity) AS 合計購入金額
-FROM 
-    users u
-JOIN 
-    orders o ON u.user_id = o.user_id
-JOIN 
-    order_items oi ON o.order_id = oi.order_id
-GROUP BY 
-    u.username
-ORDER BY 
-    合計購入金額 DESC;</code>
-
-                        <p>3. 各商品ごとに何人のユーザーが購入したかをカウントして表示する：</p>
-                        <code>SELECT 
-    p.product_name AS 商品名,
-    COUNT(DISTINCT u.user_id) AS 購入ユーザー数
-FROM 
-    products p
-JOIN 
-    order_items oi ON p.product_id = oi.product_id
-JOIN 
-    orders o ON oi.order_id = o.order_id
-JOIN 
-    users u ON o.user_id = u.user_id
-GROUP BY 
-    p.product_name
-ORDER BY 
-    購入ユーザー数 DESC;</code>
-
-                        <p>4. まだ一度も注文されていない商品を表示する：</p>
-                        <code>SELECT 
-    p.product_name AS 未購入商品名,
-    p.price AS 価格,
-    p.category AS カテゴリー
-FROM 
-    products p
-LEFT JOIN 
-    order_items oi ON p.product_id = oi.product_id
-WHERE 
-    oi.order_item_id IS NULL;</code>
-
-                        <div class="note">
-                            <h5>解説</h5>
-                            <p>これらのクエリは、複数のテーブルを適切に結合（JOIN）することで、意味のある情報を抽出しています。</p>
-                            <ul>
-                                <li>課題1では、すべてのテーブルをINNER JOINで結合して、注文された商品の詳細情報を表示しています。</li>
-                                <li>課題2では、GROUP BY句を使ってユーザーごとにデータをグループ化し、SUM関数で合計金額を計算しています。</li>
-                                <li>課題3では、COUNT(DISTINCT)を使って、各商品を購入したユニークなユーザー数をカウントしています。</li>
-                                <li>課題4では、LEFT JOINとWHERE句を組み合わせて、order_itemsテーブルに存在しない（＝まだ注文されていない）商品を抽出しています。</li>
-                            </ul>
-                        </div>
-
-                        <div class="exercise">
-                            <h5>追加課題</h5>
-                            <p>上記のテーブル構造とサンプルデータを使って、以下の課題にも挑戦してみましょう：</p>
-                            <ol>
-                                <li>各ユーザーが最後に注文した商品の名前と注文日を表示するSQLクエリを書いてください。</li>
-                                <li>カテゴリーごとの総売上金額を多い順に表示するSQLクエリを書いてください。</li>
-                                <li>すべてのユーザーと彼らの注文数を表示し、注文がないユーザーも「0」として表示するSQLクエリを書いてください。</li>
-                            </ol>
-                        </div>
-                    </section>
-
-                    <section id="chapter7-quiz">
-                        <h3 class="section-title">7.6 理解度確認テスト</h3>
-                        <div class="quiz-container">
-                            <h4>第7章の理解度チェック</h4>
-                            <p>以下の問題に答えて、第7章の内容の理解度を確認しましょう。</p>
-                            
-                            <div class="quiz-question">
-                                <p><strong>問題1:</strong> 次のうち、INNER JOINの特徴として正しいものはどれですか？</p>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q1" id="q1a" value="a">
-                                    <label class="form-check-label" for="q1a">
-                                        左側のテーブルのすべての行と、右側のテーブルの一致する行を返す。
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q1" id="q1b" value="b">
-                                    <label class="form-check-label" for="q1b">
-                                        両方のテーブルで一致する行のみを返す。
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q1" id="q1c" value="c">
-                                        <label class="form-check-label" for="q1c">
-                                        両方のテーブルのすべての行を返し、一致しない場合はNULLを設定する。
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q1" id="q1d" value="d">
-                                    <label class="form-check-label" for="q1d">
-                                        右側のテーブルのすべての行と、左側のテーブルの一致する行を返す。
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            <div class="quiz-question">
-                                <p><strong>問題2:</strong> 次のSQLクエリで使用されているJOINの種類は何ですか？</p>
-                                <pre class="bg-light p-2 rounded">
-SELECT students.name, courses.course_name
-FROM students
-LEFT JOIN enrollments ON students.student_id = enrollments.student_id
-LEFT JOIN courses ON enrollments.course_id = courses.course_id;</pre>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q2" id="q2a" value="a">
-                                    <label class="form-check-label" for="q2a">
-                                        INNER JOIN
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q2" id="q2b" value="b">
-                                    <label class="form-check-label" for="q2b">
-                                        RIGHT JOIN
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q2" id="q2c" value="c">
-                                        <label class="form-check-label" for="q2c">
-                                        LEFT JOIN
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q2" id="q2d" value="d">
-                                    <label class="form-check-label" for="q2d">
-                                        FULL JOIN
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            <div class="quiz-question">
-                                <p><strong>問題3:</strong> テーブルAとテーブルBがあり、LEFT JOINを使用した場合、次のうち正しい説明はどれですか？</p>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q3" id="q3a" value="a">
-                                    <label class="form-check-label" for="q3a">
-                                        テーブルAのすべての行が結果に含まれ、テーブルBに一致する行がない場合はNULLが設定される。
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q3" id="q3b" value="b">
-                                    <label class="form-check-label" for="q3b">
-                                        テーブルBのすべての行が結果に含まれ、テーブルAに一致する行がない場合はNULLが設定される。
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q3" id="q3c" value="c">
-                                        <label class="form-check-label" for="q3c">
-                                        テーブルAとテーブルBの両方で一致する行のみが結果に含まれる。
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q3" id="q3d" value="d">
-                                    <label class="form-check-label" for="q3d">
-                                        テーブルAとテーブルBのすべての行が結果に含まれ、一致しない場合はNULLが設定される。
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            <div class="quiz-question">
-                                <p><strong>問題4:</strong> 3つのテーブル（A、B、C）を結合するSQLクエリの正しい構文はどれですか？</p>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q4" id="q4a" value="a">
-                                    <label class="form-check-label" for="q4a">
-<pre class="bg-light p-2 rounded">
-SELECT * FROM A, B, C 
-WHERE A.id = B.a_id AND B.id = C.b_id;</pre>
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q4" id="q4b" value="b">
-                                    <label class="form-check-label" for="q4b">
-<pre class="bg-light p-2 rounded">
-SELECT * FROM A 
-JOIN B ON A.id = B.a_id 
-JOIN C ON B.id = C.b_id;</pre>
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q4" id="q4c" value="c">
-                                        <label class="form-check-label" for="q4c">
-<pre class="bg-light p-2 rounded">
-SELECT * FROM A 
-INNER JOIN (B INNER JOIN C ON B.id = C.b_id) 
-ON A.id = B.a_id;</pre>
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q4" id="q4d" value="d">
-                                    <label class="form-check-label" for="q4d">
-<pre class="bg-light p-2 rounded">
-SELECT * FROM A 
-WITH B ON A.id = B.a_id 
-WITH C ON B.id = C.b_id;</pre>
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            <div class="quiz-question">
-                                <p><strong>問題5:</strong> 次のSQL文で、まだ注文されていない商品を見つけるには、空欄にどのような条件を入れればよいですか？</p>
-                                <pre class="bg-light p-2 rounded">
-SELECT products.* 
+                    <div class="exercise-container">
+                        <h5>実習 7-1: 基本的なサブクエリ</h5>
+                        <p>スカラーサブクエリとテーブルサブクエリの基本的な使用方法を学習します。</p>
+                        <h6>実行例</h6>
+                        <pre class="code-block"><code class="language-sql">-- スカラーサブクエリ：平均価格より高い商品
+SELECT 
+    product_name,
+    price,
+    (SELECT AVG(price) FROM products) AS average_price
 FROM products 
-LEFT JOIN order_items ON products.product_id = order_items.product_id 
-WHERE ________;</pre>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q5" id="q5a" value="a">
-                                    <label class="form-check-label" for="q5a">
-                                        order_items.product_id = NULL
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q5" id="q5b" value="b">
-                                    <label class="form-check-label" for="q5b">
-                                        order_items.product_id IS NULL
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q5" id="q5c" value="c">
-                                        <label class="form-check-label" for="q5c">
-                                        products.product_id NOT IN (SELECT product_id FROM order_items)
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="q5" id="q5d" value="d">
-                                    <label class="form-check-label" for="q5d">
-                                        products.product_id = 0
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            <button class="btn btn-primary mt-3" id="checkAnswers">回答を確認</button>
-                            <div id="quizResults" class="mt-3 d-none">
-                                <div class="alert alert-success">
-                                    <h5>正解:</h5>
-                                    <ol>
-                                        <li>b（両方のテーブルで一致する行のみを返す）</li>
-                                        <li>c（LEFT JOIN）</li>
-                                        <li>a（テーブルAのすべての行が結果に含まれ、テーブルBに一致する行がない場合はNULLが設定される）</li>
-                                        <li>b（標準的なJOIN構文で3つのテーブルを結合）</li>
-                                        <li>b（order_items.product_id IS NULL）</li>
-                                    </ol>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
+WHERE price > (SELECT AVG(price) FROM products)
+ORDER BY price DESC;
 
-                    <section id="next-steps">
-                        <h3 class="section-title">次のステップ</h3>
-                        <p>この章では、SQLのJOIN操作について学びました。複数のテーブルを結合することで、より複雑なデータ検索や分析が可能になります。次の章では、さらに高度なSQL機能について学んでいきます。</p>
-                        <p>練習問題に取り組み、実際のデータベースでJOINを使ってみることで、この章で学んだ概念をしっかりと身につけましょう。</p>
-                        <div class="note">
-                            <h5>推奨される練習プロジェクト</h5>
-                            <p>以下のミニプロジェクトに取り組んで、JOINの概念を実践してみましょう：</p>
-                            <ol>
-                                <li><strong>小規模ECサイトのデータベース</strong>: 商品、顧客、注文、注文明細などのテーブルを作成し、JOINを使って様々な情報を抽出する</li>
-                                <li><strong>学校管理システム</strong>: 学生、教師、科目、成績などのテーブルを設計し、複雑なレポートを作成する</li>
-                                <li><strong>図書館管理システム</strong>: 本、著者、貸出記録、会員などのテーブルを実装し、JOINを活用した検索システムを構築する</li>
-                            </ol>
-                        </div>
-                    </section>
-                </section>
-            </div>
+-- IN演算子でのサブクエリ：注文がある商品のみ
+SELECT 
+    product_name,
+    price
+FROM products 
+WHERE product_id IN (
+    SELECT DISTINCT product_id 
+    FROM orders
+)
+ORDER BY price;
+
+-- FROM句でのサブクエリ：カテゴリ別平均価格
+SELECT 
+    category_avg.category_id,
+    c.category_name,
+    category_avg.avg_price,
+    category_avg.product_count
+FROM (
+    SELECT 
+        category_id,
+        AVG(price) AS avg_price,
+        COUNT(*) AS product_count
+    FROM products
+    GROUP BY category_id
+) category_avg
+JOIN categories c ON category_avg.category_id = c.category_id
+ORDER BY category_avg.avg_price DESC;</code></pre>
+                    </div>
+
+                    <h3 class="section-title">7.2 相関サブクエリ</h3>
+                    <div class="correlated-subquery">
+                        <h6><strong>相関サブクエリ</strong></h6>
+                        <p>外部クエリの値を参照するサブクエリ。外部クエリの各行に対して実行されます。</p>
+                    </div>
+
+                    <div class="exercise-container">
+                        <h5>実習 7-2: 相関サブクエリの活用</h5>
+                        <p>外部クエリの値を参照する相関サブクエリを使った複雑な条件検索を実行します。</p>
+                        <h6>実行例</h6>
+                        <pre class="code-block"><code class="language-sql">-- 各カテゴリ内で平均価格より高い商品
+SELECT 
+    p1.product_name,
+    p1.price,
+    c.category_name
+FROM products p1
+JOIN categories c ON p1.category_id = c.category_id
+WHERE p1.price > (
+    SELECT AVG(p2.price)
+    FROM products p2 
+    WHERE p2.category_id = p1.category_id
+)
+ORDER BY c.category_name, p1.price DESC;
+
+-- 最後に注文した日付を取得
+SELECT 
+    c.name,
+    c.email,
+    (SELECT MAX(o.order_date) 
+     FROM orders o 
+     WHERE o.customer_id = c.customer_id) AS last_order_date
+FROM customers c
+ORDER BY last_order_date DESC NULLS LAST;
+
+-- 各顧客の注文回数を表示
+SELECT 
+    c.name,
+    (SELECT COUNT(*) 
+     FROM orders o 
+     WHERE o.customer_id = c.customer_id) AS order_count
+FROM customers c
+ORDER BY order_count DESC;</code></pre>
+                    </div>
+
+                    <h3 class="section-title">7.3 EXISTS句による存在チェック</h3>
+                    <div class="exists-subquery">
+                        <h6><strong>EXISTS句</strong></h6>
+                        <p>サブクエリが1行以上の結果を返すかどうかをチェック。TRUE/FALSEを返します。</p>
+                    </div>
+
+                    <div class="exercise-container">
+                        <h5>実習 7-3: EXISTS句の使用</h5>
+                        <p>EXISTS、NOT EXISTSを使った効率的な存在チェッククエリを作成します。</p>
+                        <h6>実行例</h6>
+                        <pre class="code-block"><code class="language-sql">-- 注文履歴がある顧客
+SELECT 
+    c.name,
+    c.email,
+    c.created_at
+FROM customers c
+WHERE EXISTS (
+    SELECT 1 
+    FROM orders o 
+    WHERE o.customer_id = c.customer_id
+)
+ORDER BY c.name;
+
+-- 注文履歴がない顧客
+SELECT 
+    c.name,
+    c.email,
+    c.created_at
+FROM customers c
+WHERE NOT EXISTS (
+    SELECT 1 
+    FROM orders o 
+    WHERE o.customer_id = c.customer_id
+)
+ORDER BY c.created_at DESC;
+
+-- 売れたことがない商品
+SELECT 
+    p.product_name,
+    p.price,
+    p.stock_quantity
+FROM products p
+WHERE NOT EXISTS (
+    SELECT 1 
+    FROM orders o 
+    WHERE o.product_id = p.product_id
+)
+ORDER BY p.price DESC;</code></pre>
+                    </div>
+
+                    <h3 class="section-title">7.4 WITH句（CTE）による可読性向上</h3>
+                    <p>
+                        WITH句（Common Table Expression）を使用すると、
+                        複雑なクエリを段階的に構築し、可読性を向上させることができます。
+                    </p>
+
+                    <div class="exercise-container">
+                        <h5>実習 7-4: WITH句（CTE）の活用</h5>
+                        <p>WITH句を使って複雑な分析クエリを見やすく構造化します。</p>
+                        <h6>実行例</h6>
+                        <pre class="code-block"><code class="language-sql">-- 顧客別売上分析（WITH句使用）
+WITH customer_orders AS (
+    SELECT 
+        c.customer_id,
+        c.name,
+        c.email,
+        COUNT(o.order_id) AS order_count,
+        SUM(p.price * o.quantity) AS total_spent,
+        AVG(p.price * o.quantity) AS avg_order_value,
+        MAX(o.order_date) AS last_order_date
+    FROM customers c
+    LEFT JOIN orders o ON c.customer_id = o.customer_id
+    LEFT JOIN products p ON o.product_id = p.product_id
+    GROUP BY c.customer_id, c.name, c.email
+),
+customer_segments AS (
+    SELECT 
+        *,
+        CASE 
+            WHEN total_spent >= 50000 THEN 'VIP'
+            WHEN total_spent >= 20000 THEN 'Premium'
+            WHEN total_spent > 0 THEN 'Regular'
+            ELSE 'No Purchase'
+        END AS customer_segment
+    FROM customer_orders
+)
+SELECT 
+    customer_segment,
+    COUNT(*) AS customer_count,
+    AVG(total_spent) AS avg_spent_per_segment,
+    AVG(order_count) AS avg_orders_per_segment
+FROM customer_segments
+GROUP BY customer_segment
+ORDER BY avg_spent_per_segment DESC NULLS LAST;
+
+-- 複数CTEの使用例：月次売上トレンド分析
+WITH monthly_sales AS (
+    SELECT 
+        DATE_TRUNC('month', o.order_date) AS sales_month,
+        SUM(p.price * o.quantity) AS monthly_revenue,
+        COUNT(DISTINCT o.customer_id) AS unique_customers,
+        COUNT(o.order_id) AS total_orders
+    FROM orders o
+    JOIN products p ON o.product_id = p.product_id
+    GROUP BY DATE_TRUNC('month', o.order_date)
+),
+sales_with_growth AS (
+    SELECT 
+        sales_month,
+        monthly_revenue,
+        unique_customers,
+        total_orders,
+        LAG(monthly_revenue) OVER (ORDER BY sales_month) AS prev_month_revenue,
+        (monthly_revenue - LAG(monthly_revenue) OVER (ORDER BY sales_month)) / 
+        LAG(monthly_revenue) OVER (ORDER BY sales_month) * 100 AS growth_rate
+    FROM monthly_sales
+)
+SELECT 
+    sales_month,
+    monthly_revenue,
+    unique_customers,
+    total_orders,
+    ROUND(growth_rate, 2) AS growth_percentage
+FROM sales_with_growth
+ORDER BY sales_month;</code></pre>
+                    </div>
+
+                    <h3 class="section-title">7.5 ウィンドウ関数の基本</h3>
+                    <p>
+                        ウィンドウ関数は、行のグループに対して計算を行いながら、
+                        個々の行の詳細を保持する強力な機能です。
+                    </p>
+
+                    <div class="exercise-container">
+                        <h5>実習 7-5: ウィンドウ関数の活用</h5>
+                        <p>ランキング、移動平均、累積計算などのウィンドウ関数を使用します。</p>
+                        <h6>実行例</h6>
+                        <pre class="code-block"><code class="language-sql">-- 商品の価格ランキング（カテゴリ別）
+SELECT 
+    p.product_name,
+    c.category_name,
+    p.price,
+    RANK() OVER (PARTITION BY c.category_id ORDER BY p.price DESC) AS price_rank,
+    DENSE_RANK() OVER (PARTITION BY c.category_id ORDER BY p.price DESC) AS dense_price_rank,
+    ROW_NUMBER() OVER (PARTITION BY c.category_id ORDER BY p.price DESC) AS row_num
+FROM products p
+JOIN categories c ON p.category_id = c.category_id
+ORDER BY c.category_name, p.price DESC;
+
+-- 顧客別の注文履歴と累積金額
+SELECT 
+    o.order_id,
+    c.name AS customer_name,
+    o.order_date,
+    p.product_name,
+    (p.price * o.quantity) AS order_amount,
+    SUM(p.price * o.quantity) OVER (
+        PARTITION BY c.customer_id 
+        ORDER BY o.order_date 
+        ROWS UNBOUNDED PRECEDING
+    ) AS cumulative_spent,
+    AVG(p.price * o.quantity) OVER (
+        PARTITION BY c.customer_id 
+        ORDER BY o.order_date 
+        ROWS 2 PRECEDING
+    ) AS moving_avg_3_orders
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+JOIN products p ON o.product_id = p.product_id
+ORDER BY c.name, o.order_date;</code></pre>
+                    </div>
+
+                    <div class="warning">
+                        <h6>サブクエリのパフォーマンス最適化</h6>
+                        <ul>
+                            <li><strong>相関サブクエリの注意</strong>: 外部クエリの行数分だけ実行されるため、データ量が多い場合は注意</li>
+                            <li><strong>EXISTS vs IN</strong>: 大量データの場合はEXISTSが効率的</li>
+                            <li><strong>JOINとの使い分け</strong>: 場合によってはJOINの方が高速</li>
+                            <li><strong>インデックス</strong>: サブクエリで使用する列にはインデックスを設定</li>
+                        </ul>
+                    </div>
+
+                    <!-- 理解度確認 -->
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li><strong>問題1:</strong> スカラーサブクエリとテーブルサブクエリの違いは何ですか？</li>
+                            <li><strong>問題2:</strong> EXISTS句とIN演算子の使い分けについて説明してください。</li>
+                            <li><strong>問題3:</strong> WITH句（CTE）を使用する利点は何ですか？</li>
+                            <li><strong>問題4:</strong> 相関サブクエリでパフォーマンス問題が発生しやすい理由は？</li>
+                            <li><strong>問題5:</strong> ウィンドウ関数のPARTITION BY句の役割を説明してください。</li>
+                        </ol>
+                        
+                        <details class="mt-3">
+                            <summary>解答を表示</summary>
+                            <div class="mt-2">
+                                <strong>解答:</strong>
+                                <ol>
+                                    <li>スカラーサブクエリは単一値を返す、テーブルサブクエリは複数の行・列を返す</li>
+                                    <li>EXISTS: 存在チェックに最適、NULL値の処理が安全。IN: 値の一致チェック、小さなリストに適している</li>
+                                    <li>複雑なクエリの可読性向上、段階的な処理、再利用可能な中間結果の定義</li>
+                                    <li>外部クエリの各行に対してサブクエリが実行されるため、データ量に比例して処理時間が増加</li>
+                                    <li>結果セットをグループ分けし、各グループ内でウィンドウ関数を実行する範囲を定義</li>
+                                </ol>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- 章間ナビゲーション -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="sql-learning-material-6.html" class="btn btn-secondary">← 前の章: 集計とグループ化</a>
+                        <a href="sql-learning-material-8.html" class="btn btn-primary">次の章: パフォーマンス →</a>
+                    </div>
+                </div>
+            </main>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="text-center py-4">
-        <div class="container">
-            <p>Copyright © 2025 F-Circle All rights reserved.</p>
-        </div>
-    </footer>
-
-    <!-- Bootstrap JS and Popper.js -->
+    <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>hljs.highlightAll();</script>
     <script>
-        // 理解度テストの回答確認ボタンの処理
-        document.getElementById('checkAnswers').addEventListener('click', function() {
-            document.getElementById('quizResults').classList.remove('d-none');
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default'
         });
     </script>
 </body>
