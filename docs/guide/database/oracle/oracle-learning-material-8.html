@@ -8,6 +8,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts - Noto Sans JP -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    
     <style>
         body {
             font-family: 'Noto Sans JP', sans-serif;
@@ -34,15 +39,18 @@
             margin-top: 1.2rem;
             margin-bottom: 0.8rem;
         }
-        code {
-            display: block;
-            background-color: #f5f5f5;
-            border-radius: 4px;
+        .code-block {
+            background-color: #1e1e1e;
+            border-radius: 5px;
             padding: 1rem;
             margin: 1rem 0;
-            font-family: Consolas, Monaco, 'Andale Mono', monospace;
-            white-space: pre;
-            overflow-x: auto;
+        }
+        
+        code {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            color: #d63384;
         }
         .quiz-container {
             background-color: #e1f5fe;
@@ -192,7 +200,7 @@
                     <div class="exercise-container">
                         <h5>実習 8-1: ディレクトリオブジェクトの作成</h5>
                         <p><strong>注意：</strong>この実習はSYS権限で実行する必要があります。</p>
-                        <code>-- SYSユーザーでログイン
+                        <pre class="code-block"><code class="language-sql">-- SYSユーザーでログイン
 -- docker exec -it oracle-xe sqlplus sys/Password123@localhost:1521/XE as sysdba
 
 -- バックアップ用ディレクトリの作成（コンテナ内）
@@ -210,20 +218,20 @@ SELECT
     directory_path,
     origin_con_id
 FROM dba_directories
-WHERE directory_name = 'BACKUP_DIR';</code>
+WHERE directory_name = 'BACKUP_DIR';</code></pre>
                     </div>
 
                     <h4>ホスト側でのディレクトリ準備</h4>
                     <div class="exercise-container">
                         <h5>実習 8-2: Docker環境でのディレクトリ準備</h5>
-                        <code># ホスト側でバックアップディレクトリを作成
+                        <pre class="code-block"><code class="language-sql"># ホスト側でバックアップディレクトリを作成
 docker exec oracle-xe mkdir -p /opt/oracle/oradata/backup
 
 # ディレクトリの権限設定
 docker exec oracle-xe chmod 777 /opt/oracle/oradata/backup
 
 # ディレクトリの確認
-docker exec oracle-xe ls -la /opt/oracle/oradata/backup</code>
+docker exec oracle-xe ls -la /opt/oracle/oradata/backup</code></pre>
                     </div>
 
                     <h3 class="section-title">8.3 エクスポート操作</h3>
@@ -231,34 +239,34 @@ docker exec oracle-xe ls -la /opt/oracle/oradata/backup</code>
 
                     <div class="exercise-container">
                         <h5>実習 8-3: スキーマ全体のエクスポート</h5>
-                        <code>-- コンテナ内でData Pumpエクスポートを実行
+                        <pre class="code-block"><code class="language-sql">-- コンテナ内でData Pumpエクスポートを実行
 docker exec -it oracle-xe expdp learner/learner123@XE \
     schemas=learner \
     directory=backup_dir \
     dumpfile=learner_full_$(date +%Y%m%d).dmp \
     logfile=learner_full_$(date +%Y%m%d).log \
-    compression=all</code>
+    compression=all</code></pre>
                     </div>
 
                     <div class="exercise-container">
                         <h5>実習 8-4: 特定テーブルのエクスポート</h5>
-                        <code>-- 特定のテーブルのみエクスポート
+                        <pre class="code-block"><code class="language-sql">-- 特定のテーブルのみエクスポート
 docker exec -it oracle-xe expdp learner/learner123@XE \
     tables=learner.product_master,learner.customers \
     directory=backup_dir \
     dumpfile=specific_tables_$(date +%Y%m%d).dmp \
-    logfile=specific_tables_$(date +%Y%m%d).log</code>
+    logfile=specific_tables_$(date +%Y%m%d).log</code></pre>
                     </div>
 
                     <div class="exercise-container">
                         <h5>実習 8-5: 条件付きエクスポート</h5>
-                        <code>-- WHERE句を使用した条件付きエクスポート
+                        <pre class="code-block"><code class="language-sql">-- WHERE句を使用した条件付きエクスポート
 docker exec -it oracle-xe expdp learner/learner123@XE \
     tables=learner.product_master \
     directory=backup_dir \
     dumpfile=active_products_$(date +%Y%m%d).dmp \
     logfile=active_products_$(date +%Y%m%d).log \
-    query=learner.product_master:\"WHERE is_active=\'Y\'\"</code>
+    query=learner.product_master:\"WHERE is_active=\'Y\'\"</code></pre>
                     </div>
 
                     <h3 class="section-title">8.4 インポート操作</h3>
@@ -266,7 +274,7 @@ docker exec -it oracle-xe expdp learner/learner123@XE \
 
                     <div class="exercise-container">
                         <h5>実習 8-6: テスト用スキーマの準備</h5>
-                        <code>-- テスト用の新しいユーザーを作成（SYS権限で実行）
+                        <pre class="code-block"><code class="language-sql">-- テスト用の新しいユーザーを作成（SYS権限で実行）
 CREATE USER test_restore 
 IDENTIFIED BY test_pass123
 DEFAULT TABLESPACE USERS
@@ -275,18 +283,18 @@ QUOTA UNLIMITED ON USERS;
 GRANT CONNECT, RESOURCE TO test_restore;
 
 -- ディレクトリへの権限付与
-GRANT READ, WRITE ON DIRECTORY backup_dir TO test_restore;</code>
+GRANT READ, WRITE ON DIRECTORY backup_dir TO test_restore;</code></pre>
                     </div>
 
                     <div class="exercise-container">
                         <h5>実習 8-7: 別スキーマへのインポート</h5>
-                        <code>-- 別のスキーマにデータをインポート
+                        <pre class="code-block"><code class="language-sql">-- 別のスキーマにデータをインポート
 docker exec -it oracle-xe impdp test_restore/test_pass123@XE \
     directory=backup_dir \
     dumpfile=learner_full_$(date +%Y%m%d).dmp \
     logfile=restore_test_$(date +%Y%m%d).log \
     remap_schema=learner:test_restore \
-    exclude=statistics</code>
+    exclude=statistics</code></pre>
                     </div>
 
                     <h4>インポートオプション</h4>
@@ -329,7 +337,7 @@ docker exec -it oracle-xe impdp test_restore/test_pass123@XE \
 
                     <div class="exercise-container">
                         <h5>実習 8-8: バックアップファイルの確認</h5>
-                        <code>-- バックアップファイルの一覧表示
+                        <pre class="code-block"><code class="language-sql">-- バックアップファイルの一覧表示
 docker exec oracle-xe ls -la /opt/oracle/oradata/backup/
 
 -- ダンプファイルの内容確認（メタデータのみ）
@@ -340,12 +348,12 @@ docker exec -it oracle-xe impdp learner/learner123@XE \
     logfile=content_check.log
 
 -- 生成されたSQLファイルの確認
-docker exec oracle-xe head -50 /opt/oracle/oradata/backup/backup_structure.sql</code>
+docker exec oracle-xe head -50 /opt/oracle/oradata/backup/backup_structure.sql</code></pre>
                     </div>
 
                     <div class="exercise-container">
                         <h5>実習 8-9: データ整合性の確認</h5>
-                        <code>-- オリジナルデータの件数確認
+                        <pre class="code-block"><code class="language-sql">-- オリジナルデータの件数確認
 SELECT 'ORIGINAL' AS source, COUNT(*) AS count FROM learner.product_master
 UNION ALL
 SELECT 'RESTORED' AS source, COUNT(*) AS count FROM test_restore.product_master;
@@ -361,7 +369,7 @@ SELECT
     END AS comparison
 FROM learner.product_master o
 FULL OUTER JOIN test_restore.product_master r ON o.product_id = r.product_id
-WHERE ROWNUM <= 10;</code>
+WHERE ROWNUM <= 10;</code></pre>
                     </div>
 
                     <h3 class="section-title">8.6 バックアップスケジュールの考慮事項</h3>
@@ -376,7 +384,7 @@ WHERE ROWNUM <= 10;</code>
 
                     <div class="exercise-container">
                         <h5>実習 8-10: バックアップスクリプトの例</h5>
-                        <code>#!/bin/bash
+                        <pre class="code-block"><code class="language-sql">#!/bin/bash
 # Oracle Database バックアップスクリプト例
 
 # 変数設定
@@ -403,7 +411,7 @@ else
 fi
 
 # 古いバックアップファイルの削除（7日以上前）
-docker exec oracle-xe find /opt/oracle/oradata/backup -name "learner_daily_*.dmp" -mtime +7 -delete</code>
+docker exec oracle-xe find /opt/oracle/oradata/backup -name "learner_daily_*.dmp" -mtime +7 -delete</code></pre>
                     </div>
 
                     <h3 class="section-title">8.7 障害シナリオとリカバリ</h3>
@@ -491,5 +499,8 @@ docker exec oracle-xe find /opt/oracle/oradata/backup -name "learner_daily_*.dmp
 
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Highlight.js 初期化 -->
+    <script>hljs.highlightAll();</script>
 </body>
 </html>

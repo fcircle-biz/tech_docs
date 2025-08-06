@@ -11,6 +11,10 @@
     <!-- Google Fonts - Noto Sans JP -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
     
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    
     <style>
         /* ベースレイアウト */
         body {
@@ -47,15 +51,18 @@
         }
 
         /* コード */
-        code {
-            display: block;
-            background-color: #f5f5f5;
-            border-radius: 4px;
+        .code-block {
+            background-color: #1e1e1e;
+            border-radius: 5px;
             padding: 1rem;
             margin: 1rem 0;
-            font-family: Consolas, Monaco, 'Andale Mono', monospace;
-            white-space: pre;
-            overflow-x: auto;
+        }
+        
+        code {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            color: #d63384;
         }
 
         /* コンテンツボックス */
@@ -228,7 +235,7 @@
                         <p>テーブルデータのエクスポートとインポートを実践的に学習します。</p>
                         
                         <h6>実行する操作（コンテナ内で実行）</h6>
-                        <code># DB2コンテナ内でのエクスポート操作
+                        <pre class="code-block"><code class="language-sql"># DB2コンテナ内でのエクスポート操作
 docker exec -it db2-learning bash
 su - db2inst1
 
@@ -252,10 +259,10 @@ db2 "EXPORT TO /tmp/db2_export/recent_orders.del OF DEL
 ls -la /tmp/db2_export/
 
 # ファイル内容の確認（先頭10行）
-head -10 /tmp/db2_export/customers.del</code>
+head -10 /tmp/db2_export/customers.del</code></pre>
 
                         <h6>SQLでのエクスポート実行</h6>
-                        <code>-- SQL文でのエクスポート実行
+                        <pre class="code-block"><code class="language-sql">-- SQL文でのエクスポート実行
 EXPORT TO '/tmp/db2_export/employee_summary.del' OF DEL
     MODIFIED BY COLDEL, CHARDEL" 
     SELECT 
@@ -277,10 +284,10 @@ EXPORT TO '/tmp/db2_export/sales_report.del' OF DEL
     FROM sales_dept.customers_master c
     LEFT JOIN sales_dept.order_headers o ON c.customer_id = o.customer_id
     GROUP BY c.customer_id, c.company_name
-    ORDER BY total_sales DESC;</code>
+    ORDER BY total_sales DESC;</code></pre>
 
                         <h6>インポート操作</h6>
-                        <code># バックアップ用テーブルの作成
+                        <pre class="code-block"><code class="language-sql"># バックアップ用テーブルの作成
 db2 "CREATE TABLE sales_dept.customers_backup LIKE sales_dept.customers_master"
 
 # DELファイルからのインポート
@@ -293,7 +300,7 @@ db2 "IMPORT FROM /tmp/db2_export/products.ixf OF IXF
 
 # インポート結果の確認
 db2 "SELECT COUNT(*) as imported_count FROM sales_dept.customers_backup"
-db2 "SELECT COUNT(*) as original_count FROM sales_dept.customers_master"</code>
+db2 "SELECT COUNT(*) as original_count FROM sales_dept.customers_master"</code></pre>
 
                         <h6>エクスポート・インポートのオプション</h6>
                         <ul>
@@ -314,7 +321,7 @@ db2 "SELECT COUNT(*) as original_count FROM sales_dept.customers_master"</code>
                         <p>データベース全体のバックアップ作成とリストア操作を学習します。</p>
                         
                         <h6>バックアップ操作</h6>
-                        <code># バックアップディレクトリの作成
+                        <pre class="code-block"><code class="language-sql"># バックアップディレクトリの作成
 mkdir -p /tmp/db2_backup
 
 # データベースの完全バックアップ
@@ -327,10 +334,10 @@ db2 "BACKUP DATABASE testdb TO /tmp/db2_backup COMPRESS"
 ls -la /tmp/db2_backup/
 
 # バックアップの詳細情報
-db2ckbkp /tmp/db2_backup/TESTDB.0.db2inst1.NODE0000.CATN0000.20240101120000.001</code>
+db2ckbkp /tmp/db2_backup/TESTDB.0.db2inst1.NODE0000.CATN0000.20240101120000.001</code></pre>
 
                         <h6>バックアップ情報の確認</h6>
-                        <code>-- バックアップ履歴の確認
+                        <pre class="code-block"><code class="language-sql">-- バックアップ履歴の確認
 db2 "SELECT 
     BACKUP_ID,
     BACKUP_TYPE,
@@ -339,10 +346,10 @@ db2 "SELECT
     BACKUP_LOCATION
 FROM SYSIBMADM.DB_HISTORY 
 WHERE OPERATION = 'B'
-ORDER BY BACKUP_START DESC"</code>
+ORDER BY BACKUP_START DESC"</code></pre>
 
                         <h6>リストア操作（注意：既存データが削除されます）</h6>
-                        <code># リストア前の準備（全ての接続を切断）
+                        <pre class="code-block"><code class="language-sql"># リストア前の準備（全ての接続を切断）
 db2 "FORCE APPLICATIONS ALL"
 db2 "DEACTIVATE DATABASE testdb"
 
@@ -354,17 +361,17 @@ db2 "ACTIVATE DATABASE testdb"
 db2 "CONNECT TO testdb"
 
 # リストア結果の確認
-db2 "SELECT COUNT(*) FROM sales_dept.customers_master"</code>
+db2 "SELECT COUNT(*) FROM sales_dept.customers_master"</code></pre>
 
                         <h6>増分バックアップ（高度な機能）</h6>
-                        <code># アーカイブログモードの有効化が必要
+                        <pre class="code-block"><code class="language-sql"># アーカイブログモードの有効化が必要
 db2 "UPDATE DB CFG FOR testdb USING LOGARCHMETH1 DISK:/tmp/db2_logs"
 
 # 増分バックアップの作成
 db2 "BACKUP DATABASE testdb INCREMENTAL TO /tmp/db2_backup"
 
 # ログファイルのアーカイブ
-db2 "ARCHIVE LOG FOR DATABASE testdb"</code>
+db2 "ARCHIVE LOG FOR DATABASE testdb"</code></pre>
 
                         <h6>バックアップのベストプラクティス</h6>
                         <ul>
@@ -385,7 +392,7 @@ db2 "ARCHIVE LOG FOR DATABASE testdb"</code>
                         <p>データベースの健全性チェックと基本的な保守操作を実行します。</p>
                         
                         <h6>健全性チェックコマンド</h6>
-                        <code># データベース接続状態の確認
+                        <pre class="code-block"><code class="language-sql"># データベース接続状態の確認
 db2pd -d testdb -applications
 
 # データベースの設定確認
@@ -418,10 +425,10 @@ db2 "SELECT
     END as UNUSED_PERCENT
 FROM SYSCAT.TABLES 
 WHERE TABSCHEMA = 'SALES_DEPT'
-  AND TYPE = 'T'"</code>
+  AND TYPE = 'T'"</code></pre>
 
                         <h6>パフォーマンス関連の確認</h6>
-                        <code>-- バッファープールの使用状況
+                        <pre class="code-block"><code class="language-sql">-- バッファープールの使用状況
 db2 "SELECT 
     BP_NAME,
     POOL_DATA_P_READS as PHYSICAL_READS,
@@ -440,10 +447,10 @@ db2pd -d testdb -dynamic
 db2pd -d testdb -locks wait
 
 -- データベースサイズの確認
-db2 "CALL SYSIBMADM.ADMINTABINFO('SALES_DEPT', 'ORDER_HEADERS')"</code>
+db2 "CALL SYSIBMADM.ADMINTABINFO('SALES_DEPT', 'ORDER_HEADERS')"</code></pre>
 
                         <h6>保守操作の実行</h6>
-                        <code># テーブルの再編成（REORGが必要な場合）
+                        <pre class="code-block"><code class="language-sql"># テーブルの再編成（REORGが必要な場合）
 db2 "REORG TABLE sales_dept.order_headers"
 
 # インデックスの再構築
@@ -453,7 +460,7 @@ db2 "REORG INDEXES ALL FOR TABLE sales_dept.order_headers"
 db2 "RUNSTATS ON TABLE sales_dept.order_headers AND INDEXES ALL"
 
 # 不要な領域の回収
-db2 "ALTER TABLESPACE USERSPACE1 REDUCE"</code>
+db2 "ALTER TABLESPACE USERSPACE1 REDUCE"</code></pre>
 
                         <h6>診断結果の分析ポイント</h6>
                         <ul>
@@ -474,7 +481,7 @@ db2 "ALTER TABLESPACE USERSPACE1 REDUCE"</code>
                         <p>DB2の監視機能を使用して、システムの状態を詳細に分析します。</p>
                         
                         <h6>システム情報の収集</h6>
-                        <code># DB2のバージョンとレベル情報
+                        <pre class="code-block"><code class="language-sql"># DB2のバージョンとレベル情報
 db2level
 
 # インスタンス情報の確認
@@ -490,10 +497,10 @@ db2 "LIST APPLICATIONS"
 db2pd -d testdb -mempool
 
 # CPU使用率（システムレベル）
-db2pd -d testdb -osinfo</code>
+db2pd -d testdb -osinfo</code></pre>
 
                         <h6>パフォーマンス監視</h6>
-                        <code>-- I/O統計の確認
+                        <pre class="code-block"><code class="language-sql">-- I/O統計の確認
 db2 "SELECT 
     TBSP_NAME,
     POOL_DATA_P_READS,
@@ -531,10 +538,10 @@ db2 "SELECT
     PAGE_REORGS
 FROM SYSCAT.TABLES 
 WHERE TABSCHEMA = 'SALES_DEPT'
-ORDER BY ROWS_READ DESC"</code>
+ORDER BY ROWS_READ DESC"</code></pre>
 
                         <h6>問題の特定と診断</h6>
-                        <code># エラーログの確認
+                        <pre class="code-block"><code class="language-sql"># エラーログの確認
 db2diag -A
 
 # 最近のエラーメッセージ
@@ -559,10 +566,10 @@ db2 "SELECT
 FROM SYSIBMADM.LOCKWAITS"
 
 # 実行計画のキャッシュ情報
-db2pd -d testdb -dynamic | head -50</code>
+db2pd -d testdb -dynamic | head -50</code></pre>
 
                         <h6>アラート監視の設定</h6>
-                        <code>-- 健全性インジケーターの確認
+                        <pre class="code-block"><code class="language-sql">-- 健全性インジケーターの確認
 db2 "SELECT 
     HI_ID,
     HI_TIMESTAMP,
@@ -580,7 +587,7 @@ db2 "SELECT
     DB_CAPACITY
 FROM SYSIBMADM.SNAPDB_INFO 
 ORDER BY SNAPSHOT_TIMESTAMP DESC
-FETCH FIRST 5 ROWS ONLY"</code>
+FETCH FIRST 5 ROWS ONLY"</code></pre>
 
                         <h6>監視指標の目安</h6>
                         <ul>
@@ -601,7 +608,7 @@ FETCH FIRST 5 ROWS ONLY"</code>
                         <p>日常的な管理タスクを自動化するスクリプトとプロシージャを作成します。</p>
                         
                         <h6>日次バックアップスクリプト例</h6>
-                        <code>#!/bin/bash
+                        <pre class="code-block"><code class="language-sql">#!/bin/bash
 # daily_backup.sh - DB2日次バックアップスクリプト
 
 # 設定
@@ -642,10 +649,10 @@ else
     exit 1
 fi
 
-log "Backup process completed"</code>
+log "Backup process completed"</code></pre>
 
                         <h6>統計情報更新のストアドプロシージャ</h6>
-                        <code>-- 統計情報更新プロシージャの作成
+                        <pre class="code-block"><code class="language-sql">-- 統計情報更新プロシージャの作成
 CREATE OR REPLACE PROCEDURE sales_dept.update_table_statistics()
 LANGUAGE SQL
 BEGIN
@@ -691,10 +698,10 @@ BEGIN
 END;
 
 -- プロシージャの実行
-CALL sales_dept.update_table_statistics();</code>
+CALL sales_dept.update_table_statistics();</code></pre>
 
                         <h6>健全性チェックプロシージャ</h6>
-                        <code>-- 健全性チェック用プロシージャ
+                        <pre class="code-block"><code class="language-sql">-- 健全性チェック用プロシージャ
 CREATE OR REPLACE PROCEDURE sales_dept.health_check(
     OUT check_result VARCHAR(1000)
 )
@@ -739,7 +746,7 @@ BEGIN
 END;
 
 -- 健全性チェックの実行
-CALL sales_dept.health_check(?);</code>
+CALL sales_dept.health_check(?);</code></pre>
 
                         <h6>運用自動化のベストプラクティス</h6>
                         <ul>
@@ -871,5 +878,8 @@ CALL sales_dept.health_check(?);</code>
 
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Highlight.js 初期化 -->
+    <script>hljs.highlightAll();</script>
 </body>
 </html>
