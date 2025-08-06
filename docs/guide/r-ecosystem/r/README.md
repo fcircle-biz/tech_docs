@@ -21,34 +21,34 @@
 
 ## 学習コンテンツ
 
-### [1. R言語の基礎とRStudio入門](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/r/r-learning-material-1.html)
+### [1. R言語の基礎とRStudio入門](https://fcircle-biz.github.io/tech_docs/guide/r-ecosystem/r/r-learning-material-1.html)
 R言語の概要、RStudioのインストールと基本操作を学習します
 
-### [2. データ型と基本操作](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/r/r-learning-material-2.html)
+### [2. データ型と基本操作](https://fcircle-biz.github.io/tech_docs/guide/r-ecosystem/r/r-learning-material-2.html)
 数値、文字列、論理値、ベクトル、リストなどの基本データ型を習得します
 
-### [3. データフレームと基本統計](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/r/r-learning-material-3.html)
+### [3. データフレームと基本統計](https://fcircle-biz.github.io/tech_docs/guide/r-ecosystem/r/r-learning-material-3.html)
 データフレームの操作と記述統計量の計算方法を学びます
 
-### [4. データの読み込みと書き出し](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/r/r-learning-material-4.html)
+### [4. データの読み込みと書き出し](https://fcircle-biz.github.io/tech_docs/guide/r-ecosystem/r/r-learning-material-4.html)
 CSV、Excel、各種形式のデータファイルの入出力を習得します
 
-### [5. データの可視化 (ggplot2)](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/r/r-learning-material-5.html)
+### [5. データの可視化 (ggplot2)](https://fcircle-biz.github.io/tech_docs/guide/r-ecosystem/r/r-learning-material-5.html)
 ggplot2パッケージを使用した効果的なデータ可視化技術を学習します
 
-### [6. データの前処理と変換 (dplyr)](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/r/r-learning-material-6.html)
+### [6. データの前処理と変換 (dplyr)](https://fcircle-biz.github.io/tech_docs/guide/r-ecosystem/r/r-learning-material-6.html)
 dplyrパッケージによるデータの抽出、変換、集約処理を習得します
 
-### [7. 統計解析の基礎](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/r/r-learning-material-7.html)
+### [7. 統計解析の基礎](https://fcircle-biz.github.io/tech_docs/guide/r-ecosystem/r/r-learning-material-7.html)
 仮説検定、相関分析、分散分析などの基本的な統計解析を実践します
 
-### [8. 回帰分析](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/r/r-learning-material-8.html)
+### [8. 回帰分析](https://fcircle-biz.github.io/tech_docs/guide/r-ecosystem/r/r-learning-material-8.html)
 線形回帰、重回帰分析、ロジスティック回帰の理論と実装を学習します
 
-### [9. 時系列データ分析](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/r/r-learning-material-9.html)
+### [9. 時系列データ分析](https://fcircle-biz.github.io/tech_docs/guide/r-ecosystem/r/r-learning-material-9.html)
 時系列データの処理、トレンド分析、予測モデルの構築を習得します
 
-### [10. レポート作成 (R Markdown)](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/r/r-learning-material-10.html)
+### [10. レポート作成 (R Markdown)](https://fcircle-biz.github.io/tech_docs/guide/r-ecosystem/r/r-learning-material-10.html)
 R Markdownを使用した動的レポートと資料作成を学習します
 
 ## 学習の進め方

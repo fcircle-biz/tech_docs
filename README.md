@@ -76,10 +76,13 @@
 - **[Python SQLModel学習ガイド](docs/guide/python-ecosystem/python-sqlmodel/README.md)** - SQLModelを使用したモダンなPythonデータベースプログラミング8章完成カリキュラム
 - **[Streamlit学習ガイド](docs/guide/python-ecosystem/streamlit/README.md)** - Streamlitを使用したWebアプリケーション開発の基礎から実践まで10章完成カリキュラム
 
-### データ分析
+### R言語
 
-- **[R言語学習ガイド](docs/guide/data-analytics/r/README.md)** - R言語基礎から統計解析・データビジュアライゼーションまで10章完成カリキュラム
-- **[SAS学習ガイド](docs/guide/data-analytics/sas/README.md)** - SASによるデータ分析と統計処理の基礎から実践的な応用まで10章完成カリキュラム
+- **[R言語学習ガイド](docs/guide/r-ecosystem/r/README.md)** - R言語基礎から統計解析・データビジュアライゼーションまで10章完成カリキュラム
+
+### SAS
+
+- **[SAS学習ガイド](docs/guide/sas-ecosystem/sas/README.md)** - SASによるデータ分析と統計処理の基礎から実践的な応用まで10章完成カリキュラム
 
 ### システム・環境
 
