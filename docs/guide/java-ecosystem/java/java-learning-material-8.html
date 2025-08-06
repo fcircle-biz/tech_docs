@@ -174,18 +174,6 @@
                     <h3 class="section-title">8.1 イテレータ（Iterator）</h3>
                     <p><strong>イテレータ</strong>は、コレクション内の要素を順番に処理するための統一的なインターフェースです。拡張for文（for-each文）の内部でも使用されており、コレクションの種類に関係なく同じ方法で要素にアクセスできます。</p>
 
-                    <div class="mermaid">
-                        graph TD
-                            A[コレクション] --> B[Iterator取得]
-                            B --> C{hasNext?}
-                            C -->|true| D[next要素取得]
-                            D --> E[要素処理]
-                            E --> F{削除が必要?}
-                            F -->|yes| G[remove実行]
-                            F -->|no| C
-                            G --> C
-                            C -->|false| H[処理完了]
-                    </div>
 
                     <h4>イテレータの主要メソッド</h4>
                     <div class="collection-table">
@@ -219,124 +207,20 @@
 
                     <!-- 実習 -->
                     <div class="exercise-container">
-                        <h5>実習 8-1: イテレータを使った安全なコレクション操作</h5>
-                        <p>イテレータを使って、ループ中の要素削除などの複雑な操作を安全に実行しましょう。</p>
+                        <h5>実習 8-1: イテレータの基本的な使用</h5>
+                        <p>イテレータを使ってコレクションの要素を順番に処理しましょう。</p>
 
                         <pre class="code-block"><code class="language-java">import java.util.*;
 
 public class IteratorExample {
     public static void main(String[] args) {
-        System.out.println("=== 基本的なイテレータの使用 ===");
-        demonstrateBasicIterator();
+        List&lt;String&gt; fruits = Arrays.asList("りんご", "バナナ", "オレンジ");
         
-        System.out.println("\n=== 安全な要素削除 ===");
-        demonstrateSafeRemoval();
-        
-        System.out.println("\n=== ListIterator の双方向操作 ===");
-        demonstrateListIterator();
-        
-        System.out.println("\n=== 様々なコレクション型でのイテレータ ===");
-        demonstrateDifferentCollections();
-    }
-    
-    private static void demonstrateBasicIterator() {
-        List&lt;String&gt; fruits = Arrays.asList("りんご", "バナナ", "オレンジ", "ぶどう", "メロン");
-        
-        System.out.println("拡張for文での処理:");
-        for (String fruit : fruits) {
-            System.out.println("- " + fruit);
-        }
-        
-        System.out.println("\nイテレータでの処理:");
+        // イテレータを使った要素の取得
         Iterator&lt;String&gt; iterator = fruits.iterator();
         while (iterator.hasNext()) {
             String fruit = iterator.next();
-            System.out.println("- " + fruit);
-        }
-    }
-    
-    private static void demonstrateSafeRemoval() {
-        List&lt;Integer&gt; numbers = new ArrayList&lt;&gt;(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-        
-        System.out.println("削除前: " + numbers);
-        
-        // 危険な方法（ConcurrentModificationExceptionが発生する可能性）
-        /*
-        for (Integer num : numbers) {
-            if (num % 2 == 0) {
-                numbers.remove(num);  // これは危険！
-            }
-        }
-        */
-        
-        // 安全な方法：イテレータを使用
-        Iterator&lt;Integer&gt; iterator = numbers.iterator();
-        while (iterator.hasNext()) {
-            Integer num = iterator.next();
-            if (num % 2 == 0) {
-                System.out.println("偶数 " + num + " を削除");
-                iterator.remove();  // これは安全
-            }
-        }
-        
-        System.out.println("削除後: " + numbers);
-    }
-    
-    private static void demonstrateListIterator() {
-        List&lt;String&gt; list = new ArrayList&lt;&gt;(Arrays.asList("A", "B", "C", "D", "E"));
-        
-        System.out.println("元のリスト: " + list);
-        
-        ListIterator&lt;String&gt; listIterator = list.listIterator();
-        
-        // 前進しながら要素を変更
-        System.out.println("前進しながら要素を変更:");
-        while (listIterator.hasNext()) {
-            String element = listIterator.next();
-            System.out.println("現在の要素: " + element + " (インデックス: " + (listIterator.nextIndex() - 1) + ")");
-            
-            if ("C".equals(element)) {
-                listIterator.set("C_MODIFIED");  // 要素を変更
-                listIterator.add("INSERTED");    // 新しい要素を挿入
-            }
-        }
-        
-        System.out.println("変更後: " + list);
-        
-        // 後退しながら要素を表示
-        System.out.println("後退しながら要素を表示:");
-        while (listIterator.hasPrevious()) {
-            String element = listIterator.previous();
-            System.out.println("- " + element);
-        }
-    }
-    
-    private static void demonstrateDifferentCollections() {
-        // ArrayList
-        List&lt;String&gt; arrayList = new ArrayList&lt;&gt;(Arrays.asList("AL1", "AL2", "AL3"));
-        System.out.println("ArrayList:");
-        printWithIterator(arrayList);
-        
-        // LinkedList
-        List&lt;String&gt; linkedList = new LinkedList&lt;&gt;(Arrays.asList("LL1", "LL2", "LL3"));
-        System.out.println("LinkedList:");
-        printWithIterator(linkedList);
-        
-        // HashSet
-        Set&lt;String&gt; hashSet = new HashSet&lt;&gt;(Arrays.asList("HS1", "HS2", "HS3"));
-        System.out.println("HashSet:");
-        printWithIterator(hashSet);
-        
-        // TreeSet
-        Set&lt;String&gt; treeSet = new TreeSet&lt;&gt;(Arrays.asList("TS3", "TS1", "TS2"));
-        System.out.println("TreeSet:");
-        printWithIterator(treeSet);
-    }
-    
-    private static void printWithIterator(Collection&lt;String&gt; collection) {
-        Iterator&lt;String&gt; iterator = collection.iterator();
-        while (iterator.hasNext()) {
-            System.out.println("  - " + iterator.next());
+            System.out.println("果物: " + fruit);
         }
     }
 }</code></pre>
@@ -358,278 +242,33 @@ public class IteratorExample {
 
                     <!-- 実習 -->
                     <div class="exercise-container">
-                        <h5>実習 8-2: ジェネリクスによる型安全なプログラミング</h5>
-                        <p>独自のジェネリッククラスを作成し、型安全なプログラミングを実践しましょう。</p>
+                        <h5>実習 8-2: ジェネリクスの基本的な使用</h5>
+                        <p>ジェネリックコレクションを使って型安全なプログラムを作成しましょう。</p>
 
                         <pre class="code-block"><code class="language-java">import java.util.*;
 
-// ジェネリッククラスの定義
-class Pair&lt;T, U&gt; {
-    private T first;
-    private U second;
-    
-    public Pair(T first, U second) {
-        this.first = first;
-        this.second = second;
-    }
-    
-    public T getFirst() { return first; }
-    public U getSecond() { return second; }
-    
-    public void setFirst(T first) { this.first = first; }
-    public void setSecond(U second) { this.second = second; }
-    
-    @Override
-    public String toString() {
-        return "(" + first + ", " + second + ")";
-    }
-}
-
-// 制約付きジェネリクス
-class NumberContainer&lt;T extends Number&gt; {
-    private List&lt;T&gt; numbers;
-    
-    public NumberContainer() {
-        this.numbers = new ArrayList&lt;&gt;();
-    }
-    
-    public void add(T number) {
-        numbers.add(number);
-    }
-    
-    public double getSum() {
-        return numbers.stream().mapToDouble(Number::doubleValue).sum();
-    }
-    
-    public double getAverage() {
-        return numbers.isEmpty() ? 0 : getSum() / numbers.size();
-    }
-    
-    public T getMax() {
-        return numbers.stream()
-                     .max((a, b) -&gt; Double.compare(a.doubleValue(), b.doubleValue()))
-                     .orElse(null);
-    }
-    
-    public List&lt;T&gt; getNumbers() {
-        return new ArrayList&lt;&gt;(numbers);  // 防御的コピー
-    }
-}
-
 public class GenericsExample {
     public static void main(String[] args) {
-        System.out.println("=== ジェネリクスなしのコード（旧式） ===");
-        demonstrateWithoutGenerics();
+        // 文字列のリスト
+        List&lt;String&gt; names = new ArrayList&lt;&gt;();
+        names.add("田中");
+        names.add("佐藤");
+        names.add("鈴木");
         
-        System.out.println("\n=== ジェネリクスありのコード（推奨） ===");
-        demonstrateWithGenerics();
+        // 整数のリスト
+        List&lt;Integer&gt; scores = new ArrayList&lt;&gt;();
+        scores.add(85);
+        scores.add(92);
+        scores.add(78);
         
-        System.out.println("\n=== カスタムジェネリッククラス ===");
-        demonstrateCustomGenerics();
-        
-        System.out.println("\n=== 制約付きジェネリクス ===");
-        demonstrateBoundedGenerics();
-        
-        System.out.println("\n=== ワイルドカード ===");
-        demonstrateWildcards();
-        
-        System.out.println("\n=== ジェネリックメソッド ===");
-        demonstrateGenericMethods();
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private static void demonstrateWithoutGenerics() {
-        // ジェネリクスなし（非推奨）
-        List list = new ArrayList();
-        list.add("文字列");
-        list.add(123);
-        list.add(45.6);
-        
-        System.out.println("リストの内容:");
-        for (Object obj : list) {
-            // 型が分からないため、キャストが必要
-            System.out.println("- " + obj + " (" + obj.getClass().getSimpleName() + ")");
+        // 結果表示
+        for (String name : names) {
+            System.out.println("名前: " + name);
         }
         
-        // 危険な操作：実行時エラーの可能性
-        try {
-            String str = (String) list.get(1);  // ClassCastException!
-        } catch (ClassCastException e) {
-            System.out.println("キャストエラー: " + e.getMessage());
+        for (Integer score : scores) {
+            System.out.println("点数: " + score);
         }
-    }
-    
-    private static void demonstrateWithGenerics() {
-        // ジェネリクスあり（推奨）
-        List&lt;String&gt; stringList = new ArrayList&lt;&gt;();
-        stringList.add("Java");
-        stringList.add("Python");
-        stringList.add("JavaScript");
-        
-        // コンパイル時エラー：型安全性が保証される
-        // stringList.add(123);  // これはコンパイルエラー
-        
-        System.out.println("文字列リスト:");
-        for (String str : stringList) {
-            // キャスト不要
-            System.out.println("- " + str.toUpperCase());
-        }
-        
-        List&lt;Integer&gt; integerList = new ArrayList&lt;&gt;();
-        integerList.add(10);
-        integerList.add(20);
-        integerList.add(30);
-        
-        System.out.println("整数リスト:");
-        for (Integer num : integerList) {
-            System.out.println("- " + num * 2);
-        }
-    }
-    
-    private static void demonstrateCustomGenerics() {
-        // Pairクラスの使用
-        Pair&lt;String, Integer&gt; nameAge = new Pair&lt;&gt;("田中太郎", 25);
-        Pair&lt;Double, String&gt; priceProduct = new Pair&lt;&gt;(1999.99, "ワイヤレスマウス");
-        
-        System.out.println("名前と年齢: " + nameAge);
-        System.out.println("価格と商品: " + priceProduct);
-        
-        // 型安全な操作
-        String name = nameAge.getFirst();     // キャスト不要
-        Integer age = nameAge.getSecond();    // キャスト不要
-        
-        System.out.println(name + "さんは" + age + "歳です");
-        
-        // 複数のPairを格納
-        List&lt;Pair&lt;String, Integer&gt;&gt; students = Arrays.asList(
-            new Pair&lt;&gt;("田中太郎", 25),
-            new Pair&lt;&gt;("佐藤花子", 23),
-            new Pair&lt;&gt;("山田次郎", 27)
-        );
-        
-        System.out.println("学生一覧:");
-        for (Pair&lt;String, Integer&gt; student : students) {
-            System.out.println("- " + student.getFirst() + " (" + student.getSecond() + "歳)");
-        }
-    }
-    
-    private static void demonstrateBoundedGenerics() {
-        // Integer型のコンテナ
-        NumberContainer&lt;Integer&gt; intContainer = new NumberContainer&lt;&gt;();
-        intContainer.add(10);
-        intContainer.add(20);
-        intContainer.add(30);
-        intContainer.add(40);
-        intContainer.add(50);
-        
-        System.out.println("Integer コンテナ:");
-        System.out.println("数値: " + intContainer.getNumbers());
-        System.out.println("合計: " + intContainer.getSum());
-        System.out.println("平均: " + intContainer.getAverage());
-        System.out.println("最大値: " + intContainer.getMax());
-        
-        // Double型のコンテナ
-        NumberContainer&lt;Double&gt; doubleContainer = new NumberContainer&lt;&gt;();
-        doubleContainer.add(3.14);
-        doubleContainer.add(2.71);
-        doubleContainer.add(1.41);
-        doubleContainer.add(1.73);
-        
-        System.out.println("\nDouble コンテナ:");
-        System.out.println("数値: " + doubleContainer.getNumbers());
-        System.out.println("合計: " + String.format("%.2f", doubleContainer.getSum()));
-        System.out.println("平均: " + String.format("%.2f", doubleContainer.getAverage()));
-        System.out.println("最大値: " + doubleContainer.getMax());
-        
-        // コンパイルエラー：String は Number を継承していない
-        // NumberContainer&lt;String&gt; stringContainer = new NumberContainer&lt;&gt;();
-    }
-    
-    private static void demonstrateWildcards() {
-        List&lt;Integer&gt; integers = Arrays.asList(1, 2, 3, 4, 5);
-        List&lt;Double&gt; doubles = Arrays.asList(1.1, 2.2, 3.3, 4.4, 5.5);
-        List&lt;String&gt; strings = Arrays.asList("A", "B", "C", "D", "E");
-        
-        // 上限境界ワイルドカード（? extends Number）
-        System.out.println("数値系リストの処理:");
-        printNumbers(integers);
-        printNumbers(doubles);
-        // printNumbers(strings);  // コンパイルエラー：String は Number のサブクラスではない
-        
-        // 下限境界ワイルドカード（? super Integer）
-        List&lt;Number&gt; numbers = new ArrayList&lt;&gt;();
-        List&lt;Object&gt; objects = new ArrayList&lt;&gt;();
-        
-        addIntegers(numbers);
-        addIntegers(objects);
-        // addIntegers(doubles);  // コンパイルエラー：Double は Integer のスーパークラスではない
-        
-        System.out.println("追加結果:");
-        System.out.println("numbers: " + numbers);
-        System.out.println("objects: " + objects);
-    }
-    
-    // 上限境界ワイルドカード：Number またはそのサブクラス
-    private static void printNumbers(List&lt;? extends Number&gt; list) {
-        for (Number num : list) {
-            System.out.printf("%.2f ", num.doubleValue());
-        }
-        System.out.println();
-    }
-    
-    // 下限境界ワイルドカード：Integer またはそのスーパークラス
-    private static void addIntegers(List&lt;? super Integer&gt; list) {
-        list.add(100);
-        list.add(200);
-        list.add(300);
-    }
-    
-    private static void demonstrateGenericMethods() {
-        System.out.println("=== ジェネリックメソッドの使用 ===");
-        
-        String[] stringArray = {"Apple", "Banana", "Orange"};
-        Integer[] intArray = {1, 2, 3, 4, 5};
-        
-        System.out.println("文字列配列:");
-        printArray(stringArray);
-        
-        System.out.println("整数配列:");
-        printArray(intArray);
-        
-        // 配列の要素を交換
-        System.out.println("要素交換前: " + Arrays.toString(stringArray));
-        swap(stringArray, 0, 2);
-        System.out.println("要素交換後: " + Arrays.toString(stringArray));
-        
-        // 最大値を取得
-        Integer maxInt = getMax(10, 20, 5);
-        String maxString = getMax("Apple", "Banana", "Orange");
-        
-        System.out.println("最大整数: " + maxInt);
-        System.out.println("最大文字列: " + maxString);
-    }
-    
-    // ジェネリックメソッド：配列の内容を表示
-    public static &lt;T&gt; void printArray(T[] array) {
-        for (T element : array) {
-            System.out.print(element + " ");
-        }
-        System.out.println();
-    }
-    
-    // ジェネリックメソッド：配列の要素を交換
-    public static &lt;T&gt; void swap(T[] array, int i, int j) {
-        T temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-    }
-    
-    // 制約付きジェネリックメソッド：比較可能な要素の最大値を取得
-    public static &lt;T extends Comparable&lt;T&gt;&gt; T getMax(T a, T b, T c) {
-        T max = a;
-        if (b.compareTo(max) &gt; 0) max = b;
-        if (c.compareTo(max) &gt; 0) max = c;
-        return max;
     }
 }</code></pre>
                     </div>
@@ -638,260 +277,42 @@ public class GenericsExample {
                     <h3 class="section-title">8.3 ラムダ式とStream API</h3>
                     <p><strong>ラムダ式</strong>はJava 8で導入された関数型プログラミングの要素で、匿名関数を簡潔に記述できます。<strong>Stream API</strong>と組み合わせることで、コレクションの操作を宣言的かつ効率的に行えます。</p>
 
-                    <div class="mermaid">
-                        graph LR
-                            A[コレクション] --> B[stream]
-                            B --> C[中間操作]
-                            C --> D[中間操作]
-                            C --> E[中間操作]
-                            D --> F[終端操作]
-                            E --> F
-                            F --> G[結果]
-                            
-                            H[filter] --> C
-                            I[map] --> D
-                            J[sorted] --> E
-                            K[collect] --> F
-                            L[forEach] --> F
-                            M[reduce] --> F
-                    </div>
-
                     <!-- 実習 -->
                     <div class="exercise-container">
-                        <h5>実習 8-3: ラムダ式とStream APIの活用</h5>
-                        <p>現代的なJavaプログラミングの核心であるラムダ式とStream APIを実践しましょう。</p>
+                        <h5>実習 8-3: ラムダ式とStream APIの基本</h5>
+                        <p>ラムダ式とStream APIを使って、シンプルなデータ処理を体験しましょう。</p>
 
                         <pre class="code-block"><code class="language-java">import java.util.*;
 import java.util.stream.*;
-import java.util.function.*;
-
-class Employee {
-    private String name;
-    private String department;
-    private int age;
-    private double salary;
-    
-    public Employee(String name, String department, int age, double salary) {
-        this.name = name;
-        this.department = department;
-        this.age = age;
-        this.salary = salary;
-    }
-    
-    // Getters
-    public String getName() { return name; }
-    public String getDepartment() { return department; }
-    public int getAge() { return age; }
-    public double getSalary() { return salary; }
-    
-    @Override
-    public String toString() {
-        return String.format("%s (%s, %d歳, %.0f万円)", name, department, age, salary);
-    }
-}
 
 public class LambdaStreamExample {
     public static void main(String[] args) {
-        // サンプルデータの作成
-        List&lt;Employee&gt; employees = Arrays.asList(
-            new Employee("田中太郎", "開発", 28, 450),
-            new Employee("佐藤花子", "営業", 32, 520),
-            new Employee("山田次郎", "開発", 25, 380),
-            new Employee("鈴木美咲", "人事", 29, 410),
-            new Employee("高橋健一", "営業", 35, 580),
-            new Employee("中村智子", "開発", 27, 420),
-            new Employee("林洋介", "人事", 31, 470),
-            new Employee("木村光子", "営業", 26, 390)
-        );
+        List&lt;Integer&gt; numbers = Arrays.asList(1, 2, 3, 4, 5);
         
-        System.out.println("=== 従来の方法 vs ラムダ式 ===");
-        demonstrateLambdaBasics(employees);
-        
-        System.out.println("\n=== Stream API の基本操作 ===");
-        demonstrateStreamBasics(employees);
-        
-        System.out.println("\n=== 高度なStream操作 ===");
-        demonstrateAdvancedStream(employees);
-        
-        System.out.println("\n=== 数値ストリーム ===");
-        demonstrateNumericStream();
-        
-        System.out.println("\n=== 並列処理 ===");
-        demonstrateParallelStream();
-    }
-    
-    private static void demonstrateLambdaBasics(List&lt;Employee&gt; employees) {
-        System.out.println("全従業員:");
-        employees.forEach(System.out::println);
-        
-        System.out.println("\n従来の方法での年齢ソート:");
-        List&lt;Employee&gt; sortedByAge1 = new ArrayList&lt;&gt;(employees);
-        Collections.sort(sortedByAge1, new Comparator&lt;Employee&gt;() {
-            @Override
-            public int compare(Employee e1, Employee e2) {
-                return Integer.compare(e1.getAge(), e2.getAge());
-            }
-        });
-        sortedByAge1.forEach(System.out::println);
-        
-        System.out.println("\nラムダ式での年齢ソート:");
-        List&lt;Employee&gt; sortedByAge2 = new ArrayList&lt;&gt;(employees);
-        sortedByAge2.sort((e1, e2) -&gt; Integer.compare(e1.getAge(), e2.getAge()));
-        sortedByAge2.forEach(System.out::println);
-        
-        System.out.println("\nメソッド参照での年齢ソート:");
-        List&lt;Employee&gt; sortedByAge3 = new ArrayList&lt;&gt;(employees);
-        sortedByAge3.sort(Comparator.comparing(Employee::getAge));
-        sortedByAge3.forEach(System.out::println);
-    }
-    
-    private static void demonstrateStreamBasics(List&lt;Employee&gt; employees) {
-        System.out.println("開発部門の従業員:");
-        employees.stream()
-                .filter(emp -&gt; "開発".equals(emp.getDepartment()))
-                .forEach(System.out::println);
-        
-        System.out.println("\n年収500万円以上の従業員:");
-        employees.stream()
-                .filter(emp -&gt; emp.getSalary() &gt;= 500)
-                .forEach(System.out::println);
-        
-        System.out.println("\n従業員名リスト:");
-        List&lt;String&gt; names = employees.stream()
-                .map(Employee::getName)
-                .collect(Collectors.toList());
-        System.out.println(names);
-        
-        System.out.println("\n年齢の昇順でソート:");
-        employees.stream()
-                .sorted(Comparator.comparing(Employee::getAge))
-                .forEach(System.out::println);
-        
-        System.out.println("\n年収の降順でソート:");
-        employees.stream()
-                .sorted(Comparator.comparing(Employee::getSalary).reversed())
-                .limit(3)  // 上位3人
-                .forEach(System.out::println);
-    }
-    
-    private static void demonstrateAdvancedStream(List&lt;Employee&gt; employees) {
-        // 部門別グループ化
-        System.out.println("部門別従業員数:");
-        Map&lt;String, Long&gt; countByDepartment = employees.stream()
-                .collect(Collectors.groupingBy(
-                    Employee::getDepartment,
-                    Collectors.counting()
-                ));
-        countByDepartment.forEach((dept, count) -&gt; 
-            System.out.println(dept + ": " + count + "人"));
-        
-        // 部門別平均年収
-        System.out.println("\n部門別平均年収:");
-        Map&lt;String, Double&gt; avgSalaryByDept = employees.stream()
-                .collect(Collectors.groupingBy(
-                    Employee::getDepartment,
-                    Collectors.averagingDouble(Employee::getSalary)
-                ));
-        avgSalaryByDept.forEach((dept, avgSalary) -&gt; 
-            System.out.printf("%s: %.1f万円%n", dept, avgSalary));
-        
-        // 統計情報
-        System.out.println("\n年収統計:");
-        DoubleSummaryStatistics salaryStats = employees.stream()
-                .mapToDouble(Employee::getSalary)
-                .summaryStatistics();
-        System.out.printf("人数: %.0f人%n", salaryStats.getCount());
-        System.out.printf("合計: %.0f万円%n", salaryStats.getSum());
-        System.out.printf("平均: %.1f万円%n", salaryStats.getAverage());
-        System.out.printf("最高: %.0f万円%n", salaryStats.getMax());
-        System.out.printf("最低: %.0f万円%n", salaryStats.getMin());
-        
-        // 条件を満たす従業員の存在確認
-        boolean hasHighEarner = employees.stream()
-                .anyMatch(emp -&gt; emp.getSalary() &gt; 550);
-        System.out.println("\n年収550万円超の従業員がいる: " + hasHighEarner);
-        
-        boolean allInCompany = employees.stream()
-                .allMatch(emp -&gt; emp.getSalary() &gt; 300);
-        System.out.println("全員が年収300万円超: " + allInCompany);
-        
-        // 最高年収の従業員
-        Optional&lt;Employee&gt; topEarner = employees.stream()
-                .max(Comparator.comparing(Employee::getSalary));
-        topEarner.ifPresent(emp -&gt; 
-            System.out.println("最高年収: " + emp));
-    }
-    
-    private static void demonstrateNumericStream() {
-        List&lt;Integer&gt; numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-        
-        // 偶数をフィルタして二乗
-        System.out.println("偶数の二乗:");
+        // 偶数だけを抽出して表示
         numbers.stream()
-                .filter(n -&gt; n % 2 == 0)
-                .map(n -&gt; n * n)
-                .forEach(System.out::println);
+               .filter(n -&gt; n % 2 == 0)
+               .forEach(System.out::println);
         
-        // 合計値
-        int sum = numbers.stream()
-                .mapToInt(Integer::intValue)
-                .sum();
-        System.out.println("合計: " + sum);
+        // 全ての数値を2倍にした結果を取得
+        List&lt;Integer&gt; doubled = numbers.stream()
+                                     .map(n -&gt; n * 2)
+                                     .collect(Collectors.toList());
         
-        // 平均値
-        OptionalDouble average = numbers.stream()
-                .mapToInt(Integer::intValue)
-                .average();
-        average.ifPresent(avg -&gt; System.out.printf("平均: %.2f%n", avg));
-        
-        // 範囲指定
-        System.out.println("1から10までの合計: " + 
-            IntStream.rangeClosed(1, 10).sum());
-        
-        // 無限ストリーム
-        System.out.println("フィボナッチ数列（最初の10項）:");
-        Stream.iterate(new int[]{0, 1}, fib -&gt; new int[]{fib[1], fib[0] + fib[1]})
-                .mapToInt(fib -&gt; fib[0])
-                .limit(10)
-                .forEach(System.out::println);
-    }
-    
-    private static void demonstrateParallelStream() {
-        List&lt;Integer&gt; largeList = IntStream.range(1, 1000000)
-                .boxed()
-                .collect(Collectors.toList());
-        
-        // シーケンシャル処理
-        long startTime = System.currentTimeMillis();
-        long sequentialSum = largeList.stream()
-                .mapToLong(Integer::longValue)
-                .sum();
-        long sequentialTime = System.currentTimeMillis() - startTime;
-        
-        // 並列処理
-        startTime = System.currentTimeMillis();
-        long parallelSum = largeList.parallelStream()
-                .mapToLong(Integer::longValue)
-                .sum();
-        long parallelTime = System.currentTimeMillis() - startTime;
-        
-        System.out.printf("シーケンシャル: %d (%dms)%n", sequentialSum, sequentialTime);
-        System.out.printf("並列: %d (%dms)%n", parallelSum, parallelTime);
-        System.out.printf("速度向上: %.2f倍%n", (double)sequentialTime / parallelTime);
+        System.out.println("2倍にした結果: " + doubled);
     }
 }</code></pre>
                     </div>
 
-                    <!-- 8.4 Optional クラス -->
-                    <h3 class="section-title">8.4 Optional クラス</h3>
-                    <p><strong>Optional クラス</strong>は、値が存在するかもしれないし、存在しないかもしれない状況を表現するコンテナクラスです。null ポインタ例外を避け、より安全で表現力豊かなコードを書くことができます。</p>
+                    <!-- 8.4 Optional -->
+                    <h3 class="section-title">8.4 Optional</h3>
+                    <p><strong>Optional</strong>は、null値を安全に扱うためのコンテナクラスです。null参照によるNullPointerExceptionを防ぎ、より読みやすく安全なコードを書くことができます。</p>
 
                     <div class="highlight">
                         <h6>Optional の利点</h6>
                         <ul>
-                            <li><strong>null安全性</strong>：NullPointerException を防ぐ</li>
-                            <li><strong>明示的な意図</strong>：値が存在しない可能性を明確に表現</li>
-                            <li><strong>関数型API</strong>：map、filter、orElse などのメソッドチェーン</li>
+                            <li><strong>null安全性</strong>：NullPointerExceptionの発生を防ぐ</li>
+                            <li><strong>明示的な意図</strong>：値が存在しない可能性を型で表現</li>
                             <li><strong>読みやすさ</strong>：null チェックのボイラープレートコードを削減</li>
                         </ul>
                     </div>
@@ -902,326 +323,23 @@ public class LambdaStreamExample {
                         <p>Optional クラスを活用して、null安全で読みやすいコードを作成しましょう。</p>
 
                         <pre class="code-block"><code class="language-java">import java.util.*;
-import java.util.stream.*;
-
-class User {
-    private String name;
-    private String email;
-    private Address address;
-    
-    public User(String name, String email, Address address) {
-        this.name = name;
-        this.email = email;
-        this.address = address;
-    }
-    
-    public String getName() { return name; }
-    public String getEmail() { return email; }
-    public Optional&lt;Address&gt; getAddress() { return Optional.ofNullable(address); }
-}
-
-class Address {
-    private String street;
-    private String city;
-    private String zipCode;
-    
-    public Address(String street, String city, String zipCode) {
-        this.street = street;
-        this.city = city;
-        this.zipCode = zipCode;
-    }
-    
-    public String getStreet() { return street; }
-    public String getCity() { return city; }
-    public String getZipCode() { return zipCode; }
-    
-    @Override
-    public String toString() {
-        return String.format("%s, %s (%s)", street, city, zipCode);
-    }
-}
-
-class UserRepository {
-    private static final List&lt;User&gt; USERS = Arrays.asList(
-        new User("田中太郎", "tanaka@example.com", 
-                 new Address("東京都渋谷区1-2-3", "東京", "150-0001")),
-        new User("佐藤花子", "sato@example.com", null),
-        new User("山田次郎", "yamada@example.com", 
-                 new Address("大阪府大阪市北区4-5-6", "大阪", "530-0001")),
-        new User("鈴木美咲", "suzuki@example.com", null)
-    );
-    
-    public static Optional&lt;User&gt; findUserByName(String name) {
-        return USERS.stream()
-                   .filter(user -&gt; user.getName().equals(name))
-                   .findFirst();
-    }
-    
-    public static Optional&lt;User&gt; findUserByEmail(String email) {
-        return USERS.stream()
-                   .filter(user -&gt; user.getEmail().equals(email))
-                   .findFirst();
-    }
-    
-    public static List&lt;User&gt; getAllUsers() {
-        return new ArrayList&lt;&gt;(USERS);
-    }
-}
 
 public class OptionalExample {
     public static void main(String[] args) {
-        System.out.println("=== Optional の基本操作 ===");
-        demonstrateBasicOptional();
+        // Optionalの基本的な使用
+        Optional&lt;String&gt; optional1 = Optional.of("Hello");
+        Optional&lt;String&gt; optional2 = Optional.empty();
         
-        System.out.println("\n=== 従来のnullチェック vs Optional ===");
-        demonstrateNullCheckComparison();
-        
-        System.out.println("\n=== Optional のメソッドチェーン ===");
-        demonstrateOptionalChaining();
-        
-        System.out.println("\n=== Optional の高度な操作 ===");
-        demonstrateAdvancedOptional();
-    }
-    
-    private static void demonstrateBasicOptional() {
-        // Optional の作成
-        Optional&lt;String&gt; emptyOptional = Optional.empty();
-        Optional&lt;String&gt; nonEmptyOptional = Optional.of("Hello World");
-        Optional&lt;String&gt; nullableOptional = Optional.ofNullable(null);
-        
-        System.out.println("空のOptional: " + emptyOptional);
-        System.out.println("値ありOptional: " + nonEmptyOptional);
-        System.out.println("null可能Optional: " + nullableOptional);
-        
-        // 値の存在確認
-        System.out.println("emptyOptional.isPresent(): " + emptyOptional.isPresent());
-        System.out.println("nonEmptyOptional.isPresent(): " + nonEmptyOptional.isPresent());
-        System.out.println("emptyOptional.isEmpty(): " + emptyOptional.isEmpty());
-        
-        // 値の取得
-        if (nonEmptyOptional.isPresent()) {
-            System.out.println("値: " + nonEmptyOptional.get());
+        // 値が存在するかチェック
+        if (optional1.isPresent()) {
+            System.out.println("値: " + optional1.get());
         }
         
-        // より安全な値の取得
-        nonEmptyOptional.ifPresent(value -&gt; System.out.println("安全に取得した値: " + value));
-        
-        // デフォルト値の設定
-        String result1 = emptyOptional.orElse("デフォルト値");
-        String result2 = nonEmptyOptional.orElse("デフォルト値");
-        
-        System.out.println("emptyOptional.orElse(): " + result1);
-        System.out.println("nonEmptyOptional.orElse(): " + result2);
-    }
-    
-    private static void demonstrateNullCheckComparison() {
-        String userName = "田中太郎";
-        
-        System.out.println("=== 従来のnullチェック ===");
-        demonstrateTraditionalNullCheck(userName);
-        
-        System.out.println("\n=== Optional を使ったアプローチ ===");
-        demonstrateOptionalApproach(userName);
-    }
-    
-    private static void demonstrateTraditionalNullCheck(String userName) {
-        // 従来の方法（推奨されない）
-        User user = findUserTraditional(userName);
-        if (user != null) {
-            System.out.println("ユーザーが見つかりました: " + user.getName());
-            
-            // さらにネストしたnullチェック
-            if (user.getAddress().isPresent()) {
-                Address address = user.getAddress().get();
-                if (address != null) {
-                    System.out.println("住所: " + address);
-                    
-                    if (address.getCity() != null) {
-                        System.out.println("都市: " + address.getCity());
-                    } else {
-                        System.out.println("都市情報がありません");
-                    }
-                }
-            } else {
-                System.out.println("住所情報がありません");
-            }
-        } else {
-            System.out.println("ユーザーが見つかりませんでした");
-        }
-    }
-    
-    private static User findUserTraditional(String userName) {
-        // 危険：null を返す可能性がある
-        return UserRepository.getAllUsers().stream()
-                            .filter(user -&gt; user.getName().equals(userName))
-                            .findFirst()
-                            .orElse(null);
-    }
-    
-    private static void demonstrateOptionalApproach(String userName) {
-        // Optional を使った安全なアプローチ
-        UserRepository.findUserByName(userName)
-            .ifPresentOrElse(
-                user -&gt; {
-                    System.out.println("ユーザーが見つかりました: " + user.getName());
-                    
-                    // Optional のメソッドチェーンで安全に処理
-                    String cityInfo = user.getAddress()
-                                         .map(Address::getCity)
-                                         .orElse("都市情報なし");
-                    System.out.println("都市: " + cityInfo);
-                    
-                    user.getAddress()
-                        .ifPresentOrElse(
-                            address -&gt; System.out.println("住所: " + address),
-                            () -&gt; System.out.println("住所情報がありません")
-                        );
-                },
-                () -&gt; System.out.println("ユーザーが見つかりませんでした")
-            );
-    }
-    
-    private static void demonstrateOptionalChaining() {
-        List&lt;String&gt; userNames = Arrays.asList("田中太郎", "存在しないユーザー", "山田次郎", "佐藤花子");
-        
-        System.out.println("ユーザー検索とアドレス情報:");
-        userNames.forEach(name -&gt; {
-            String addressInfo = UserRepository.findUserByName(name)
-                    .flatMap(User::getAddress)
-                    .map(Address::toString)
-                    .orElse("住所情報なし");
-            
-            System.out.println(name + " -&gt; " + addressInfo);
-        });
-        
-        // 複数の検索方法を試す
-        System.out.println("\n複数の検索方法:");
-        Optional&lt;User&gt; user = UserRepository.findUserByName("存在しないユーザー")
-                .or(() -&gt; UserRepository.findUserByEmail("tanaka@example.com"))
-                .or(() -&gt; {
-                    System.out.println("フォールバック検索を実行");
-                    return UserRepository.findUserByEmail("yamada@example.com");
-                });
-        
-        user.ifPresent(u -&gt; System.out.println("最終的に見つかったユーザー: " + u.getName()));
-    }
-    
-    private static void demonstrateAdvancedOptional() {
-        List&lt;User&gt; allUsers = UserRepository.getAllUsers();
-        
-        // Optional と Stream の組み合わせ
-        System.out.println("住所を持つユーザーの都市一覧:");
-        allUsers.stream()
-                .map(User::getAddress)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(Address::getCity)
-                .distinct()
-                .sorted()
-                .forEach(city -&gt; System.out.println("- " + city));
-        
-        // Optional を使った統計
-        OptionalDouble averageZipCodeLength = allUsers.stream()
-                .map(User::getAddress)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .mapToInt(address -&gt; address.getZipCode().length())
-                .average();
-        
-        averageZipCodeLength.ifPresentOrElse(
-            avg -&gt; System.out.printf("郵便番号の平均長: %.2f文字%n", avg),
-            () -&gt; System.out.println("郵便番号データが不十分です")
-        );
-        
-        // Optional のフィルタ機能
-        System.out.println("\n東京在住のユーザー:");
-        allUsers.stream()
-                .filter(user -&gt; user.getAddress()
-                                   .map(Address::getCity)
-                                   .filter("東京"::equals)
-                                   .isPresent())
-                .forEach(user -&gt; System.out.println("- " + user.getName()));
-        
-        // Optional を使った変換
-        System.out.println("\nユーザーの住所要約:");
-        allUsers.forEach(user -&gt; {
-            String summary = Optional.of(user)
-                    .map(u -&gt; String.format("%s: %s", 
-                            u.getName(),
-                            u.getAddress()
-                             .map(addr -&gt; addr.getCity() + "在住")
-                             .orElse("住所未登録")))
-                    .orElse("ユーザー情報なし");
-            System.out.println(summary);
-        });
+        // より安全な取得方法
+        String value = optional2.orElse("デフォルト値");
+        System.out.println("結果: " + value);
     }
 }</code></pre>
-                    </div>
-
-                    <!-- 理解度確認クイズ -->
-                    <div class="quiz-container">
-                        <h5>理解度確認クイズ</h5>
-                        <ol>
-                            <li>
-                                <strong>Iterator の remove() メソッドを使う利点は何ですか？</strong>
-                                <ul style="list-style-type: none;">
-                                    <li>a) 処理速度が向上する</li>
-                                    <li>b) ループ中の安全な要素削除ができる</li>
-                                    <li>c) メモリ使用量が削減される</li>
-                                    <li>d) コードが短くなる</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>ジェネリクスの主な目的として正しいものはどれですか？</strong>
-                                <ul style="list-style-type: none;">
-                                    <li>a) 実行速度の向上</li>
-                                    <li>b) メモリ使用量の削減</li>
-                                    <li>c) コンパイル時の型安全性の確保</li>
-                                    <li>d) ネットワーク通信の効率化</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Stream API の中間操作として正しいものはどれですか？</strong>
-                                <ul style="list-style-type: none;">
-                                    <li>a) collect()</li>
-                                    <li>b) forEach()</li>
-                                    <li>c) filter()</li>
-                                    <li>d) reduce()</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>Optional クラスの利点として正しくないものはどれですか？</strong>
-                                <ul style="list-style-type: none;">
-                                    <li>a) NullPointerException を防ぐ</li>
-                                    <li>b) 値の存在可能性を明示的に表現</li>
-                                    <li>c) 処理速度が大幅に向上する</li>
-                                    <li>d) 関数型プログラミングとの親和性</li>
-                                </ul>
-                            </li>
-                            <li>
-                                <strong>ラムダ式 x -&gt; x * 2 と等価な従来の記述はどれですか？</strong>
-                                <ul style="list-style-type: none;">
-                                    <li>a) new Function&lt;&gt;() { public int apply(int x) { return x * 2; } }</li>
-                                    <li>b) new Function&lt;Integer, Integer&gt;() { public Integer apply(Integer x) { return x * 2; } }</li>
-                                    <li>c) (x) -&gt; { return x * 2; }</li>
-                                    <li>d) b) と c) の両方</li>
-                                </ul>
-                            </li>
-                        </ol>
-
-                        <details style="margin-top: 1rem;">
-                            <summary>解答を表示</summary>
-                            <div style="margin-top: 0.5rem;">
-                                <p><strong>解答:</strong></p>
-                                <ol>
-                                    <li>b) ループ中の安全な要素削除ができる - ConcurrentModificationException を避けられる</li>
-                                    <li>c) コンパイル時の型安全性の確保 - 型エラーを実行前に検出</li>
-                                    <li>c) filter() - 中間操作は遅延評価される</li>
-                                    <li>c) 処理速度が大幅に向上する - Optional は安全性が主目的、性能向上は副次的</li>
-                                    <li>d) b) と c) の両方 - どちらも同等の機能を提供</li>
-                                </ol>
-                            </div>
-                        </details>
                     </div>
 
                     <!-- 章のまとめ -->
@@ -1231,33 +349,31 @@ public class OptionalExample {
                     <ul>
                         <li><strong>イテレータ</strong>：安全で統一的なコレクション要素の走査と操作</li>
                         <li><strong>ジェネリクス</strong>：コンパイル時の型安全性と型パラメータ化</li>
-                        <li><strong>比較インターフェース</strong>：Comparable と Comparator による柔軟なソート</li>
-                        <li><strong>ラムダ式</strong>：簡潔な関数型プログラミングの記述方法</li>
-                        <li><strong>Stream API</strong>：宣言的で効率的なコレクション処理</li>
-                        <li><strong>Optional クラス</strong>：null安全なプログラミングの実現</li>
+                        <li><strong>ラムダ式とStream API</strong>：関数型プログラミングによる宣言的データ処理</li>
+                        <li><strong>Optional</strong>：null安全なプログラミングと明示的な値の不在表現</li>
                     </ul>
 
                     <div class="highlight">
-                        <h6>Java学習の完了おめでとうございます！</h6>
-                        <p>8章にわたるJava学習教材を完了されました。基礎から応用まで、現代的なJavaプログラミングに必要な知識を習得されています。今後は実際のプロジェクトで这些知识を活用し、継続的にスキルアップを図ってください。フレームワーク（Spring Boot）、データベース操作（JDBC）、テストフレームワーク（JUnit）などの学習に進むことをお勧めします。</p>
+                        <h6>学習の成果</h6>
+                        <p>これらの機能をマスターすることで、より安全で保守しやすく、表現力豊かなJavaコードが書けるようになります。これで基本的なJava学習は完了です。実際のプロジェクトで積極的に活用していきましょう。</p>
                     </div>
 
                     <!-- 章間ナビゲーション -->
                     <div class="d-flex justify-content-between mt-4">
-                        <a href="java-learning-material-7.html" class="btn btn-secondary">← 前の章: 入出力操作</a>
-                        <a href="../README.html" class="btn btn-success">Javaガイドトップに戻る</a>
+                        <a href="java-learning-material-7.html" class="btn btn-secondary">← 前の章: 入出力処理</a>
+                        <span class="btn btn-outline-secondary disabled">学習完了！</span>
                     </div>
-                </div>
-            </main>
+                </main>
+            </div>
         </div>
     </div>
 
     <!-- フッター -->
-    <footer class="bg-dark text-white mt-5">
-        <div class="container-fluid py-3">
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+        <div class="container">
             <div class="row">
-                <div class="col-12 text-center">
-                    <p class="mb-0">&copy; 2025 F-Circle All rights reserved.</p>
+                <div class="col-12">
+                    <p>&copy; 2024 Java学習ガイド. All rights reserved.</p>
                 </div>
             </div>
         </div>
