@@ -3,1052 +3,729 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Django + PostgreSQL チュートリアル Step 9 - テストとデバッグ</title>
+    <title>Django実践チュートリアル ステップ9 - テストとデバッグ</title>
     
-    <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Google Fonts - Noto Sans JP -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Highlight.js CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
     
     <style>
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            padding-top: 56px;
-        }
-        
-        .navbar {
-            background-color: #2e7d33;
-        }
-        
-        .sidebar {
-            position: sticky;
-            top: 70px;
-            height: calc(100vh - 70px);
-            overflow-y: auto;
-        }
-        
-        .chapter-title {
-            color: #2e7d33;
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #2e7d33;
-            padding-bottom: 0.5rem;
-        }
-        
-        .section-title {
-            color: #4caf50;
-            margin-top: 1.2rem;
-            margin-bottom: 0.8rem;
-        }
-        
-        .quiz-container {
-            background-color: #e8f5e8;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #2e7d33;
-        }
-        
-        .exercise-container {
-            background-color: #f3e5f5;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #9c27b0;
-        }
-        
-        .highlight {
-            background-color: #ffecb3;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #ffc107;
-        }
-        
-        .warning {
-            background-color: #ffebee;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #f44336;
-        }
-        
-        .code-block {
-            background-color: #1e1e1e;
-            border-radius: 5px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-        
-        .nav-link.active {
-            background-color: #2e7d33 !important;
-            color: white !important;
-        }
+        body { font-family: 'Noto Sans JP', sans-serif; padding-top: 56px; }
+        .navbar { background-color: #4caf50; }
+        .sidebar { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; }
+        .chapter-title { color: #4caf50; margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #4caf50; padding-bottom: 0.5rem; }
+        .section-title { color: #66bb6a; margin-top: 1.2rem; margin-bottom: 0.8rem; }
+        .quiz-container { background-color: #e8f5e8; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #4caf50; }
+        .exercise-container { background-color: #f3e5f5; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #9c27b0; }
+        .highlight { background-color: #ffecb3; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #ffc107; }
+        .code-block { background-color: #1e1e1e; border-radius: 5px; padding: 1rem; margin: 1rem 0; }
+        .nav-link.active { background-color: #4caf50 !important; color: white !important; }
     </style>
 </head>
 <body>
-    <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Django + PostgreSQL チュートリアル</a>
+            <a class="navbar-brand"><strong>Django実践チュートリアル</strong></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
         </div>
     </nav>
 
     <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar -->
-            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
                 <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>チュートリアルステップ</span>
+                    </h6>
                     <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="step1-environment-setup.html">
-                                Step 1: 環境構築
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="step2-docker-postgresql.html">
-                                Step 2: PostgreSQL環境
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="step3-django-project-init.html">
-                                Step 3: プロジェクト初期化
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="step4-models-migration.html">
-                                Step 4: モデル設計
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="step5-views-templates-urls.html">
-                                Step 5: ビュー・テンプレート
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="step6-admin-interface.html">
-                                Step 6: 管理サイト
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="step7-crud-operations.html">
-                                Step 7: CRUD操作
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="step8-validation-security.html">
-                                Step 8: バリデーション・セキュリティ
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="step9-testing-debugging.html">
-                                Step 9: テスト・デバッグ
-                            </a>
-                        </li>
+                        <li class="nav-item"><a class="nav-link" href="step1-environment-setup.html">ステップ1: 開発環境構築</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step2-docker-postgresql.html">ステップ2: Docker・PostgreSQL</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step3-django-project-init.html">ステップ3: プロジェクト初期化</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step4-models-migration.html">ステップ4: モデル・マイグレーション</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step5-views-templates-urls.html">ステップ5: ビュー・テンプレート・URL</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step6-admin-interface.html">ステップ6: 管理サイト</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step7-crud-operations.html">ステップ7: CRUD操作</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step8-validation-security.html">ステップ8: バリデーション・セキュリティ</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="step9-testing-debugging.html">ステップ9: テスト・デバッグ</a></li>
                     </ul>
                 </div>
             </nav>
 
-            <!-- Main content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Step 9: テストとデバッグ</h1>
+                    <h1 class="h2">ステップ9: テストとデバッグ</h1>
                 </div>
 
                 <div id="step9">
-                    <h2 class="chapter-title">品質保証と開発効率化</h2>
-                    
                     <div class="highlight">
-                        <h5>この章で学ぶこと</h5>
+                        <h5>このステップで実装すること</h5>
                         <ul>
-                            <li>Djangoテストフレームワークの包括的活用</li>
-                            <li>ユニットテスト、統合テスト、機能テストの実装</li>
-                            <li>テストカバレッジの測定と向上</li>
-                            <li>Django Debug Toolbarを使った パフォーマンス分析</li>
-                            <li>ログ設定とトラブルシューティング手法</li>
-                            <li>継続的インテグレーション（CI）の基礎</li>
+                            <li>Djangoテストフレームワークの基礎</li>
+                            <li>モデルテストの作成</li>
+                            <li>ビューテストの実装</li>
+                            <li>フォームテストの作成</li>
+                            <li>テストデータベースの管理</li>
+                            <li>デバッグツールの活用</li>
+                            <li>ログ設定とトラブルシューティング</li>
                         </ul>
                     </div>
 
-                    <h3 class="section-title">9.1 包括的なテストスイートの構築</h3>
-                    <p>全ての機能に対する包括的なテストを作成し、品質保証体制を構築します。</p>
+                    <h2 class="chapter-title">品質保証とデバッグ技術</h2>
 
                     <div class="exercise-container">
-                        <h5>実習 9-1: 完全なテストスイートの実装</h5>
+                        <h5>実装 9-1: モデルテストの作成</h5>
+                        <p>カスタムUserモデルの機能をテストする包括的なテストスイートを作成します。</p>
                         
-                        <h6>完全なテストクラス（users/tests.py更新）</h6>
-                        <pre class="code-block"><code class="language-python">from django.test import TestCase, Client, TransactionTestCase
-from django.urls import reverse
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.contrib.auth.models import User as DjangoUser
-from django.db import transaction
-from django.test.utils import override_settings
-import tempfile
-import shutil
-from users.models import User, Category, UserProfile
-from users.forms import SecureUserForm, SecureUserProfileForm
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>users/tests/test_models.py作成</strong>:
+                                <pre class="code-block"><code class="language-python"># users/tests/test_models.py (新規作成)
+from django.test import TestCase
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
+from datetime import date, timedelta
+from users.models import User
 
-
-class ModelTestCase(TestCase):
-    """モデルの包括的テスト"""
+class UserModelTest(TestCase):
+    """Userモデルのテストクラス"""
     
     def setUp(self):
-        self.category = Category.objects.create(
-            name="テスト部門",
-            description="テスト用のカテゴリ",
-            color="#007bff"
-        )
+        """各テストメソッド実行前の準備"""
+        self.valid_user_data = {
+            'username': 'testuser',
+            'email': 'test@example.com',
+            'first_name': '太郎',
+            'last_name': '田中',
+            'phone_number': '090-1234-5678',
+            'birth_date': date(1990, 5, 15)
+        }
     
-    def test_user_creation(self):
-        """ユーザー作成のテスト"""
-        user = User.objects.create(
-            username="testuser",
-            email="test@example.com",
-            first_name="テスト",
-            last_name="ユーザー",
-            birth_date="1990-01-01"
-        )
-        
-        self.assertEqual(user.username, "testuser")
-        self.assertEqual(user.get_full_name(), "ユーザー テスト")
+    def test_user_creation_with_valid_data(self):
+        """有効なデータでのユーザー作成テスト"""
+        user = User.objects.create_user(**self.valid_user_data)
+        self.assertEqual(user.username, 'testuser')
+        self.assertEqual(user.email, 'test@example.com')
         self.assertTrue(user.is_active)
         self.assertIsNotNone(user.created_at)
-        
-        # 年齢計算のテスト
-        age = user.get_age()
-        self.assertIsInstance(age, int)
-        self.assertGreater(age, 30)
     
-    def test_user_profile_creation(self):
-        """ユーザープロフィール作成のテスト"""
-        user = User.objects.create(
-            username="profileuser",
-            email="profile@example.com",
-            first_name="プロフィール",
-            last_name="テスト"
+    def test_user_str_representation(self):
+        """__str__メソッドのテスト"""
+        user = User.objects.create_user(**self.valid_user_data)
+        expected = f"{user.username} ({user.get_full_name()})"
+        self.assertEqual(str(user), expected)
+    
+    def test_get_full_name_method(self):
+        """get_full_nameメソッドのテスト"""
+        user = User.objects.create_user(**self.valid_user_data)
+        self.assertEqual(user.get_full_name(), '太郎 田中')
+        
+        # 名前が空の場合
+        user.first_name = ''
+        user.last_name = ''
+        self.assertEqual(user.get_full_name(), '')
+    
+    def test_get_age_method(self):
+        """get_ageメソッドのテスト"""
+        # 30歳のユーザー
+        birth_date = date.today() - timedelta(days=30*365)
+        user = User.objects.create_user(
+            username='testuser',
+            birth_date=birth_date
         )
+        self.assertAlmostEqual(user.get_age(), 30, delta=1)
         
-        profile = UserProfile.objects.create(
-            user=user,
-            category=self.category,
-            bio="テスト用のプロフィールです",
-            login_count=5
-        )
+        # 生年月日が未設定の場合
+        user.birth_date = None
+        self.assertIsNone(user.get_age())
+    
+    def test_email_uniqueness(self):
+        """メールアドレスの一意性制約テスト"""
+        User.objects.create_user(**self.valid_user_data)
         
-        self.assertEqual(profile.user, user)
-        self.assertEqual(profile.category, self.category)
-        self.assertEqual(profile.login_count, 5)
+        # 同じメールアドレスで2人目のユーザー作成を試行
+        with self.assertRaises(IntegrityError):
+            User.objects.create_user(
+                username='testuser2',
+                email='test@example.com'  # 同じメールアドレス
+            )
+    
+    def test_phone_number_validation(self):
+        """電話番号バリデーションのテスト"""
+        # 有効な電話番号
+        user_data = self.valid_user_data.copy()
+        user_data['phone_number'] = '090-1234-5678'
+        user = User(**user_data)
+        user.full_clean()  # バリデーション実行
         
-        # リレーションのテスト
-        self.assertEqual(user.profile, profile)
-        self.assertIn(user, self.category.users.all())
+        # 無効な電話番号
+        user_data['phone_number'] = '090-12345678'  # ハイフンなし
+        user = User(**user_data)
+        with self.assertRaises(ValidationError):
+            user.full_clean()
     
-    def test_user_model_methods(self):
-        """ユーザーモデルのメソッドテスト"""
-        user = User.objects.create(
-            username="TESTUSER",  # 大文字で作成
-            email="method@example.com",
-            first_name="メソッド",
-            last_name="テスト"
-        )
+    def test_username_validation(self):
+        """ユーザー名バリデーションのテスト"""
+        user_data = self.valid_user_data.copy()
         
-        # save()メソッドでユーザー名が小文字になることを確認
-        self.assertEqual(user.username, "testuser")
+        # 無効な文字を含むユーザー名
+        user_data['username'] = 'test@user'  # @を含む
+        user = User(**user_data)
+        with self.assertRaises(ValidationError):
+            user.full_clean()
+    
+    def test_age_validation(self):
+        """年齢バリデーションのテスト"""
+        user_data = self.valid_user_data.copy()
         
-        # __str__メソッドのテスト
-        expected_str = "testuser (テスト メソッド)"
-        self.assertEqual(str(user), expected_str)
-    
-    def test_category_model(self):
-        """カテゴリモデルのテスト"""
-        category = Category.objects.create(
-            name="新規カテゴリ",
-            description="新しく作成されたカテゴリ",
-            color="#28a745"
-        )
+        # 年齢が若すぎる（12歳）
+        user_data['birth_date'] = date.today() - timedelta(days=12*365)
+        user = User(**user_data)
+        with self.assertRaises(ValidationError):
+            user.full_clean()
         
-        self.assertEqual(str(category), "新規カテゴリ")
-        self.assertTrue(category.is_active)
-        self.assertEqual(category.color, "#28a745")
-
-
-class ViewTestCase(TestCase):
-    """ビューの包括的テスト"""
+        # 年齢が高すぎる（101歳）
+        user_data['birth_date'] = date.today() - timedelta(days=101*365)
+        user = User(**user_data)
+        with self.assertRaises(ValidationError):
+            user.full_clean()
     
-    def setUp(self):
-        self.client = Client()
-        self.category = Category.objects.create(
-            name="テスト部門",
-            color="#007bff"
-        )
-        
-        self.user = User.objects.create(
-            username="viewtestuser",
-            email="view@example.com",
-            first_name="ビュー",
-            last_name="テスト"
-        )
-        
-        UserProfile.objects.create(
-            user=self.user,
-            category=self.category
-        )
-    
-    def test_user_list_view(self):
-        """ユーザー一覧ビューのテスト"""
-        url = reverse('users:user_list')
-        response = self.client.get(url)
-        
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'ユーザー一覧')
-        self.assertContains(response, self.user.username)
-        self.assertIn('page_obj', response.context)
-    
-    def test_user_detail_view(self):
-        """ユーザー詳細ビューのテスト"""
-        url = reverse('users:user_detail', kwargs={'pk': self.user.pk})
-        response = self.client.get(url)
-        
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.get_full_name())
-        self.assertEqual(response.context['user'], self.user)
-    
-    def test_user_create_view_get(self):
-        """ユーザー作成ビュー（GET）のテスト"""
-        url = reverse('users:user_create')
-        response = self.client.get(url)
-        
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'ユーザー作成')
-        self.assertIn('form', response.context)
-        self.assertIn('profile_form', response.context)
-    
-    def test_user_create_view_post(self):
-        """ユーザー作成ビュー（POST）のテスト"""
-        url = reverse('users:user_create')
-        data = {
-            'username': 'newuser',
-            'email': 'new@example.com',
-            'first_name': '新規',
-            'last_name': 'ユーザー',
-            'category': self.category.pk,
-            'bio': '新規作成されたユーザーです',
-        }
-        
-        response = self.client.post(url, data)
-        
-        # リダイレクトの確認
-        self.assertEqual(response.status_code, 302)
-        
-        # ユーザーが作成されたことを確認
-        self.assertTrue(User.objects.filter(username='newuser').exists())
-        
-        new_user = User.objects.get(username='newuser')
-        self.assertTrue(hasattr(new_user, 'profile'))
-    
-    def test_user_update_view(self):
-        """ユーザー更新ビューのテスト"""
-        url = reverse('users:user_edit', kwargs={'pk': self.user.pk})
-        
-        # GET テスト
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'ユーザー編集')
-        
-        # POST テスト
-        data = {
-            'username': self.user.username,
-            'email': 'updated@example.com',
-            'first_name': '更新',
-            'last_name': 'テスト',
-            'category': self.category.pk,
-            'bio': '更新されたプロフィール',
-        }
-        
-        response = self.client.post(url, data)
-        self.assertEqual(response.status_code, 302)
-        
-        # 更新されたことを確認
-        self.user.refresh_from_db()
-        self.assertEqual(self.user.email, 'updated@example.com')
-        self.assertEqual(self.user.first_name, '更新')
-    
-    def test_user_delete_view(self):
-        """ユーザー削除ビューのテスト"""
-        url = reverse('users:user_delete', kwargs={'pk': self.user.pk})
-        
-        # GET テスト（確認画面）
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '削除確認')
-        
-        # POST テスト（削除実行）
-        response = self.client.post(url)
-        self.assertEqual(response.status_code, 302)
-        
-        # 論理削除されたことを確認
-        self.user.refresh_from_db()
-        self.assertFalse(self.user.is_active)
-    
-    def test_search_functionality(self):
-        """検索機能のテスト"""
-        # 追加のテストユーザーを作成
-        User.objects.create(
-            username="searchtest",
-            email="search@example.com", 
-            first_name="検索",
-            last_name="テスト"
-        )
-        
-        url = reverse('users:user_list')
-        
-        # 名前での検索
-        response = self.client.get(url, {'search': '検索'})
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'searchtest')
-        
-        # カテゴリでのフィルター
-        response = self.client.get(url, {'category': self.category.pk})
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.user.username)
-
-
-class FormTestCase(TestCase):
-    """フォームの包括的テスト"""
-    
-    def setUp(self):
-        self.category = Category.objects.create(
-            name="テスト部門",
-            color="#007bff"
-        )
-    
-    def test_secure_user_form_valid_data(self):
-        """有効なデータでのフォームテスト"""
-        form_data = {
-            'username': 'validuser',
-            'email': 'valid@example.com',
-            'first_name': '有効',
-            'last_name': 'ユーザー',
-            'phone_number': '090-1234-5678',
-            'birth_date': '1990-01-01'
-        }
-        
-        form = SecureUserForm(data=form_data)
-        self.assertTrue(form.is_valid())
-        
-        # 保存テスト
-        user = form.save()
-        self.assertEqual(user.username, 'validuser')
-        self.assertEqual(user.email, 'valid@example.com')
-    
-    def test_secure_user_form_invalid_data(self):
-        """無効なデータでのフォームテスト"""
-        form_data = {
-            'username': 'ab',  # 短すぎる
-            'email': 'invalid-email',  # 無効なメール形式
-            'first_name': '',  # 必須フィールドが空
-            'last_name': 'ユーザー'
-        }
-        
-        form = SecureUserForm(data=form_data)
-        self.assertFalse(form.is_valid())
-        
-        # 特定のエラーの確認
-        self.assertIn('username', form.errors)
-        self.assertIn('email', form.errors)
-        self.assertIn('first_name', form.errors)
-    
-    def test_user_profile_form(self):
-        """ユーザープロフィールフォームのテスト"""
-        form_data = {
-            'category': self.category.pk,
-            'bio': 'テスト用のプロフィール',
-            'website': 'https://example.com',
-            'receive_notifications': True
-        }
-        
-        form = SecureUserProfileForm(data=form_data)
-        self.assertTrue(form.is_valid())
-        
-        profile = form.save(commit=False)
-        self.assertEqual(profile.category, self.category)
-        self.assertTrue(profile.receive_notifications)
-
-
-class IntegrationTestCase(TransactionTestCase):
-    """統合テスト"""
-    
-    def setUp(self):
-        self.client = Client()
-    
-    def test_complete_user_workflow(self):
-        """完全なユーザーワークフローのテスト"""
-        # 1. カテゴリ作成
-        category = Category.objects.create(
-            name="統合テスト部門",
-            color="#007bff"
-        )
-        
-        # 2. ユーザー作成
-        create_url = reverse('users:user_create')
-        user_data = {
-            'username': 'integrationuser',
-            'email': 'integration@example.com',
-            'first_name': '統合',
-            'last_name': 'テスト',
-            'category': category.pk,
-            'bio': '統合テスト用ユーザー',
-        }
-        
-        response = self.client.post(create_url, user_data)
-        self.assertEqual(response.status_code, 302)
-        
-        # 3. ユーザーが正常に作成されたことを確認
-        user = User.objects.get(username='integrationuser')
-        self.assertTrue(hasattr(user, 'profile'))
-        
-        # 4. 作成されたユーザーの詳細表示
-        detail_url = reverse('users:user_detail', kwargs={'pk': user.pk})
-        response = self.client.get(detail_url)
-        self.assertEqual(response.status_code, 200)
-        
-        # 5. ユーザー編集
-        edit_url = reverse('users:user_edit', kwargs={'pk': user.pk})
-        updated_data = user_data.copy()
-        updated_data['first_name'] = '更新統合'
-        
-        response = self.client.post(edit_url, updated_data)
-        self.assertEqual(response.status_code, 302)
-        
-        # 6. 更新が反映されていることを確認
-        user.refresh_from_db()
-        self.assertEqual(user.first_name, '更新統合')
-        
-        # 7. 一覧での表示確認
-        list_url = reverse('users:user_list')
-        response = self.client.get(list_url)
-        self.assertContains(response, user.username)
-        
-        # 8. 削除（論理削除）
-        delete_url = reverse('users:user_delete', kwargs={'pk': user.pk})
-        response = self.client.post(delete_url)
-        self.assertEqual(response.status_code, 302)
-        
-        # 9. 論理削除されていることを確認
-        user.refresh_from_db()
-        self.assertFalse(user.is_active)
-
-
-@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
-class FileUploadTestCase(TestCase):
-    """ファイルアップロードのテスト"""
-    
-    def setUp(self):
-        self.user = User.objects.create(
-            username="fileuser",
-            email="file@example.com",
-            first_name="ファイル",
-            last_name="テスト"
-        )
-        
-        self.profile, created = UserProfile.objects.get_or_create(user=self.user)
-    
-    def tearDown(self):
-        # テスト後にメディアファイルをクリーンアップ
-        try:
-            shutil.rmtree(tempfile.gettempdir())
-        except:
-            pass
-    
-    def test_valid_image_upload(self):
-        """有効な画像アップロードのテスト"""
-        # 1x1ピクセルのPNG画像データ
-        image_data = (
-            b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01'
-            b'\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00'
-            b'\x00\x0cIDATx\x9cc```\x00\x00\x00\x04\x00\x01\xdd\x8d'
-            b'\xb4\x1c\x00\x00\x00\x00IEND\xaeB`\x82'
-        )
-        
-        uploaded_file = SimpleUploadedFile(
-            "test.png",
-            image_data,
-            content_type="image/png"
-        )
-        
-        form_data = {
-            'category': '',
-            'bio': 'テスト',
-        }
-        
-        form = SecureUserProfileForm(
-            data=form_data,
-            files={'avatar': uploaded_file}
-        )
-        
-        self.assertTrue(form.is_valid())
-    
-    def test_invalid_file_upload(self):
-        """無効なファイルアップロードのテスト"""
-        # 不正なファイル
-        malicious_file = SimpleUploadedFile(
-            "malicious.txt",
-            b"This is not an image",
-            content_type="text/plain"
-        )
-        
-        form_data = {
-            'category': '',
-            'bio': 'テスト',
-        }
-        
-        form = SecureUserProfileForm(
-            data=form_data,
-            files={'avatar': malicious_file}
-        )
-        
-        self.assertFalse(form.is_valid())
-        self.assertIn('avatar', form.errors)</code></pre>
-
-                        <h6>テスト実行とカバレッジ測定</h6>
-                        <pre class="code-block"><code class="language-bash"># 全テストの実行
-python manage.py test --verbosity=2
-
-# 特定アプリのテスト実行
-python manage.py test users --verbosity=2
-
-# カバレッジパッケージのインストール
-pip install coverage
-
-# カバレッジ付きでテスト実行
-coverage run --source='.' manage.py test users
-
-# カバレッジレポートの表示
-coverage report
-
-# HTMLレポートの生成
-coverage html
-
-# カバレッジの詳細確認
-coverage report --show-missing</code></pre>
-                    </div>
-
-                    <h3 class="section-title">9.2 デバッグツールとパフォーマンス分析</h3>
-                    <p>Django Debug Toolbarとログ機能を活用した効率的なデバッグ手法を学習します。</p>
-
-                    <div class="exercise-container">
-                        <h5>実習 9-2: デバッグ環境の構築とパフォーマンス分析</h5>
-                        
-                        <h6>Django Debug Toolbar設定強化（settings.py更新）</h6>
-                        <pre class="code-block"><code class="language-python"># Debug Toolbar 詳細設定
-if DEBUG:
-    INSTALLED_APPS += [
-        'debug_toolbar',
-    ]
-    
-    MIDDLEWARE += [
-        'debug_toolbar.middleware.DebugToolbarMiddleware',
-    ]
-    
-    DEBUG_TOOLBAR_CONFIG = {
-        'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG,
-        'SHOW_COLLAPSED': False,
-        'SHOW_TEMPLATE_CONTEXT': True,
-        'ENABLE_STACKTRACES': True,
-    }
-    
-    DEBUG_TOOLBAR_PANELS = [
-        'debug_toolbar.panels.versions.VersionsPanel',
-        'debug_toolbar.panels.timer.TimerPanel',
-        'debug_toolbar.panels.settings.SettingsPanel',
-        'debug_toolbar.panels.headers.HeadersPanel',
-        'debug_toolbar.panels.request.RequestPanel',
-        'debug_toolbar.panels.sql.SQLPanel',
-        'debug_toolbar.panels.staticfiles.StaticFilesPanel',
-        'debug_toolbar.panels.templates.TemplatesPanel',
-        'debug_toolbar.panels.cache.CachePanel',
-        'debug_toolbar.panels.signals.SignalsPanel',
-        'debug_toolbar.panels.logging.LoggingPanel',
-        'debug_toolbar.panels.redirects.RedirectsPanel',
-        'debug_toolbar.panels.profiling.ProfilingPanel',
-    ]</code></pre>
-
-                        <h6>カスタムデバッグビューの作成（users/debug_views.py作成）</h6>
-                        <pre class="code-block"><code class="language-python">import time
-import logging
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.db import connection
-from django.conf import settings
-from django.views.decorators.http import require_http_methods
-from django.views.decorators.csrf import csrf_exempt
-from .models import User, Category, UserProfile
-
-logger = logging.getLogger('users')
-
-
-def debug_info_view(request):
-    """デバッグ情報表示ビュー"""
-    if not settings.DEBUG:
-        return JsonResponse({'error': 'Debug mode only'}, status=403)
-    
-    # データベース統計
-    user_count = User.objects.count()
-    active_user_count = User.objects.filter(is_active=True).count()
-    category_count = Category.objects.count()
-    profile_count = UserProfile.objects.count()
-    
-    # データベースクエリ統計
-    queries = connection.queries
-    total_time = sum(float(query['time']) for query in queries)
-    
-    debug_data = {
-        'database_stats': {
-            'total_users': user_count,
-            'active_users': active_user_count,
-            'categories': category_count,
-            'profiles': profile_count,
-        },
-        'query_stats': {
-            'total_queries': len(queries),
-            'total_time': f'{total_time:.3f}s',
-            'queries': queries[-10:] if queries else []  # 最後の10クエリ
-        },
-        'recent_queries': [
-            {
-                'sql': query['sql'][:100] + '...' if len(query['sql']) > 100 else query['sql'],
-                'time': query['time']
-            }
-            for query in queries[-5:]
-        ]
-    }
-    
-    return JsonResponse(debug_data)
-
-
-@require_http_methods(["POST"])
-@csrf_exempt
-def performance_test_view(request):
-    """パフォーマンステストビュー"""
-    if not settings.DEBUG:
-        return JsonResponse({'error': 'Debug mode only'}, status=403)
-    
-    results = {}
-    
-    # N+1クエリ問題のテスト
-    start_time = time.time()
-    
-    # 悪い例：N+1クエリ
-    users_bad = User.objects.all()[:10]
-    for user in users_bad:
-        _ = user.profile  # これがN+1を引き起こす
-    
-    bad_time = time.time() - start_time
-    bad_queries = len(connection.queries)
-    
-    # 良い例：select_related使用
-    connection.queries.clear()  # クエリログをクリア
-    start_time = time.time()
-    
-    users_good = User.objects.select_related('profile')[:10]
-    for user in users_good:
-        _ = user.profile
-    
-    good_time = time.time() - start_time
-    good_queries = len(connection.queries)
-    
-    results = {
-        'n_plus_1_test': {
-            'bad_approach': {
-                'time': f'{bad_time:.3f}s',
-                'queries': bad_queries
-            },
-            'good_approach': {
-                'time': f'{good_time:.3f}s', 
-                'queries': good_queries
-            }
-        }
-    }
-    
-    logger.info(f'Performance test completed: {results}')
-    
-    return JsonResponse(results)
-
-
-def sql_explain_view(request):
-    """SQL実行計画表示ビュー"""
-    if not settings.DEBUG:
-        return JsonResponse({'error': 'Debug mode only'}, status=403)
-    
-    from django.db import connection
-    
-    queries_with_explain = []
-    
-    # サンプルクエリの実行計画を取得
-    sample_queries = [
-        "SELECT * FROM users_user WHERE is_active = true LIMIT 10",
-        "SELECT u.*, p.*, c.* FROM users_user u LEFT JOIN users_userprofile p ON u.id = p.user_id LEFT JOIN users_category c ON p.category_id = c.id WHERE u.is_active = true"
-    ]
-    
-    with connection.cursor() as cursor:
-        for query in sample_queries:
-            cursor.execute(f"EXPLAIN ANALYZE {query}")
-            plan = cursor.fetchall()
-            
-            queries_with_explain.append({
-                'query': query,
-                'execution_plan': [row[0] for row in plan]
-            })
-    
-    return JsonResponse({'queries': queries_with_explain})
-
-
-def memory_usage_view(request):
-    """メモリ使用量確認ビュー"""
-    if not settings.DEBUG:
-        return JsonResponse({'error': 'Debug mode only'}, status=403)
-    
-    import psutil
-    import os
-    
-    process = psutil.Process(os.getpid())
-    memory_info = process.memory_info()
-    
-    return JsonResponse({
-        'memory_usage': {
-            'rss': f'{memory_info.rss / 1024 / 1024:.1f} MB',
-            'vms': f'{memory_info.vms / 1024 / 1024:.1f} MB',
-            'percent': f'{process.memory_percent():.1f}%'
-        },
-        'system_memory': {
-            'total': f'{psutil.virtual_memory().total / 1024 / 1024 / 1024:.1f} GB',
-            'available': f'{psutil.virtual_memory().available / 1024 / 1024 / 1024:.1f} GB',
-            'percent': f'{psutil.virtual_memory().percent:.1f}%'
-        }
-    })</code></pre>
-
-                        <h6>デバッグ用URL設定（users/urls.py更新）</h6>
-                        <pre class="code-block"><code class="language-python"># デバッグURL追加
-from django.conf import settings
-
-urlpatterns = [
-    # 既存のURL...
-    path('', views.UserListView.as_view(), name='user_list'),
-    # ... 他のURL
-]
-
-# デバッグ用URL（開発環境のみ）
-if settings.DEBUG:
-    from . import debug_views
-    
-    urlpatterns += [
-        path('debug/info/', debug_views.debug_info_view, name='debug_info'),
-        path('debug/performance/', debug_views.performance_test_view, name='performance_test'),
-        path('debug/sql-explain/', debug_views.sql_explain_view, name='sql_explain'),
-        path('debug/memory/', debug_views.memory_usage_view, name='memory_usage'),
-    ]</code></pre>
-                    </div>
-
-                    <h3 class="section-title">9.3 継続的インテグレーション（CI）の基礎</h3>
-                    <p>GitHub Actionsを使用したCI/CDパイプラインの基礎を構築します。</p>
-
-                    <div class="exercise-container">
-                        <h5>実習 9-3: CI/CD環境の構築</h5>
-                        
-                        <h6>GitHub Actions設定（.github/workflows/django.yml作成）</h6>
-                        <pre class="code-block"><code class="language-bash"># ディレクトリ作成
-mkdir .github
-mkdir .github\workflows</code></pre>
-                        
-                        <pre class="code-block"><code class="language-bash">name: Django CI/CD Pipeline
-
-on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: django_user
-          POSTGRES_PASSWORD: django_password
-          POSTGRES_DB: test_django_db
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    strategy:
-      matrix:
-        python-version: [3.10, 3.11, 3.12]
-
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install coverage pytest-django
-    
-    - name: Run migrations
-      env:
-        DATABASE_URL: postgres://django_user:django_password@localhost:5432/test_django_db
-      run: |
-        python manage.py migrate
-    
-    - name: Run tests with coverage
-      env:
-        DATABASE_URL: postgres://django_user:django_password@localhost:5432/test_django_db
-      run: |
-        coverage run --source='.' manage.py test
-        coverage xml
-    
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-    
-    - name: Run security checks
-      run: |
-        pip install bandit safety
-        bandit -r . -f json -o bandit-report.json || true
-        safety check --json --output safety-report.json || true
-    
-    - name: Django Check
-      env:
-        DATABASE_URL: postgres://django_user:django_password@localhost:5432/test_django_db
-      run: |
-        python manage.py check --deploy
-
-  lint:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
-    
-    - name: Install linting tools
-      run: |
-        python -m pip install --upgrade pip
-        pip install flake8 black isort
-    
-    - name: Run Black
-      run: black --check .
-    
-    - name: Run isort
-      run: isort --check-only .
-    
-    - name: Run flake8
-      run: flake8 .</code></pre>
-
-                        <h6>requirements.txt作成</h6>
-                        <pre class="code-block"><code class="language-bash"># requirements.txtの生成（仮想環境内で実行）
-pip freeze > requirements.txt
-
-# または手動で作成
-# Django==5.0.0
-# psycopg2-binary==2.9.9
-# python-decouple==3.8
-# Pillow==10.1.0
-# django-debug-toolbar==4.2.0</code></pre>
-
-                        <h6>テスト設定ファイル（conftest.py作成）</h6>
-                        <pre class="code-block"><code class="language-python">import os
-import django
-from django.conf import settings
-from django.test.utils import get_runner
-
-if __name__ == "__main__":
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'myproject.settings'
-    django.setup()
-    TestRunner = get_runner(settings)
-    test_runner = TestRunner()
-    failures = test_runner.run_tests(["users"])
-    if failures:
-        raise SystemExit(bool(failures))</code></pre>
-                    </div>
-
-                    <div class="quiz-container">
-                        <h5>理解度確認クイズ</h5>
-                        <ol>
-                            <li><strong>テスト駆動開発（TDD）</strong>: 
-                                <p>Q. TDDの基本的なサイクル（Red-Green-Refactor）を説明してください。</p>
-                                <p>A. Red（失敗するテストを書く）→ Green（テストが通る最小のコードを書く）→ Refactor（コードを改善）のサイクル</p>
+    def test_email_normalization(self):
+        """メールアドレス正規化のテスト"""
+        user_data = self.valid_user_data.copy()
+        user_data['email'] = 'TEST@EXAMPLE.COM'  # 大文字
+        user = User.objects.create_user(**user_data)
+        self.assertEqual(user.email, 'test@example.com')  # 小文字に変換される</code></pre>
                             </li>
-                            <li><strong>テストカバレッジ</strong>:
-                                <p>Q. テストカバレッジが100%であることの意味と限界は何ですか？</p>
-                                <p>A. 全てのコード行が実行されたことを示すが、全ての条件分岐やエッジケースがテストされているわけではない</p>
-                            </li>
-                            <li><strong>N+1クエリ問題</strong>:
-                                <p>Q. Django ORMでN+1クエリ問題を回避する方法は何ですか？</p>
-                                <p>A. select_related（1対1、多対1関係）やprefetch_related（1対多、多対多関係）を使用してクエリを最適化</p>
+                            <li><strong>tests/__init__.py作成</strong>:
+                                <pre class="code-block"><code class="language-bash">mkdir users/tests
+touch users/tests/__init__.py</code></pre>
                             </li>
                         </ol>
                     </div>
 
-                    <div class="highlight">
-                        <h5>チュートリアル完了おめでとうございます！</h5>
-                        <p>Django + PostgreSQL チュートリアルが完了しました！このチュートリアルを通じて以下のスキルを習得しました：</p>
-                        <ul>
-                            <li><strong>環境構築</strong>: Windows環境でのPython、Django、Docker環境の構築</li>
-                            <li><strong>データベース設計</strong>: PostgreSQLを使用したモデル設計とマイグレーション</li>
-                            <li><strong>MVTアーキテクチャ</strong>: Django特有の設計パターンの実装</li>
-                            <li><strong>CRUD操作</strong>: 基本的なWebアプリケーション機能の実装</li>
-                            <li><strong>セキュリティ</strong>: Webアプリケーションのセキュリティ対策</li>
-                            <li><strong>テストとデバッグ</strong>: 品質保証と開発効率化技術</li>
-                        </ul>
+                    <div class="exercise-container">
+                        <h5>実装 9-2: ビューテストの作成</h5>
+                        <p>ビューの動作をテストし、適切なレスポンスとリダイレクトを確認します。</p>
                         
-                        <h6>次のステップ</h6>
-                        <p>このチュートリアルで身につけた基礎知識を活用して、より高度なDjango開発に挑戦してください：</p>
-                        <ul>
-                            <li>Django REST Frameworkを使用したAPI開発</li>
-                            <li>Celeryを使用した非同期タスク処理</li>
-                            <li>Django Channelsを使用したWebSocket実装</li>
-                            <li>クラウドデプロイメント（AWS、Google Cloud、Azure）</li>
-                            <li>コンテナ化とKubernetes</li>
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>users/tests/test_views.py作成</strong>:
+                                <pre class="code-block"><code class="language-python"># users/tests/test_views.py (新規作成)
+from django.test import TestCase, Client
+from django.urls import reverse
+from django.contrib.auth import get_user_model
+from users.models import User
+
+class UserViewTest(TestCase):
+    """ユーザービューのテストクラス"""
+    
+    def setUp(self):
+        """テスト準備"""
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            first_name='太郎',
+            last_name='田中',
+            password='testpass123'
+        )
+    
+    def test_user_list_view(self):
+        """ユーザー一覧ページのテスト"""
+        url = reverse('users:user_list')
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'testuser')
+        self.assertContains(response, '太郎 田中')
+    
+    def test_user_detail_view(self):
+        """ユーザー詳細ページのテスト"""
+        url = reverse('users:user_detail', args=[self.user.pk])
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.user.username)
+        self.assertContains(response, self.user.email)
+    
+    def test_user_detail_view_nonexistent_user(self):
+        """存在しないユーザーの詳細ページテスト"""
+        url = reverse('users:user_detail', args=[9999])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+    
+    def test_user_create_view_get(self):
+        """ユーザー作成ページ（GET）のテスト"""
+        url = reverse('users:user_create')
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'ユーザー登録')
+    
+    def test_user_create_view_post_valid(self):
+        """ユーザー作成（POST・有効データ）のテスト"""
+        url = reverse('users:user_create')
+        data = {
+            'username': 'newuser',
+            'email': 'new@example.com',
+            'first_name': '次郎',
+            'last_name': '佐藤',
+            'password1': 'NewPass123!',
+            'password2': 'NewPass123!',
+        }
+        response = self.client.post(url, data)
+        
+        # リダイレクトされることを確認
+        self.assertEqual(response.status_code, 302)
+        
+        # ユーザーが作成されたことを確認
+        self.assertTrue(User.objects.filter(username='newuser').exists())
+    
+    def test_user_create_view_post_invalid(self):
+        """ユーザー作成（POST・無効データ）のテスト"""
+        url = reverse('users:user_create')
+        data = {
+            'username': '',  # 空のユーザー名
+            'email': 'invalid-email',  # 無効なメール
+            'password1': '123',  # 弱いパスワード
+            'password2': '456',  # パスワードが一致しない
+        }
+        response = self.client.post(url, data)
+        
+        # フォームエラーでページが再表示される
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(response, 'form', 'username', 'This field is required.')
+    
+    def test_user_update_view(self):
+        """ユーザー更新のテスト"""
+        url = reverse('users:user_update', args=[self.user.pk])
+        data = {
+            'username': 'updateduser',
+            'email': 'updated@example.com',
+            'first_name': '更新',
+            'last_name': '太郎',
+            'is_active': True,
+        }
+        response = self.client.post(url, data)
+        
+        # リダイレクトされることを確認
+        self.assertEqual(response.status_code, 302)
+        
+        # ユーザー情報が更新されたことを確認
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.username, 'updateduser')
+        self.assertEqual(self.user.first_name, '更新')
+    
+    def test_user_delete_view(self):
+        """ユーザー削除のテスト"""
+        user_id = self.user.pk
+        url = reverse('users:user_delete', args=[user_id])
+        
+        # DELETE確認ページ
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '削除確認')
+        
+        # 実際の削除実行
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+        
+        # ユーザーが削除されたことを確認
+        self.assertFalse(User.objects.filter(pk=user_id).exists())
+    
+    def test_dashboard_view(self):
+        """ダッシュボードページのテスト"""
+        url = reverse('users:dashboard')
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'ダッシュボード')
+        self.assertContains(response, '総ユーザー数')
+    
+    def test_user_search(self):
+        """ユーザー検索機能のテスト"""
+        # 検索対象のユーザーを追加作成
+        User.objects.create_user(
+            username='searchuser',
+            email='search@example.com',
+            first_name='検索',
+            last_name='対象'
+        )
+        
+        url = reverse('users:user_list')
+        response = self.client.get(url, {'search': '検索'})
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'searchuser')
+        self.assertNotContains(response, 'testuser')  # 検索にヒットしない</code></pre>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="exercise-container">
+                        <h5>実装 9-3: フォームテストの作成</h5>
+                        <p>カスタムフォームのバリデーション機能をテストします。</p>
+                        
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>users/tests/test_forms.py作成</strong>:
+                                <pre class="code-block"><code class="language-python"># users/tests/test_forms.py (新規作成)
+from django.test import TestCase
+from users.forms import CustomUserCreationForm, UserUpdateForm
+from users.models import User
+
+class CustomUserCreationFormTest(TestCase):
+    """カスタムユーザー作成フォームのテスト"""
+    
+    def test_form_valid_data(self):
+        """有効なデータでのフォームテスト"""
+        form_data = {
+            'username': 'testuser',
+            'email': 'test@example.com',
+            'first_name': '太郎',
+            'last_name': '田中',
+            'password1': 'TestPass123!',
+            'password2': 'TestPass123!',
+        }
+        form = CustomUserCreationForm(data=form_data)
+        self.assertTrue(form.is_valid())
+    
+    def test_form_invalid_email_duplicate(self):
+        """重複メールアドレスのテスト"""
+        # 既存ユーザー作成
+        User.objects.create_user(
+            username='existing',
+            email='test@example.com'
+        )
+        
+        form_data = {
+            'username': 'testuser',
+            'email': 'test@example.com',  # 重複
+            'first_name': '太郎',
+            'last_name': '田中',
+            'password1': 'TestPass123!',
+            'password2': 'TestPass123!',
+        }
+        form = CustomUserCreationForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('email', form.errors)
+    
+    def test_form_password_mismatch(self):
+        """パスワード不一致のテスト"""
+        form_data = {
+            'username': 'testuser',
+            'email': 'test@example.com',
+            'first_name': '太郎',
+            'last_name': '田中',
+            'password1': 'TestPass123!',
+            'password2': 'DifferentPass123!',  # 異なるパスワード
+        }
+        form = CustomUserCreationForm(data=form_data)
+        self.assertFalse(form.is_valid())
+    
+    def test_form_required_fields(self):
+        """必須フィールドのテスト"""
+        form_data = {}  # 空データ
+        form = CustomUserCreationForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        
+        required_fields = ['username', 'email', 'first_name', 'last_name']
+        for field in required_fields:
+            self.assertIn(field, form.errors)
+
+class UserUpdateFormTest(TestCase):
+    """ユーザー更新フォームのテスト"""
+    
+    def setUp(self):
+        """テスト準備"""
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com'
+        )
+    
+    def test_form_valid_data(self):
+        """有効なデータでのフォーム更新テスト"""
+        form_data = {
+            'username': 'updateduser',
+            'email': 'updated@example.com',
+            'first_name': '更新',
+            'last_name': '太郎',
+            'phone_number': '090-1234-5678',
+            'is_active': True,
+        }
+        form = UserUpdateForm(data=form_data, instance=self.user)
+        self.assertTrue(form.is_valid())
+    
+    def test_form_email_duplicate_different_user(self):
+        """他のユーザーとメール重複のテスト"""
+        # 別ユーザー作成
+        User.objects.create_user(
+            username='otheruser',
+            email='other@example.com'
+        )
+        
+        form_data = {
+            'username': 'testuser',
+            'email': 'other@example.com',  # 他ユーザーのメール
+            'first_name': '太郎',
+            'last_name': '田中',
+            'is_active': True,
+        }
+        form = UserUpdateForm(data=form_data, instance=self.user)
+        self.assertFalse(form.is_valid())
+        self.assertIn('email', form.errors)
+    
+    def test_form_same_email_same_user(self):
+        """同じユーザーの既存メール使用のテスト（OK）"""
+        form_data = {
+            'username': 'testuser',
+            'email': 'test@example.com',  # 自分の既存メール
+            'first_name': '太郎',
+            'last_name': '田中',
+            'is_active': True,
+        }
+        form = UserUpdateForm(data=form_data, instance=self.user)
+        self.assertTrue(form.is_valid())</code></pre>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="exercise-container">
+                        <h5>実装 9-4: テスト実行とカバレッジ確認</h5>
+                        <p>作成したテストを実行し、カバレッジを確認します。</p>
+                        
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>テスト実行</strong>:
+                                <pre class="code-block"><code class="language-bash"># すべてのテスト実行
+python manage.py test
+
+# 特定のアプリのテストのみ
+python manage.py test users
+
+# 詳細出力でテスト実行
+python manage.py test --verbosity=2
+
+# 特定のテストクラスのみ
+python manage.py test users.tests.test_models.UserModelTest</code></pre>
+                            </li>
+                            <li><strong>カバレッジツールのインストール</strong>:
+                                <pre class="code-block"><code class="language-bash">pip install coverage</code></pre>
+                            </li>
+                            <li><strong>カバレッジ付きテスト実行</strong>:
+                                <pre class="code-block"><code class="language-bash"># カバレッジデータ収集
+coverage run --source='.' manage.py test
+
+# カバレッジレポート表示
+coverage report
+
+# HTMLレポート生成
+coverage html</code></pre>
+                            </li>
+                        </ol>
+                        
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>すべてのテストがパスし、適切なカバレッジが確保されている</p>
+                        </div>
+                    </div>
+
+                    <div class="exercise-container">
+                        <h5>実装 9-5: ログ設定とデバッグ</h5>
+                        <p>アプリケーションのログ機能を設定し、デバッグツールを活用します。</p>
+                        
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>詳細なログ設定</strong>:
+                                <pre class="code-block"><code class="language-python"># myproject/settings.py のLOGGING設定を拡張
+import os
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'django.log'),
+            'formatter': 'verbose',
+        },
+        'error_file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'error.log'),
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['error_file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'users': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'propagate': False,
+        },
+    },
+}</code></pre>
+                            </li>
+                            <li><strong>ログの活用例</strong>:
+                                <pre class="code-block"><code class="language-python"># users/views.py でのログ使用例
+import logging
+
+logger = logging.getLogger(__name__)
+
+class UserCreateView(CreateView):
+    def form_valid(self, form):
+        user = form.save(commit=False)
+        user.set_password(form.cleaned_data['password1'])
+        user.save()
+        
+        # ログ出力
+        logger.info(f'New user created: {user.username} ({user.email})')
+        
+        messages.success(self.request, f'ユーザー「{user.username}」が正常に作成されました。')
+        return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        # エラーログ
+        logger.warning(f'User creation failed: {form.errors}')
+        return super().form_invalid(form)</code></pre>
+                            </li>
+                            <li><strong>デバッグヘルパーの作成</strong>:
+                                <pre class="code-block"><code class="language-python"># users/debug.py (新規作成)
+import logging
+from django.conf import settings
+from functools import wraps
+
+def debug_view(func):
+    """ビューのデバッグ用デコレータ"""
+    @wraps(func)
+    def wrapper(request, *args, **kwargs):
+        if settings.DEBUG:
+            logger = logging.getLogger(__name__)
+            logger.debug(f'View called: {func.__name__}')
+            logger.debug(f'Request method: {request.method}')
+            logger.debug(f'Request user: {request.user}')
+            logger.debug(f'Args: {args}, Kwargs: {kwargs}')
+        
+        result = func(request, *args, **kwargs)
+        
+        if settings.DEBUG:
+            logger.debug(f'View completed: {func.__name__}')
+        
+        return result
+    return wrapper</code></pre>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="exercise-container">
+                        <h5>実装 9-6: 本番環境への準備</h5>
+                        <p>本番環境でのデプロイに向けた最終設定を行います。</p>
+                        
+                        <h6>チェック項目</h6>
+                        <ol>
+                            <li><strong>セキュリティチェック</strong>:
+                                <pre class="code-block"><code class="language-bash"># Djangoセキュリティチェック
+python manage.py check --deploy</code></pre>
+                            </li>
+                            <li><strong>静的ファイル収集</strong>:
+                                <pre class="code-block"><code class="language-bash"># 静的ファイルを本番用ディレクトリに収集
+python manage.py collectstatic --noinput</code></pre>
+                            </li>
+                            <li><strong>マイグレーション確認</strong>:
+                                <pre class="code-block"><code class="language-bash"># 未適用のマイグレーション確認
+python manage.py showmigrations --list</code></pre>
+                            </li>
+                            <li><strong>requirements.txt更新</strong>:
+                                <pre class="code-block"><code class="language-bash"># 依存関係を最新の状態で記録
+pip freeze > requirements.txt</code></pre>
+                            </li>
+                        </ol>
+                        
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>本番環境デプロイの準備が整い、セキュリティチェックにパスする</p>
+                        </div>
+                    </div>
+
+                    <div class="quiz-container">
+                        <h5>チュートリアル完了チェック</h5>
+                        <ul class="list-unstyled">
+                            <li>☐ 包括的なテストスイートが作成されている</li>
+                            <li>☐ すべてのテストがパスする</li>
+                            <li>☐ 適切なカバレッジが確保されている</li>
+                            <li>☐ ログ機能が正常に動作している</li>
+                            <li>☐ デバッグツールが活用できている</li>
+                            <li>☐ 本番環境デプロイの準備が完了している</li>
                         </ul>
                     </div>
 
-                    <!-- Navigation -->
+                    <div class="alert alert-success mt-4">
+                        <h4>🎉 Django実践チュートリアル完了！</h4>
+                        <p>おめでとうございます！このチュートリアルで以下のスキルを習得しました：</p>
+                        <ul>
+                            <li>Django開発環境の構築</li>
+                            <li>PostgreSQL データベース連携</li>
+                            <li>カスタムユーザーモデルの実装</li>
+                            <li>フルCRUD機能の開発</li>
+                            <li>セキュリティ対策の実装</li>
+                            <li>テスト駆動開発の実践</li>
+                        </ul>
+                        <p><strong>次のステップ:</strong> より高度な機能（認証システム、API開発、デプロイメント等）に挑戦してみてください！</p>
+                    </div>
+
                     <div class="d-flex justify-content-between mt-4">
-                        <a href="step8-validation-security.html" class="btn btn-secondary">← 前の章: バリデーション・セキュリティ</a>
-                        <a href="../README.html" class="btn btn-success">チュートリアル完了 🎉</a>
+                        <a href="step8-validation-security.html" class="btn btn-secondary">← 前のステップ: バリデーション・セキュリティ</a>
+                        <span class="text-muted">完了！</span>
                     </div>
                 </div>
             </main>
         </div>
     </div>
-
-    <!-- Bootstrap JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Highlight.js 初期化 -->
+    <footer class="bg-dark text-white mt-5">
+        <div class="container-fluid py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="mb-0">&copy; 2025 F-Circle All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>hljs.highlightAll();</script>
+    <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
 </body>
 </html>

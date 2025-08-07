@@ -3,828 +3,372 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Django + PostgreSQL チュートリアル Step 7 - 基本的なCRUD操作の実装</title>
+    <title>Django実践チュートリアル ステップ7 - 基本的なCRUD操作の実装</title>
     
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Google Fonts - Noto Sans JP -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Highlight.js CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
     
     <style>
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            padding-top: 56px;
-        }
-        
-        .navbar {
-            background-color: #2e7d33;
-        }
-        
-        .sidebar {
-            position: sticky;
-            top: 70px;
-            height: calc(100vh - 70px);
-            overflow-y: auto;
-        }
-        
-        .chapter-title {
-            color: #2e7d33;
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #2e7d33;
-            padding-bottom: 0.5rem;
-        }
-        
-        .section-title {
-            color: #4caf50;
-            margin-top: 1.2rem;
-            margin-bottom: 0.8rem;
-        }
-        
-        .quiz-container {
-            background-color: #e8f5e8;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #2e7d33;
-        }
-        
-        .exercise-container {
-            background-color: #f3e5f5;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #9c27b0;
-        }
-        
-        .highlight {
-            background-color: #ffecb3;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #ffc107;
-        }
-        
-        .warning {
-            background-color: #ffebee;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #f44336;
-        }
-        
-        .code-block {
-            background-color: #1e1e1e;
-            border-radius: 5px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-        
-        .nav-link.active {
-            background-color: #2e7d33 !important;
-            color: white !important;
-        }
+        body { font-family: 'Noto Sans JP', sans-serif; padding-top: 56px; }
+        .navbar { background-color: #4caf50; }
+        .sidebar { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; }
+        .chapter-title { color: #4caf50; margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #4caf50; padding-bottom: 0.5rem; }
+        .section-title { color: #66bb6a; margin-top: 1.2rem; margin-bottom: 0.8rem; }
+        .quiz-container { background-color: #e8f5e8; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #4caf50; }
+        .exercise-container { background-color: #f3e5f5; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #9c27b0; }
+        .highlight { background-color: #ffecb3; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #ffc107; }
+        .code-block { background-color: #1e1e1e; border-radius: 5px; padding: 1rem; margin: 1rem 0; }
+        .nav-link.active { background-color: #4caf50 !important; color: white !important; }
     </style>
 </head>
 <body>
-    <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Django + PostgreSQL チュートリアル</a>
+            <a class="navbar-brand"><strong>Django実践チュートリアル</strong></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
         </div>
     </nav>
 
     <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar -->
-            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
                 <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>チュートリアルステップ</span>
+                    </h6>
                     <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="step1-environment-setup.html">
-                                Step 1: 環境構築
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="step2-docker-postgresql.html">
-                                Step 2: PostgreSQL環境
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="step3-django-project-init.html">
-                                Step 3: プロジェクト初期化
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="step4-models-migration.html">
-                                Step 4: モデル設計
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="step5-views-templates-urls.html">
-                                Step 5: ビュー・テンプレート
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="step6-admin-interface.html">
-                                Step 6: 管理サイト
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="step7-crud-operations.html">
-                                Step 7: CRUD操作
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="step8-validation-security.html">
-                                Step 8: バリデーション・セキュリティ
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="step9-testing-debugging.html">
-                                Step 9: テスト・デバッグ
-                            </a>
-                        </li>
+                        <li class="nav-item"><a class="nav-link" href="step1-environment-setup.html">ステップ1: 開発環境構築</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step2-docker-postgresql.html">ステップ2: Docker・PostgreSQL</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step3-django-project-init.html">ステップ3: プロジェクト初期化</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step4-models-migration.html">ステップ4: モデル・マイグレーション</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step5-views-templates-urls.html">ステップ5: ビュー・テンプレート・URL</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step6-admin-interface.html">ステップ6: 管理サイト</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="step7-crud-operations.html">ステップ7: CRUD操作</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step8-validation-security.html">ステップ8: バリデーション・セキュリティ</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step9-testing-debugging.html">ステップ9: テスト・デバッグ</a></li>
                     </ul>
                 </div>
             </nav>
 
-            <!-- Main content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-border">
-                    <h1 class="h2">Step 7: 基本的なCRUD操作の実装</h1>
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">ステップ7: 基本的なCRUD操作の実装</h1>
                 </div>
 
                 <div id="step7">
-                    <h2 class="chapter-title">完全なユーザー管理システムの構築</h2>
-                    
                     <div class="highlight">
-                        <h5>この章で学ぶこと</h5>
+                        <h5>このステップで実装すること</h5>
                         <ul>
-                            <li>クラスベースビュー（CBV）を使用したCRUD操作</li>
-                            <li>ListView、DetailView、CreateView、UpdateView、DeleteViewの実装</li>
-                            <li>Djangoフォームクラスの作成と活用</li>
-                            <li>フォームバリデーションと エラーハンドリング</li>
-                            <li>ページネーション機能の実装</li>
-                            <li>検索・フィルター機能の追加</li>
+                            <li>ユーザー一覧表示（ListView）</li>
+                            <li>ユーザー詳細表示（DetailView）</li>
+                            <li>ユーザー登録フォーム（CreateView）</li>
+                            <li>ユーザー情報更新（UpdateView）</li>
+                            <li>ユーザー削除機能（DeleteView）</li>
+                            <li>ページネーションの実装</li>
                         </ul>
                     </div>
 
-                    <h3 class="section-title">7.1 Djangoフォームクラスの作成</h3>
-                    <p>ModelFormを使用してユーザー作成・編集用のフォームを作成します。</p>
+                    <h2 class="chapter-title">フル機能CRUDアプリケーションの構築</h2>
 
                     <div class="exercise-container">
-                        <h5>実習 7-1: ユーザー管理フォームの実装</h5>
-                        <p>ModelFormを継承したフォームクラスを作成し、バリデーション機能を追加します。</p>
+                        <h5>実装 7-1: 残りのテンプレートファイル作成</h5>
+                        <p>ユーザーの作成・編集・削除・詳細表示用のテンプレートを作成します。</p>
                         
-                        <h6>フォームクラス作成（users/forms.py作成）</h6>
-                        <pre class="code-block"><code class="language-python">from django import forms
-from django.core.exceptions import ValidationError
-from .models import User, UserProfile, Category
-
-
-class UserForm(forms.ModelForm):
-    """ユーザー作成・編集フォーム"""
-    
-    class Meta:
-        model = User
-        fields = [
-            'username', 'email', 'first_name', 'last_name',
-            'phone_number', 'birth_date', 'gender',
-            'postal_code', 'address'
-        ]
-        widgets = {
-            'username': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': '英数字とアンダースコアのみ'
-            }),
-            'email': forms.EmailInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'user@example.com'
-            }),
-            'first_name': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': '太郎'
-            }),
-            'last_name': forms.TextInput(attrs={
-                'class': 'form-control', 
-                'placeholder': '田中'
-            }),
-            'phone_number': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': '090-1234-5678'
-            }),
-            'birth_date': forms.DateInput(attrs={
-                'class': 'form-control',
-                'type': 'date'
-            }),
-            'gender': forms.Select(attrs={
-                'class': 'form-select'
-            }),
-            'postal_code': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': '123-4567'
-            }),
-            'address': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 3
-            }),
-        }
-        labels = {
-            'username': 'ユーザー名',
-            'email': 'メールアドレス',
-            'first_name': '名',
-            'last_name': '姓',
-            'phone_number': '電話番号',
-            'birth_date': '生年月日',
-            'gender': '性別',
-            'postal_code': '郵便番号',
-            'address': '住所',
-        }
-    
-    def clean_username(self):
-        """ユーザー名のカスタムバリデーション"""
-        username = self.cleaned_data['username']
-        if len(username) < 3:
-            raise ValidationError('ユーザー名は3文字以上で入力してください。')
-        return username.lower()
-    
-    def clean_email(self):
-        """メールアドレスの重複チェック"""
-        email = self.cleaned_data['email']
-        qs = User.objects.filter(email=email)
-        
-        # 編集時は自分自身を除外
-        if self.instance.pk:
-            qs = qs.exclude(pk=self.instance.pk)
-            
-        if qs.exists():
-            raise ValidationError('このメールアドレスは既に使用されています。')
-        return email
-
-
-class UserProfileForm(forms.ModelForm):
-    """ユーザープロフィールフォーム"""
-    
-    class Meta:
-        model = UserProfile
-        fields = [
-            'category', 'bio', 'website',
-            'receive_notifications', 'receive_email_updates'
-        ]
-        widgets = {
-            'category': forms.Select(attrs={
-                'class': 'form-select'
-            }),
-            'bio': forms.Textarea(attrs={
-                'class': 'form-control',
-                'rows': 4,
-                'placeholder': '自己紹介を入力してください（500文字以内）'
-            }),
-            'website': forms.URLInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'https://example.com'
-            }),
-            'receive_notifications': forms.CheckboxInput(attrs={
-                'class': 'form-check-input'
-            }),
-            'receive_email_updates': forms.CheckboxInput(attrs={
-                'class': 'form-check-input'
-            }),
-        }
-        labels = {
-            'category': 'カテゴリ',
-            'bio': '自己紹介',
-            'website': 'ウェブサイト',
-            'receive_notifications': '通知受信',
-            'receive_email_updates': 'メール更新受信',
-        }
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # アクティブなカテゴリのみを選択肢として表示
-        self.fields['category'].queryset = Category.objects.filter(is_active=True)
-
-
-class UserSearchForm(forms.Form):
-    """ユーザー検索フォーム"""
-    
-    search = forms.CharField(
-        max_length=100,
-        required=False,
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'ユーザー名、氏名、メールアドレスで検索'
-        }),
-        label='検索キーワード'
-    )
-    
-    category = forms.ModelChoiceField(
-        queryset=Category.objects.filter(is_active=True),
-        required=False,
-        empty_label='全カテゴリ',
-        widget=forms.Select(attrs={
-            'class': 'form-select'
-        }),
-        label='カテゴリ'
-    )
-    
-    is_active = forms.ChoiceField(
-        choices=[('', '全て'), ('1', 'アクティブ'), ('0', '非アクティブ')],
-        required=False,
-        widget=forms.Select(attrs={
-            'class': 'form-select'
-        }),
-        label='状態'
-    )</code></pre>
-                    </div>
-
-                    <h3 class="section-title">7.2 クラスベースビューの実装</h3>
-                    <p>Django のジェネリッククラスベースビューを使用してCRUD操作を効率的に実装します。</p>
-
-                    <div class="exercise-container">
-                        <h5>実習 7-2: CBVベースのビュークラス実装</h5>
-                        <p>ListView、CreateView、UpdateView、DeleteViewを使ったモダンなビュー実装を行います。</p>
-                        
-                        <h6>CBVビュークラス（users/views.py更新）</h6>
-                        <pre class="code-block"><code class="language-python">from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages
-from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.db.models import Q
-from .models import User, Category, UserProfile
-from .forms import UserForm, UserProfileForm, UserSearchForm
-
-
-class UserListView(ListView):
-    """ユーザー一覧ビュー"""
-    model = User
-    template_name = 'users/user_list.html'
-    context_object_name = 'users'
-    paginate_by = 10
-    
-    def get_queryset(self):
-        queryset = User.objects.select_related('profile', 'profile__category').filter(is_active=True)
-        
-        # 検索処理
-        form = UserSearchForm(self.request.GET)
-        if form.is_valid():
-            search = form.cleaned_data['search']
-            category = form.cleaned_data['category']
-            is_active = form.cleaned_data['is_active']
-            
-            if search:
-                queryset = queryset.filter(
-                    Q(username__icontains=search) |
-                    Q(first_name__icontains=search) |
-                    Q(last_name__icontains=search) |
-                    Q(email__icontains=search)
-                )
-            
-            if category:
-                queryset = queryset.filter(profile__category=category)
-                
-            if is_active:
-                queryset = queryset.filter(is_active=is_active == '1')
-        
-        return queryset.order_by('-created_at')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['search_form'] = UserSearchForm(self.request.GET)
-        context['total_users'] = self.get_queryset().count()
-        return context
-
-
-class UserDetailView(DetailView):
-    """ユーザー詳細ビュー"""
-    model = User
-    template_name = 'users/user_detail.html'
-    context_object_name = 'user'
-    
-    def get_object(self):
-        user = super().get_object()
-        # プロフィールが存在しない場合は作成
-        UserProfile.objects.get_or_create(user=user)
-        return user
-
-
-class UserCreateView(CreateView):
-    """ユーザー作成ビュー"""
-    model = User
-    form_class = UserForm
-    template_name = 'users/user_form.html'
-    success_url = reverse_lazy('users:user_list')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'ユーザー作成'
-        context['submit_text'] = '作成'
-        
-        if self.request.POST:
-            context['profile_form'] = UserProfileForm(self.request.POST)
-        else:
-            context['profile_form'] = UserProfileForm()
-        
-        return context
-    
-    def form_valid(self, form):
-        context = self.get_context_data()
-        profile_form = context['profile_form']
-        
-        if profile_form.is_valid():
-            self.object = form.save()
-            
-            # プロフィールの保存
-            profile = profile_form.save(commit=False)
-            profile.user = self.object
-            profile.save()
-            
-            messages.success(
-                self.request, 
-                f'ユーザー「{self.object.get_full_name()}」を作成しました。'
-            )
-            return super().form_valid(form)
-        else:
-            return self.render_to_response(self.get_context_data(form=form))
-
-
-class UserUpdateView(UpdateView):
-    """ユーザー更新ビュー"""
-    model = User
-    form_class = UserForm
-    template_name = 'users/user_form.html'
-    
-    def get_success_url(self):
-        return reverse_lazy('users:user_detail', kwargs={'pk': self.object.pk})
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'ユーザー編集'
-        context['submit_text'] = '更新'
-        context['is_edit'] = True
-        
-        profile, created = UserProfile.objects.get_or_create(user=self.object)
-        
-        if self.request.POST:
-            context['profile_form'] = UserProfileForm(
-                self.request.POST, instance=profile
-            )
-        else:
-            context['profile_form'] = UserProfileForm(instance=profile)
-        
-        return context
-    
-    def form_valid(self, form):
-        context = self.get_context_data()
-        profile_form = context['profile_form']
-        
-        if profile_form.is_valid():
-            self.object = form.save()
-            profile_form.save()
-            
-            messages.success(
-                self.request, 
-                f'ユーザー「{self.object.get_full_name()}」を更新しました。'
-            )
-            return super().form_valid(form)
-        else:
-            return self.render_to_response(self.get_context_data(form=form))
-
-
-class UserDeleteView(DeleteView):
-    """ユーザー削除ビュー（論理削除）"""
-    model = User
-    template_name = 'users/user_confirm_delete.html'
-    success_url = reverse_lazy('users:user_list')
-    
-    def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        # 物理削除の代わりに論理削除
-        self.object.is_active = False
-        self.object.save()
-        
-        messages.success(
-            request, 
-            f'ユーザー「{self.object.get_full_name()}」を削除しました。'
-        )
-        return redirect(self.success_url)
-
-
-class CategoryListView(ListView):
-    """カテゴリ一覧ビュー"""
-    model = Category
-    template_name = 'users/category_list.html'
-    context_object_name = 'categories'
-    
-    def get_queryset(self):
-        return Category.objects.filter(is_active=True).prefetch_related('users')
-
-
-# 従来の関数ベースビューも併用可能
-def user_list(request):
-    """ユーザー一覧（関数ベースビュー版）"""
-    return UserListView.as_view()(request)
-
-
-def user_detail(request, pk):
-    """ユーザー詳細（関数ベースビュー版）"""
-    return UserDetailView.as_view()(request, pk=pk)</code></pre>
-                    </div>
-
-                    <h3 class="section-title">7.3 テンプレートの改良</h3>
-                    <p>フォーム機能に対応したテンプレートを作成・更新します。</p>
-
-                    <div class="exercise-container">
-                        <h5>実習 7-3: フォーム対応テンプレートの実装</h5>
-                        <p>Bootstrap を使用した美しいフォームテンプレートを作成します。</p>
-                        
-                        <h6>ユーザーフォームテンプレート（users/templates/users/user_form.html）</h6>
-                        <pre class="code-block"><code class="language-html">{% extends 'base.html' %}
-
-{% block title %}{{ title }} - Django Tutorial{% endblock %}
-
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>ユーザー詳細テンプレート</strong>:
+                                <pre class="code-block"><code class="language-html">&lt;!-- templates/users/user_detail.html --&gt;
+{% extends 'base.html' %}
+{% block title %}{{ user.username }} - 詳細 - {{ block.super }}{% endblock %}
 {% block content %}
-&lt;div class="d-flex justify-content-between align-items-center mb-4"&gt;
-    &lt;h2&gt;{{ title }}&lt;/h2&gt;
-    &lt;a href="{% url 'users:user_list' %}" class="btn btn-secondary"&gt;
-        一覧に戻る
-    &lt;/a&gt;
-&lt;/div&gt;
-
-&lt;form method="post" novalidate&gt;
-    {% csrf_token %}
-    
-    &lt;div class="row"&gt;
-        &lt;div class="col-md-8"&gt;
-            &lt;div class="card"&gt;
-                &lt;div class="card-header"&gt;
-                    &lt;h5 class="mb-0"&gt;基本情報&lt;/h5&gt;
-                &lt;/div&gt;
-                &lt;div class="card-body"&gt;
-                    &lt;div class="row"&gt;
-                        &lt;div class="col-md-6"&gt;
-                            &lt;div class="mb-3"&gt;
-                                &lt;label for="{{ form.username.id_for_label }}" class="form-label"&gt;
-                                    {{ form.username.label }}
-                                    {% if form.username.field.required %}&lt;span class="text-danger"&gt;*&lt;/span&gt;{% endif %}
-                                &lt;/label&gt;
-                                {{ form.username }}
-                                {% if form.username.help_text %}
-                                    &lt;div class="form-text"&gt;{{ form.username.help_text }}&lt;/div&gt;
-                                {% endif %}
-                                {% if form.username.errors %}
-                                    &lt;div class="text-danger"&gt;
-                                        {% for error in form.username.errors %}
-                                            &lt;small&gt;{{ error }}&lt;/small&gt;
-                                        {% endfor %}
-                                    &lt;/div&gt;
-                                {% endif %}
-                            &lt;/div&gt;
-                        &lt;/div&gt;
-                        
-                        &lt;div class="col-md-6"&gt;
-                            &lt;div class="mb-3"&gt;
-                                &lt;label for="{{ form.email.id_for_label }}" class="form-label"&gt;
-                                    {{ form.email.label }}
-                                    {% if form.email.field.required %}&lt;span class="text-danger"&gt;*&lt;/span&gt;{% endif %}
-                                &lt;/label&gt;
-                                {{ form.email }}
-                                {% if form.email.errors %}
-                                    &lt;div class="text-danger"&gt;
-                                        {% for error in form.email.errors %}
-                                            &lt;small&gt;{{ error }}&lt;/small&gt;
-                                        {% endfor %}
-                                    &lt;/div&gt;
-                                {% endif %}
-                            &lt;/div&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;
-                    
-                    &lt;div class="row"&gt;
-                        &lt;div class="col-md-6"&gt;
-                            &lt;div class="mb-3"&gt;
-                                &lt;label for="{{ form.last_name.id_for_label }}" class="form-label"&gt;
-                                    {{ form.last_name.label }}
-                                    {% if form.last_name.field.required %}&lt;span class="text-danger"&gt;*&lt;/span&gt;{% endif %}
-                                &lt;/label&gt;
-                                {{ form.last_name }}
-                                {% if form.last_name.errors %}
-                                    &lt;div class="text-danger"&gt;
-                                        {% for error in form.last_name.errors %}
-                                            &lt;small&gt;{{ error }}&lt;/small&gt;
-                                        {% endfor %}
-                                    &lt;/div&gt;
-                                {% endif %}
-                            &lt;/div&gt;
-                        &lt;/div&gt;
-                        
-                        &lt;div class="col-md-6"&gt;
-                            &lt;div class="mb-3"&gt;
-                                &lt;label for="{{ form.first_name.id_for_label }}" class="form-label"&gt;
-                                    {{ form.first_name.label }}
-                                    {% if form.first_name.field.required %}&lt;span class="text-danger"&gt;*&lt;/span&gt;{% endif %}
-                                &lt;/label&gt;
-                                {{ form.first_name }}
-                                {% if form.first_name.errors %}
-                                    &lt;div class="text-danger"&gt;
-                                        {% for error in form.first_name.errors %}
-                                            &lt;small&gt;{{ error }}&lt;/small&gt;
-                                        {% endfor %}
-                                    &lt;/div&gt;
-                                {% endif %}
-                            &lt;/div&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;
-                    
-                    &lt;!-- その他のフィールドも同様に実装 --&gt;
+&lt;div class="row"&gt;
+    &lt;div class="col-md-8"&gt;
+        &lt;div class="card"&gt;
+            &lt;div class="card-header d-flex justify-content-between align-items-center"&gt;
+                &lt;h5 class="mb-0"&gt;ユーザー詳細: {{ user.username }}&lt;/h5&gt;
+                &lt;div&gt;
+                    &lt;a href="{% url 'users:user_update' user.pk %}" class="btn btn-warning btn-sm"&gt;編集&lt;/a&gt;
+                    &lt;a href="{% url 'users:user_delete' user.pk %}" class="btn btn-danger btn-sm"&gt;削除&lt;/a&gt;
                 &lt;/div&gt;
             &lt;/div&gt;
-            
-            &lt;!-- プロフィール情報 --&gt;
-            &lt;div class="card mt-4"&gt;
-                &lt;div class="card-header"&gt;
-                    &lt;h5 class="mb-0"&gt;プロフィール情報&lt;/h5&gt;
-                &lt;/div&gt;
-                &lt;div class="card-body"&gt;
-                    &lt;div class="row"&gt;
-                        &lt;div class="col-md-6"&gt;
-                            &lt;div class="mb-3"&gt;
-                                &lt;label for="{{ profile_form.category.id_for_label }}" class="form-label"&gt;
-                                    {{ profile_form.category.label }}
-                                &lt;/label&gt;
-                                {{ profile_form.category }}
-                            &lt;/div&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;
-                    
+            &lt;div class="card-body"&gt;
+                &lt;table class="table"&gt;
+                    &lt;tr&gt;&lt;th&gt;ユーザー名&lt;/th&gt;&lt;td&gt;{{ user.username }}&lt;/td&gt;&lt;/tr&gt;
+                    &lt;tr&gt;&lt;th&gt;フルネーム&lt;/th&gt;&lt;td&gt;{{ user.get_full_name|default:'-' }}&lt;/td&gt;&lt;/tr&gt;
+                    &lt;tr&gt;&lt;th&gt;メール&lt;/th&gt;&lt;td&gt;&lt;a href="mailto:{{ user.email }}"&gt;{{ user.email }}&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+                    &lt;tr&gt;&lt;th&gt;電話番号&lt;/th&gt;&lt;td&gt;{{ user.phone_number|default:'-' }}&lt;/td&gt;&lt;/tr&gt;
+                    &lt;tr&gt;&lt;th&gt;年齢&lt;/th&gt;&lt;td&gt;{% if user.get_age %}{{ user.get_age }}歳{% else %}-{% endif %}&lt;/td&gt;&lt;/tr&gt;
+                    &lt;tr&gt;&lt;th&gt;ステータス&lt;/th&gt;&lt;td&gt;&lt;span class="badge bg-{% if user.is_active %}success{% else %}secondary{% endif %}"&gt;{% if user.is_active %}アクティブ{% else %}非アクティブ{% endif %}&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+                    &lt;tr&gt;&lt;th&gt;登録日&lt;/th&gt;&lt;td&gt;{{ user.date_joined|date:"Y年m月d日 H:i" }}&lt;/td&gt;&lt;/tr&gt;
+                    &lt;tr&gt;&lt;th&gt;最終ログイン&lt;/th&gt;&lt;td&gt;{{ user.last_login|date:"Y年m月d日 H:i"|default:'-' }}&lt;/td&gt;&lt;/tr&gt;
+                &lt;/table&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;a href="{% url 'users:user_list' %}" class="btn btn-secondary mt-3"&gt;一覧に戻る&lt;/a&gt;
+{% endblock %}</code></pre>
+                            </li>
+                            <li><strong>ユーザー作成・編集フォーム</strong>:
+                                <pre class="code-block"><code class="language-html">&lt;!-- templates/users/user_form.html --&gt;
+{% extends 'base.html' %}
+{% block title %}{% if form.instance.pk %}{{ form.instance.username }} - 編集{% else %}新規ユーザー登録{% endif %} - {{ block.super }}{% endblock %}
+{% block content %}
+&lt;div class="row justify-content-center"&gt;
+    &lt;div class="col-md-8"&gt;
+        &lt;div class="card"&gt;
+            &lt;div class="card-header"&gt;
+                &lt;h5 class="mb-0"&gt;{% if form.instance.pk %}ユーザー情報編集{% else %}新規ユーザー登録{% endif %}&lt;/h5&gt;
+            &lt;/div&gt;
+            &lt;div class="card-body"&gt;
+                &lt;form method="post"&gt;
+                    {% csrf_token %}
+                    {% for field in form %}
                     &lt;div class="mb-3"&gt;
-                        &lt;label for="{{ profile_form.bio.id_for_label }}" class="form-label"&gt;
-                            {{ profile_form.bio.label }}
-                        &lt;/label&gt;
-                        {{ profile_form.bio }}
-                        {% if profile_form.bio.help_text %}
-                            &lt;div class="form-text"&gt;{{ profile_form.bio.help_text }}&lt;/div&gt;
+                        &lt;label for="{{ field.id_for_label }}" class="form-label"&gt;{{ field.label }}{% if field.field.required %} *{% endif %}&lt;/label&gt;
+                        {% if field.field.widget.input_type == 'checkbox' %}
+                            &lt;div class="form-check"&gt;
+                                {{ field|add_class:"form-check-input" }}
+                            &lt;/div&gt;
+                        {% else %}
+                            {{ field|add_class:"form-control" }}
+                        {% endif %}
+                        {% if field.help_text %}
+                            &lt;div class="form-text"&gt;{{ field.help_text }}&lt;/div&gt;
+                        {% endif %}
+                        {% if field.errors %}
+                            &lt;div class="text-danger"&gt;{{ field.errors }}&lt;/div&gt;
                         {% endif %}
                     &lt;/div&gt;
-                    
-                    &lt;div class="row"&gt;
-                        &lt;div class="col-md-6"&gt;
-                            &lt;div class="form-check mb-3"&gt;
-                                {{ profile_form.receive_notifications }}
-                                &lt;label for="{{ profile_form.receive_notifications.id_for_label }}" class="form-check-label"&gt;
-                                    {{ profile_form.receive_notifications.label }}
-                                &lt;/label&gt;
-                            &lt;/div&gt;
-                        &lt;/div&gt;
-                        &lt;div class="col-md-6"&gt;
-                            &lt;div class="form-check mb-3"&gt;
-                                {{ profile_form.receive_email_updates }}
-                                &lt;label for="{{ profile_form.receive_email_updates.id_for_label }}" class="form-check-label"&gt;
-                                    {{ profile_form.receive_email_updates.label }}
-                                &lt;/label&gt;
-                            &lt;/div&gt;
-                        &lt;/div&gt;
+                    {% endfor %}
+                    &lt;div class="d-flex justify-content-between"&gt;
+                        &lt;a href="{% url 'users:user_list' %}" class="btn btn-secondary"&gt;キャンセル&lt;/a&gt;
+                        &lt;button type="submit" class="btn btn-success"&gt;{% if form.instance.pk %}更新{% else %}登録{% endif %}&lt;/button&gt;
                     &lt;/div&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
-        
-        &lt;div class="col-md-4"&gt;
-            &lt;div class="card"&gt;
-                &lt;div class="card-header"&gt;
-                    &lt;h5 class="mb-0"&gt;操作&lt;/h5&gt;
-                &lt;/div&gt;
-                &lt;div class="card-body"&gt;
-                    &lt;button type="submit" class="btn btn-success w-100 mb-3"&gt;
-                        {{ submit_text }}
-                    &lt;/button&gt;
-                    
-                    &lt;a href="{% url 'users:user_list' %}" class="btn btn-secondary w-100"&gt;
-                        キャンセル
-                    &lt;/a&gt;
-                    
-                    {% if is_edit and object %}
-                        &lt;hr&gt;
-                        &lt;a href="{% url 'users:user_delete' object.pk %}" 
-                           class="btn btn-outline-danger w-100"&gt;
-                            削除
-                        &lt;/a&gt;
-                    {% endif %}
-                &lt;/div&gt;
+                &lt;/form&gt;
             &lt;/div&gt;
         &lt;/div&gt;
     &lt;/div&gt;
-&lt;/form&gt;
+&lt;/div&gt;
 {% endblock %}</code></pre>
-
-                        <h6>削除確認テンプレート（users/templates/users/user_confirm_delete.html）</h6>
-                        <pre class="code-block"><code class="language-html">{% extends 'base.html' %}
-
-{% block title %}ユーザー削除確認 - Django Tutorial{% endblock %}
-
+                            </li>
+                            <li><strong>削除確認テンプレート</strong>:
+                                <pre class="code-block"><code class="language-html">&lt;!-- templates/users/user_confirm_delete.html --&gt;
+{% extends 'base.html' %}
+{% block title %}{{ user.username }} - 削除確認 - {{ block.super }}{% endblock %}
 {% block content %}
-&lt;div class="d-flex justify-content-between align-items-center mb-4"&gt;
-    &lt;h2&gt;ユーザー削除確認&lt;/h2&gt;
-    &lt;a href="{% url 'users:user_detail' object.pk %}" class="btn btn-secondary"&gt;
-        戻る
-    &lt;/a&gt;
-&lt;/div&gt;
-
-&lt;div class="alert alert-warning"&gt;
-    &lt;h4&gt;&lt;i class="fas fa-exclamation-triangle"&gt;&lt;/i&gt; 確認&lt;/h4&gt;
-    &lt;p&gt;以下のユーザーを削除してもよろしいですか？&lt;/p&gt;
-&lt;/div&gt;
-
-&lt;div class="card"&gt;
-    &lt;div class="card-body"&gt;
-        &lt;dl class="row"&gt;
-            &lt;dt class="col-sm-3"&gt;ユーザー名:&lt;/dt&gt;
-            &lt;dd class="col-sm-9"&gt;&lt;strong&gt;{{ object.username }}&lt;/strong&gt;&lt;/dd&gt;
-            
-            &lt;dt class="col-sm-3"&gt;氏名:&lt;/dt&gt;
-            &lt;dd class="col-sm-9"&gt;{{ object.get_full_name }}&lt;/dd&gt;
-            
-            &lt;dt class="col-sm-3"&gt;メールアドレス:&lt;/dt&gt;
-            &lt;dd class="col-sm-9"&gt;{{ object.email }}&lt;/dd&gt;
-            
-            &lt;dt class="col-sm-3"&gt;作成日:&lt;/dt&gt;
-            &lt;dd class="col-sm-9"&gt;{{ object.created_at|date:"Y年m月d日 H:i" }}&lt;/dd&gt;
-        &lt;/dl&gt;
+&lt;div class="row justify-content-center"&gt;
+    &lt;div class="col-md-6"&gt;
+        &lt;div class="card border-danger"&gt;
+            &lt;div class="card-header bg-danger text-white"&gt;
+                &lt;h5 class="mb-0"&gt;ユーザー削除確認&lt;/h5&gt;
+            &lt;/div&gt;
+            &lt;div class="card-body"&gt;
+                &lt;p class="card-text"&gt;以下のユーザーを削除してもよろしいですか？&lt;/p&gt;
+                &lt;div class="alert alert-warning"&gt;
+                    &lt;strong&gt;{{ user.username }} ({{ user.get_full_name }})&lt;/strong&gt;&lt;br&gt;
+                    メール: {{ user.email }}&lt;br&gt;
+                    登録日: {{ user.date_joined|date:"Y年m月d日" }}
+                &lt;/div&gt;
+                &lt;p class="text-danger"&gt;&lt;strong&gt;注意: この操作は取り消すことができません。&lt;/strong&gt;&lt;/p&gt;
+                &lt;form method="post"&gt;
+                    {% csrf_token %}
+                    &lt;div class="d-flex justify-content-between"&gt;
+                        &lt;a href="{% url 'users:user_detail' user.pk %}" class="btn btn-secondary"&gt;キャンセル&lt;/a&gt;
+                        &lt;button type="submit" class="btn btn-danger"&gt;削除を実行&lt;/button&gt;
+                    &lt;/div&gt;
+                &lt;/form&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
     &lt;/div&gt;
 &lt;/div&gt;
-
-&lt;div class="mt-4"&gt;
-    &lt;form method="post"&gt;
-        {% csrf_token %}
-        &lt;button type="submit" class="btn btn-danger"&gt;
-            &lt;i class="fas fa-trash"&gt;&lt;/i&gt; 削除する
-        &lt;/button&gt;
-        &lt;a href="{% url 'users:user_detail' object.pk %}" class="btn btn-secondary"&gt;
-            キャンセル
-        &lt;/a&gt;
-    &lt;/form&gt;
-&lt;/div&gt;
-
-&lt;div class="alert alert-info mt-4"&gt;
-    &lt;small&gt;
-        &lt;i class="fas fa-info-circle"&gt;&lt;/i&gt; 
-        注意: この操作は論理削除となり、ユーザーは非アクティブ状態になります。
-        データは完全には削除されません。
-    &lt;/small&gt;
-&lt;/div&gt;
 {% endblock %}</code></pre>
-                    </div>
-
-                    <div class="quiz-container">
-                        <h5>理解度確認クイズ</h5>
-                        <ol>
-                            <li><strong>クラスベースビュー</strong>: 
-                                <p>Q. ListView、CreateView、UpdateViewの主な機能と使い分けを説明してください。</p>
-                                <p>A. ListView（一覧表示とページネーション）、CreateView（新規作成フォーム）、UpdateView（編集フォーム）で、それぞれ特定のCRUD操作に特化</p>
-                            </li>
-                            <li><strong>ModelForm</strong>:
-                                <p>Q. ModelFormを使用する利点は何ですか？</p>
-                                <p>A. モデル定義からフォームを自動生成、バリデーション機能の継承、コード重複の削減が可能</p>
-                            </li>
-                            <li><strong>論理削除</strong>:
-                                <p>Q. 物理削除ではなく論理削除を実装する理由は何ですか？</p>
-                                <p>A. データの完全消失を防ぎ、監査証跡の保持、誤削除からの復旧が可能で、ビジネス要件に対応</p>
                             </li>
                         </ol>
                     </div>
 
-                    <div class="highlight">
-                        <h5>次のステップの準備</h5>
-                        <p>Step 7が完了しました！次のStep 8では、フォームバリデーションとセキュリティの強化を行います。以下を確認してから進んでください：</p>
-                        <ul>
-                            <li>ModelFormクラスが正しく実装され、バリデーション機能が動作している</li>
-                            <li>クラスベースビューによるCRUD操作が全て実装されている</li>
-                            <li>フォームテンプレートがBootstrapでスタイリングされている</li>
-                            <li>削除機能が論理削除として正しく実装されている</li>
-                            <li>エラーハンドリングとメッセージ表示が正常に動作している</li>
+                    <div class="exercise-container">
+                        <h5>実装 7-2: Djangoフォームのカスタマイズ</h5>
+                        <p>より使いやすいフォームを作成し、バリデーション機能を追加します。</p>
+                        
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>users/forms.py作成</strong>:
+                                <pre class="code-block"><code class="language-python"># users/forms.py (新規作成)
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from .models import User
+
+class CustomUserCreationForm(UserCreationForm):
+    """カスタムユーザー作成フォーム"""
+    email = forms.EmailField(required=True, help_text='有効なメールアドレスを入力してください。')
+    first_name = forms.CharField(max_length=50, required=True, help_text='姓を入力してください。')
+    last_name = forms.CharField(max_length=50, required=True, help_text='名を入力してください。')
+    
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
+    
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email and User.objects.filter(email=email).exists():
+            raise forms.ValidationError('このメールアドレスは既に使用されています。')
+        return email
+
+class UserUpdateForm(forms.ModelForm):
+    """ユーザー更新フォーム"""
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name', 'phone_number', 'birth_date', 'is_active']
+        widgets = {
+            'birth_date': forms.DateInput(attrs={'type': 'date'}),
+            'phone_number': forms.TextInput(attrs={'placeholder': '090-1234-5678'}),
+        }
+    
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email and User.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError('このメールアドレスは既に使用されています。')
+        return email</code></pre>
+                            </li>
+                            <li><strong>views.pyの更新</strong>: フォームクラスを使用するように変更
+                                <pre class="code-block"><code class="language-python"># users/views.py に追加・変更
+from .forms import CustomUserCreationForm, UserUpdateForm
+
+class UserCreateView(CreateView):
+    """ユーザー作成"""
+    model = User
+    form_class = CustomUserCreationForm  # フォームクラス指定
+    template_name = 'users/user_form.html'
+    success_url = reverse_lazy('users:user_list')
+    
+    def form_valid(self, form):
+        user = form.save(commit=False)
+        user.set_password(form.cleaned_data['password1'])  # パスワード暗号化
+        user.save()
+        messages.success(self.request, f'ユーザー「{user.username}」が正常に作成されました。')
+        return super().form_valid(form)
+
+class UserUpdateView(UpdateView):
+    """ユーザー更新"""
+    model = User
+    form_class = UserUpdateForm  # フォームクラス指定
+    template_name = 'users/user_form.html'
+    success_url = reverse_lazy('users:user_list')
+    
+    def form_valid(self, form):
+        messages.success(self.request, f'ユーザー「{form.instance.username}」の情報が正常に更新されました。')
+        return super().form_valid(form)</code></pre>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="exercise-container">
+                        <h5>実装 7-3: ページネーション機能の強化</h5>
+                        <p>大量データに対応したページネーション機能を実装します。</p>
+                        
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>UserListViewの拡張</strong>:
+                                <pre class="code-block"><code class="language-python"># users/views.py のUserListView更新
+class UserListView(ListView):
+    model = User
+    template_name = 'users/user_list.html'
+    context_object_name = 'users'
+    paginate_by = 5  # 1ページあたりの表示件数
+    
+    def get_queryset(self):
+        queryset = User.objects.all()
+        
+        # 検索機能
+        search_query = self.request.GET.get('search')
+        if search_query:
+            queryset = queryset.filter(
+                Q(username__icontains=search_query) |
+                Q(email__icontains=search_query) |
+                Q(first_name__icontains=search_query) |
+                Q(last_name__icontains=search_query)
+            )
+        
+        # ソート機能
+        sort = self.request.GET.get('sort', '-date_joined')
+        valid_sorts = ['username', '-username', 'email', '-email', 'date_joined', '-date_joined']
+        if sort in valid_sorts:
+            queryset = queryset.order_by(sort)
+        
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['search_query'] = self.request.GET.get('search', '')
+        context['current_sort'] = self.request.GET.get('sort', '-date_joined')
+        context['total_count'] = self.get_queryset().count()
+        return context</code></pre>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="exercise-container">
+                        <h5>実装 7-4: 最終動作確認</h5>
+                        <p>すべてのCRUD機能が正常に動作することを確認します。</p>
+                        
+                        <h6>動作確認</h6>
+                        <ol>
+                            <li>開発サーバー起動: <code>python manage.py runserver</code></li>
+                            <li>http://127.0.0.1:8000/ でユーザー一覧を確認</li>
+                            <li>新規ユーザー登録をテスト</li>
+                            <li>ユーザー詳細表示を確認</li>
+                            <li>ユーザー情報の編集をテスト</li>
+                            <li>検索機能をテスト</li>
+                            <li>ページネーションをテスト</li>
+                            <li>ユーザー削除をテスト</li>
+                        </ol>
+                        
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>フル機能のCRUDアプリケーションが完成し、すべての操作が正常に動作する</p>
+                        </div>
+                    </div>
+
+                    <div class="quiz-container">
+                        <h5>ステップ完了チェック</h5>
+                        <ul class="list-unstyled">
+                            <li>☐ すべてのテンプレートが作成されている</li>
+                            <li>☐ カスタムフォームが実装されている</li>
+                            <li>☐ ユーザーの作成・詳細・編集・削除が動作する</li>
+                            <li>☐ 検索・ソート機能が動作する</li>
+                            <li>☐ ページネーションが正常に機能する</li>
+                            <li>☐ フォームバリデーションが適切に動作する</li>
                         </ul>
                     </div>
 
-                    <!-- Navigation -->
                     <div class="d-flex justify-content-between mt-4">
-                        <a href="step6-admin-interface.html" class="btn btn-secondary">← 前の章: 管理サイト</a>
-                        <a href="step8-validation-security.html" class="btn btn-primary">次の章: バリデーション・セキュリティ →</a>
+                        <a href="step6-admin-interface.html" class="btn btn-secondary">← 前のステップ: 管理サイト</a>
+                        <a href="step8-validation-security.html" class="btn btn-primary">次のステップ: バリデーション・セキュリティ →</a>
                     </div>
                 </div>
             </main>
         </div>
     </div>
-
-    <!-- Bootstrap JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Highlight.js 初期化 -->
+    <footer class="bg-dark text-white mt-5">
+        <div class="container-fluid py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="mb-0">&copy; 2025 F-Circle All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>hljs.highlightAll();</script>
+    <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
 </body>
 </html>
