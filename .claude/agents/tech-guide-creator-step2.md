@@ -36,7 +36,7 @@ color: cyan
    - `.quiz-container`内理解度確認クイズ（概念理解を重視した問題）
    - 章間ナビゲーションリンク
    - **最小限のコード例**：概念説明のために必要な場合のみコード例を提供し、`<pre class="code-block"><code class="language-[言語名]">`タグで囲み、黒背景で表示する
-   - **図表やチャート**を積極的に使って視覚的に説明してください（**Mermaid.js**を使用して概念図、関係図を作成すること。**ただし、フローチャートは使用禁止**）
+   - **図表やチャート**を積極的に使って視覚的に説明してください（**Mermaid.js**を使用して概念図、関係図を作成すること。**複雑なフローチャートは使用禁止**）
    - **重要な概念のハイライト**：`.highlight`クラスを使用して重要なポイントを強調表示する
 
 4. **技術標準**：生成されるすべてのHTMLが以下を確実に満たす：
@@ -48,7 +48,7 @@ color: cyan
    - **Highlight.js統合**：templates/html-template.mdに従いhighlight.js CDN（Atom One Darkテーマ）を含め、`hljs.highlightAll()`で初期化
    - **構文ハイライト**：技術に応じた適切な言語識別子を使用（例：`language-vbnet`, `language-csharp`, `language-python`等）
    - **黒背景コードブロック**：`.code-block`クラスで黒背景（#1e1e1e）と白文字を適用し、Atom One Darkテーマと調和させる
-   - **Mermaid.js統合**：図表作成にはtemplates/html-template.mdに従いMermaid.js CDNを含め、`<div class="mermaid">`タグ内にシーケンス図、クラス図、概念図等を作成（**デフォルトテーマを使用、darkテーマは使用しない。フローチャートは使用禁止**）
+   - **Mermaid.js統合**：図表作成にはtemplates/html-template.mdに従いMermaid.js CDNを含め、`<div class="mermaid">`タグ内にシーケンス図、クラス図、概念図等を作成（**デフォルトテーマを使用、darkテーマは使用しない。複雑なフローチャートは使用禁止**）
 
 5. **初心者向け学習重点事項**：コンテンツ作成時に以下を優先する：
    - **理論優先アプローチ**：技術の背景、歴史、必要性を詳しく説明する
