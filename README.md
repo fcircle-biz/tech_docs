@@ -56,6 +56,7 @@
 
 - **[VB.NET学習ガイド](docs/guide/dotnet-ecosystem/vbnet/README.md)** - VB.NET言語基礎からオブジェクト指向プログラミングまで10章完成カリキュラム
 - **[ASP.NET(VB.NET)学習ガイド](docs/guide/dotnet-ecosystem/aspnet-vb/README.md)** - ASP.NET Web Forms基礎から実践的なユーザー管理システム開発まで10章完成カリキュラム
+- **[ASP.NET Core(VB.NET)学習ガイド](docs/guide/dotnet-ecosystem/aspnetcore-vb/README.md)** - ASP.NET Core MVCとEntity Framework Coreを使用したモダンWebアプリケーション開発10章完成カリキュラム
 
 ### PHP
 
