@@ -71,6 +71,7 @@
 
 ### Microsoft Office
 
+- **[Excel基本操作学習ガイド](docs/guide/microsoft-office/excel-basic/README.md)** - Excel基本操作から関数、VBA入門まで8章完成カリキュラム
 - **[VBA学習ガイド](docs/guide/microsoft-office/vba/README.md)** - VBA基礎からExcel自動化まで10ステップ
 
 ### Python
