@@ -76,6 +76,7 @@
 ### Python
 
 - **[Python学習ガイド](docs/guide/python-ecosystem/python/README.md)** - Python基礎から高度なプログラミング技術まで10章完成カリキュラム
+- **[Django学習ガイド](docs/guide/python-ecosystem/django/README.md)** - Djangoフレームワークを使用したWebアプリケーション開発の基礎から実践まで10章完成カリキュラム
 - **[FastAPI学習ガイド](docs/guide/python-ecosystem/fastapi/README.md)** - FastAPIを使用した高性能WebAPI開発の基礎から実践まで10章完成カリキュラム
 - **[Python SQLAlchemy学習ガイド](docs/guide/python-ecosystem/sqlalchemy/README.md)** - SQLAlchemyを使用したPythonデータベースプログラミングの基礎から実践まで8章完成カリキュラム
 - **[Python SQLModel学習ガイド](docs/guide/python-ecosystem/sqlmodel/README.md)** - SQLModelを使用したモダンなPythonデータベースプログラミング8章完成カリキュラム
