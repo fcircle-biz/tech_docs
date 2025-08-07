@@ -95,4 +95,4 @@ COUNT、SUM、AVG、MAX、MIN等の集計関数、GROUP BY句によるグルー�
 
 - [PL/SQL学習ガイドライン](../plsql/README.md) - ストアドプロシージャの作成方法
 - [JDBC学習ガイドライン](../../java-ecosystem/jdbc/README.md) - JavaからのSQL実行方法
-- [Python SQLAlchemy学習ガイドライン](../../python-ecosystem/python-sqlalchemy/README.md) - PythonでのORM活用方法
+- [Python SQLAlchemy学習ガイドライン](../../python-ecosystem/sqlalchemy/README.md) - PythonでのORM活用方法

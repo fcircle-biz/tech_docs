@@ -25,28 +25,28 @@ SQLの基礎知識がない場合は、先に[SQL学習ガイド](../sql/README.
 
 ## 学習コンテンツ
 
-### [1. SQLAlchemy入門と環境構築](https://fcircle-biz.github.io/tech_docs/guide/database/python-sqlalchemy/python-sqlalchemy-learning-material-1.html)
+### [1. SQLAlchemy入門と環境構築](https://fcircle-biz.github.io/tech_docs/guide/python-ecosystem/sqlalchemy/python-sqlalchemy-learning-material-1.html)
 SQLAlchemyの概要、CoreとORMの違い、環境構築方法を学習します。基本的なデータベース接続の設定と動作確認を行います。
 
-### [2. SQLAlchemy Core基礎](https://fcircle-biz.github.io/tech_docs/guide/database/python-sqlalchemy/python-sqlalchemy-learning-material-2.html)
+### [2. SQLAlchemy Core基礎](https://fcircle-biz.github.io/tech_docs/guide/python-ecosystem/sqlalchemy/python-sqlalchemy-learning-material-2.html)
 SQLAlchemy Coreの基本概念、Engineとコネクション管理、メタデータとテーブル定義、基本的なCRUD操作を学習します。
 
-### [3. SQLAlchemy ORM基礎](https://fcircle-biz.github.io/tech_docs/guide/database/python-sqlalchemy/python-sqlalchemy-learning-material-3.html)
+### [3. SQLAlchemy ORM基礎](https://fcircle-biz.github.io/tech_docs/guide/python-ecosystem/sqlalchemy/python-sqlalchemy-learning-material-3.html)
 ORMの基本概念、モデルクラスの定義方法、セッション管理、基本的なクエリメソッドを使ったデータ操作を学習します。
 
-### [4. リレーションシップとJOIN操作](https://fcircle-biz.github.io/tech_docs/guide/database/python-sqlalchemy/python-sqlalchemy-learning-material-4.html)
+### [4. リレーションシップとJOIN操作](https://fcircle-biz.github.io/tech_docs/guide/python-ecosystem/sqlalchemy/python-sqlalchemy-learning-material-4.html)
 1対多、多対多などのリレーションシップの定義、外部キー制約、JOINを使った関連データの取得方法を習得します。
 
-### [5. 高度なクエリとパフォーマンス最適化](https://fcircle-biz.github.io/tech_docs/guide/database/python-sqlalchemy/python-sqlalchemy-learning-material-5.html)
+### [5. 高度なクエリとパフォーマンス最適化](https://fcircle-biz.github.io/tech_docs/guide/python-ecosystem/sqlalchemy/python-sqlalchemy-learning-material-5.html)
 複雑なクエリの構築、サブクエリ、集計関数、Eager LoadingとLazy Loading、N+1問題の解決方法を学習します。
 
-### [6. データベースマイグレーション（Alembic）](https://fcircle-biz.github.io/tech_docs/guide/database/python-sqlalchemy/python-sqlalchemy-learning-material-6.html)
+### [6. データベースマイグレーション（Alembic）](https://fcircle-biz.github.io/tech_docs/guide/python-ecosystem/sqlalchemy/python-sqlalchemy-learning-material-6.html)
 Alembicを使ったデータベーススキーマのバージョン管理、マイグレーションファイルの作成と実行、本番環境での安全な適用方法を学習します。
 
-### [7. トランザクション管理とエラーハンドリング](https://fcircle-biz.github.io/tech_docs/guide/database/python-sqlalchemy/python-sqlalchemy-learning-material-7.html)
+### [7. トランザクション管理とエラーハンドリング](https://fcircle-biz.github.io/tech_docs/guide/python-ecosystem/sqlalchemy/python-sqlalchemy-learning-material-7.html)
 トランザクションの基本概念、コミットとロールバック、同時実行制御、適切なエラーハンドリングの実装方法を習得します。
 
-### [8. 実践的なアプリケーション開発](https://fcircle-biz.github.io/tech_docs/guide/database/python-sqlalchemy/python-sqlalchemy-learning-material-8.html)
+### [8. 実践的なアプリケーション開発](https://fcircle-biz.github.io/tech_docs/guide/python-ecosystem/sqlalchemy/python-sqlalchemy-learning-material-8.html)
 Flask/FastAPIとの統合、コネクションプーリング、セキュリティ対策、本番環境でのベストプラクティスを学習します。
 
 ## 学習の進め方
