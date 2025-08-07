@@ -56,7 +56,7 @@ color: cyan
    - **Highlight.js統合**：templates/html-template.mdに従いhighlight.js CDN（Atom One Darkテーマ）を含め、`hljs.highlightAll()`で初期化
    - **構文ハイライト**：技術に応じた適切な言語識別子を使用（例：`language-vbnet`, `language-csharp`, `language-python`等）
    - **黒背景コードブロック**：`.code-block`クラスで黒背景（#1e1e1e）と白文字を適用し、Atom One Darkテーマと調和させる
-   - **Mermaid.js統合**：図表作成にはtemplates/html-template.mdに従いMermaid.js CDNを含め、`<div class="mermaid">`タグ内にシーケンス図、クラス図、概念図等を作成（**デフォルトテーマを使用、darkテーマは使用しない。原則フローチャートは使用禁止**）
+   - **Mermaid.js統合**：図表作成にはtemplates/html-template.mdに従いMermaid.js CDNを含め、`<div class="mermaid">`タグ内にシーケンス図、クラス図、概念図等を作成（**デフォルトテーマを使用、darkテーマは使用しない。フローチャートは使用禁止**）
 
 5. **初心者向け学習重点事項**：コンテンツ作成時に以下を優先する：
    - **理論優先アプローチ**：技術の背景、歴史、必要性を詳しく説明する
