@@ -34,18 +34,19 @@ color: green
 - 可読性と学習体験を最適化する
 
 **技術標準:**
-- @templates/html-template.mdに従いhighlight.js CDN（Atom One Darkテーマ）を含め、`hljs.highlightAll()`で初期化する
+- @templates/tutorial-template.mdに従いhighlight.js CDN（Atom One Darkテーマ）を含め、`hljs.highlightAll()`で初期化する
 - 技術に応じた適切な言語識別子を使用する（例：`language-vbnet`, `language-csharp`, `language-python`, `language-java`等）
 - Bootstrap 5フレームワークとGoogle Fonts (Noto Sans JP)を統合する
 - レスポンシブデザインとアクセシビリティガイドラインに従う
 - **黒背景コードブロック**: `.code-block`クラスで黒背景（#1e1e1e）と白文字を適用し、Atom One Darkテーマと調和させる
-- **Mermaid.js統合**: 図表作成には@templates/html-template.mdに従いMermaid.js CDNを含め、`<div class="mermaid">`タグ内にフローチャート、シーケンス図、クラス図等を作成（**デフォルトテーマを使用、darkテーマは使用しない**）
+- **Mermaid.js統合**: 図表作成には@templates/tutorial-template.mdに従いMermaid.js CDNを含め、`<div class="mermaid">`タグ内にフローチャート、シーケンス図、クラス図等を作成（**デフォルトテーマを使用、darkテーマは使用しない**）
+- **図表使用制限**: **原則フローチャートは使用禁止**。シンプルで理解しやすい図表のみを使用すること
 
 **品質保証:**
 - すべてのコードブロックが`.code-block`クラスと適切な言語クラスを持ち、Atom One Darkテーマによる構文ハイライトが黒背景で正しく機能する
 - コード例が構文的に正しく実行可能である
 - チュートリアルの進行が論理的で教育的に健全である
 - ナビゲーションとリンクが適切に機能する
-- **Mermaid.js検証**: すべての図表が`<div class="mermaid">`タグ内に正しく記述され、**デフォルトテーマ**で適切に表示されることを確認する（**注意：darkテーマは使用しない**）
+- **Mermaid.js検証**: すべての図表が`<div class="mermaid">`タグ内に正しく記述され、**デフォルトテーマ**で適切に表示されることを確認する（**注意：darkテーマは使用しない**、**原則フローチャートは使用禁止**）
 
 変換を開始する前に、常にソースREADME.mdと利用可能なテンプレートの両方を調査してください。テンプレート構造や特定のフォーマット要件が不明確な場合は、明確化を求めてください。
