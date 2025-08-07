@@ -220,7 +220,3 @@
 - [リポジトリ](https://github.com/fcircle-biz/tech_docs)
 
 ---
-
-## 📄 ライセンス
-
-このプロジェクトは MIT License の下で公開されています。
