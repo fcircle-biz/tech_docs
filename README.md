@@ -95,9 +95,10 @@
 
 - **[COBOL学習ガイド](docs/guide/cobol-ecosystem/cobol/README.md)** - COBOL基礎から実践的なビジネスロジックまで10章完成カリキュラム
 
-### ドキュメンテーション・要求工学
+### ソフトウェア設計
 
-- **[EARS学習ガイド](docs/guide/documentation-patterns/ears/README.md)** - EARS（Easy Approach to Requirements Syntax）を使用した明確で検証可能な要求記述の基礎から実践まで8章完成カリキュラム
+- **[UML学習ガイド](docs/guide/software-design/uml/README.md)** - UML（統一モデリング言語）の基礎から実践的なシステム設計まで10章完成カリキュラム
+- **[要求工学学習ガイド](docs/guide/software-design/requirements-engineering/README.md)** - 要求工学の基礎理論から実践的な要求分析・管理まで10章完成カリキュラム
 
 ---
 
