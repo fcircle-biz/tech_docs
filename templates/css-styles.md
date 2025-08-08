@@ -71,6 +71,7 @@ body {
 /* コードハイライト */
 .code-block {
     background-color: #1e1e1e;
+    color: white;
     border-radius: 5px;
     padding: 1rem;
     margin: 1rem 0;
