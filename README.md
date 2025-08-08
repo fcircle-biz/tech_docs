@@ -95,6 +95,10 @@
 
 - **[COBOL学習ガイド](docs/guide/cobol-ecosystem/cobol/README.md)** - COBOL基礎から実践的なビジネスロジックまで10章完成カリキュラム
 
+### ドキュメンテーション・要求工学
+
+- **[EARS学習ガイド](docs/guide/documentation-patterns/ears/README.md)** - EARS（Easy Approach to Requirements Syntax）を使用した明確で検証可能な要求記述の基礎から実践まで8章完成カリキュラム
+
 ---
 
 ## 📚 チートシート

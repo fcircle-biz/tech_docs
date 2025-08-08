@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EARS学習教材 第6章 - State-driven要求パターン</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; padding-top: 56px; }
+        .navbar { background-color: #2e7d32; }
+        .sidebar { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; }
+        .chapter-title { color: #2e7d32; margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #2e7d32; padding-bottom: 0.5rem; }
+        .section-title { color: #4caf50; margin-top: 1.2rem; margin-bottom: 0.8rem; }
+        .quiz-container { background-color: #e8f5e8; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #2e7d32; }
+        .exercise-container { background-color: #f3e5f5; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #9c27b0; }
+        .highlight { background-color: #ffecb3; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #ffc107; }
+        .code-block { background-color: #1e1e1e; color: white; border-radius: 5px; padding: 1rem; margin: 1rem 0; }
+        .nav-link.active { background-color: #2e7d32 !important; color: white !important; }
+        .pattern-example { background-color: #e3f2fd; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #1976d2; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand"><strong>EARS学習教材</strong></a>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>学習章</span>
+                    </h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item"><a class="nav-link" href="ears-learning-material-1.html">第1章: EARSの概要と背景</a></li>
+                        <li class="nav-item"><a class="nav-link" href="ears-learning-material-2.html">第2章: 要求記述の基本原則</a></li>
+                        <li class="nav-item"><a class="nav-link" href="ears-learning-material-3.html">第3章: Ubiquitous要求パターン</a></li>
+                        <li class="nav-item"><a class="nav-link" href="ears-learning-material-4.html">第4章: Event-driven要求パターン</a></li>
+                        <li class="nav-item"><a class="nav-link" href="ears-learning-material-5.html">第5章: Unwanted Behavior要求パターン</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="ears-learning-material-6.html">第6章: State-driven要求パターン</a></li>
+                        <li class="nav-item"><a class="nav-link" href="ears-learning-material-7.html">第7章: Optional Feature要求パターン</a></li>
+                        <li class="nav-item"><a class="nav-link" href="ears-learning-material-8.html">第8章: 複合パターンと実践演習</a></li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第6章: State-driven要求パターン</h1>
+                </div>
+
+                <div id="chapter6">
+                    <h2 class="chapter-title">システム状態依存要求の記述方法</h2>
+                    
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>State-driven（状態駆動）要求パターンの基本概念</li>
+                            <li>「While [state], the [system] shall [requirement]」構文の使用方法</li>
+                            <li>システム状態の定義と識別方法</li>
+                            <li>状態遷移に伴う要求の変化記述</li>
+                            <li>モード依存機能の要求記述</li>
+                            <li>状態管理システムでの実用的適用例</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">6.1 State-driven要求パターンの基本概念</h3>
+                    
+                    <p>
+                        <strong>State-driven要求パターン</strong>は、システムが特定の状態にある間のみ有効な要求を記述するパターンです。
+                        システムの動作モード、運用状態、または処理段階に依存する機能要求を明確に表現できます。
+                    </p>
+
+                    <div class="mermaid">
+                        stateDiagram-v2
+                            [*] --> 初期化中
+                            初期化中 --> 待機中: 初期化完了
+                            待機中 --> 処理中: 要求受信
+                            処理中 --> 待機中: 処理完了
+                            処理中 --> エラー状態: エラー発生
+                            エラー状態 --> 待機中: エラー解決
+                            待機中 --> メンテナンス中: メンテナンス開始
+                            メンテナンス中 --> 待機中: メンテナンス完了
+                            
+                            note right of 処理中 : While 処理中, システムは...
+                            note right of メンテナンス中 : While メンテナンス中, システムは...
+                    </div>
+
+                    <div class="pattern-example">
+                        <h6>State-drivenパターンの基本構文</h6>
+                        <pre class="code-block"><code class="language-plaintext">While [system state/condition], the [system name] shall [system response]
+
+【構成要素】
+- While : 状態継続を示すキーワード
+- [system state/condition] : システムの状態または条件
+- the [system name] : 対象システム名
+- shall : 義務を示す助動詞
+- [system response] : その状態での要求される動作・特性</code></pre>
+                    </div>
+
+                    <h3 class="section-title">6.2 システム状態の分類と定義</h3>
+
+                    <p>State-drivenパターンで使用する「状態」は、システムの様々な側面を表現できます：</p>
+
+                    <div class="highlight">
+                        <h6>1. 動作モード状態</h6>
+                        <p>システムの基本的な動作モードによる状態：</p>
+                        <pre class="code-block"><code class="language-plaintext">While システムが通常運転モードの間、
+the 監視システム shall 5分間隔でステータス情報を収集する
+
+While システムがメンテナンスモードの間、
+the Webサーバー shall メンテナンス画面を表示する</code></pre>
+                    </div>
+
+                    <div class="highlight">
+                        <h6>2. 処理段階状態</h6>
+                        <p>特定の処理が進行中の状態：</p>
+                        <pre class="code-block"><code class="language-plaintext">While データベースバックアップが実行中の間、
+the システム shall 読み取り専用モードで動作する
+
+While ファイルアップロード処理中の間、
+the プログレスバー shall 進捗状況をリアルタイムで表示する</code></pre>
+                    </div>
+
+                    <div class="highlight">
+                        <h6>3. リソース状態</h6>
+                        <p>システムリソースの使用状況による状態：</p>
+                        <pre class="code-block"><code class="language-plaintext">While CPU使用率が80%を超えている間、
+the タスクスケジューラー shall 新規タスクの実行を制限する
+
+While メモリ使用量が制限値に近づいている間、
+the アプリケーション shall ガベージコレクションを積極的に実行する</code></pre>
+                    </div>
+
+                    <h3 class="section-title">6.3 Event-drivenパターンとの違いと使い分け</h3>
+
+                    <p>
+                        State-drivenパターンとEvent-drivenパターンは、時間的な観点で明確に区別されます：
+                    </p>
+
+                    <div class="mermaid">
+                        gantt
+                            title Event-driven vs State-driven 時間軸比較
+                            dateFormat X
+                            axisFormat %s
+                            
+                            section Event-driven
+                            イベント発生        :milestone, m1, 5, 0s
+                            瞬間的な応答        :active, e1, 5, 7
+                            
+                            section State-driven  
+                            状態A開始          :milestone, m2, 10, 0s
+                            継続的な動作        :active, s1, 10, 25
+                            状態A終了          :milestone, m3, 25, 0s
+                    </div>
+
+                    <div class="pattern-example">
+                        <h6>使い分けの具体例</h6>
+                        
+                        <p><strong>Event-driven（瞬間的なトリガー）：</strong></p>
+                        <pre class="code-block"><code class="language-plaintext">When ユーザーがログインボタンをクリックした時、
+the システム shall 認証処理を開始する</code></pre>
+
+                        <p><strong>State-driven（継続的な状態）：</strong></p>
+                        <pre class="code-block"><code class="language-plaintext">While ユーザーがログイン済み状態の間、
+the システム shall ユーザー専用メニューを表示する</code></pre>
+
+                        <p><strong>組み合わせ例：</strong></p>
+                        <pre class="code-block"><code class="language-plaintext">When ユーザーがログインに成功した時、
+the システム shall ユーザーを「ログイン済み状態」に変更する
+
+While ユーザーがログイン済み状態の間、
+the システム shall セッション管理とアクセス制御を実行する</code></pre>
+                    </div>
+
+                    <h3 class="section-title">6.4 複雑な状態条件の記述方法</h3>
+
+                    <p>
+                        実際のシステムでは、複数の条件を組み合わせた複合的な状態を表現する必要があります：
+                    </p>
+
+                    <div class="highlight">
+                        <h6>複合状態条件の記述例</h6>
+                        
+                        <p><strong>AND条件（複数条件の同時満足）：</strong></p>
+                        <pre class="code-block"><code class="language-plaintext">While システムが夜間バッチモードかつCPU使用率が50%以下の間、
+the データ分析システム shall 大容量レポート生成処理を実行する</code></pre>
+
+                        <p><strong>OR条件（複数条件のいずれか満足）：</strong></p>
+                        <pre class="code-block"><code class="language-plaintext">While システムがメンテナンスモードまたは緊急停止モードの間、
+the Webサービス shall サービス停止画面を表示する</code></pre>
+
+                        <p><strong>範囲条件（数値範囲による状態）：</strong></p>
+                        <pre class="code-block"><code class="language-plaintext">While 同時接続ユーザー数が100人から500人の間、
+the ロードバランサー shall 3台のサーバーに負荷分散する</code></pre>
+                    </div>
+
+                    <div class="exercise-container">
+                        <h5>実習 6-1: システム状態の識別と要求作成</h5>
+                        <p>スマートホームシステムについて、State-driven要求を作成してください。</p>
+                        
+                        <h6>システム概要</h6>
+                        <p>以下の機能を持つスマートホーム制御システム：</p>
+                        <ul>
+                            <li>照明・空調の自動制御</li>
+                            <li>セキュリティ監視</li>
+                            <li>エネルギー管理</li>
+                            <li>居住者在宅検知</li>
+                        </ul>
+                        
+                        <h6>状態識別課題</h6>
+                        <p>以下の各状態について、適切なState-driven要求を作成してください：</p>
+                        <ol>
+                            <li><strong>在宅状態</strong>：家族が家にいる間のシステム動作</li>
+                            <li><strong>外出状態</strong>：家が無人の間のセキュリティ動作</li>
+                            <li><strong>就寝状態</strong>：夜間の省エネ・セキュリティ動作</li>
+                            <li><strong>来客状態</strong>：訪問者がある時の特別な動作</li>
+                        </ol>
+                    </div>
+
+                    <div class="exercise-container">
+                        <h5>実習 6-2: パターンの総合的な使い分け</h5>
+                        <p>オンライン会議システムについて、適切なEARSパターンを選択して要求を作成してください。</p>
+                        
+                        <h6>シナリオ分析課題</h6>
+                        <p>以下の各シナリオについて、最適なEARSパターンを選択し、理由も説明してください：</p>
+                        <ol>
+                            <li>参加者が入室ボタンをクリックする</li>
+                            <li>会議が進行中の間の音声品質制御</li>
+                            <li>参加者全員が退出した時の会議終了処理</li>
+                            <li>ネットワーク障害で接続が切れた場合の対処</li>
+                            <li>録画機能が有効な場合の追加処理</li>
+                            <li>会議室が満員状態の間の新規参加制限</li>
+                        </ol>
+                    </div>
+
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>
+                                <strong>State-drivenパターンの基本構文で正しいのはどれですか？</strong>
+                                <ol type="a">
+                                    <li>When [state], the [system] shall [response]</li>
+                                    <li>While [state], the [system] shall [response]</li>
+                                    <li>If [state], then the [system] shall [response]</li>
+                                    <li>Where [state], the [system] shall [response]</li>
+                                </ol>
+                            </li>
+                            
+                            <li>
+                                <strong>State-drivenパターンとEvent-drivenパターンの主な違いは何ですか？</strong>
+                                <ol type="a">
+                                    <li>構文の違い</li>
+                                    <li>時間的な継続性の違い</li>
+                                    <li>システム名の記述方法の違い</li>
+                                    <li>要求の重要度の違い</li>
+                                </ol>
+                            </li>
+                            
+                            <li>
+                                <strong>次のうち、State-driven要求として最も適切なのはどれですか？</strong>
+                                <ol type="a">
+                                    <li>ユーザーがボタンをクリックした時の処理</li>
+                                    <li>システムがメンテナンス中の間の動作制限</li>
+                                    <li>エラーが発生した時の緊急処理</li>
+                                    <li>特定機能が有効な場合の追加処理</li>
+                                </ol>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <h3 class="section-title">6.6 章のまとめ</h3>
+                    
+                    <div class="highlight">
+                        <h6>重要なポイント</h6>
+                        <ul>
+                            <li><strong>基本構文</strong>：「While [state], the [system] shall [response]」</li>
+                            <li><strong>継続性</strong>：特定状態が継続する間のシステム動作を定義</li>
+                            <li><strong>状態分類</strong>：動作モード、処理段階、リソース状況等の多様な状態表現</li>
+                            <li><strong>時間軸の理解</strong>：Event-drivenの瞬間性との明確な区別</li>
+                            <li><strong>複合条件</strong>：AND・OR・範囲条件による複雑な状態記述</li>
+                        </ul>
+                    </div>
+
+                    <p>
+                        State-drivenパターンは、システムの動的な状態管理を要求レベルで明確に定義する重要な手法です。
+                        次の章では、システムの条件付き機能を記述する「Optional Feature要求パターン」について学習します。
+                    </p>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="ears-learning-material-5.html" class="btn btn-secondary">← 前の章</a>
+                        <a href="ears-learning-material-7.html" class="btn btn-primary">次の章 →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <footer class="bg-dark text-white mt-5">
+        <div class="container-fluid py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="mb-0">© 2025 F-Circle. All rights reserved.<br>
+本資料はAIツールを活用し、人間による編集・監修のもと作成されています。無断転載・再配布を禁じます。</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default'
+        });
+    </script>
+</body>
+</html>
