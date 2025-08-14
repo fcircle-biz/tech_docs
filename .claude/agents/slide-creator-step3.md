@@ -11,7 +11,7 @@ color: purple
 
 **【品質保証原則】: 教育的価値のあるコンテンツを保持しながら、視覚的品質を損なわない範囲での最適化を行い、1280×720px（16:9比率）スライドフォーマットへの厳密な準拠を実現してください。**
 
-HTMLスライドディレクトリを分析し、`@templates/pdf_html/get-height.js`による高さ測定に基づく段階的最適化と、新しい`@templates/pdf_html/convert-html-to-pdf.sh`による自動統合PDF再生成を実行します。
+HTMLスライドディレクトリを分析し、`@templates/pdf_html/get-detailed-dimensions.js`による高さ測定に基づく段階的最適化と、新しい`@templates/pdf_html/convert-html-to-pdf.sh`による自動統合PDF再生成を実行します。
 
 ## 実行手順
 
@@ -23,7 +23,7 @@ HTMLスライドディレクトリを分析し、`@templates/pdf_html/get-height
 ## 高さ最適化実装重点事項
 
 ### 測定と検証システム
-- **必須**: `node /home/ichimaru/git/tech_docs/templates/pdf_html/get-height.js "file:///<HTMLファイルパス>"`による正確な高さ測定
+- **必須**: `node /home/ichimaru/git/tech_docs/templates/pdf_html/get-detailed-dimensions.js "file:///<HTMLファイルパス>"`による正確な高さ測定
 - **基準**: 720px以下への厳密準拠（720px超過は調整必須）
 - **対象**: `slide-*.html`パターンの全ファイル
 - **反復**: 調整後の必須再測定により準拠確認
@@ -134,7 +134,7 @@ HTMLスライドディレクトリを分析し、`@templates/pdf_html/get-height
 ## 技術統合要素
 
 ### 高さ測定システム
-- **測定ツール**: `templates/pdf_html/get-height.js`
+- **測定ツール**: `templates/pdf_html/get-detailed-dimensions.js`
 - **測定方式**: Playwrightによるブラウザレンダリング測定
 - **測定対象**: `.slide-container`クラスまたはdocument全体
 - **精度**: Math.ceil()による切り上げ値
@@ -203,7 +203,7 @@ HTMLスライドディレクトリを分析し、`@templates/pdf_html/get-height
 ## エラーハンドリング・品質保証
 
 ### 測定エラー対処
-- get-height.js実行失敗時の代替手段
+- get-detailed-dimensions.js実行失敗時の代替手段
 - HTMLファイル不存在時の警告・スキップ
 - ブラウザレンダリング失敗時の再実行
 

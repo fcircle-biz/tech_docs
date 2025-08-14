@@ -57,7 +57,7 @@ color: purple
 - フォントサイズ・色彩・余白の初期設定
 
 #### ステップ2: 高さ測定と調整
-- `node @templates/pdf_html/get-height.js "file:///<HTMLファイルパス>"`でスライド高さを測定
+- `node @templates/pdf_html/get-detailed-dimensions.js "file:///<HTMLファイルパス>"`でスライド高さを測定
 - **重要**: 測定結果が720pxを超えた場合は必ずHTML作り直し
 - **720px未満になるまで以下を反復実行**：
   - コンテンツ量の削減（文字数・要素数調整）
@@ -81,10 +81,10 @@ color: purple
 - フォント・色彩の最適化
 - 余白・マージンの調整
 - アイコン・図表の再配置
-- **調整後は必ず高さ再測定**: 720px超過時はステップ2に戻る
+- **調整後は必ず高さ再測定**: `node @templates/pdf_html/get-detailed-dimensions.js`を使用、720px超過時はステップ2に戻る
 
 #### ステップ5: 最終確認
-- **必須**: 最終HTML高さ測定（720px以下確認）
+- **必須**: 最終HTML高さ測定（`node @templates/pdf_html/get-detailed-dimensions.js`で720px以下確認）
 - 視覚的品質の最終確認
 - PDF変換準備完了確認
 
