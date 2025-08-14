@@ -14,6 +14,7 @@ This is a Japanese technical documentation repository (`tech_docs`) that provide
 2. **Learning Guides** (`docs/guide/`) - Comprehensive learning curricula organized by technology stack
 3. **Cheat Sheets** (`docs/cheatsheet/`) - Quick reference materials in HTML format
 4. **AI Prompts** (`docs/prompt/`) - AI assistant prompts for various development tasks
+5. **Presentations** (`docs/presentation/`) - SVG-based presentation materials with PDF output
 
 ### Technology Ecosystems
 
@@ -31,6 +32,7 @@ The repository is organized into technology ecosystems:
 - `specs/user-management/` - Reference specifications for user management system tutorials
 - `templates/` - HTML templates and styling guides for creating educational content
 - `eco-system.md` - Technology ecosystem mapping reference
+- `.claude/agents/` - Specialized agent configurations for content creation
 
 ## Content Creation Standards
 
@@ -59,6 +61,31 @@ Important language mappings for Highlight.js:
 - Dockerfiles: `language-bash`
 - HTML content must be escaped (`<` → `&lt;`, `>` → `&gt;`)
 
+## Common Development Tasks
+
+### Creating Learning Content
+
+Use specialized agents for efficient content creation:
+
+1. **Technical Guides**: Use `@agent-tech-guide-creator-step1 [technology]` for README.md-based learning guides
+2. **Tutorials**: Use `@agent-tutorial-creator-step1 [technology] [environment] [additional-specs]` for step-by-step tutorials
+3. **Presentations**: Use `@agent-presentation-creator-step1 [technology]` for SVG-based presentation materials
+
+### Content Validation
+
+There are no automated build tools or test commands. Content validation involves:
+- Manual HTML syntax checking
+- Verifying CDN resource links
+- Testing responsive design in different browsers
+- Ensuring Japanese language accuracy
+
+### Publishing Workflow
+
+Content is published via GitHub Pages at https://fcircle-biz.github.io/tech_docs/:
+- Direct HTML serving - no build process required
+- Update README.md when adding new content sections
+- All dependencies loaded via CDN (Bootstrap, Highlight.js, Google Fonts)
+
 ## Development Workflow
 
 ### Creating New Content
@@ -73,6 +100,33 @@ Important language mappings for Highlight.js:
 - Each technology has dedicated directories with README.md outlining the curriculum
 - HTML files follow sequential naming (chapter1.html, chapter2.html, etc.)
 - All content is self-contained with CDN resources (no local dependencies)
+
+## Architecture Overview
+
+### Multi-Agent Content Creation System
+
+The repository utilizes Claude Code agents for specialized content creation:
+
+- **tech-guide-creator-step1/step2**: Creates learning guides with structured curricula
+- **tutorial-creator-step1/step2**: Develops practical, hands-on tutorials
+- **presentation-creator-step1/step2**: Generates SVG-based presentation materials
+- **folder-structure-readme-updater**: Maintains repository documentation consistency
+
+### Template-Driven Design
+
+All content follows standardized templates:
+- `templates/html-template.md` - Base HTML structure
+- `templates/css-styles.md` - Styling guidelines
+- `templates/tutorial-template.md` - Tutorial-specific patterns
+- `templates/pdf_svg/` - Presentation template system
+
+### Content Ecosystem Integration
+
+Content is cross-referenced through:
+- `eco-system.md` technology mapping
+- Inter-chapter navigation within learning paths
+- Related resource linking between different content types
+- Consistent URL structure for GitHub Pages integration
 
 ## Repository Maintenance
 
@@ -89,6 +143,14 @@ Important language mappings for Highlight.js:
 - Beginner-friendly explanations with practical examples
 - Consistent visual design across all materials
 - Mobile-responsive layouts
+
+### Agent Usage Patterns
+
+When working with this repository:
+- Use appropriate agents for content type (guides vs tutorials vs presentations)
+- Follow established naming conventions for files and directories
+- Maintain consistency with existing ecosystem organization
+- Reference `specs/user-management/` for tutorial requirements
 
 ## Publishing
 
