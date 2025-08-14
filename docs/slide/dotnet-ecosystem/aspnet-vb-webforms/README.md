@@ -4,8 +4,8 @@
 
 ## 教材形式
 - **ファイル形式**: PDF（HTMLから高品質変換）
-- **推奨スライド数**: 15-18枚（包括的な内容をカバー）
-- **学習時間**: 60-75分（詳細学習時）、30-40分（概要把握時）
+- **スライド数**: 11枚（核心的な内容に厳選）
+- **学習時間**: 45-60分（詳細学習時）、25-35分（概要把握時）
 
 ## 前提条件
 ### 必要な環境
@@ -90,14 +90,29 @@
 - モダンフレームワークへの移行パス（ASP.NET Core）
 
 ## ダウンロード
-- **PDFファイル**: [https://fcircle-biz.github.io/tech_docs/slide/dotnet-ecosystem/aspnet-vb-webforms/aspnet-vb-webforms-slide.pdf](https://fcircle-biz.github.io/tech_docs/slide/dotnet-ecosystem/aspnet-vb-webforms/aspnet-vb-webforms-slide.pdf)
+- **PDFファイル**: [aspnet-vb-webforms-slide.pdf](./aspnet-vb-webforms-slide.pdf) （387KB）
 - **HTMLソースファイル**: [GitHubリポジトリ](https://github.com/fcircle-biz/tech_docs/tree/main/docs/slide/dotnet-ecosystem/aspnet-vb-webforms)
+
+## 作成されたスライド
+本教材では以下の11枚のスライドを作成しました：
+1. **タイトルスライド** - ASP.NET WebForms (VB.NET) 教材概要
+2. **目次** - 学習フローと進捗状況
+3. **ASP.NET WebForms概要** - フレームワークの位置づけと特徴
+4. **基本アーキテクチャ** - クライアント・サーバーモデルとイベントドリブン
+5. **開発環境構築** - Visual Studio設定とセットアップ手順
+6. **ページライフサイクル** - Init→Load→Event→PreRender→Renderの流れ
+7. **Webコントロール基礎** - サーバーコントロールとプロパティ
+8. **状態管理機能** - ViewState、Session、Application変数の使い分け
+9. **ベストプラクティス** - パフォーマンス最適化とセキュリティ対策
+10. **よくある質問（FAQ）** - PostBack、ViewState、JavaScript連携の解決策
+11. **参考リンク・資料** - 学習継続のためのリソース集
 
 ## 視覚的特徴
 - **大きなフォントサイズ**: 16px-48pxで優れた視認性
 - **アイコン活用**: Font Awesome技術アイコンで理解促進
 - **2列レイアウト**: 効率的な情報配置
-- **色分けシステム**: Tailwind CSS + Microsoft Blueベース
+- **色分けシステム**: .NET紫テーマ（#512BD4）による統一感
+- **高解像度対応**: 1280×720px設計でクリアな表示
 
 ## 学習目標
 このスライド教材を完了すると、以下のスキルを身につけることができます：
