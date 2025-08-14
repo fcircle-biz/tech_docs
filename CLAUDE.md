@@ -47,16 +47,28 @@ The repository is organized around major technology ecosystems:
 
 # High resolution conversion
 ./templates/pdf_html/convert-html-to-pdf.sh input.html -q 1920x1080
+
+# Auto-merge multiple PDFs
+./templates/pdf_html/convert-html-to-pdf.sh -d ./slides/ -m --merge-name presentation.pdf
+```
+
+### HTML Dimension Analysis
+```bash
+# Analyze HTML slide dimensions (requires Node.js)
+cd templates/pdf_html/
+npm run height input.html
 ```
 
 ### Content Generation Workflow
 The repository uses specialized agents for content creation:
 - `slide-creator-step1`: Creates initial slide-format learning materials
 - `slide-creator-step2`: Generates HTML slides from README guides
+- `slide-creator-step3`: Optimizes slide dimensions and regenerates PDFs
 - `tutorial-creator-step1`: Creates hands-on tutorial materials
 - `tutorial-creator-step2`: Converts guides to interactive HTML tutorials
 - `tech-guide-creator-step1`: Creates comprehensive learning guidelines
 - `tech-guide-creator-step2`: Converts guidelines to HTML format
+- `folder-structure-readme-updater`: Updates README.md with folder structure changes
 
 ## Content Creation Guidelines
 
