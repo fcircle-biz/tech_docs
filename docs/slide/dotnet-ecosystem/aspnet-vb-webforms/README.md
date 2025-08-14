@@ -90,7 +90,7 @@
 - モダンフレームワークへの移行パス（ASP.NET Core）
 
 ## ダウンロード
-- **PDFファイル**: [aspnet-vb-webforms-slide.pdf](./aspnet-vb-webforms-slide.pdf) （387KB）
+- **PDFファイル**: [aspnet-vb-webforms-slide.pdf](./aspnet-vb-webforms-slide.pdf) （675KB）
 - **HTMLソースファイル**: [GitHubリポジトリ](https://github.com/fcircle-biz/tech_docs/tree/main/docs/slide/dotnet-ecosystem/aspnet-vb-webforms)
 
 ## 作成されたスライド
