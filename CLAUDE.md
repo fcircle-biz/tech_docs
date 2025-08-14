@@ -4,156 +4,120 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is a Japanese technical documentation repository (`tech_docs`) that provides HTML-based learning materials, tutorials, and cheat sheets for various programming technologies and software development topics.
+This is a Japanese technical documentation repository containing comprehensive programming guides, tutorials, cheat sheets, and AI prompts. The repository focuses on creating HTML-based educational materials for various programming languages, frameworks, and technologies.
 
-## Repository Structure
+## Key Architecture Components
 
-### Core Content Types
-
-1. **Tutorials** (`docs/tutorial/`) - Step-by-step practical tutorials organized by technology ecosystem
-2. **Learning Guides** (`docs/guide/`) - Comprehensive learning curricula organized by technology stack
-3. **Cheat Sheets** (`docs/cheatsheet/`) - Quick reference materials in HTML format
-4. **AI Prompts** (`docs/prompt/`) - AI assistant prompts for various development tasks
-5. **Slides** (`docs/slide/`) - SVG-based slide materials with PDF output
+### Documentation Structure
+- **docs/guide/**: Structured learning guides organized by technology ecosystem (10-chapter curricula)
+- **docs/tutorial/**: Step-by-step practical tutorials with hands-on projects (6-10 chapters)
+- **docs/cheatsheet/**: Quick reference materials in HTML format
+- **docs/prompt/**: AI assistant prompts for various programming domains
+- **docs/slide/**: Slide-format educational materials
+- **specs/**: Reference specifications (e.g., user-management system specs)
+- **templates/**: HTML templates and styling systems
 
 ### Technology Ecosystems
+The repository is organized around major technology ecosystems:
+- **Java**: Spring Boot, JSP/Servlet, JDBC, Struts, JUnit
+- **Python**: Django, FastAPI, Streamlit, SQLAlchemy, SQLModel
+- **JavaScript**: React, Node.js, vanilla JavaScript
+- **.NET**: ASP.NET, ASP.NET Core, VB.NET
+- **PHP**: Core PHP development
+- **Database**: SQL, Oracle, PL/SQL, PostgreSQL, DB2
+- **Data Analysis**: R, SAS, statistical analysis
+- **Legacy**: COBOL for mainframe systems
 
-The repository is organized into technology ecosystems:
-- Java (Spring Boot, JSP/Servlet, JDBC, JUnit, Struts)
-- Python (Django, FastAPI, Streamlit, SQLAlchemy, SQLModel)
-- JavaScript (React, Node.js, beginner/intermediate guides)
-- .NET (ASP.NET, VB.NET, C#)
-- PHP (Core PHP development)
-- Database (SQL, Oracle, PostgreSQL, DB2, PL/SQL)
-- Others (R, SAS, COBOL, VBA)
+### HTML Template System
+- **PDF Slide Templates**: Located in `templates/pdf_html/`
+- **Standard dimensions**: 1280×720px (16:9 ratio)
+- **CSS Framework**: Tailwind CSS 2.2.19
+- **Icons**: Font Awesome 6.4.0
+- **Color system**: Microsoft Blue (#0078d4) primary theme
 
-### Key Directories
+## Common Development Commands
 
-- `specs/user-management/` - Reference specifications for user management system tutorials
-- `templates/` - HTML templates and styling guides for creating educational content
-- `eco-system.md` - Technology ecosystem mapping reference
-- `.claude/agents/` - Specialized agent configurations for content creation
+### HTML to PDF Conversion
+```bash
+# Convert single HTML file to PDF
+./templates/pdf_html/convert-html-to-pdf.sh input.html
 
-## Content Creation Standards
+# Batch convert directory
+./templates/pdf_html/convert-html-to-pdf.sh -d ./slides/ -o ./pdf/
 
-### HTML Learning Materials
+# High resolution conversion
+./templates/pdf_html/convert-html-to-pdf.sh input.html -q 1920x1080
+```
 
-All educational content follows standardized HTML templates using:
-- Bootstrap 5 for responsive design
-- Highlight.js for syntax highlighting (atom-one-dark theme)
-- Google Fonts (Noto Sans JP) for Japanese text
-- Consistent navigation and chapter structure
+### Content Generation Workflow
+The repository uses specialized agents for content creation:
+- `slide-creator-step1`: Creates initial slide-format learning materials
+- `slide-creator-step2`: Generates HTML slides from README guides
+- `tutorial-creator-step1`: Creates hands-on tutorial materials
+- `tutorial-creator-step2`: Converts guides to interactive HTML tutorials
+- `tech-guide-creator-step1`: Creates comprehensive learning guidelines
+- `tech-guide-creator-step2`: Converts guidelines to HTML format
 
-### Template Structure
+## Content Creation Guidelines
 
-When creating new learning materials, follow the template in `templates/html-template.md`:
-- Chapter-based organization with navigation
-- Learning objectives section
-- Hands-on exercises (`exercise-container` class)
-- Comprehension quizzes (`quiz-container` class)
-- Code examples with proper language highlighting
+### Tutorial Structure
+All tutorials follow a consistent 6-10 chapter format:
+1. Environment Setup
+2. Architecture/Framework Introduction
+3. Database Design/Connection
+4. User Registration Feature
+5. User List/Detail Display
+6. User Update/Delete Operations
+7. Advanced Features (Security, Testing)
 
-### Code Highlighting
+### Learning Guide Format
+Each technology guide contains:
+- 10-chapter progressive curriculum
+- Practical exercises and examples
+- Code snippets and explanations
+- Best practices and common pitfalls
 
-Important language mappings for Highlight.js:
-- Gradle files: `language-bash`
-- Properties files: `language-ini`
-- Dockerfiles: `language-bash`
-- HTML content must be escaped (`<` → `&lt;`, `>` → `&gt;`)
+### HTML Template Usage
+When creating new slide materials:
+1. Use existing templates from `templates/pdf_html/templates/`
+2. Maintain 1280×720px dimensions
+3. Follow the established color scheme
+4. Include proper navigation and page numbering
+5. Ensure accessibility with proper heading structure
 
-## Common Development Tasks
+## Special Considerations
 
-### Creating Learning Content
+### Japanese Language Content
+- All educational content is in Japanese
+- Maintain proper Japanese technical terminology
+- Follow Japanese documentation conventions
+- Code comments should be in Japanese where appropriate
 
-Use specialized agents for efficient content creation:
+### Cross-Platform Compatibility
+- HTML templates work across all browsers
+- PDF conversion requires `wkhtmltopdf` tool
+- Responsive design for various screen sizes
+- Font fallbacks for different operating systems
 
-1. **Technical Guides**: Use `@agent-tech-guide-creator-step1 [technology]` for README.md-based learning guides
-2. **Tutorials**: Use `@agent-tutorial-creator-step1 [technology] [environment] [additional-specs]` for step-by-step tutorials
-3. **Slides**: Use `@agent-slide-creator-step1 [technology]` for SVG-based slide materials
+### Technology-Specific Customization
+When creating content for different technologies:
+- Java: Use orange color scheme (#ED8B00), `fab fa-java` icon
+- Python: Use blue color scheme (#3776AB), `fab fa-python` icon
+- React: Use cyan color scheme (#61DAFB), `fab fa-react` icon
+- .NET: Use purple color scheme (#512BD4), Microsoft-specific icons
+
+## Quality Standards
 
 ### Content Validation
+- All code examples must be functional
+- Step-by-step instructions should be tested
+- Screenshots should be current and relevant
+- Links should be verified and working
 
-There are no automated build tools or test commands. Content validation involves:
-- Manual HTML syntax checking
-- Verifying CDN resource links
-- Testing responsive design in different browsers
-- Ensuring Japanese language accuracy
+### Consistency Requirements
+- Follow established naming conventions
+- Maintain consistent file structure
+- Use standardized headers and footers
+- Ensure proper cross-referencing between materials
 
-### Publishing Workflow
-
-Content is published via GitHub Pages at https://fcircle-biz.github.io/tech_docs/:
-- Direct HTML serving - no build process required
-- Update README.md when adding new content sections
-- All dependencies loaded via CDN (Bootstrap, Highlight.js, Google Fonts)
-
-## Development Workflow
-
-### Creating New Content
-
-1. **Tutorials**: Use user management system specs in `specs/user-management/` as reference
-2. **Guides**: Follow the established ecosystem structure in `docs/guide/`
-3. **Templates**: Reference `templates/` directory for styling and structure
-4. **Consistency**: Maintain Japanese language consistency and technical accuracy
-
-### Content Organization
-
-- Each technology has dedicated directories with README.md outlining the curriculum
-- HTML files follow sequential naming (chapter1.html, chapter2.html, etc.)
-- All content is self-contained with CDN resources (no local dependencies)
-
-## Architecture Overview
-
-### Multi-Agent Content Creation System
-
-The repository utilizes Claude Code agents for specialized content creation:
-
-- **tech-guide-creator-step1/step2**: Creates learning guides with structured curricula
-- **tutorial-creator-step1/step2**: Develops practical, hands-on tutorials
-- **slide-creator-step1/step2**: Generates SVG-based slide materials
-- **folder-structure-readme-updater**: Maintains repository documentation consistency
-
-### Template-Driven Design
-
-All content follows standardized templates:
-- `templates/html-template.md` - Base HTML structure
-- `templates/css-styles.md` - Styling guidelines
-- `templates/tutorial-template.md` - Tutorial-specific patterns
-- `templates/pdf_svg/` - Presentation template system
-
-### Content Ecosystem Integration
-
-Content is cross-referenced through:
-- `eco-system.md` technology mapping
-- Inter-chapter navigation within learning paths
-- Related resource linking between different content types
-- Consistent URL structure for GitHub Pages integration
-
-## Repository Maintenance
-
-### File Management
-
-- No build tools or package managers required
-- Content is static HTML served directly
-- All dependencies loaded via CDN
-- Images stored in technology-specific `img/` directories
-
-### Quality Standards
-
-- Japanese language primary, with English technical terms
-- Beginner-friendly explanations with practical examples
-- Consistent visual design across all materials
-- Mobile-responsive layouts
-
-### Agent Usage Patterns
-
-When working with this repository:
-- Use appropriate agents for content type (guides vs tutorials vs slides)
-- Follow established naming conventions for files and directories
-- Maintain consistency with existing ecosystem organization
-- Reference `specs/user-management/` for tutorial requirements
-
-## Publishing
-
-- Content published via GitHub Pages at https://fcircle-biz.github.io/tech_docs/
-- Direct HTML serving - no build process required
-- Update README.md when adding new content sections
+This repository serves as a comprehensive resource for Japanese-speaking developers learning various programming technologies through structured, hands-on approaches.
