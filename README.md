@@ -30,6 +30,7 @@
 
 ### .NET
 
+- **[ASP.NET Core MVC (VB.NET) スライド教材](docs/slide/dotnet-ecosystem/aspnet-vb-core-mvc/README.md)** - ASP.NET Core MVCとVB.NETを使用したモダンなWebアプリケーション開発の重要概念を視覚的なスライド形式で効率的に学習できる教材。クロスプラットフォーム対応・高性能なMVCアーキテクチャによるWebアプリケーション開発を14枚のスライドで体系的に学習
 - **[ASP.NET WebForms (VB.NET) スライド教材](docs/slide/dotnet-ecosystem/aspnet-vb-webforms/README.md)** - ASP.NET WebFormsとVB.NETを使用したWebアプリケーション開発の重要概念を視覚的なスライド形式で効率的に学習できる教材。イベントドリブンプログラミングモデルによる迅速なWebアプリケーション開発を11枚のスライドで体系的に学習
 
 ---
