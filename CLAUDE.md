@@ -14,7 +14,7 @@ This is a Japanese technical documentation repository (`tech_docs`) that provide
 2. **Learning Guides** (`docs/guide/`) - Comprehensive learning curricula organized by technology stack
 3. **Cheat Sheets** (`docs/cheatsheet/`) - Quick reference materials in HTML format
 4. **AI Prompts** (`docs/prompt/`) - AI assistant prompts for various development tasks
-5. **Presentations** (`docs/presentation/`) - SVG-based presentation materials with PDF output
+5. **Slides** (`docs/slide/`) - SVG-based slide materials with PDF output
 
 ### Technology Ecosystems
 
@@ -69,7 +69,7 @@ Use specialized agents for efficient content creation:
 
 1. **Technical Guides**: Use `@agent-tech-guide-creator-step1 [technology]` for README.md-based learning guides
 2. **Tutorials**: Use `@agent-tutorial-creator-step1 [technology] [environment] [additional-specs]` for step-by-step tutorials
-3. **Presentations**: Use `@agent-presentation-creator-step1 [technology]` for SVG-based presentation materials
+3. **Slides**: Use `@agent-slide-creator-step1 [technology]` for SVG-based slide materials
 
 ### Content Validation
 
@@ -109,7 +109,7 @@ The repository utilizes Claude Code agents for specialized content creation:
 
 - **tech-guide-creator-step1/step2**: Creates learning guides with structured curricula
 - **tutorial-creator-step1/step2**: Develops practical, hands-on tutorials
-- **presentation-creator-step1/step2**: Generates SVG-based presentation materials
+- **slide-creator-step1/step2**: Generates SVG-based slide materials
 - **folder-structure-readme-updater**: Maintains repository documentation consistency
 
 ### Template-Driven Design
@@ -147,7 +147,7 @@ Content is cross-referenced through:
 ### Agent Usage Patterns
 
 When working with this repository:
-- Use appropriate agents for content type (guides vs tutorials vs presentations)
+- Use appropriate agents for content type (guides vs tutorials vs slides)
 - Follow established naming conventions for files and directories
 - Maintain consistency with existing ecosystem organization
 - Reference `specs/user-management/` for tutorial requirements

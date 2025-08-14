@@ -1,13 +1,13 @@
-# SVG プレゼンテーションテンプレート
+# SVG スライドテンプレート
 
-Inkscapeを使用してPDF変換可能なSVGプレゼンテーションテンプレートシステムです。  
+Inkscapeを使用してPDF変換可能なSVGスライドテンプレートシステムです。  
 **大きなフォントサイズと最適化されたレイアウトで、優れた視認性を実現します。**
 
 ## ✨ 特徴
 
 - **📖 優れた視認性**: 大きなフォントサイズ（16px〜48px）で読みやすさを重視
 - **🎯 完璧なPDF変換**: InkscapeのネイティブSVG→PDF変換
-- **📐 プレゼンテーションサイズ最適化**: 1280px × 720px (16:9)
+- **📐 スライドサイズ最適化**: 1280px × 720px (16:9)
 - **🎨 カスタマイズ可能**: 色テーマ・フォント・レイアウトを簡単変更
 - **📋 3つのレイアウト**: タイトル・目次・2列コンテンツ
 - **🎪 豊富なアイコン**: Font Awesome互換のSVGアイコンライブラリ
@@ -49,7 +49,7 @@ brew install inkscape          # macOS
 
 ```bash
 # 単一ファイル変換
-./convert-svg-to-pdf.sh templates/title-slide.svg my-presentation-title.pdf
+./convert-svg-to-pdf.sh templates/title-slide.svg my-slide-title.pdf
 
 # 一括変換
 ./convert-svg-to-pdf.sh --batch templates/
@@ -104,7 +104,7 @@ brew install inkscape          # macOS
 
 ### 1. タイトルスライド (`title-slide.svg`)
 
-**用途**: プレゼンテーションの表紙  
+**用途**: スライドの表紙  
 **改善点**: 大きなタイトル（56px）、適切な行間（65px）、拡大されたアイコン
 
 **要素**: 
@@ -192,7 +192,7 @@ brew install inkscape          # macOS
 ### 推奨座標系と配置
 
 ```xml
-<!-- プレゼンテーションサイズの座標系 -->
+<!-- スライドサイズの座標系 -->
 <!-- viewBox="0 0 1280 720" (px単位) -->
 
 <!-- 最適化されたマージン値 -->
