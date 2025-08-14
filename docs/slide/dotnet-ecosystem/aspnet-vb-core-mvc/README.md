@@ -106,7 +106,7 @@
 - 次のステップへの案内
 
 ## ダウンロード
-- **PDFファイル**: [aspnet-vb-core-mvc-slides.pdf](./aspnet-vb-core-mvc-slides.pdf) （490KB）
+- **PDFファイル**: [aspnet-vb-core-mvc-slides.pdf](./pdf/aspnet-vb-core-mvc-slides.pdf) （490KB）
 - **HTMLソースファイル**: このディレクトリ内の slide-XX-*.html ファイル（全14スライド）
 
 ## 視覚的特徴
