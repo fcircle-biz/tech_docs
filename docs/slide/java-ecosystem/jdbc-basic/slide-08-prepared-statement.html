@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>JDBC基本 スライド教材 - PreparedStatement活用</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+/* PDF HTML テンプレート共通スタイル */
+
+/* 基本設定 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* スライドコンテナ */
+.slide-container {
+    width: 1280px;
+    min-height: 720px;
+    overflow: hidden;
+    position: relative;
+    background-color: #f0f4f8;
+}
+
+/* ヘッダーアクセント */
+.header-accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background-color: var(--primary-color, #ED8B00);
+}
+
+/* サイドアクセント */
+.side-accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 12px;
+    height: 100%;
+    background-color: var(--primary-color, #ED8B00);
+}
+
+/* フッター */
+.footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    background-color: var(--primary-color, #ED8B00);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+    color: white;
+    box-sizing: border-box;
+}
+
+/* タイトル装飾 */
+.title-underline {
+    width: 80px;
+    height: 4px;
+    background-color: var(--primary-color, #ED8B00);
+    margin-bottom: 24px;
+}
+
+/* レイアウト */
+.two-column {
+    display: flex;
+    flex: 1;
+}
+
+.left-column {
+    flex: 3;
+    padding-right: 40px;
+}
+
+.right-column {
+    flex: 2;
+    padding-left: 20px;
+}
+
+.right-column-with-border {
+    border-left: 1px solid #cfd8e3;
+}
+
+/* 箇条書き */
+.bullet-point {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 14px;
+}
+
+.bullet-icon {
+    color: var(--primary-color, #ED8B00);
+    margin-right: 12px;
+    margin-top: 4px;
+    flex-shrink: 0;
+}
+
+/* 情報ボックス */
+.info-box {
+    background-color: #fff3e0;
+    border-left: 4px solid var(--primary-color, #ED8B00);
+    padding: 16px;
+    margin-top: 24px;
+    border-radius: 0 4px 4px 0;
+}
+
+.warning-box {
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 16px;
+    margin-top: 24px;
+    border-radius: 0 4px 4px 0;
+}
+
+/* カスタムCSS変数 */
+:root {
+    --primary-color: #ED8B00;
+    --database-color: #336791;
+    --accent-color: #fff3e0;
+    --background-color: #f0f4f8;
+    --text-color: #1f2937;
+    --border-color: #cfd8e3;
+}
+
+.content {
+    padding: 60px 80px 60px 100px;
+    position: relative;
+    z-index: 1;
+    height: calc(100% - 120px);
+    box-sizing: border-box;
+}
+</style>
+</head>
+<body>
+<div class="slide-container">
+    <div class="header-accent"></div>
+    <div class="side-accent"></div>
+    <div class="content">
+        <div>
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">コア機能 - PreparedStatement活用</h1>
+            <div class="title-underline"></div>
+            <div class="two-column">
+                <div class="left-column">
+                    <p class="text-lg text-gray-700 mb-6">
+                        PreparedStatementは、パラメータ化クエリを使用してSQLインジェクション攻撃を防ぎ、
+                        パフォーマンスの向上も実現する重要な機能です。
+                    </p>
+                    <h3 class="text-xl font-semibold text-gray-700 mb-3">主要な利点</h3>
+                    <div class="bullet-point">
+                        <div class="bullet-icon"><i class="fas fa-shield-alt"></i></div>
+                        <div><strong>セキュリティ</strong> - SQLインジェクション対策</div>
+                    </div>
+                    <div class="bullet-point">
+                        <div class="bullet-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        <div><strong>パフォーマンス</strong> - SQL文の事前コンパイル</div>
+                    </div>
+                    <div class="bullet-point">
+                        <div class="bullet-icon"><i class="fas fa-code"></i></div>
+                        <div><strong>可読性</strong> - パラメータによる明確な構造</div>
+                    </div>
+                    <div class="bullet-point">
+                        <div class="bullet-icon"><i class="fas fa-recycle"></i></div>
+                        <div><strong>再利用性</strong> - 同一SQL文の繰り返し実行</div>
+                    </div>
+                    <div class="warning-box">
+                        <h4 class="font-semibold mb-2">⚠️ SQLインジェクション対策</h4>
+                        <p class="text-sm">文字列連結でSQL構築する代わりに、?プレースホルダーとパラメータバインディングを必ず使用しましょう。</p>
+                    </div>
+                </div>
+                <div class="right-column right-column-with-border">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">基本的な使用方法</h3>
+                    <div class="bullet-point">
+                        <div class="bullet-icon"><i class="fas fa-question"></i></div>
+                        <div><strong>プレースホルダー</strong> - ? でパラメータ位置を指定</div>
+                    </div>
+                    <div class="bullet-point">
+                        <div class="bullet-icon"><i class="fas fa-link"></i></div>
+                        <div><strong>パラメータバインド</strong> - setString(), setInt()等</div>
+                    </div>
+                    <div class="bullet-point">
+                        <div class="bullet-icon"><i class="fas fa-play"></i></div>
+                        <div><strong>実行</strong> - executeQuery() / executeUpdate()</div>
+                    </div>
+                    <div class="bullet-point">
+                        <div class="bullet-icon"><i class="fas fa-times"></i></div>
+                        <div><strong>クローズ</strong> - try-with-resourcesを活用</div>
+                    </div>
+                    <div class="mt-8">
+                        <h4 class="font-semibold mb-2">パラメータ設定メソッド</h4>
+                        <ul class="list-disc pl-5 space-y-2 text-gray-700 text-sm">
+                            <li>setString() - 文字列</li>
+                            <li>setInt() - 整数</li>
+                            <li>setDate() - 日付</li>
+                            <li>setTimestamp() - 日時</li>
+                            <li>setNull() - NULL値</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <span>JDBC基本 学習ガイド</span>
+        <span>8/14</span>
+    </div>
+</div>
+</body>
+</html>
