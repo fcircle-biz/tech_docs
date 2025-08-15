@@ -28,6 +28,10 @@
 
 ## 📖 スライド教材
 
+### Java
+
+- **[Java基本 スライド教材](docs/slide/java-ecosystem/java-basics/README.md)** - Javaプログラミングの基礎から実践的な開発手法まで、視覚的なスライド形式で効率的に学習できる教材。Write Once, Run Anywhereの概念、オブジェクト指向プログラミング、JVMの仕組み、Webアプリケーション開発まで14枚のスライドで体系的に学習
+
 ### .NET
 
 - **[VB.NET スライド教材](docs/slide/dotnet-ecosystem/vbnet/README.md)** - VB.NETプログラミング言語の基礎から実践的な開発パターンまでを視覚的なスライド形式で効率的に学習できる教材。オブジェクト指向プログラミング、.NET統合、Windowsフォーム開発など12枚のスライドで体系的に学習
