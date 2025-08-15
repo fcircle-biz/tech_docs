@@ -31,6 +31,7 @@
 ### Java
 
 - **[Java基本 スライド教材](docs/slide/java-ecosystem/java-basics/README.md)** - Javaプログラミングの基礎から実践的な開発手法まで、視覚的なスライド形式で効率的に学習できる教材。Write Once, Run Anywhereの概念、オブジェクト指向プログラミング、JVMの仕組み、Webアプリケーション開発まで14枚のスライドで体系的に学習
+- **[JDBC基本 スライド教材](docs/slide/java-ecosystem/jdbc-basic/README.md)** - JDBC（Java Database Connectivity）の基礎から実践的なデータベース操作まで、視覚的なスライド形式で効率的に学習できる教材。データベース接続、SQL実行、トランザクション制御、セキュリティ対策まで14枚のスライドで体系的に学習
 
 ### .NET
 
