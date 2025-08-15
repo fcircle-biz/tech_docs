@@ -231,6 +231,7 @@ AI開発支援のための専用プロンプト集です。各技術領域に特
 
 ### プログラミング支援
 
+- **[ASP.NET VB WebForms開発アシスタント](docs/prompt/aspnet-vb-webforms-ai-assistant-prompt.html)** - ASP.NET WebForms VB.NET開発特化AIアシスタント
 - **[Java開発支援](docs/prompt/java-ai-assistant-prompt.html)** - Java開発支援専用AIアシスタント
 - **[JDBC開発エージェント](docs/prompt/jdbc-agent-prompt.html)** - JDBC開発特化エージェント
 - **[JavaScript開発エキスパート](docs/prompt/js-assistant-prompt.html)** - JavaScript開発エキスパート
