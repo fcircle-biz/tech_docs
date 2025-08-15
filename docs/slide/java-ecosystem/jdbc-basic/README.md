@@ -107,7 +107,7 @@
 - 次のステップ（JPA、MyBatis）
 
 ## ダウンロード
-- **PDFファイル**: [https://fcircle-biz.github.io/tech_docs/slide/java-ecosystem/jdbc-basic/pdf/jdbc-basic-slides.pdf](https://fcircle-biz.github.io/tech_docs/slide/java-ecosystem/pdf/jdbc-basic/jdbc-basic-slides.pdf)
+- **PDFファイル**: [https://fcircle-biz.github.io/tech_docs/slide/java-ecosystem/jdbc-basic/pdf/jdbc-basic-slides.pdf](https://fcircle-biz.github.io/tech_docs/slide/java-ecosystem/jdbc-basic/pdf/jdbc-basic-slides.pdf)
 - **HTMLソースファイル**: [GitHubリポジトリ](https://github.com/fcircle-biz/tech_docs/tree/main/docs/slide/java-ecosystem/jdbc-basic)
 
 ## 視覚的特徴
