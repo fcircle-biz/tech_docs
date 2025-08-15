@@ -231,16 +231,16 @@ AI開発支援のための専用プロンプト集です。各技術領域に特
 
 ### プログラミング支援
 
-- **[ASP.NET VB WebForms開発アシスタント](docs/prompt/aspnet-vb-webforms-ai-assistant-prompt.html)** - ASP.NET WebForms VB.NET開発特化AIアシスタント
-- **[Java開発支援](docs/prompt/java-ai-assistant-prompt.html)** - Java開発支援専用AIアシスタント
-- **[JDBC開発エージェント](docs/prompt/jdbc-agent-prompt.html)** - JDBC開発特化エージェント
-- **[JavaScript開発エキスパート](docs/prompt/js-assistant-prompt.html)** - JavaScript開発エキスパート
-- **[JSP開発エージェント](docs/prompt/jsp-ai-agent-prompt.html)** - JSP開発特化AIエージェント
-- **[PHP開発特化](docs/prompt/php-coding-assistant-prompt.html)** - PHP開発特化AIアシスタント
-- **[React開発エージェント](docs/prompt/react-ai-agent-prompt.html)** - React開発特化AIエージェント
-- **[Spring Boot開発アシスタント](docs/prompt/spring-boot-assistant-prompt.html)** - Spring Boot開発アシスタント
-- **[Streamlit開発エージェント](docs/prompt/streamlit-ai-agent-prompt.html)** - Streamlit開発特化AIエージェント
-- **[VBAプログラミング専門](docs/prompt/vba-assistant-prompt.html)** - Office VBAプログラミング専門
+- **[ASP.NET VB WebForms開発アシスタント](https://fcircle-biz.github.io/tech_docs/prompt/aspnet-vb-webforms-ai-assistant-prompt.html)** - ASP.NET WebForms VB.NET開発特化AIアシスタント
+- **[Java開発支援](https://fcircle-biz.github.io/tech_docs/prompt/java-ai-assistant-prompt.html)** - Java開発支援専用AIアシスタント
+- **[JDBC開発エージェント](https://fcircle-biz.github.io/tech_docs/prompt/jdbc-agent-prompt.html)** - JDBC開発特化エージェント
+- **[JavaScript開発エキスパート](https://fcircle-biz.github.io/tech_docs/prompt/js-assistant-prompt.html)** - JavaScript開発エキスパート
+- **[JSP開発エージェント](https://fcircle-biz.github.io/tech_docs/prompt/jsp-ai-agent-prompt.html)** - JSP開発特化AIエージェント
+- **[PHP開発特化](https://fcircle-biz.github.io/tech_docs/prompt/php-coding-assistant-prompt.html)** - PHP開発特化AIアシスタント
+- **[React開発エージェント](https://fcircle-biz.github.io/tech_docs/prompt/react-ai-agent-prompt.html)** - React開発特化AIエージェント
+- **[Spring Boot開発アシスタント](https://fcircle-biz.github.io/tech_docs/prompt/spring-boot-assistant-prompt.html)** - Spring Boot開発アシスタント
+- **[Streamlit開発エージェント](https://fcircle-biz.github.io/tech_docs/prompt/streamlit-ai-agent-prompt.html)** - Streamlit開発特化AIエージェント
+- **[VBAプログラミング専門](https://fcircle-biz.github.io/tech_docs/prompt/vba-assistant-prompt.html)** - Office VBAプログラミング専門
 
 ### データベース・データ処理
 
