@@ -94,7 +94,7 @@
 - 次のステップへの案内
 
 ## ダウンロード
-- **PDFファイル**: [https://fcircle-biz.github.io/tech_docs/slide/dotnet-ecosystem/vbnet/vbnet-slides.pdf](https://fcircle-biz.github.io/tech_docs/slide/dotnet-ecosystem/vbnet/vbnet-slides.pdf)
+- **PDFファイル**: [https://fcircle-biz.github.io/tech_docs/slide/dotnet-ecosystem/vbnet/pdf/vbnet-slides.pdf](https://fcircle-biz.github.io/tech_docs/slide/dotnet-ecosystem/vbnet/pdf/vbnet-slides.pdf)
 - **HTMLソースファイル**: [GitHubリポジトリ](https://github.com/fcircle-biz/tech_docs/tree/main/docs/slide/dotnet-ecosystem/vbnet)
 
 ## 視覚的特徴
