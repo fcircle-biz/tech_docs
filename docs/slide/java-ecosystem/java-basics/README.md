@@ -106,7 +106,7 @@
 - 次のステップ（Spring Boot、マイクロサービス）
 
 ## ダウンロード
-- **PDFファイル**: [https://fcircle-biz.github.io/tech_docs/slide/java-ecosystem/java-basics/java-basics-slides.pdf](https://fcircle-biz.github.io/tech_docs/slide/java-ecosystem/java-basics/java-basics-slides.pdf)
+- **PDFファイル**: [https://fcircle-biz.github.io/tech_docs/slide/java-ecosystem/java-basics/pdf/java-basics-slides.pdf](https://fcircle-biz.github.io/tech_docs/slide/java-ecosystem/java-basics/pdf/java-basics-slides.pdf)
 - **HTMLソースファイル**: [GitHubリポジトリ](https://github.com/fcircle-biz/tech_docs/tree/main/docs/slide/java-ecosystem/java-basics)
 
 ## 視覚的特徴

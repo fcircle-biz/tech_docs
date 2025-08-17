@@ -107,7 +107,7 @@ color: purple
 - [実践的なチュートリアル教材へのリンク]
 ```
 
-3. **適切なリンク形式の適用**: GitHub Pages形式 `https://fcircle-biz.github.io/tech_docs/slide/[分野]/[技術]/[ファイル名].pdf` を使用し、ディレクトリ構造 `/docs/slide/[分野]/[技術]/` に従います。
+3. **適切なリンク形式の適用**: GitHub Pages形式 `https://fcircle-biz.github.io/tech_docs/slide/[分野]/[技術]/pdf/[ファイル名].pdf` を使用し、ディレクトリ構造 `/docs/slide/[分野]/[技術]/` に従います。
 
 4. **学習効果の最適化**: スライド形式の特性を活かした設計を提案します：
    - 1スライド1コンセプトの原則（基本概念、環境設定、技術仕組み、実践例等を明確に分離）
