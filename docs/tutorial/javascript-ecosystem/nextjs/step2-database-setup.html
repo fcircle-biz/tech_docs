@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next.jsチュートリアル ステップ2 - DockerでPostgreSQL環境構築とPrisma設定</title>
+
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 56px;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 56px;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 48px 0 0;
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+            background-color: #f8f9fa;
+            overflow-y: auto;
+        }
+
+        .sidebar-heading {
+            font-size: .75rem;
+            text-transform: uppercase;
+        }
+
+        .sidebar .nav-link {
+            font-weight: 500;
+            color: #333;
+            padding: 0.5rem 1rem;
+            margin: 0.2rem 0;
+            border-radius: 0.25rem;
+        }
+
+        .sidebar .nav-link:hover {
+            color: #667eea;
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+
+        .sidebar .nav-link.active {
+            color: #fff;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        main {
+            margin-top: 20px;
+        }
+
+        .chapter-title {
+            color: #667eea;
+            font-weight: bold;
+            margin-top: 2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .section-title {
+            color: #764ba2;
+            font-weight: bold;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-left: 5px solid #667eea;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0.5rem;
+        }
+
+        .code-block {
+            background-color: #282c34;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            color: #abb2bf;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+        }
+
+        .exercise-container {
+            background-color: #fff;
+            border: 2px solid #667eea;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .quiz-container {
+            background-color: #f0f4ff;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        footer {
+            margin-top: 3rem;
+            padding: 2rem 0;
+            background-color: #343a40;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand">
+                <strong>Next.js実践チュートリアル</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>チュートリアルステップ</span>
+                    </h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="step1-environment-setup.html">
+                                ステップ1: 開発環境構築
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="step2-database-setup.html">
+                                ステップ2: DB環境構築
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step3-components-architecture.html">
+                                ステップ3: コンポーネント設計
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step4-user-model-crud.html">
+                                ステップ4: ユーザーモデルとCRUD
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step5-user-registration.html">
+                                ステップ5: ユーザー登録機能
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step6-user-list-detail.html">
+                                ステップ6: 一覧・詳細表示
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step7-user-update-delete.html">
+                                ステップ7: 編集・削除機能
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step8-authentication-security.html">
+                                ステップ8: 認証とセキュリティ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step9-ui-ux-improvement.html">
+                                ステップ9: UI/UX向上
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step10-testing-deployment.html">
+                                ステップ10: テストとデプロイ
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">ステップ2: DockerでPostgreSQL環境構築とPrisma設定</h1>
+                </div>
+
+                <div id="step2">
+                    <h2 class="chapter-title">データベース環境の構築</h2>
+
+                    <div class="highlight">
+                        <h5>このステップで実装すること</h5>
+                        <ul>
+                            <li>Docker ComposeによるPostgreSQLコンテナの構築</li>
+                            <li>Adminerによるデータベース管理UI設定</li>
+                            <li>Prisma ORMのインストールと初期設定</li>
+                            <li>Prismaスキーマの定義とマイグレーション</li>
+                            <li>Prisma Clientの生成と型定義の確認</li>
+                            <li>Prisma Studioによるデータ管理の実践</li>
+                        </ul>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <h6>前提条件</h6>
+                        <ul>
+                            <li>ステップ1が完了し、Next.jsプロジェクトが正常に動作していること</li>
+                            <li>Docker Desktopがインストールされ、起動していること</li>
+                            <li>基本的なSQLの知識があること</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">2.1 Docker Composeファイルの作成</h3>
+                    <p>PostgreSQLデータベースとAdminer管理UIをDockerコンテナで構築します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実装 2-1: docker-compose.ymlの作成</h5>
+                        <p>プロジェクトのルートディレクトリにDocker Compose設定ファイルを作成します。</p>
+
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>docker-compose.ymlファイルの作成</strong>: プロジェクトルートに以下の内容で作成
+                                <pre class="code-block"><code class="language-yaml">version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: nextjs-postgres
+    environment:
+      POSTGRES_USER: nextuser
+      POSTGRES_PASSWORD: nextpass
+      POSTGRES_DB: userdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nextuser"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  adminer:
+    image: adminer:latest
+    container_name: nextjs-adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:</code></pre>
+                            </li>
+                            <li><strong>Dockerコンテナの起動</strong>: ターミナルで以下を実行
+                                <pre class="code-block"><code class="language-bash"># プロジェクトルートで実行
+docker-compose up -d
+
+# コンテナの状態確認
+docker-compose ps</code></pre>
+                            </li>
+                        </ol>
+
+                        <h6>動作確認</h6>
+                        <p>Adminerにアクセスしてデータベース接続を確認します。</p>
+                        <pre class="code-block"><code class="language-bash"># ブラウザで以下にアクセス
+http://localhost:8080
+
+# ログイン情報
+# サーバー: postgres
+# ユーザー名: nextuser
+# パスワード: nextpass
+# データベース: userdb</code></pre>
+
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>✓ Adminerのログイン画面が表示される</p>
+                            <p>✓ 正しい情報でログインできる</p>
+                            <p>✓ userdbデータベースが存在する</p>
+                        </div>
+
+                        <h6>トラブルシューティング</h6>
+                        <div class="alert alert-warning">
+                            <p><strong>エラー:</strong> ポート5432が既に使用されています</p>
+                            <p><strong>解決方法:</strong> 既存のPostgreSQLを停止するか、docker-compose.ymlでポート番号を変更（例: "5433:5432"）</p>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">2.2 Prisma ORMのインストールと初期設定</h3>
+                    <p>Prisma ORMをプロジェクトに導入し、TypeScriptと連携します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実装 2-2: Prismaのセットアップ</h5>
+                        <p>Prisma CLIとクライアントライブラリをインストールします。</p>
+
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>Prismaパッケージのインストール</strong>: 依存関係を追加
+                                <pre class="code-block"><code class="language-bash"># Prismaのインストール
+pnpm add prisma @prisma/client
+
+# Prismaの初期化
+pnpm dlx prisma init</code></pre>
+                            </li>
+                            <li><strong>.envファイルの編集</strong>: データベース接続文字列を設定
+                                <pre class="code-block"><code class="language-bash"># .env
+DATABASE_URL="postgresql://nextuser:nextpass@localhost:5432/userdb?schema=public"</code></pre>
+                            </li>
+                            <li><strong>.gitignoreの確認</strong>: 環境変数ファイルが除外されていることを確認
+                                <pre class="code-block"><code class="language-bash"># .gitignoreに以下が含まれていることを確認
+.env
+.env.local
+.env*.local</code></pre>
+                            </li>
+                        </ol>
+
+                        <h6>動作確認</h6>
+                        <p>Prismaが正しくインストールされたことを確認します。</p>
+                        <pre class="code-block"><code class="language-bash"># Prismaのバージョン確認
+pnpm dlx prisma --version
+
+# 接続テスト（後で実行）
+pnpm dlx prisma db pull</code></pre>
+
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>✓ prisma/ディレクトリとschema.prismaファイルが作成される</p>
+                            <p>✓ .envファイルが作成され、DATABASE_URLが設定される</p>
+                            <p>✓ Prismaコマンドが正常に動作する</p>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">2.3 Prismaスキーマ定義とマイグレーション</h3>
+                    <p>ユーザーテーブルのスキーマを定義し、データベースに反映します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実装 2-3: スキーマの定義</h5>
+                        <p>Prismaスキーマファイルにユーザーモデルを定義します。</p>
+
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>schema.prismaの編集</strong>: prisma/schema.prismaを以下のように編集
+                                <pre class="code-block"><code class="language-prisma">// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  email     String   @unique
+  fullName  String
+  bio       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}</code></pre>
+                            </li>
+                            <li><strong>マイグレーションの作成と実行</strong>: スキーマをデータベースに適用
+                                <pre class="code-block"><code class="language-bash"># マイグレーションファイルの生成と適用
+pnpm dlx prisma migrate dev --name init
+
+# マイグレーション履歴の確認
+pnpm dlx prisma migrate status</code></pre>
+                            </li>
+                            <li><strong>Prisma Clientの生成</strong>: 型定義を生成
+                                <pre class="code-block"><code class="language-bash"># Prisma Clientの再生成
+pnpm dlx prisma generate</code></pre>
+                            </li>
+                        </ol>
+
+                        <h6>動作確認</h6>
+                        <p>データベースにテーブルが作成されたことを確認します。</p>
+                        <pre class="code-block"><code class="language-bash"># Adminerで確認
+# http://localhost:8080にアクセスし、usersテーブルを確認</code></pre>
+
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>✓ prisma/migrationsディレクトリが作成される</p>
+                            <p>✓ データベースにusersテーブルが作成される</p>
+                            <p>✓ node_modules/.prisma/clientが生成される</p>
+                        </div>
+
+                        <h6>Prismaスキーマの構成要素</h6>
+                        <div class="mermaid">
+flowchart LR
+    A[Prismaスキーマ] --> B[generator]
+    A --> C[datasource]
+    A --> D[model]
+    B --> E[Prisma Clientの生成設定]
+    C --> F[DB接続情報]
+    D --> G[テーブル定義]
+    D --> H[フィールド定義]
+    D --> I[リレーション]
+</div>
+                    </div>
+
+                    <h3 class="section-title">2.4 Prisma Clientのセットアップ</h3>
+                    <p>Next.jsアプリケーションからPrismaを使用するためのクライアントを設定します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実装 2-4: Prismaクライアントのインスタンス化</h5>
+                        <p>開発環境でのホットリロード対応を含めたPrismaクライアントを作成します。</p>
+
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>libディレクトリの作成</strong>: プロジェクトルートにlibフォルダを作成
+                                <pre class="code-block"><code class="language-bash"># ディレクトリ作成
+mkdir lib</code></pre>
+                            </li>
+                            <li><strong>prisma.tsファイルの作成</strong>: lib/prisma.tsを以下の内容で作成
+                                <pre class="code-block"><code class="language-typescript">// lib/prisma.ts
+import { PrismaClient } from '@prisma/client'
+
+const globalForPrisma = global as unknown as {
+  prisma: PrismaClient | undefined
+}
+
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  })
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma
+}</code></pre>
+                            </li>
+                        </ol>
+
+                        <h6>コードの説明</h6>
+                        <ul>
+                            <li><strong>グローバル変数の使用</strong>: 開発環境でのホットリロード時に複数のPrismaClientインスタンスが作成されるのを防ぐ</li>
+                            <li><strong>ログ設定</strong>: 開発環境ではクエリログを出力し、本番環境ではエラーログのみ</li>
+                            <li><strong>シングルトンパターン</strong>: アプリケーション全体で1つのPrismaClientインスタンスを共有</li>
+                        </ul>
+
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>✓ lib/prisma.tsファイルが作成される</p>
+                            <p>✓ TypeScriptの型チェックがエラーなく通る</p>
+                            <p>✓ 他のファイルからインポートして使用できる</p>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">2.5 Prisma Studioによるデータ管理</h3>
+                    <p>Prisma Studioを使用してデータベースのデータを視覚的に管理します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実装 2-5: Prisma Studioの起動とテストデータ投入</h5>
+                        <p>Prisma Studioを起動し、テストデータを手動で追加します。</p>
+
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>Prisma Studioの起動</strong>: 以下のコマンドを実行
+                                <pre class="code-block"><code class="language-bash"># Prisma Studioを起動
+pnpm dlx prisma studio</code></pre>
+                            </li>
+                            <li><strong>テストデータの追加</strong>: ブラウザ（http://localhost:5555）でUserモデルにテストデータを追加
+                                <pre class="code-block"><code class="language-json">{
+  "username": "testuser",
+  "email": "test@example.com",
+  "fullName": "テストユーザー",
+  "bio": "これはテストアカウントです"
+}</code></pre>
+                            </li>
+                        </ol>
+
+                        <h6>動作確認</h6>
+                        <p>Prisma Studioとデータベース管理UIの両方で確認します。</p>
+                        <pre class="code-block"><code class="language-bash"># Prisma Studio: http://localhost:5555
+# Adminer: http://localhost:8080</code></pre>
+
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>✓ Prisma Studioが起動し、Userモデルが表示される</p>
+                            <p>✓ テストデータが正常に追加される</p>
+                            <p>✓ Adminerでも同じデータが確認できる</p>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">2.6 データベースアーキテクチャの理解</h3>
+                    <p>構築したデータベース環境の全体像を確認します。</p>
+
+                    <div class="mermaid">
+flowchart TB
+    subgraph Docker環境
+        A[PostgreSQLコンテナ<br/>Port: 5432]
+        B[Adminerコンテナ<br/>Port: 8080]
+    end
+
+    subgraph Next.jsアプリケーション
+        C[Prisma Client]
+        D[Server Components]
+        E[Server Actions]
+    end
+
+    F[開発者]
+
+    F -->|データ確認・管理| B
+    F -->|データ確認・編集| G[Prisma Studio<br/>Port: 5555]
+    B --> A
+    G --> C
+    C --> A
+    D --> C
+    E --> C
+</div>
+
+                    <div class="quiz-container">
+                        <h5>ステップ完了チェック</h5>
+                        <p>以下の項目が完了していることを確認してください：</p>
+                        <ul class="list-unstyled">
+                            <li>☐ Docker ComposeでPostgreSQLとAdminerが起動している</li>
+                            <li>☐ Adminerでデータベースにアクセスできる</li>
+                            <li>☐ Prismaがインストールされ、初期設定が完了している</li>
+                            <li>☐ schema.prismaにUserモデルが定義されている</li>
+                            <li>☐ マイグレーションが正常に実行されている</li>
+                            <li>☐ lib/prisma.tsが作成され、Prismaクライアントが利用可能</li>
+                            <li>☐ Prisma Studioが起動し、データの追加・確認ができる</li>
+                        </ul>
+                    </div>
+
+                    <div class="alert alert-light">
+                        <h6>現在のプロジェクト構成</h6>
+                        <pre class="code-block"><code class="language-bash">user-management-app/
+├── app/
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── globals.css
+├── lib/
+│   └── prisma.ts          # 新規作成
+├── prisma/
+│   ├── schema.prisma      # 新規作成
+│   └── migrations/        # 新規作成
+│       └── 20250126000000_init/
+│           └── migration.sql
+├── docker-compose.yml     # 新規作成
+├── .env                   # 新規作成（.gitignore対象）
+├── package.json
+├── tsconfig.json
+└── next.config.js</code></pre>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <h6>次のステップの準備</h6>
+                        <p>ステップ3では、Server ComponentsとClient Componentsの概念を学び、コンポーネントアーキテクチャを設計します。データベースとPrismaの準備ができたので、実際のデータフェッチングとレンダリングパターンを実装していきます。</p>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="step1-environment-setup.html" class="btn btn-secondary">← 前のステップ</a>
+                        <a href="step3-components-architecture.html" class="btn btn-primary">次のステップ →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- フッター -->
+    <footer class="bg-dark text-white mt-5">
+        <div class="container-fluid py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="mb-0">© 2025 F-Circle. All rights reserved.<br>
+本資料はAIツールを活用し、人間による編集・監修のもと作成されています。無断転載・再配布を禁じます。</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Highlight.js 初期化 -->
+    <script>hljs.highlightAll();</script>
+
+    <!-- Mermaid.js 初期化 -->
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default'
+        });
+    </script>
+</body>
+</html>

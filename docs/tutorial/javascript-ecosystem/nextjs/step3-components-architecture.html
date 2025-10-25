@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next.jsチュートリアル ステップ3 - Server ComponentsとClient Components</title>
+
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 56px;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 56px;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 48px 0 0;
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+            background-color: #f8f9fa;
+            overflow-y: auto;
+        }
+
+        .sidebar-heading {
+            font-size: .75rem;
+            text-transform: uppercase;
+        }
+
+        .sidebar .nav-link {
+            font-weight: 500;
+            color: #333;
+            padding: 0.5rem 1rem;
+            margin: 0.2rem 0;
+            border-radius: 0.25rem;
+        }
+
+        .sidebar .nav-link:hover {
+            color: #667eea;
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+
+        .sidebar .nav-link.active {
+            color: #fff;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        main {
+            margin-top: 20px;
+        }
+
+        .chapter-title {
+            color: #667eea;
+            font-weight: bold;
+            margin-top: 2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .section-title {
+            color: #764ba2;
+            font-weight: bold;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-left: 5px solid #667eea;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0.5rem;
+        }
+
+        .code-block {
+            background-color: #282c34;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            color: #abb2bf;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+        }
+
+        .exercise-container {
+            background-color: #fff;
+            border: 2px solid #667eea;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .quiz-container {
+            background-color: #f0f4ff;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        footer {
+            margin-top: 3rem;
+            padding: 2rem 0;
+            background-color: #343a40;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand">
+                <strong>Next.js実践チュートリアル</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>チュートリアルステップ</span>
+                    </h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="step1-environment-setup.html">
+                                ステップ1: 開発環境構築
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step2-database-setup.html">
+                                ステップ2: DB環境構築
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="step3-components-architecture.html">
+                                ステップ3: コンポーネント設計
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step4-user-model-crud.html">
+                                ステップ4: ユーザーモデルとCRUD
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step5-user-registration.html">
+                                ステップ5: ユーザー登録機能
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step6-user-list-detail.html">
+                                ステップ6: 一覧・詳細表示
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step7-user-update-delete.html">
+                                ステップ7: 編集・削除機能
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step8-authentication-security.html">
+                                ステップ8: 認証とセキュリティ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step9-ui-ux-improvement.html">
+                                ステップ9: UI/UX向上
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="step10-testing-deployment.html">
+                                ステップ10: テストとデプロイ
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">ステップ3: Server ComponentsとClient Components</h1>
+                </div>
+
+                <div id="step3">
+                    <h2 class="chapter-title">Next.js App Routerのコンポーネントアーキテクチャ</h2>
+
+                    <div class="highlight">
+                        <h5>このステップで実装すること</h5>
+                        <ul>
+                            <li>React Server Components（RSC）の概念理解と実装</li>
+                            <li>Client Componentsの適切な使用場面の理解</li>
+                            <li>コンポーネント境界の設計とデータフェッチングパターン</li>
+                            <li>Suspenseによるローディング状態の管理</li>
+                            <li>error.tsxとnot-found.tsxによるエラーハンドリング</li>
+                            <li>レイアウトとネストされたルーティングの実装</li>
+                        </ul>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <h6>前提条件</h6>
+                        <ul>
+                            <li>ステップ2が完了し、データベース環境が構築されていること</li>
+                            <li>Reactの基本的なコンポーネント設計を理解していること</li>
+                            <li>非同期処理（async/await）の基本を理解していること</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">3.1 Server ComponentsとClient Componentsの理解</h3>
+                    <p>Next.js 14 App Routerでは、デフォルトで全てのコンポーネントがServer Componentsとして動作します。</p>
+
+                    <div class="mermaid">
+flowchart TB
+    A[コンポーネント] --> B{インタラクティブ性<br/>必要?}
+    B -->|不要| C[Server Component<br/>デフォルト]
+    B -->|必要| D[Client Component<br/>'use client']
+
+    C --> E[サーバーでレンダリング]
+    C --> F[データベース直接アクセス]
+    C --> G[小さいバンドルサイズ]
+
+    D --> H[ブラウザでレンダリング]
+    D --> I[useState/useEffect使用可]
+    D --> J[イベントハンドラー]
+</div>
+
+                    <div class="exercise-container">
+                        <h5>実装 3-1: Server Componentの作成</h5>
+                        <p>データベースから直接データを取得するServer Componentを作成します。</p>
+
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>ユーザー一覧ページの作成</strong>: app/users/page.tsxを作成
+                                <pre class="code-block"><code class="language-typescript">// app/users/page.tsx
+import { prisma } from '@/lib/prisma'
+
+// Server Componentはasync関数にできる
+export default async function UsersPage() {
+  // サーバーサイドで直接データベースにアクセス
+  const users = await prisma.user.findMany({
+    orderBy: {
+      createdAt: 'desc'
+    }
+  })
+
+  return (
+    &lt;div className="container mx-auto p-8"&gt;
+      &lt;h1 className="text-3xl font-bold mb-6"&gt;ユーザー一覧&lt;/h1&gt;
+      &lt;div className="grid gap-4"&gt;
+        {users.map((user) =&gt; (
+          &lt;div key={user.id} className="border p-4 rounded-lg"&gt;
+            &lt;h2 className="text-xl font-semibold"&gt;{user.fullName}&lt;/h2&gt;
+            &lt;p className="text-gray-600"&gt;@{user.username}&lt;/p&gt;
+            &lt;p className="text-sm text-gray-500"&gt;{user.email}&lt;/p&gt;
+          &lt;/div&gt;
+        ))}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+                            </li>
+                            <li><strong>動作確認</strong>: 開発サーバーを起動してページにアクセス
+                                <pre class="code-block"><code class="language-bash">pnpm dev
+# ブラウザで http://localhost:3000/users にアクセス</code></pre>
+                            </li>
+                        </ol>
+
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>✓ ユーザー一覧が表示される</p>
+                            <p>✓ データベースから直接データが取得されている</p>
+                            <p>✓ JavaScriptバンドルにPrismaクライアントが含まれていない</p>
+                        </div>
+
+                        <h6>Server Componentの利点</h6>
+                        <ul>
+                            <li><strong>直接データアクセス</strong>: APIルートを経由せずデータベースに直接アクセス可能</li>
+                            <li><strong>セキュリティ</strong>: 機密情報がクライアントに送信されない</li>
+                            <li><strong>パフォーマンス</strong>: クライアントのJavaScriptバンドルサイズが小さい</li>
+                            <li><strong>SEO</strong>: サーバーレンダリングによりSEOに有利</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">3.2 Client Componentの実装</h3>
+                    <p>ユーザーインタラクションが必要な部分はClient Componentとして実装します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実装 3-2: インタラクティブなボタンコンポーネント</h5>
+                        <p>'use client'ディレクティブを使用してClient Componentを作成します。</p>
+
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>componentsディレクトリの作成</strong>: app/components/ディレクトリを作成
+                                <pre class="code-block"><code class="language-bash">mkdir -p app/components</code></pre>
+                            </li>
+                            <li><strong>DeleteButtonコンポーネントの作成</strong>: app/components/DeleteButton.tsxを作成
+                                <pre class="code-block"><code class="language-typescript">// app/components/DeleteButton.tsx
+'use client'
+
+import { useState } from 'react'
+
+interface DeleteButtonProps {
+  userId: string
+  userName: string
+}
+
+export function DeleteButton({ userId, userName }: DeleteButtonProps) {
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  const handleDelete = async () =&gt; {
+    if (!confirm(`本当に ${userName} を削除しますか?`)) {
+      return
+    }
+
+    setIsDeleting(true)
+    try {
+      // 後でServer Actionを実装
+      console.log('削除処理:', userId)
+      alert('削除しました（デモ）')
+    } catch (error) {
+      console.error('削除エラー:', error)
+      alert('削除に失敗しました')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  return (
+    &lt;button
+      onClick={handleDelete}
+      disabled={isDeleting}
+      className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50"
+    &gt;
+      {isDeleting ? '削除中...' : '削除'}
+    &lt;/button&gt;
+  )
+}</code></pre>
+                            </li>
+                            <li><strong>Server ComponentからClient Componentを使用</strong>: app/users/page.tsxを更新
+                                <pre class="code-block"><code class="language-typescript">// app/users/page.tsx
+import { prisma } from '@/lib/prisma'
+import { DeleteButton } from '@/app/components/DeleteButton'
+
+export default async function UsersPage() {
+  const users = await prisma.user.findMany({
+    orderBy: {
+      createdAt: 'desc'
+    }
+  })
+
+  return (
+    &lt;div className="container mx-auto p-8"&gt;
+      &lt;h1 className="text-3xl font-bold mb-6"&gt;ユーザー一覧&lt;/h1&gt;
+      &lt;div className="grid gap-4"&gt;
+        {users.map((user) =&gt; (
+          &lt;div key={user.id} className="border p-4 rounded-lg flex justify-between items-center"&gt;
+            &lt;div&gt;
+              &lt;h2 className="text-xl font-semibold"&gt;{user.fullName}&lt;/h2&gt;
+              &lt;p className="text-gray-600"&gt;@{user.username}&lt;/p&gt;
+              &lt;p className="text-sm text-gray-500"&gt;{user.email}&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;DeleteButton userId={user.id} userName={user.fullName} /&gt;
+          &lt;/div&gt;
+        ))}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+                            </li>
+                        </ol>
+
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>✓ 各ユーザーカードに削除ボタンが表示される</p>
+                            <p>✓ ボタンクリックで確認ダイアログが表示される</p>
+                            <p>✓ 削除中はボタンが無効化される</p>
+                        </div>
+
+                        <h6>コンポーネント境界の設計ポイント</h6>
+                        <div class="alert alert-warning">
+                            <p><strong>重要:</strong> Server ComponentからClient Componentにデータを渡す場合、シリアライズ可能なデータのみ渡すことができます（関数やクラスインスタンスは不可）。</p>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">3.3 Suspenseによるローディング状態管理</h3>
+                    <p>Reactのサスペンスを使用して、データ読み込み中の状態を管理します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実装 3-3: loading.tsxの作成</h5>
+                        <p>Next.jsのファイルベース規約でローディングUIを実装します。</p>
+
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>ローディングコンポーネントの作成</strong>: app/users/loading.tsxを作成
+                                <pre class="code-block"><code class="language-typescript">// app/users/loading.tsx
+export default function Loading() {
+  return (
+    &lt;div className="container mx-auto p-8"&gt;
+      &lt;h1 className="text-3xl font-bold mb-6"&gt;ユーザー一覧&lt;/h1&gt;
+      &lt;div className="grid gap-4"&gt;
+        {[1, 2, 3].map((i) =&gt; (
+          &lt;div key={i} className="border p-4 rounded-lg animate-pulse"&gt;
+            &lt;div className="h-6 bg-gray-200 rounded w-1/3 mb-2"&gt;&lt;/div&gt;
+            &lt;div className="h-4 bg-gray-200 rounded w-1/4 mb-2"&gt;&lt;/div&gt;
+            &lt;div className="h-4 bg-gray-200 rounded w-1/2"&gt;&lt;/div&gt;
+          &lt;/div&gt;
+        ))}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+                            </li>
+                            <li><strong>データフェッチに遅延を追加（テスト用）</strong>: app/users/page.tsxを一時的に修正
+                                <pre class="code-block"><code class="language-typescript">// app/users/page.tsx（テスト用に遅延追加）
+export default async function UsersPage() {
+  // テスト用に2秒の遅延を追加
+  await new Promise(resolve =&gt; setTimeout(resolve, 2000))
+
+  const users = await prisma.user.findMany({
+    orderBy: {
+      createdAt: 'desc'
+    }
+  })
+  // 以下同じ
+}</code></pre>
+                            </li>
+                        </ol>
+
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>✓ ページ遷移時にローディングスケルトンが表示される</p>
+                            <p>✓ データ取得完了後に実際のコンテンツが表示される</p>
+                            <p>✓ アニメーション効果が適用される</p>
+                        </div>
+
+                        <h6>Suspenseの動作フロー</h6>
+                        <div class="mermaid">
+sequenceDiagram
+    participant U as User
+    participant N as Next.js Router
+    participant L as loading.tsx
+    participant P as page.tsx
+    participant DB as Database
+
+    U->>N: /usersにアクセス
+    N->>L: ローディングUI表示
+    L-->>U: スケルトン表示
+    N->>P: ページコンポーネント実行
+    P->>DB: データ取得
+    DB-->>P: データ返却
+    P-->>N: レンダリング完了
+    N-->>U: 実際のコンテンツ表示
+</div>
+                    </div>
+
+                    <h3 class="section-title">3.4 エラーハンドリングの実装</h3>
+                    <p>error.tsxとnot-found.tsxでエラー状態を適切に処理します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実装 3-4: エラーページの作成</h5>
+                        <p>エラー境界とNotFoundページを実装します。</p>
+
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>エラー境界の作成</strong>: app/users/error.tsxを作成
+                                <pre class="code-block"><code class="language-typescript">// app/users/error.tsx
+'use client'
+
+import { useEffect } from 'react'
+
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string }
+  reset: () =&gt; void
+}) {
+  useEffect(() =&gt; {
+    console.error('エラーが発生しました:', error)
+  }, [error])
+
+  return (
+    &lt;div className="container mx-auto p-8"&gt;
+      &lt;div className="bg-red-50 border border-red-200 rounded-lg p-6"&gt;
+        &lt;h2 className="text-2xl font-bold text-red-800 mb-4"&gt;エラーが発生しました&lt;/h2&gt;
+        &lt;p className="text-red-600 mb-4"&gt;{error.message}&lt;/p&gt;
+        &lt;button
+          onClick={reset}
+          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+        &gt;
+          再試行
+        &lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+                            </li>
+                            <li><strong>NotFoundページの作成</strong>: app/users/not-found.tsxを作成
+                                <pre class="code-block"><code class="language-typescript">// app/users/not-found.tsx
+import Link from 'next/link'
+
+export default function NotFound() {
+  return (
+    &lt;div className="container mx-auto p-8"&gt;
+      &lt;div className="text-center"&gt;
+        &lt;h2 className="text-3xl font-bold mb-4"&gt;ページが見つかりません&lt;/h2&gt;
+        &lt;p className="text-gray-600 mb-6"&gt;
+          お探しのページは存在しないか、移動された可能性があります。
+        &lt;/p&gt;
+        &lt;Link
+          href="/users"
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        &gt;
+          ユーザー一覧へ戻る
+        &lt;/Link&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+                            </li>
+                            <li><strong>動的ルートでのnotFound使用</strong>: app/users/[id]/page.tsxを作成
+                                <pre class="code-block"><code class="language-typescript">// app/users/[id]/page.tsx
+import { prisma } from '@/lib/prisma'
+import { notFound } from 'next/navigation'
+
+export default async function UserDetailPage({
+  params,
+}: {
+  params: { id: string }
+}) {
+  const user = await prisma.user.findUnique({
+    where: { id: params.id }
+  })
+
+  if (!user) {
+    notFound()
+  }
+
+  return (
+    &lt;div className="container mx-auto p-8"&gt;
+      &lt;h1 className="text-3xl font-bold mb-6"&gt;{user.fullName}&lt;/h1&gt;
+      &lt;div className="bg-white rounded-lg shadow p-6"&gt;
+        &lt;p&gt;&lt;strong&gt;ユーザー名:&lt;/strong&gt; @{user.username}&lt;/p&gt;
+        &lt;p&gt;&lt;strong&gt;メールアドレス:&lt;/strong&gt; {user.email}&lt;/p&gt;
+        {user.bio && &lt;p&gt;&lt;strong&gt;自己紹介:&lt;/strong&gt; {user.bio}&lt;/p&gt;}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+                            </li>
+                        </ol>
+
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>✓ 存在しないユーザーIDにアクセスするとNotFoundページが表示される</p>
+                            <p>✓ データ取得エラー時にエラー境界が動作する</p>
+                            <p>✓ 再試行ボタンで復旧を試みることができる</p>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">3.5 レイアウトとネストされたルーティング</h3>
+                    <p>共通レイアウトを定義し、ネストされたルート構造を構築します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実装 3-5: ユーザー管理用レイアウト</h5>
+                        <p>ユーザー関連ページで共有するレイアウトを作成します。</p>
+
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>レイアウトコンポーネントの作成</strong>: app/users/layout.tsxを作成
+                                <pre class="code-block"><code class="language-typescript">// app/users/layout.tsx
+import Link from 'next/link'
+
+export default function UsersLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    &lt;div&gt;
+      &lt;nav className="bg-white shadow-sm mb-6"&gt;
+        &lt;div className="container mx-auto px-8 py-4"&gt;
+          &lt;div className="flex gap-4"&gt;
+            &lt;Link
+              href="/users"
+              className="text-gray-600 hover:text-blue-600"
+            &gt;
+              一覧
+            &lt;/Link&gt;
+            &lt;Link
+              href="/users/new"
+              className="text-gray-600 hover:text-blue-600"
+            &gt;
+              新規登録
+            &lt;/Link&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/nav&gt;
+      {children}
+    &lt;/div&gt;
+  )
+}</code></pre>
+                            </li>
+                        </ol>
+
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>✓ /users配下の全ページで共通ナビゲーションが表示される</p>
+                            <p>✓ ページ遷移時にレイアウトは再レンダリングされない</p>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-light">
+                        <h6>コンポーネントアーキテクチャの全体像</h6>
+                        <div class="mermaid">
+flowchart TB
+    subgraph Server["Server Side"]
+        A[Layout<br/>app/layout.tsx]
+        B[Users Layout<br/>app/users/layout.tsx]
+        C[Users Page<br/>app/users/page.tsx]
+        D[User Detail<br/>app/users/[id]/page.tsx]
+    end
+
+    subgraph Client["Client Side"]
+        E[DeleteButton<br/>'use client']
+        F[FormComponent<br/>'use client']
+    end
+
+    A --> B
+    B --> C
+    B --> D
+    C --> E
+    D --> F
+</div>
+                    </div>
+
+                    <div class="quiz-container">
+                        <h5>ステップ完了チェック</h5>
+                        <p>以下の項目が完了していることを確認してください：</p>
+                        <ul class="list-unstyled">
+                            <li>☐ Server Componentとして動作するpage.tsxが実装されている</li>
+                            <li>☐ Client Componentとして動作するインタラクティブコンポーネントが実装されている</li>
+                            <li>☐ loading.tsxでローディング状態が表示される</li>
+                            <li>☐ error.tsxでエラーハンドリングが機能する</li>
+                            <li>☐ not-found.tsxで404ページが表示される</li>
+                            <li>☐ layout.tsxで共通レイアウトが適用されている</li>
+                            <li>☐ Server ComponentとClient Componentの使い分けが理解できた</li>
+                        </ul>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <h6>次のステップの準備</h6>
+                        <p>ステップ4では、Prismaスキーマを使用したユーザーモデルの詳細設計と、Server Actionsを使用したCRUD操作の基盤を構築します。コンポーネントアーキテクチャの理解を基に、実際のデータ操作を実装していきます。</p>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="step2-database-setup.html" class="btn btn-secondary">← 前のステップ</a>
+                        <a href="step4-user-model-crud.html" class="btn btn-primary">次のステップ →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- フッター -->
+    <footer class="bg-dark text-white mt-5">
+        <div class="container-fluid py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="mb-0">© 2025 F-Circle. All rights reserved.<br>
+本資料はAIツールを活用し、人間による編集・監修のもと作成されています。無断転載・再配布を禁じます。</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Highlight.js 初期化 -->
+    <script>hljs.highlightAll();</script>
+
+    <!-- Mermaid.js 初期化 -->
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default'
+        });
+    </script>
+</body>
+</html>

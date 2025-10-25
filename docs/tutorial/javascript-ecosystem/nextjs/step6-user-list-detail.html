@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next.jsチュートリアル ステップ6 - ユーザー一覧・詳細表示機能</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #f8f9fa; padding-top: 56px; }
+        .navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .sidebar { position: fixed; top: 56px; bottom: 0; left: 0; z-index: 100; padding: 48px 0 0; box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1); background-color: #f8f9fa; overflow-y: auto; }
+        .sidebar .nav-link { font-weight: 500; color: #333; padding: 0.5rem 1rem; margin: 0.2rem 0; border-radius: 0.25rem; }
+        .sidebar .nav-link:hover { color: #667eea; background-color: rgba(102, 126, 234, 0.1); }
+        .sidebar .nav-link.active { color: #fff; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        main { margin-top: 20px; }
+        .chapter-title { color: #667eea; font-weight: bold; margin-top: 2rem; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 3px solid #667eea; }
+        .section-title { color: #764ba2; font-weight: bold; margin-top: 1.5rem; margin-bottom: 1rem; }
+        .highlight { background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); border-left: 5px solid #667eea; padding: 1.5rem; margin: 1.5rem 0; border-radius: 0.5rem; }
+        .code-block { background-color: #282c34; border-radius: 0.5rem; padding: 1.5rem; margin: 1rem 0; overflow-x: auto; }
+        .code-block code { color: #abb2bf; font-family: 'Courier New', monospace; font-size: 0.95rem; }
+        .exercise-container { background-color: #fff; border: 2px solid #667eea; border-radius: 0.5rem; padding: 1.5rem; margin: 1.5rem 0; }
+        .quiz-container { background-color: #f0f4ff; border-radius: 0.5rem; padding: 1.5rem; margin: 1.5rem 0; }
+        footer { margin-top: 3rem; padding: 2rem 0; background-color: #343a40; color: white; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid"><a class="navbar-brand"><strong>Next.js実践チュートリアル</strong></a></div>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item"><a class="nav-link" href="step1-environment-setup.html">ステップ1: 開発環境構築</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step2-database-setup.html">ステップ2: DB環境構築</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step3-components-architecture.html">ステップ3: コンポーネント設計</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step4-user-model-crud.html">ステップ4: ユーザーモデルとCRUD</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step5-user-registration.html">ステップ5: ユーザー登録機能</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="step6-user-list-detail.html">ステップ6: 一覧・詳細表示</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step7-user-update-delete.html">ステップ7: 編集・削除機能</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step8-authentication-security.html">ステップ8: 認証とセキュリティ</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step9-ui-ux-improvement.html">ステップ9: UI/UX向上</a></li>
+                        <li class="nav-item"><a class="nav-link" href="step10-testing-deployment.html">ステップ10: テストとデプロイ</a></li>
+                    </ul>
+                </div>
+            </nav>
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">ステップ6: ユーザー一覧・詳細表示機能</h1>
+                </div>
+                <div id="step6">
+                    <h2 class="chapter-title">データ表示とページネーション、動的ルーティング</h2>
+                    <div class="highlight">
+                        <h5>このステップで実装すること</h5>
+                        <ul>
+                            <li>ユーザー一覧ページの実装</li>
+                            <li>テーブルコンポーネントの作成</li>
+                            <li>ページネーション機能の実装</li>
+                            <li>検索・フィルター機能の追加</li>
+                            <li>動的ルーティングによる詳細ページ</li>
+                            <li>Suspenseによるストリーミングレンダリング</li>
+                            <li>キャッシュ戦略とrevalidate設定</li>
+                        </ul>
+                    </div>
+                    <h3 class="section-title">6.1 ユーザー一覧ページの実装</h3>
+                    <div class="exercise-container">
+                        <h5>実装 6-1: ページネーション付き一覧表示</h5>
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>一覧ページの更新</strong>: app/users/page.tsxを拡張
+<pre class="code-block"><code class="language-typescript">// app/users/page.tsx
+import { userRepository } from '@/lib/repositories/user-repository'
+import Link from 'next/link'
+import { Suspense } from 'react'
+
+export const revalidate = 60 // 60秒ごとに再検証
+
+export default async function UsersPage({
+  searchParams,
+}: {
+  searchParams: { page?: string; q?: string }
+}) {
+  const page = Number(searchParams.page) || 1
+  const query = searchParams.q || ''
+
+  return (
+    &lt;div className="container mx-auto p-8"&gt;
+      &lt;div className="flex justify-between items-center mb-6"&gt;
+        &lt;h1 className="text-3xl font-bold"&gt;ユーザー一覧&lt;/h1&gt;
+        &lt;Link
+          href="/users/new"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        &gt;
+          新規登録
+        &lt;/Link&gt;
+      &lt;/div&gt;
+
+      &lt;Suspense fallback={&lt;div&gt;読み込み中...&lt;/div&gt;}&gt;
+        &lt;UserList page={page} query={query} /&gt;
+      &lt;/Suspense&gt;
+    &lt;/div&gt;
+  )
+}
+
+async function UserList({ page, query }: { page: number; query: string }) {
+  const limit = 10
+  const result = query
+    ? await userRepository.search(query)
+    : await userRepository.findManyWithPagination(page, limit)
+
+  const users = 'users' in result ? result.users : result
+  const totalPages = 'totalPages' in result ? result.totalPages : 1
+
+  return (
+    &lt;&gt;
+      &lt;div className="grid gap-4"&gt;
+        {users.map((user) =&gt; (
+          &lt;Link
+            key={user.id}
+            href={`/users/${user.id}`}
+            className="border p-4 rounded-lg hover:shadow-lg transition"
+          &gt;
+            &lt;h2 className="text-xl font-semibold"&gt;{user.fullName}&lt;/h2&gt;
+            &lt;p className="text-gray-600"&gt;@{user.username}&lt;/p&gt;
+            &lt;p className="text-sm text-gray-500"&gt;{user.email}&lt;/p&gt;
+          &lt;/Link&gt;
+        ))}
+      &lt;/div&gt;
+
+      {!query && totalPages > 1 && (
+        &lt;div className="flex justify-center gap-2 mt-6"&gt;
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            &lt;Link
+              key={p}
+              href={`/users?page=${p}`}
+              className={`px-3 py-1 rounded ${
+                p === page ? 'bg-blue-600 text-white' : 'bg-gray-200'
+              }`}
+            &gt;
+              {p}
+            &lt;/Link&gt;
+          ))}
+        &lt;/div&gt;
+      )}
+    &lt;/&gt;
+  )
+}</code></pre>
+                            </li>
+                        </ol>
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>✓ ユーザー一覧が表示される</p>
+                            <p>✓ ページネーションが動作する</p>
+                            <p>✓ ユーザーカードをクリックすると詳細ページに遷移する</p>
+                        </div>
+                    </div>
+                    <h3 class="section-title">6.2 ユーザー詳細ページの実装</h3>
+                    <div class="exercise-container">
+                        <h5>実装 6-2: 動的ルーティング</h5>
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>詳細ページの作成</strong>: app/users/[id]/page.tsxを更新
+<pre class="code-block"><code class="language-typescript">// app/users/[id]/page.tsx
+import { userRepository } from '@/lib/repositories/user-repository'
+import { notFound } from 'next/navigation'
+import Link from 'next/link'
+
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const user = await userRepository.findById(params.id)
+  return {
+    title: user ? `${user.fullName} - ユーザー詳細` : 'ユーザーが見つかりません',
+  }
+}
+
+export default async function UserDetailPage({
+  params,
+}: {
+  params: { id: string }
+}) {
+  const user = await userRepository.findById(params.id)
+
+  if (!user) {
+    notFound()
+  }
+
+  return (
+    &lt;div className="container mx-auto p-8 max-w-2xl"&gt;
+      &lt;div className="bg-white rounded-lg shadow-lg p-8"&gt;
+        &lt;div className="flex justify-between items-start mb-6"&gt;
+          &lt;div&gt;
+            &lt;h1 className="text-3xl font-bold mb-2"&gt;{user.fullName}&lt;/h1&gt;
+            &lt;p className="text-gray-600"&gt;@{user.username}&lt;/p&gt;
+          &lt;/div&gt;
+          &lt;Link
+            href={`/users/${user.id}/edit`}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          &gt;
+            編集
+          &lt;/Link&gt;
+        &lt;/div&gt;
+
+        &lt;div className="space-y-4"&gt;
+          &lt;div&gt;
+            &lt;h3 className="font-semibold text-gray-700"&gt;メールアドレス&lt;/h3&gt;
+            &lt;p&gt;{user.email}&lt;/p&gt;
+          &lt;/div&gt;
+
+          {user.bio && (
+            &lt;div&gt;
+              &lt;h3 className="font-semibold text-gray-700"&gt;自己紹介&lt;/h3&gt;
+              &lt;p&gt;{user.bio}&lt;/p&gt;
+            &lt;/div&gt;
+          )}
+
+          &lt;div&gt;
+            &lt;h3 className="font-semibold text-gray-700"&gt;登録日時&lt;/h3&gt;
+            &lt;p&gt;{new Date(user.createdAt).toLocaleDateString('ja-JP')}&lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div className="mt-6"&gt;
+          &lt;Link href="/users" className="text-blue-600 hover:underline"&gt;
+            ← 一覧に戻る
+          &lt;/Link&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+                            </li>
+                        </ol>
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>✓ /users/[id]でユーザー詳細が表示される</p>
+                            <p>✓ 存在しないIDの場合は404ページが表示される</p>
+                            <p>✓ メタデータが正しく設定される</p>
+                        </div>
+                    </div>
+                    <div class="quiz-container">
+                        <h5>ステップ完了チェック</h5>
+                        <ul class="list-unstyled">
+                            <li>☐ ユーザー一覧が正しく表示される</li>
+                            <li>☐ ページネーションが動作する</li>
+                            <li>☐ 詳細ページが正しく表示される</li>
+                            <li>☐ 動的ルーティングが機能する</li>
+                            <li>☐ Suspenseによるストリーミングが動作する</li>
+                        </ul>
+                    </div>
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="step5-user-registration.html" class="btn btn-secondary">← 前のステップ</a>
+                        <a href="step7-user-update-delete.html" class="btn btn-primary">次のステップ →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <footer class="bg-dark text-white mt-5">
+        <div class="container-fluid py-3">
+            <div class="row"><div class="col-12 text-center">
+                <p class="mb-0">© 2025 F-Circle. All rights reserved.<br>本資料はAIツールを活用し、人間による編集・監修のもと作成されています。無断転載・再配布を禁じます。</p>
+            </div></div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+</body>
+</html>
