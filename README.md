@@ -22,23 +22,27 @@
 - **HTML形式の教材**: ブラウザで直接閲覧可能な見やすいドキュメント
 - **段階的学習**: 基礎から応用まで順序立てて学べる構成
 - **実践的内容**: ユーザー管理システム開発を通じた実践的な学習
-- **多様な技術領域**: Java、Python、.NET、データベース、AI等の幅広いカバレッジ
+- **多様な技術領域**: Java、Python、.NET、JavaScript、データベース、AI等の幅広いカバレッジ
 
 ---
 
 ## 📖 スライド教材
 
-### Java
+### データベース
 
-- **[Java基本 スライド教材](docs/slide/java-ecosystem/java-basics/README.md)** - Javaプログラミングの基礎から実践的な開発手法まで、視覚的なスライド形式で効率的に学習できる教材。Write Once, Run Anywhereの概念、オブジェクト指向プログラミング、JVMの仕組み、Webアプリケーション開発まで14枚のスライドで体系的に学習
-- **[JDBC基本 スライド教材](docs/slide/java-ecosystem/jdbc-basic/README.md)** - JDBC（Java Database Connectivity）の基礎から実践的なデータベース操作まで、視覚的なスライド形式で効率的に学習できる教材。データベース接続、SQL実行、トランザクション制御、セキュリティ対策まで14枚のスライドで体系的に学習
-- **[JSP基本 スライド教材](docs/slide/java-ecosystem/jsp-basics/README.md)** - JSP（JavaServer Pages）の基本概念から実践的なWebアプリケーション開発まで、視覚的なスライド形式で効率的に学習できる教材。JSP構文要素、暗黙オブジェクト、EL式とJSTL、フォーム処理とDB連携まで14枚のスライドで体系的に学習
+- **[SQL基礎 スライド教材](docs/slide/database/sql-fundamentals/README.md)** - SQL（Structured Query Language）の基本概念からデータベース操作の実践まで、視覚的なスライド形式で効率的に学習できる教材。リレーショナルデータベースの概念、SELECT文、JOIN、グループ化、トランザクション制御まで14枚のスライドで体系的に学習
 
 ### .NET
 
 - **[VB.NET スライド教材](docs/slide/dotnet-ecosystem/vbnet/README.md)** - VB.NETプログラミング言語の基礎から実践的な開発パターンまでを視覚的なスライド形式で効率的に学習できる教材。オブジェクト指向プログラミング、.NET統合、Windowsフォーム開発など12枚のスライドで体系的に学習
 - **[ASP.NET WebForms (VB.NET) スライド教材](docs/slide/dotnet-ecosystem/aspnet-vb-webforms/README.md)** - ASP.NET WebFormsとVB.NETを使用したWebアプリケーション開発の重要概念を視覚的なスライド形式で効率的に学習できる教材。イベントドリブンプログラミングモデルによる迅速なWebアプリケーション開発を11枚のスライドで体系的に学習
 - **[ASP.NET Core MVC (VB.NET) スライド教材](docs/slide/dotnet-ecosystem/aspnet-vb-core-mvc/README.md)** - ASP.NET Core MVCとVB.NETを使用したモダンなWebアプリケーション開発の重要概念を視覚的なスライド形式で効率的に学習できる教材。クロスプラットフォーム対応・高性能なMVCアーキテクチャによるWebアプリケーション開発を14枚のスライドで体系的に学習
+
+### Java
+
+- **[Java基本 スライド教材](docs/slide/java-ecosystem/java-basics/README.md)** - Javaプログラミングの基礎から実践的な開発手法まで、視覚的なスライド形式で効率的に学習できる教材。Write Once, Run Anywhereの概念、オブジェクト指向プログラミング、JVMの仕組み、Webアプリケーション開発まで14枚のスライドで体系的に学習
+- **[JDBC基本 スライド教材](docs/slide/java-ecosystem/jdbc-basic/README.md)** - JDBC（Java Database Connectivity）の基礎から実践的なデータベース操作まで、視覚的なスライド形式で効率的に学習できる教材。データベース接続、SQL実行、トランザクション制御、セキュリティ対策まで14枚のスライドで体系的に学習
+- **[JSP基本 スライド教材](docs/slide/java-ecosystem/jsp-basics/README.md)** - JSP（JavaServer Pages）の基本概念から実践的なWebアプリケーション開発まで、視覚的なスライド形式で効率的に学習できる教材。JSP構文要素、暗黙オブジェクト、EL式とJSTL、フォーム処理とDB連携まで14枚のスライドで体系的に学習
 
 ---
 
@@ -56,6 +60,11 @@
 - **[Spring Boot + Gradle実践チュートリアル](docs/tutorial/java-ecosystem/spring-boot-gradle/README.md)** - Spring BootとGradleを使用したモダンなJava Webアプリケーション開発の実践的なチュートリアル。Docker環境でのPostgreSQL連携、Spring MVC、Spring Data JPA、Thymeleafによるユーザー管理システム開発（10章構成）
 - **[JSP/Servlet/JDBC実践チュートリアル](docs/tutorial/java-ecosystem/jsp-servlet-jdbc/README.md)** - Eclipse IDEを使用したJavaのWebアプリケーション開発基礎技術（JSP、Servlet、JDBC）を学ぶ実践的なチュートリアル。MVCパターンに基づいたユーザー管理システム開発（7章構成）
 - **[Struts 1.x実践チュートリアル](docs/tutorial/java-ecosystem/struts1/README.md)** - Apache Struts 1.xフレームワークを使用したWebアプリケーション開発の実践的なチュートリアル（6章構成）
+
+### JavaScript
+
+- **[Next.js実践チュートリアル](docs/tutorial/javascript-ecosystem/nextjs/README.md)** - Next.jsフレームワークを使用したモダンなReactアプリケーション開発の実践的なチュートリアル
+- **[React実践チュートリアル](docs/tutorial/javascript-ecosystem/react/README.md)** - Reactライブラリを使用したモダンなWebアプリケーション開発の実践的なチュートリアル
 
 ### PHP
 
@@ -103,6 +112,8 @@
 
 - **[JavaScript完全初心者向け学習ガイド](docs/guide/javascript-ecosystem/javascript-beginner/README.md)** - プログラミング未経験者向けJavaScript入門8章構成カリキュラム
 - **[JavaScript中級学習ガイド](docs/guide/javascript-ecosystem/javascript-intermediate/README.md)** - JavaScript基礎知識から実践的なSPA開発まで9週間完成カリキュラム
+- **[Next.js学習ガイド](docs/guide/javascript-ecosystem/nextjs/README.md)** - Next.jsフレームワークを使用したモダンなReactアプリケーション開発の基礎を入門者向けに段階的に学習するためのカリキュラム（10章構成）
+- **[React学習ガイド](docs/guide/javascript-ecosystem/react/README.md)** - Reactライブラリを使用したモダンなWebアプリケーション開発の基礎を入門者向けに段階的に学習するためのカリキュラム（10章構成）
 
 ### Microsoft Office
 
@@ -122,7 +133,7 @@
 - **[SQLModel学習ガイド](docs/guide/python-ecosystem/sqlmodel/README.md)** - SQLModelを使用したモダンなPythonデータベースプログラミング8章完成カリキュラム
 - **[Streamlit学習ガイド](docs/guide/python-ecosystem/streamlit/README.md)** - Streamlitを使用したWebアプリケーション開発の基礎から実践まで10章完成カリキュラム
 
-### R言語
+### R
 
 - **[R言語学習ガイド](docs/guide/r-ecosystem/r/README.md)** - R言語基礎から統計解析・データビジュアライゼーションまで10章完成カリキュラム
 
@@ -230,10 +241,10 @@ AI開発支援のための専用プロンプト集です。各技術領域に特
 
 ### ニュース分析ツール
 
-- **[経済ニュース分析ツール（基礎編）](docs/prompt/news/economic-news-analysis-tool_lv1.html)** - 経済ニュース分析AIアシスタント
-- **[経済ニュース分析ツール（上級編）](docs/prompt/news/economic-news-analysis-tool_lv2.html)** - 経済ニュース分析AIアシスタント（上級版）
-- **[IT業界ニュース分析ツール（基礎編）](docs/prompt/news/it-news-analysis-tool_lv1.html)** - IT業界ニュース分析AIアシスタント
-- **[IT業界ニュース分析ツール（上級編）](docs/prompt/news/it-news-analysis-tool_lv2.html)** - IT業界ニュース分析AIアシスタント（上級版）
+- **[経済ニュース分析ツール（基礎編）](https://fcircle-biz.github.io/tech_docs/prompt/news/economic-news-analysis-tool_lv1.html)** - 経済ニュース分析AIアシスタント
+- **[経済ニュース分析ツール（上級編）](https://fcircle-biz.github.io/tech_docs/prompt/news/economic-news-analysis-tool_lv2.html)** - 経済ニュース分析AIアシスタント（上級版）
+- **[IT業界ニュース分析ツール（基礎編）](https://fcircle-biz.github.io/tech_docs/prompt/news/it-news-analysis-tool_lv1.html)** - IT業界ニュース分析AIアシスタント
+- **[IT業界ニュース分析ツール（上級編）](https://fcircle-biz.github.io/tech_docs/prompt/news/it-news-analysis-tool_lv2.html)** - IT業界ニュース分析AIアシスタント（上級版）
 
 ### プログラミング支援
 
@@ -250,13 +261,13 @@ AI開発支援のための専用プロンプト集です。各技術領域に特
 
 ### データベース・データ処理
 
-- **[SASプログラミング専門](docs/prompt/sas-ai-agent-prompt.html)** - SASプログラミング専門
-- **[SASデータエンジニアリング](docs/prompt/sas-data-engineering-prompt.html)** - SASデータエンジニアリング特化
-- **[SQL特化エキスパート](docs/prompt/sql-assistant-prompt.html)** - SQL特化エキスパート
+- **[SASプログラミング専門](https://fcircle-biz.github.io/tech_docs/prompt/sas-ai-agent-prompt.html)** - SASプログラミング専門
+- **[SASデータエンジニアリング](https://fcircle-biz.github.io/tech_docs/prompt/sas-data-engineering-prompt.html)** - SASデータエンジニアリング特化
+- **[SQL特化エキスパート](https://fcircle-biz.github.io/tech_docs/prompt/sql-assistant-prompt.html)** - SQL特化エキスパート
 
 ### ツール・その他
 
-- **[Wagby開発アシスタント](docs/prompt/tools/wagby-ai-assistant-prompt.html)** - Wagby開発支援AIアシスタント
+- **[Wagby開発アシスタント](https://fcircle-biz.github.io/tech_docs/prompt/tools/wagby-ai-assistant-prompt.html)** - Wagby開発支援AIアシスタント
 
 ---
 
