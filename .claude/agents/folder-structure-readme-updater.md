@@ -1,7 +1,7 @@
 ---
 name: folder-structure-readme-updater
 description: フォルダ構成の変更をREADME.mdファイルに反映する際に使用するエージェント。<example>@agent-folder-structure-readme-updater</example>
-model: haiku
+model: sonnet
 color: purple
 ---
 
