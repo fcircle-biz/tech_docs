@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next.js実践チュートリアル ステップ9 - テストとデバッグ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #F7DF1E; --dark: #000000; --light: #1F2937; --success: #10b981; }
+        body { font-family: 'Noto Sans JP', sans-serif; padding-top: 56px; background-color: #f8fafc; }
+        .navbar { background-color: var(--dark); }
+        .navbar-brand { color: var(--primary) !important; font-weight: 700; }
+        .sidebar { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; background-color: #fff; border-right: 1px solid #e5e7eb; }
+        .sidebar .nav-link { color: #4b5563; padding: 0.75rem 1.5rem; border-left: 3px solid transparent; }
+        .sidebar .nav-link.active { background-color: #fffbeb; border-left-color: var(--primary); font-weight: 600; }
+        .chapter-title { color: var(--dark); border-bottom: 3px solid var(--primary); padding-bottom: 0.5rem; font-weight: 700; font-size: 1.8rem; margin-top: 2rem; }
+        .section-title { color: var(--light); margin-top: 1.5rem; font-weight: 600; }
+        .highlight { background-color: #fffbeb; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid var(--primary); }
+        .exercise-container { background-color: #e0f2fe; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #0284c7; }
+        .code-block { background-color: #1e1e1e; color: #d4d4d4; border-radius: 5px; padding: 1rem; margin: 1rem 0; overflow-x: auto; max-height: 400px; font-size: 0.85rem; }
+        .quiz-container { background-color: #f0fdf4; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid var(--success); }
+        main { background-color: #fff; margin: 1rem 0; padding: 2rem; border-radius: 8px; }
+        .footer { background-color: var(--dark); color: #fff; margin-top: 3rem; padding: 2rem; text-align: center; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 2rem; }
+        .btn-prev { background-color: #6b7280; color: white; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; border: none; }
+        .btn-next { background-color: var(--primary); color: var(--dark); font-weight: 600; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; border: none; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark fixed-top"><div class="container-fluid"><a class="navbar-brand"><i class="fas fa-js-square"></i> Next.js実践チュートリアル</a></div></nav>
+    <div class="container-fluid"><div class="row">
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse" style="padding: 1rem 0;">
+            <div class="position-sticky pt-3">
+                <h6 style="font-weight:700; padding:0 1.5rem; margin:1rem 0;">チュートリアルステップ</h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-1.html">ステップ1: 環境構築</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-2.html">ステップ2: App Routerの基礎</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-3.html">ステップ3: DB設計とPrisma</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-4.html">ステップ4: ユーザー登録</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-5.html">ステップ5: 一覧・詳細表示</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-6.html">ステップ6: 更新・削除機能</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-7.html">ステップ7: 認証・セキュリティ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-8.html">ステップ8: バリデーション</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="nextjs-tutorial-9.html">ステップ9: テスト・デバッグ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-10.html">ステップ10: デプロイ</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <h1 class="h2" style="margin-bottom: 2rem; padding-top: 1rem;">ステップ9: テストとデバッグ</h1>
+
+            <div id="step9">
+                <h2 class="chapter-title">テスト戦略とデバッグ手法</h2>
+
+                <div class="highlight">
+                    <h5>このステップで実装すること</h5>
+                    <ul>
+                        <li>Jestのセットアップとテスト環境構築</li>
+                        <li>React Testing Libraryによるコンポーネントテスト</li>
+                        <li>Server Actionsのユニットテスト</li>
+                        <li>モックとスタブの活用</li>
+                        <li>Playwrightによるエンドツーエンドテスト</li>
+                        <li>テストデータベースの設定</li>
+                        <li>Next.js DevToolsの活用</li>
+                        <li>React DevToolsによるデバッグ</li>
+                        <li>パフォーマンス計測とボトルネック解析</li>
+                    </ul>
+                </div>
+
+                <h3 class="section-title">9.1 Jestのセットアップ</h3>
+
+                <div class="exercise-container">
+                    <h5>実装 9-1: テスト環境の構築</h5>
+                    <pre class="code-block"><code class="language-bash"># テスティングライブラリをインストール
+npm install --save-dev jest @testing-library/react @testing-library/jest-dom jest-environment-jsdom
+
+# Jest設定ファイルを作成
+npx jest --init</code></pre>
+
+                    <h6>jest.config.js の設定例</h6>
+                    <pre class="code-block"><code class="language-javascript">const nextJest = require('next/jest')
+
+const createJestConfig = nextJest({
+  dir: './',
+})
+
+const customJestConfig = {
+  setupFilesAfterEnv: ['&lt;rootDir&gt;/jest.setup.js'],
+  testEnvironment: 'jest-environment-jsdom',
+  moduleNameMapper: {
+    '^@/(.*)$': '&lt;rootDir&gt;/src/$1',
+  },
+}
+
+module.exports = createJestConfig(customJestConfig)</code></pre>
+                </div>
+
+                <h3 class="section-title">9.2 コンポーネントテスト</h3>
+
+                <div class="alert alert-light">
+                    <h6>React Testing Libraryでのテスト例</h6>
+                    <pre class="code-block"><code class="language-typescript">// src/__tests__/components/register-form.test.tsx
+import { render, screen, fireEvent } from '@testing-library/react';
+import RegisterForm from '@/app/components/register-form';
+
+describe('RegisterForm', () => {
+  it('フォームが正常にレンダリングされる', () => {
+    render(&lt;RegisterForm /&gt;);
+    expect(screen.getByLabelText('お名前')).toBeInTheDocument();
+  });
+
+  it('入力値が更新される', () => {
+    render(&lt;RegisterForm /&gt;);
+    const nameInput = screen.getByLabelText('お名前') as HTMLInputElement;
+    fireEvent.change(nameInput, { target: { value: 'テストユーザー' } });
+    expect(nameInput.value).toBe('テストユーザー');
+  });
+
+  it('バリデーションエラーが表示される', async () => {
+    render(&lt;RegisterForm /&gt;);
+    const submitButton = screen.getByText('ユーザー登録');
+    fireEvent.click(submitButton);
+
+    const error = await screen.findByText(/2文字以上/i);
+    expect(error).toBeInTheDocument();
+  });
+});</code></pre>
+                </div>
+
+                <h3 class="section-title">9.3 Server Actionsのテスト</h3>
+
+                <div class="alert alert-light">
+                    <h6>Server Action のユニットテスト</h6>
+                    <pre class="code-block"><code class="language-typescript">// src/__tests__/actions/user-actions.test.ts
+import { registerUser } from '@/actions/user-actions';
+import { prisma } from '@/lib/prisma';
+
+jest.mock('@/lib/prisma', () => ({
+  prisma: {
+    user: {
+      create: jest.fn(),
+      findUnique: jest.fn(),
+    },
+  },
+}));
+
+describe('User Actions', () => {
+  it('新規ユーザーを登録できる', async () => {
+    const formData = new FormData();
+    formData.append('name', 'テストユーザー');
+    formData.append('email', 'test@example.com');
+    formData.append('password', 'SecurePass123');
+    formData.append('confirmPassword', 'SecurePass123');
+
+    (prisma.user.create as jest.Mock).mockResolvedValue({
+      id: '1',
+      name: 'テストユーザー',
+      email: 'test@example.com',
+    });
+
+    const result = await registerUser(formData);
+    expect(result.success).toBe(true);
+  });
+
+  it('既存メールアドレスで登録できない', async () => {
+    const formData = new FormData();
+    formData.append('email', 'existing@example.com');
+
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+      id: '1',
+      email: 'existing@example.com',
+    });
+
+    const result = await registerUser(formData);
+    expect(result.success).toBe(false);
+  });
+});</code></pre>
+                </div>
+
+                <h3 class="section-title">9.4 Playwrightによるエンドツーエンドテスト</h3>
+
+                <div class="alert alert-light">
+                    <h6>Playwright セットアップ</h6>
+                    <pre class="code-block"><code class="language-bash"># Playwright をインストール
+npm install --save-dev @playwright/test
+
+# playwright.config.ts を作成
+npx playwright install</code></pre>
+
+                    <h6>E2E テストの例</h6>
+                    <pre class="code-block"><code class="language-typescript">// e2e/user-flow.spec.ts
+import { test, expect } from '@playwright/test';
+
+test.describe('User Management Flow', () => {
+  test('ユーザー登録から一覧表示までのフロー', async ({ page }) => {
+    // ホームページにアクセス
+    await page.goto('http://localhost:3000');
+    expect(page).toHaveTitle('ユーザー管理システム');
+
+    // 登録ページに遷移
+    await page.click('text=新規登録');
+
+    // フォーム入力
+    await page.fill('input[name="name"]', 'テストユーザー');
+    await page.fill('input[name="email"]', 'test@example.com');
+    await page.fill('input[name="password"]', 'SecurePass123');
+
+    // 送信
+    await page.click('button:has-text("登録")');
+
+    // ユーザー一覧ページに遷移することを確認
+    await expect(page).toHaveURL('http://localhost:3000/users');
+  });
+});</code></pre>
+                </div>
+
+                <h3 class="section-title">9.5 デバッグのコツ</h3>
+
+                <div class="alert alert-light">
+                    <h6>console.log と VS Code Debugger</h6>
+                    <pre class="code-block"><code class="language-typescript">// Server Component でのデバッグ
+export default async function UsersList() {
+  const users = await prisma.user.findMany();
+  console.log('[DEBUG] Users found:', users);
+
+  return (
+    &lt;div&gt;
+      {/* UI */}
+    &lt;/div&gt;
+  );
+}
+
+// Client Component でのデバッグ
+'use client';
+
+import { useEffect } from 'react';
+
+export default function UserForm() {
+  useEffect(() => {
+    console.log('[DEBUG] Component mounted');
+  }, []);
+
+  return (
+    &lt;div&gt;{/* UI */}&lt;/div&gt;
+  );
+}</code></pre>
+
+                    <h6>VS Code デバッガ設定（.vscode/launch.json）</h6>
+                    <pre class="code-block"><code class="language-json">{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Next.js",
+      "type": "node",
+      "request": "launch",
+      "skipFiles": ["&lt;node_internals&gt;/**"],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"]
+    }
+  ]
+}</code></pre>
+                </div>
+
+                <h3 class="section-title">9.6 パフォーマンス計測</h3>
+
+                <div class="alert alert-light">
+                    <h6>Next.js Speed Insights</h6>
+                    <pre class="code-block"><code class="language-bash"># performance を計測
+npm install next-speed-insights
+
+# Web Vitals を確認
+npm install web-vitals</code></pre>
+                </div>
+
+                <div class="quiz-container">
+                    <h5>ステップ完了チェック</h5>
+                    <ul class="list-unstyled">
+                        <li>☐ Jest とテスティングライブラリをセットアップした</li>
+                        <li>☐ コンポーネントテストを実装し、npm test で実行できる</li>
+                        <li>☐ Server Action のテストをモック付きで実装した</li>
+                        <li>☐ Playwright をセットアップしてE2Eテストを作成した</li>
+                        <li>☐ VS Code デバッガで Server Component をデバッグできる</li>
+                        <li>☐ React DevTools で状態管理をデバッグした</li>
+                        <li>☐ テストカバレッジを計測し、80%以上を達成した</li>
+                    </ul>
+                </div>
+
+                <div class="nav-buttons">
+                    <a href="nextjs-tutorial-8.html" class="btn btn-prev">← 前のステップ</a>
+                    <a href="nextjs-tutorial-10.html" class="btn btn-next">次のステップ →</a>
+                </div>
+            </div>
+        </main>
+    </div></div>
+
+    <footer class="footer">
+        <p>© 2025 F-Circle. All rights reserved.<br>本資料はAIツールを活用し、人間による編集・監修のもと作成されています。</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

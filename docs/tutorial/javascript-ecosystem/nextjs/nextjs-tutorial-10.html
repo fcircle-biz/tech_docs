@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next.js実践チュートリアル ステップ10 - デプロイメントと本番環境への準備</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #F7DF1E; --dark: #000000; --light: #1F2937; --success: #10b981; }
+        body { font-family: 'Noto Sans JP', sans-serif; padding-top: 56px; background-color: #f8fafc; }
+        .navbar { background-color: var(--dark); }
+        .navbar-brand { color: var(--primary) !important; font-weight: 700; }
+        .sidebar { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; background-color: #fff; border-right: 1px solid #e5e7eb; }
+        .sidebar .nav-link { color: #4b5563; padding: 0.75rem 1.5rem; border-left: 3px solid transparent; }
+        .sidebar .nav-link.active { background-color: #fffbeb; border-left-color: var(--primary); font-weight: 600; }
+        .chapter-title { color: var(--dark); border-bottom: 3px solid var(--primary); padding-bottom: 0.5rem; font-weight: 700; font-size: 1.8rem; margin-top: 2rem; }
+        .section-title { color: var(--light); margin-top: 1.5rem; font-weight: 600; }
+        .highlight { background-color: #fffbeb; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid var(--primary); }
+        .exercise-container { background-color: #e0f2fe; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #0284c7; }
+        .code-block { background-color: #1e1e1e; color: #d4d4d4; border-radius: 5px; padding: 1rem; margin: 1rem 0; overflow-x: auto; max-height: 400px; font-size: 0.85rem; }
+        .quiz-container { background-color: #f0fdf4; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid var(--success); }
+        main { background-color: #fff; margin: 1rem 0; padding: 2rem; border-radius: 8px; }
+        .footer { background-color: var(--dark); color: #fff; margin-top: 3rem; padding: 2rem; text-align: center; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 2rem; }
+        .btn-prev { background-color: #6b7280; color: white; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; border: none; }
+        .btn-next { background-color: var(--primary); color: var(--dark); font-weight: 600; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; border: none; opacity: 0.5; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark fixed-top"><div class="container-fluid"><a class="navbar-brand"><i class="fas fa-js-square"></i> Next.js実践チュートリアル</a></div></nav>
+    <div class="container-fluid"><div class="row">
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse" style="padding: 1rem 0;">
+            <div class="position-sticky pt-3">
+                <h6 style="font-weight:700; padding:0 1.5rem; margin:1rem 0;">チュートリアルステップ</h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-1.html">ステップ1: 環境構築</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-2.html">ステップ2: App Routerの基礎</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-3.html">ステップ3: DB設計とPrisma</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-4.html">ステップ4: ユーザー登録</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-5.html">ステップ5: 一覧・詳細表示</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-6.html">ステップ6: 更新・削除機能</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-7.html">ステップ7: 認証・セキュリティ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-8.html">ステップ8: バリデーション</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-9.html">ステップ9: テスト・デバッグ</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="nextjs-tutorial-10.html">ステップ10: デプロイ</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <h1 class="h2" style="margin-bottom: 2rem; padding-top: 1rem;">ステップ10: デプロイメントと本番環境への準備</h1>
+
+            <div id="step10">
+                <h2 class="chapter-title">Vercelへのデプロイと本番環境設定</h2>
+
+                <div class="highlight">
+                    <h5>このステップで実装すること</h5>
+                    <ul>
+                        <li>本番環境用の設定と環境変数管理</li>
+                        <li>Vercelへのデプロイ手順</li>
+                        <li>Supabase PostgreSQLへの接続設定</li>
+                        <li>ドメイン設定とカスタムドメイン</li>
+                        <li>環境変数の本番設定</li>
+                        <li>ビルド最適化とパフォーマンスチューニング</li>
+                        <li>エラー監視とロギング（Sentry）</li>
+                        <li>CI/CDパイプラインの基礎</li>
+                        <li>セキュリティチェックリスト</li>
+                        <li>運用時のベストプラクティス</li>
+                    </ul>
+                </div>
+
+                <h3 class="section-title">10.1 本番環境用の設定</h3>
+
+                <div class="exercise-container">
+                    <h5>実装 10-1: 本番環境変数の設定</h5>
+                    <pre class="code-block"><code class="language-bash"># .env.production.local を作成
+DATABASE_URL=postgresql://user:password@host:5432/dbname
+NEXTAUTH_SECRET=$(openssl rand -base64 32)
+NEXTAUTH_URL=https://yourdomain.com
+
+# ビルド確認
+npm run build
+npm run start</code></pre>
+                </div>
+
+                <h3 class="section-title">10.2 Vercelへのデプロイ</h3>
+
+                <div class="alert alert-light">
+                    <h6>デプロイ手順</h6>
+                    <ol style="padding-left: 1.5rem;">
+                        <li>Vercelアカウント作成（https://vercel.com）</li>
+                        <li>GitHub リポジトリと連携</li>
+                        <li>environment variables を設定</li>
+                        <li>自動デプロイを有効化</li>
+                    </ol>
+
+                    <h6>Vercelへの接続コマンド</h6>
+                    <pre class="code-block"><code class="language-bash"># Vercel CLIをインストール
+npm i -g vercel
+
+# Vercelにデプロイ
+vercel
+
+# 本番環境にデプロイ
+vercel --prod</code></pre>
+                </div>
+
+                <h3 class="section-title">10.3 Supabase PostgreSQL設定</h3>
+
+                <div class="alert alert-light">
+                    <h6>Supabaseの接続設定</h6>
+                    <pre class="code-block"><code class="language-bash"># Supabase でプロジェクト作成後、DATABASE_URL を取得
+DATABASE_URL="postgresql://[user]:[password]@[host]:5432/[database]"
+
+# マイグレーション実行
+npx prisma migrate deploy
+
+# Seed データ投入
+npx prisma db seed</code></pre>
+
+                    <h6>prisma/seed.ts の例</h6>
+                    <pre class="code-block"><code class="language-typescript">import { prisma } from '../src/lib/prisma';
+import bcrypt from 'bcryptjs';
+
+async function main() {
+  const hashedPassword = await bcrypt.hash('Demo123', 10);
+
+  const user = await prisma.user.create({
+    data: {
+      name: 'デモユーザー',
+      email: 'demo@example.com',
+      password: hashedPassword,
+    },
+  });
+
+  console.log('Seed user created:', user);
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });</code></pre>
+                </div>
+
+                <h3 class="section-title">10.4 ビルド最適化</h3>
+
+                <div class="alert alert-light">
+                    <h6>next.config.js の最適化設定</h6>
+                    <pre class="code-block"><code class="language-javascript">// next.config.js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // 画像最適化
+  images: {
+    unoptimized: false,
+  },
+  // ビルドサイズ削減
+  experimental: {
+    optimizePackageImports: [
+      '@mui/material',
+      '@mui/icons-material',
+    ],
+  },
+  // ヘッダー設定
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
+  },
+};
+
+module.exports = nextConfig;</code></pre>
+                </div>
+
+                <h3 class="section-title">10.5 Sentryによるエラー監視</h3>
+
+                <div class="alert alert-light">
+                    <h6>Sentry セットアップ</h6>
+                    <pre class="code-block"><code class="language-bash">npm install @sentry/nextjs</code></pre>
+
+                    <h6>sentry.server.config.ts</h6>
+                    <pre class="code-block"><code class="language-typescript">import * as Sentry from "@sentry/nextjs";
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  environment: process.env.NODE_ENV,
+  tracesSampleRate: 1.0,
+  debug: false,
+});</code></pre>
+                </div>
+
+                <h3 class="section-title">10.6 セキュリティチェックリスト</h3>
+
+                <div class="alert alert-light">
+                    <h6>本番環境セキュリティチェックリスト</h6>
+                    <ul style="padding-left: 1.5rem;">
+                        <li>☐ すべての環境変数を安全に管理（.env.local をgitignoreに含める）</li>
+                        <li>☐ パスワードは bcrypt でハッシュ化</li>
+                        <li>☐ HTTPS通信を使用</li>
+                        <li>☐ CORS ヘッダーを適切に設定</li>
+                        <li>☐ CSP（Content Security Policy）を設定</li>
+                        <li>☐ SQL injection 対策（Prisma のパラメータ化クエリを使用）</li>
+                        <li>☐ CSRF トークンを実装</li>
+                        <li>☐ レート制限を実装</li>
+                        <li>☐ 定期的なセキュリティ監査を実施</li>
+                        <li>☐ 依存パッケージの脆弱性をチェック（npm audit）</li>
+                    </ul>
+                </div>
+
+                <h3 class="section-title">10.7 CI/CDパイプライン</h3>
+
+                <div class="alert alert-light">
+                    <h6>GitHub Actions での自動デプロイ例</h6>
+                    <pre class="code-block"><code class="language-yaml"># .github/workflows/deploy.yml
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  Deploy-Production:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Run Tests
+        run: npm test
+      - name: Deploy to Vercel
+        run: npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }}</code></pre>
+                </div>
+
+                <h3 class="section-title">10.8 運用時のモニタリング</h3>
+
+                <div class="alert alert-light">
+                    <h6>監視すべきメトリクス</h6>
+                    <ul style="padding-left: 1.5rem;">
+                        <li><strong>パフォーマンス</strong>: TTFB (Time to First Byte)、FCP (First Contentful Paint)</li>
+                        <li><strong>可用性</strong>: アップタイム、エラー率</li>
+                        <li><strong>セキュリティ</strong>: 不正アクセス試行、SQL インジェクション試行</li>
+                        <li><strong>リソース使用</strong>: データベース接続数、API レスポンス時間</li>
+                    </ul>
+                </div>
+
+                <div class="quiz-container">
+                    <h5>チュートリアル完了チェック</h5>
+                    <ul class="list-unstyled">
+                        <li>☐ Vercelアカウントを作成した</li>
+                        <li>☐ GitHub リポジトリをVercelに接続した</li>
+                        <li>☐ Supabase PostgreSQL を本番データベースとして設定した</li>
+                        <li>☐ 環境変数を Vercel ダッシュボードで設定した</li>
+                        <li>☐ npm run build で本番ビルドが成功する</li>
+                        <li>☐ npm run start で本番サーバーが起動できる</li>
+                        <li>☐ Vercel にデプロイされたアプリが動作する</li>
+                        <li>☐ Sentry でエラー監視が機能している</li>
+                        <li>☐ CI/CD パイプラインが自動デプロイを実行している</li>
+                        <li>☐ セキュリティチェックリストをすべてクリアした</li>
+                    </ul>
+                </div>
+
+                <div style="background-color: #f0fdf4; border-radius: 8px; padding: 2rem; margin: 2rem 0; border-left: 4px solid var(--success);">
+                    <h3 style="color: #15803d; margin-bottom: 1rem;">Next.jsチュートリアル完了</h3>
+                    <p style="color: #166534; font-size: 1.1rem;">おめでとうございます！このチュートリアルを完了することで、以下のスキルが身につきました：</p>
+                    <ul style="color: #166534; padding-left: 1.5rem;">
+                        <li><strong>Next.js App Router</strong>: モダンなNext.js開発手法</li>
+                        <li><strong>TypeScript</strong>: 型安全なコード記述能力</li>
+                        <li><strong>Prisma ORM</strong>: データベース操作の効率化</li>
+                        <li><strong>認証・認可</strong>: NextAuth.jsを使用したセキュアな実装</li>
+                        <li><strong>フルスタック開発</strong>: フロントエンドからバックエンドまでの一貫した開発</li>
+                        <li><strong>テスト・デバッグ</strong>: 品質を保証するテスト手法</li>
+                        <li><strong>本番デプロイ</strong>: Vercelへのデプロイと本番環境管理</li>
+                    </ul>
+                </div>
+
+                <div class="nav-buttons">
+                    <a href="nextjs-tutorial-9.html" class="btn btn-prev">← 前のステップ</a>
+                    <button class="btn btn-next" disabled style="opacity: 0.5; cursor: not-allowed;">完了 ✓</button>
+                </div>
+            </div>
+        </main>
+    </div></div>
+
+    <footer class="footer">
+        <p>© 2025 F-Circle. All rights reserved.<br>本資料はAIツールを活用し、人間による編集・監修のもと作成されています。無断転載・再配布を禁じます。<br><br><strong>Happy Next.js Coding!</strong></p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

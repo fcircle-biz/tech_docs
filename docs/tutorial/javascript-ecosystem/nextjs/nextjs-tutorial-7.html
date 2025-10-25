@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next.js実践チュートリアル ステップ7 - 認証とセキュリティの実装</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --nextjs-primary: #F7DF1E; --nextjs-dark: #000000; --nextjs-light: #1F2937; --success: #10b981; }
+        body { font-family: 'Noto Sans JP', sans-serif; padding-top: 56px; background-color: #f8fafc; }
+        .navbar { background-color: var(--nextjs-dark); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .navbar-brand { color: var(--nextjs-primary) !important; font-weight: 700; font-size: 1.2rem; }
+        .sidebar { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; background-color: #ffffff; border-right: 1px solid #e5e7eb; padding: 1rem 0; }
+        .sidebar .nav-link { color: #4b5563; padding: 0.75rem 1.5rem; border-left: 3px solid transparent; }
+        .sidebar .nav-link.active { background-color: #fffbeb; color: var(--nextjs-dark); border-left-color: var(--nextjs-primary); font-weight: 600; }
+        .chapter-title { color: var(--nextjs-dark); margin-top: 2rem; margin-bottom: 1rem; border-bottom: 3px solid var(--nextjs-primary); padding-bottom: 0.5rem; font-weight: 700; font-size: 1.8rem; }
+        .section-title { color: var(--nextjs-light); margin-top: 1.5rem; margin-bottom: 1rem; font-weight: 600; font-size: 1.3rem; }
+        .highlight { background-color: #fffbeb; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid var(--nextjs-primary); }
+        .exercise-container { background-color: #e0f2fe; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #0284c7; }
+        .code-block { background-color: #1e1e1e; color: #d4d4d4; border-radius: 5px; padding: 1rem; margin: 1rem 0; overflow-x: auto; max-height: 400px; }
+        .quiz-container { background-color: #f0fdf4; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid var(--success); }
+        main { background-color: #ffffff; margin: 1rem 0; padding: 2rem; border-radius: 8px; }
+        .footer { background-color: var(--nextjs-dark); color: #ffffff; margin-top: 3rem; padding: 2rem; text-align: center; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 2rem; gap: 1rem; }
+        .btn-prev, .btn-next { border: none; color: white; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; display: inline-block; }
+        .btn-prev { background-color: #6b7280; }
+        .btn-next { background-color: var(--nextjs-primary); color: var(--nextjs-dark); font-weight: 600; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark fixed-top"><div class="container-fluid"><a class="navbar-brand"><i class="fas fa-js-square"></i> Next.js実践チュートリアル</a></div></nav>
+    <div class="container-fluid"><div class="row">
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+            <div class="position-sticky pt-3">
+                <h6 style="font-weight:700; color:var(--nextjs-dark); padding:0 1.5rem; margin:1rem 0 0.5rem;">チュートリアルステップ</h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-1.html">ステップ1: 環境構築</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-2.html">ステップ2: App Routerの基礎</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-3.html">ステップ3: DB設計とPrisma</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-4.html">ステップ4: ユーザー登録</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-5.html">ステップ5: 一覧・詳細表示</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-6.html">ステップ6: 更新・削除機能</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="nextjs-tutorial-7.html">ステップ7: 認証・セキュリティ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-8.html">ステップ8: バリデーション</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-9.html">ステップ9: テスト・デバッグ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-10.html">ステップ10: デプロイ</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">ステップ7: 認証とセキュリティの実装</h1>
+            </div>
+
+            <div id="step7">
+                <h2 class="chapter-title">NextAuth.jsによる認証実装</h2>
+
+                <div class="highlight">
+                    <h5>このステップで実装すること</h5>
+                    <ul>
+                        <li>NextAuth.js（Auth.js）のセットアップ</li>
+                        <li>Credentials Providerによるログイン機能</li>
+                        <li>セッション管理とミドルウェア</li>
+                        <li>保護されたルートの実装</li>
+                        <li>ログイン・ログアウト機能</li>
+                        <li>セッション情報の取得と使用</li>
+                        <li>CSRF対策（Server Actionsのトークン）</li>
+                        <li>環境変数によるシークレット管理</li>
+                        <li>セキュリティベストプラクティス</li>
+                    </ul>
+                </div>
+
+                <h3 class="section-title">7.1 NextAuth.jsのインストール</h3>
+                <p>NextAuth.js（v5以降はAuth.js）をインストールして認証機能を実装します。</p>
+
+                <div class="exercise-container">
+                    <h5>実装 7-1: NextAuth.jsのセットアップ</h5>
+                    <pre class="code-block"><code class="language-bash"># NextAuth.jsのインストール
+npm install next-auth@beta
+
+# 認証設定ファイルを作成するディレクトリ
+mkdir -p src/lib</code></pre>
+
+                    <h6>認証設定ファイルの作成</h6>
+                    <pre class="code-block"><code class="language-typescript">// src/lib/auth.ts
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import { prisma } from './prisma';
+import bcrypt from 'bcryptjs';
+
+export const authOptions = {
+  adapter: PrismaAdapter(prisma),
+  providers: [
+    CredentialsProvider({
+      name: 'Credentials',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('メールアドレスとパスワードを入力してください');
+        }
+
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
+
+        if (!user) {
+          throw new Error('ユーザーが見つかりません');
+        }
+
+        const passwordMatch = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
+
+        if (!passwordMatch) {
+          throw new Error('パスワードが正しくありません');
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+        };
+      },
+    }),
+  ],
+  pages: {
+    signIn: '/auth/login',
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user.id = token.id as string;
+      return session;
+    },
+  },
+};</code></pre>
+                </div>
+
+                <h3 class="section-title">7.2 ログインフォームの実装</h3>
+                <p>ユーザーがログインするためのフォームを作成します。</p>
+
+                <div class="alert alert-light">
+                    <h6>ログインフォームコンポーネントの例</h6>
+                    <pre class="code-block"><code class="language-typescript">// src/app/components/login-form.tsx
+'use client';
+
+import { signIn } from 'next-auth/react';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function LoginForm() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
+
+  async function handleSubmit(e: React.FormEvent&lt;HTMLFormElement&gt;) {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    const result = await signIn('credentials', {
+      email,
+      password,
+      redirect: false,
+    });
+
+    if (result?.error) {
+      setError(result.error);
+    } else {
+      router.push('/users');
+    }
+    setLoading(false);
+  }
+
+  return (
+    &lt;form onSubmit={handleSubmit} className="max-w-md mx-auto"&gt;
+      {error && &lt;div className="mb-4 p-4 bg-red-100 text-red-800 rounded"&gt;{error}&lt;/div&gt;}
+
+      &lt;div className="mb-4"&gt;
+        &lt;label className="block font-semibold mb-1"&gt;メールアドレス&lt;/label&gt;
+        &lt;input type="email" name="email" required className="w-full px-3 py-2 border rounded" /&gt;
+      &lt;/div&gt;
+
+      &lt;div className="mb-6"&gt;
+        &lt;label className="block font-semibold mb-1"&gt;パスワード&lt;/label&gt;
+        &lt;input type="password" name="password" required className="w-full px-3 py-2 border rounded" /&gt;
+      &lt;/div&gt;
+
+      &lt;button type="submit" disabled={loading} className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"&gt;
+        {loading ? 'ログイン中...' : 'ログイン'}
+      &lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</code></pre>
+                </div>
+
+                <h3 class="section-title">7.3 認証ミドルウェア</h3>
+                <p>保護されたルートを実装するためのミドルウェアを設定します。</p>
+
+                <div class="alert alert-light">
+                    <h6>ミドルウェアの実装</h6>
+                    <pre class="code-block"><code class="language-typescript">// src/middleware.ts
+import { withAuth } from 'next-auth/middleware';
+
+export const config = {
+  matcher: ['/users/:path*', '/admin/:path*'],
+};
+
+export default withAuth(function middleware(req) {
+  // 認証が必要なページ
+  return undefined;
+});</code></pre>
+                </div>
+
+                <h3 class="section-title">7.4 セッション情報の使用</h3>
+                <p>ログイン中のユーザー情報にアクセスします。</p>
+
+                <div class="alert alert-light">
+                    <h6>セッション取得の例</h6>
+                    <pre class="code-block"><code class="language-typescript">// サーバーサイドでセッション取得
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+
+export default async function Page() {
+  const session = await getServerSession(authOptions);
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;ログインユーザー: {session?.user?.email}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+                </div>
+
+                <h3 class="section-title">7.5 ログアウト機能</h3>
+                <p>ログアウト機能を追加します。</p>
+
+                <div class="alert alert-light">
+                    <h6>ログアウトボタンの実装</h6>
+                    <pre class="code-block"><code class="language-typescript">// 'use client' コンポーネント内
+import { signOut } from 'next-auth/react';
+
+&lt;button onClick={() =&gt; signOut()} className="px-4 py-2 bg-red-500 text-white rounded"&gt;
+  ログアウト
+&lt;/button&gt;</code></pre>
+                </div>
+
+                <h3 class="section-title">7.6 環境変数の設定</h3>
+                <p>.env.local に NEXTAUTH_SECRET を追加します。</p>
+
+                <div class="alert alert-light">
+                    <h6>環境変数設定</h6>
+                    <pre class="code-block"><code class="language-bash"># .env.local
+NEXTAUTH_SECRET=$(openssl rand -base64 32)
+NEXTAUTH_URL=http://localhost:3000</code></pre>
+                </div>
+
+                <div class="quiz-container">
+                    <h5>ステップ完了チェック</h5>
+                    <ul class="list-unstyled">
+                        <li>☐ NextAuth.js をインストールして設定した</li>
+                        <li>☐ 認証設定ファイルを作成し、Credentials Providerを実装した</li>
+                        <li>☐ ログインフォームを実装し、メール・パスワードでログインできる</li>
+                        <li>☐ ミドルウェアを設定して保護されたルートを作成した</li>
+                        <li>☐ セッション情報を取得できることを確認した</li>
+                        <li>☐ ログアウト機能が動作することを確認した</li>
+                        <li>☐ .env.local に NEXTAUTH_SECRET を設定した</li>
+                    </ul>
+                </div>
+
+                <div class="nav-buttons">
+                    <a href="nextjs-tutorial-6.html" class="btn btn-prev">← 前のステップ</a>
+                    <a href="nextjs-tutorial-8.html" class="btn btn-next">次のステップ →</a>
+                </div>
+            </div>
+        </main>
+    </div></div>
+
+    <footer class="footer">
+        <p>© 2025 F-Circle. All rights reserved.<br>本資料はAIツールを活用し、人間による編集・監修のもと作成されています。無断転載・再配布を禁じます。</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>hljs.highlightAll(); mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+</body>
+</html>

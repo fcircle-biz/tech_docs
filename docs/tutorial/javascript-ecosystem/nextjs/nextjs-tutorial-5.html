@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next.js実践チュートリアル ステップ5 - ユーザー一覧・詳細表示機能</title>
+
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --nextjs-primary: #F7DF1E;
+            --nextjs-dark: #000000;
+            --nextjs-light: #1F2937;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+            background-color: #f8fafc;
+        }
+
+        .navbar {
+            background-color: var(--nextjs-dark);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            color: var(--nextjs-primary) !important;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+            background-color: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            padding: 1rem 0;
+        }
+
+        .sidebar .nav-link {
+            color: #4b5563;
+            padding: 0.75rem 1.5rem;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #f3f4f6;
+            border-left-color: var(--nextjs-primary);
+        }
+
+        .sidebar .nav-link.active {
+            background-color: #fffbeb;
+            color: var(--nextjs-dark);
+            border-left-color: var(--nextjs-primary);
+            font-weight: 600;
+        }
+
+        .chapter-title {
+            color: var(--nextjs-dark);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            border-bottom: 3px solid var(--nextjs-primary);
+            padding-bottom: 0.5rem;
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+
+        .section-title {
+            color: var(--nextjs-light);
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            font-size: 1.3rem;
+        }
+
+        .highlight {
+            background-color: #fffbeb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--nextjs-primary);
+        }
+
+        .highlight h5 {
+            color: var(--nextjs-dark);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .highlight ul {
+            margin-bottom: 0;
+            padding-left: 1.5rem;
+        }
+
+        .highlight li {
+            margin-bottom: 0.5rem;
+        }
+
+        .exercise-container {
+            background-color: #e0f2fe;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #0284c7;
+        }
+
+        .exercise-container h5 {
+            color: #0c4a6e;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .exercise-container h6 {
+            color: #0c4a6e;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .code-block code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .quiz-container {
+            background-color: #f0fdf4;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--success);
+        }
+
+        .quiz-container h5 {
+            color: #15803d;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .quiz-container .list-unstyled li {
+            margin-bottom: 0.5rem;
+            color: #166534;
+        }
+
+        main {
+            background-color: #ffffff;
+            margin: 1rem 0;
+            padding: 2rem;
+            border-radius: 8px;
+        }
+
+        .footer {
+            background-color: var(--nextjs-dark);
+            color: #ffffff;
+            margin-top: 3rem;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+
+        .btn-prev {
+            background-color: #6b7280;
+            border: none;
+            color: white;
+        }
+
+        .btn-prev:hover {
+            background-color: #4b5563;
+            color: white;
+        }
+
+        .btn-next {
+            background-color: var(--nextjs-primary);
+            border: none;
+            color: var(--nextjs-dark);
+            font-weight: 600;
+        }
+
+        .btn-next:hover {
+            background-color: #f0d000;
+            color: var(--nextjs-dark);
+        }
+
+        .alert {
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .sidebar-heading {
+            font-weight: 700;
+            color: var(--nextjs-dark);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand">
+                <i class="fas fa-js-square"></i> Next.js実践チュートリアル
+            </a>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1">
+                        <span>チュートリアルステップ</span>
+                    </h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="nextjs-tutorial-1.html">
+                                ステップ1: 環境構築
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="nextjs-tutorial-2.html">
+                                ステップ2: App Routerの基礎
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="nextjs-tutorial-3.html">
+                                ステップ3: DB設計とPrisma
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="nextjs-tutorial-4.html">
+                                ステップ4: ユーザー登録
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="nextjs-tutorial-5.html">
+                                ステップ5: 一覧・詳細表示
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="nextjs-tutorial-6.html">
+                                ステップ6: 更新・削除機能
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="nextjs-tutorial-7.html">
+                                ステップ7: 認証・セキュリティ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="nextjs-tutorial-8.html">
+                                ステップ8: バリデーション
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="nextjs-tutorial-9.html">
+                                ステップ9: テスト・デバッグ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="nextjs-tutorial-10.html">
+                                ステップ10: デプロイ
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">ステップ5: ユーザー一覧・詳細表示機能</h1>
+                </div>
+
+                <div id="step5">
+                    <h2 class="chapter-title">データ取得と表示機能の実装</h2>
+
+                    <div class="highlight">
+                        <h5>このステップで実装すること</h5>
+                        <ul>
+                            <li>ユーザー一覧ページの実装（Server Component）</li>
+                            <li>Prismaによるデータ取得とクエリ最適化</li>
+                            <li>テーブルコンポーネントの作成（Tailwind CSS）</li>
+                            <li>ページネーション機能の実装</li>
+                            <li>検索機能（名前・メールアドレス）の追加</li>
+                            <li>ユーザー詳細ページの作成</li>
+                            <li>動的ルート（/users/[id]）の実装</li>
+                            <li>データローディングとSuspense</li>
+                        </ul>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <h6>前提条件</h6>
+                        <ul>
+                            <li>ステップ4を完了し、ユーザーがデータベースに保存されていること</li>
+                            <li>Prisma Clientの使用方法を理解していること</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">5.1 ユーザー一覧ページの実装</h3>
+                    <p>ユーザーデータをデータベースから取得し、テーブル形式で表示します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実装 5-1: ユーザー一覧ページ</h5>
+                        <p>src/app/users/page.tsx を更新します。</p>
+
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>ユーザー一覧ページを実装</strong>:
+                                <pre class="code-block"><code class="language-typescript">// src/app/users/page.tsx
+import { prisma } from '@/lib/prisma';
+import Link from 'next/link';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'ユーザー一覧',
+};
+
+export default async function UsersPage() {
+  // すべてのユーザーを取得
+  const users = await prisma.user.findMany({
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return (
+    &lt;div className="container mx-auto py-10"&gt;
+      &lt;div className="flex justify-between items-center mb-6"&gt;
+        &lt;h1 className="text-3xl font-bold"&gt;ユーザー一覧&lt;/h1&gt;
+        &lt;Link
+          href="/users/new"
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        &gt;
+          新規登録
+        &lt;/Link&gt;
+      &lt;/div&gt;
+
+      {users.length === 0 ? (
+        &lt;div className="text-center py-10"&gt;
+          &lt;p className="text-gray-600"&gt;ユーザーが登録されていません&lt;/p&gt;
+        &lt;/div&gt;
+      ) : (
+        &lt;div className="overflow-x-auto"&gt;
+          &lt;table className="min-w-full border-collapse"&gt;
+            &lt;thead&gt;
+              &lt;tr className="bg-gray-100"&gt;
+                &lt;th className="border p-2 text-left"&gt;ID&lt;/th&gt;
+                &lt;th className="border p-2 text-left"&gt;名前&lt;/th&gt;
+                &lt;th className="border p-2 text-left"&gt;メールアドレス&lt;/th&gt;
+                &lt;th className="border p-2 text-left"&gt;作成日&lt;/th&gt;
+                &lt;th className="border p-2 text-left"&gt;アクション&lt;/th&gt;
+              &lt;/tr&gt;
+            &lt;/thead&gt;
+            &lt;tbody&gt;
+              {users.map((user) =&gt; (
+                &lt;tr key={user.id} className="hover:bg-gray-50"&gt;
+                  &lt;td className="border p-2"&gt;{user.id}&lt;/td&gt;
+                  &lt;td className="border p-2"&gt;{user.name}&lt;/td&gt;
+                  &lt;td className="border p-2"&gt;{user.email}&lt;/td&gt;
+                  &lt;td className="border p-2"&gt;
+                    {user.createdAt.toLocaleDateString('ja-JP')}
+                  &lt;/td&gt;
+                  &lt;td className="border p-2"&gt;
+                    &lt;Link
+                      href={`/users/${user.id}`}
+                      className="text-blue-500 hover:underline"
+                    &gt;
+                      詳細
+                    &lt;/Link&gt;
+                  &lt;/td&gt;
+                &lt;/tr&gt;
+              ))}
+            &lt;/tbody&gt;
+          &lt;/table&gt;
+        &lt;/div&gt;
+      )}
+    &lt;/div&gt;
+  );
+}</code></pre>
+                            </li>
+                        </ol>
+
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>/users にアクセスすると、登録済みのユーザーがテーブル形式で表示されます。</p>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">5.2 ユーザー詳細ページの実装</h3>
+                    <p>動的ルートを使用して、ユーザーの詳細情報を表示します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実装 5-2: ユーザー詳細ページ</h5>
+                        <p>src/app/users/[id]/page.tsx を更新します。</p>
+
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>詳細ページを実装</strong>:
+                                <pre class="code-block"><code class="language-typescript">// src/app/users/[id]/page.tsx
+import { prisma } from '@/lib/prisma';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+
+type Props = {
+  params: { id: string };
+};
+
+export async function generateMetadata({ params }: Props) {
+  const user = await prisma.user.findUnique({
+    where: { id: params.id },
+  });
+  return {
+    title: user ? user.name : 'ユーザーが見つかりません',
+  };
+}
+
+export default async function UserDetailPage({ params }: Props) {
+  const user = await prisma.user.findUnique({
+    where: { id: params.id },
+  });
+
+  if (!user) {
+    notFound();
+  }
+
+  return (
+    &lt;div className="container mx-auto py-10"&gt;
+      &lt;Link
+        href="/users"
+        className="text-blue-500 hover:underline mb-4 inline-block"
+      &gt;
+        ← 一覧に戻る
+      &lt;/Link&gt;
+
+      &lt;div className="bg-white border rounded p-6"&gt;
+        &lt;h1 className="text-3xl font-bold mb-4"&gt;{user.name}&lt;/h1&gt;
+        &lt;div className="space-y-2"&gt;
+          &lt;p&gt;&lt;strong&gt;ID:&lt;/strong&gt; {user.id}&lt;/p&gt;
+          &lt;p&gt;&lt;strong&gt;メール:&lt;/strong&gt; {user.email}&lt;/p&gt;
+          &lt;p&gt;&lt;strong&gt;作成日:&lt;/strong&gt; {user.createdAt.toLocaleString('ja-JP')}&lt;/p&gt;
+          &lt;p&gt;&lt;strong&gt;更新日:&lt;/strong&gt; {user.updatedAt.toLocaleString('ja-JP')}&lt;/p&gt;
+        &lt;/div&gt;
+
+        &lt;div className="mt-6 flex gap-2"&gt;
+          &lt;Link
+            href={`/users/${user.id}/edit`}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          &gt;
+            編集
+          &lt;/Link&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+                            </li>
+                        </ol>
+
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>/users/[id] にアクセスすると、そのユーザーの詳細情報が表示されます。</p>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">5.3 検索機能の実装</h3>
+                    <p>名前またはメールアドレスでユーザーを検索できる機能を追加します。</p>
+
+                    <div class="alert alert-light">
+                        <h6>検索機能付きユーザー一覧の実装例</h6>
+                        <pre class="code-block"><code class="language-typescript">// src/app/users/page.tsx に検索パラメータを追加
+import { Suspense } from 'react';
+
+type SearchParams = {
+  q?: string;
+};
+
+async function UsersList({ searchParams }: { searchParams: SearchParams }) {
+  const query = searchParams.q || '';
+
+  let users = await prisma.user.findMany({
+    where: query
+      ? {
+          OR: [
+            { name: { contains: query, mode: 'insensitive' } },
+            { email: { contains: query, mode: 'insensitive' } },
+          ],
+        }
+      : {},
+    orderBy: { createdAt: 'desc' },
+  });
+
+  // テーブル出力...
+}
+
+export default function UsersPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  return (
+    &lt;div className="container mx-auto py-10"&gt;
+      &lt;form className="mb-6"&gt;
+        &lt;input
+          type="text"
+          name="q"
+          placeholder="名前またはメールで検索..."
+          defaultValue={searchParams.q}
+          className="w-full px-4 py-2 border rounded"
+        /&gt;
+      &lt;/form&gt;
+      &lt;Suspense fallback={&lt;div&gt;読み込み中...&lt;/div&gt;}&gt;
+        &lt;UsersList searchParams={searchParams} /&gt;
+      &lt;/Suspense&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+                    </div>
+
+                    <!-- Step Completion Checklist -->
+                    <div class="quiz-container">
+                        <h5>ステップ完了チェック</h5>
+                        <p>以下の項目が完了していることを確認してください：</p>
+                        <ul class="list-unstyled">
+                            <li>☐ ユーザー一覧ページを実装し、/users にアクセスするとユーザーが表示される</li>
+                            <li>☐ Prisma ですべてのユーザーを取得できる</li>
+                            <li>☐ テーブル形式でユーザー情報が表示されている</li>
+                            <li>☐ ユーザー詳細ページを実装し、/users/[id] で個別のユーザー情報が表示される</li>
+                            <li>☐ 動的ルートの[id]パラメータが正しく取得されている</li>
+                            <li>☐ notFound() でユーザーが見つからない場合の処理を実装した</li>
+                            <li>☐ 検索機能を実装し、名前またはメールでユーザーを絞り込めることを確認した</li>
+                            <li>☐ Suspense でローディング状態を表示できることを確認した</li>
+                        </ul>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="nav-buttons">
+                        <a href="nextjs-tutorial-4.html" class="btn btn-prev">← 前のステップ</a>
+                        <a href="nextjs-tutorial-6.html" class="btn btn-next">次のステップ →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 F-Circle. All rights reserved.<br>
+        本資料はAIツールを活用し、人間による編集・監修のもと作成されています。無断転載・再配布を禁じます。</p>
+    </footer>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Highlight.js Initialization -->
+    <script>hljs.highlightAll();</script>
+
+    <!-- Mermaid.js Initialization -->
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default'
+        });
+    </script>
+</body>
+</html>

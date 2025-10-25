@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next.js実践チュートリアル ステップ2 - Next.js App Routerの基礎</title>
+
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --nextjs-primary: #F7DF1E;
+            --nextjs-dark: #000000;
+            --nextjs-light: #1F2937;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+            background-color: #f8fafc;
+        }
+
+        .navbar {
+            background-color: var(--nextjs-dark);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            color: var(--nextjs-primary) !important;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+            background-color: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            padding: 1rem 0;
+        }
+
+        .sidebar .nav-link {
+            color: #4b5563;
+            padding: 0.75rem 1.5rem;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #f3f4f6;
+            border-left-color: var(--nextjs-primary);
+        }
+
+        .sidebar .nav-link.active {
+            background-color: #fffbeb;
+            color: var(--nextjs-dark);
+            border-left-color: var(--nextjs-primary);
+            font-weight: 600;
+        }
+
+        .chapter-title {
+            color: var(--nextjs-dark);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            border-bottom: 3px solid var(--nextjs-primary);
+            padding-bottom: 0.5rem;
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+
+        .section-title {
+            color: var(--nextjs-light);
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            font-size: 1.3rem;
+        }
+
+        .highlight {
+            background-color: #fffbeb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--nextjs-primary);
+        }
+
+        .highlight h5 {
+            color: var(--nextjs-dark);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .highlight ul {
+            margin-bottom: 0;
+            padding-left: 1.5rem;
+        }
+
+        .highlight li {
+            margin-bottom: 0.5rem;
+        }
+
+        .exercise-container {
+            background-color: #e0f2fe;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #0284c7;
+        }
+
+        .exercise-container h5 {
+            color: #0c4a6e;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .exercise-container h6 {
+            color: #0c4a6e;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .quiz-container {
+            background-color: #f0fdf4;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--success);
+        }
+
+        .quiz-container h5 {
+            color: #15803d;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .quiz-container .list-unstyled li {
+            margin-bottom: 0.5rem;
+            color: #166534;
+        }
+
+        main {
+            background-color: #ffffff;
+            margin: 1rem 0;
+            padding: 2rem;
+            border-radius: 8px;
+        }
+
+        .footer {
+            background-color: var(--nextjs-dark);
+            color: #ffffff;
+            margin-top: 3rem;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+
+        .btn-prev {
+            background-color: #6b7280;
+            border: none;
+            color: white;
+        }
+
+        .btn-prev:hover {
+            background-color: #4b5563;
+            color: white;
+        }
+
+        .btn-next {
+            background-color: var(--nextjs-primary);
+            border: none;
+            color: var(--nextjs-dark);
+            font-weight: 600;
+        }
+
+        .btn-next:hover {
+            background-color: #f0d000;
+            color: var(--nextjs-dark);
+        }
+
+        .alert {
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .sidebar-heading {
+            font-weight: 700;
+            color: var(--nextjs-dark);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand">
+                <i class="fas fa-js-square"></i> Next.js実践チュートリアル
+            </a>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1">
+                        <span>チュートリアルステップ</span>
+                    </h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="nextjs-tutorial-1.html">
+                                ステップ1: 環境構築
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="nextjs-tutorial-2.html">
+                                ステップ2: App Routerの基礎
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="nextjs-tutorial-3.html">
+                                ステップ3: DB設計とPrisma
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="nextjs-tutorial-4.html">
+                                ステップ4: ユーザー登録
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="nextjs-tutorial-5.html">
+                                ステップ5: 一覧・詳細表示
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="nextjs-tutorial-6.html">
+                                ステップ6: 更新・削除機能
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="nextjs-tutorial-7.html">
+                                ステップ7: 認証・セキュリティ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="nextjs-tutorial-8.html">
+                                ステップ8: バリデーション
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="nextjs-tutorial-9.html">
+                                ステップ9: テスト・デバッグ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="nextjs-tutorial-10.html">
+                                ステップ10: デプロイ
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">ステップ2: Next.js App Routerの基礎</h1>
+                </div>
+
+                <div id="step2">
+                    <h2 class="chapter-title">App Routerとファイルベースルーティングの習得</h2>
+
+                    <div class="highlight">
+                        <h5>このステップで実装すること</h5>
+                        <ul>
+                            <li>App RouterとPages Routerの違いの理解</li>
+                            <li>ファイルベースルーティングシステムの実装</li>
+                            <li>Server ComponentsとClient Componentsの使い分け</li>
+                            <li>レイアウトとテンプレートの活用</li>
+                            <li>ローディングとエラーハンドリング</li>
+                            <li>メタデータとSEO対策の基本設定</li>
+                            <li>動的ルートとパラメータ取得</li>
+                        </ul>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <h6>前提条件</h6>
+                        <ul>
+                            <li>ステップ1を完了し、Next.jsプロジェクトが正常に起動すること</li>
+                            <li>React Hooksの基本知識（useState、useEffect等）</li>
+                            <li>TypeScriptの基本的な型定義方法</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">2.1 App Routerの概要</h3>
+                    <p>Next.js 13以降は「App Router」が推奨されています。Pages Routerよりも柔軟で、Server Componentsなどの新しい機能が使えます。</p>
+
+                    <div class="mermaid">
+                        flowchart TD
+                            A["App Router<br/>Next.js 13+"] --> B["ファイルベースルーティング"]
+                            A --> C["Server Components"]
+                            A --> D["Server Actions"]
+                            B --> E["src/app/page.tsx"]
+                            B --> F["src/app/users/page.tsx"]
+                            B --> G["src/app/users/[id]/page.tsx"]
+                            C --> H["デフォルトでServer Component"]
+                            D --> I["フォーム処理を簡潔に"]
+                    </div>
+
+                    <h3 class="section-title">2.2 基本的なルーティング</h3>
+                    <p>App Routerではファイルの配置がURLルートに直結します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実装 2-1: 基本的なページルートの作成</h5>
+                        <p>users一覧ページと詳細ページのルートを作成します。</p>
+
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>usersディレクトリを作成</strong>: src/app の直下に users というディレクトリを作成します。
+                                <pre class="code-block"><code class="language-bash">mkdir -p src/app/users</code></pre>
+                            </li>
+                            <li><strong>ユーザー一覧ページを作成</strong>: src/app/users/page.tsx を作成します。
+                                <pre class="code-block"><code class="language-typescript">// src/app/users/page.tsx
+export default function UsersPage() {
+  return (
+    &lt;div className="container mx-auto py-10"&gt;
+      &lt;h1 className="text-3xl font-bold mb-4"&gt;ユーザー一覧&lt;/h1&gt;
+      &lt;p className="text-gray-600"&gt;このページにはユーザー一覧が表示されます。&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+                            </li>
+                            <li><strong>動的ルート用ディレクトリを作成</strong>: users の中に [id] ディレクトリを作成します。
+                                <pre class="code-block"><code class="language-bash">mkdir -p src/app/users/\[id\]</code></pre>
+                            </li>
+                            <li><strong>詳細ページを作成</strong>: src/app/users/[id]/page.tsx を作成します。
+                                <pre class="code-block"><code class="language-typescript">// src/app/users/[id]/page.tsx
+type Props = {
+  params: {
+    id: string;
+  };
+};
+
+export default function UserDetailPage({ params }: Props) {
+  return (
+    &lt;div className="container mx-auto py-10"&gt;
+      &lt;h1 className="text-3xl font-bold mb-4"&gt;ユーザー詳細&lt;/h1&gt;
+      &lt;p className="text-gray-600"&gt;ユーザーID: {params.id}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+                            </li>
+                        </ol>
+
+                        <h6>動作確認</h6>
+                        <p>開発サーバーが起動している状態で、以下のURLにアクセスします：</p>
+                        <pre class="code-block"><code class="language-bash">http://localhost:3000/users        # ユーザー一覧ページ
+http://localhost:3000/users/123    # ID 123 のユーザー詳細ページ</code></pre>
+
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>各ページが正常に表示され、詳細ページではURLのパラメータ（ID）が正しく取得されます。</p>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">2.3 Server Components vs Client Components</h3>
+                    <p>Next.jsではデフォルトがServer Componentです。Client Componentは 'use client' ディレクティブで明示的に指定します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実装 2-2: Client Componentの作成</h5>
+                        <p>インタラクティブな機能が必要な場合、Client Componentを使用します。</p>
+
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>Client Component を作成</strong>: src/app/components/counter.tsx を作成します。
+                                <pre class="code-block"><code class="language-typescript">// src/app/components/counter.tsx
+'use client'; // クライアントコンポーネント指定
+
+import { useState } from 'react';
+
+export default function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    &lt;div className="p-4 border rounded"&gt;
+      &lt;p className="text-lg font-semibold"&gt;カウント: {count}&lt;/p&gt;
+      &lt;button
+        onClick={() =&gt; setCount(count + 1)}
+        className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      &gt;
+        +1
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+                            </li>
+                            <li><strong>Server Component でClient Componentを使用</strong>: ホームページに Counter を追加します。
+                                <pre class="code-block"><code class="language-typescript">// src/app/page.tsx
+import Counter from '@/app/components/counter';
+
+export default function Home() {
+  return (
+    &lt;main className="flex min-h-screen flex-col items-center justify-center bg-gray-100"&gt;
+      &lt;div className="text-center bg-white p-8 rounded shadow"&gt;
+        &lt;h1 className="text-4xl font-bold text-gray-900 mb-4"&gt;
+          ユーザー管理システム
+        &lt;/h1&gt;
+        &lt;Counter /&gt;
+      &lt;/div&gt;
+    &lt;/main&gt;
+  );
+}</code></pre>
+                            </li>
+                        </ol>
+
+                        <h6>動作確認</h6>
+                        <p>ブラウザで http://localhost:3000 にアクセスし、カウンターボタンをクリックしてカウントが増加することを確認します。</p>
+
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>ボタンをクリックするたびにカウント値が1ずつ増加します。これはClient ComponentのuseStateフックが機能している証拠です。</p>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">2.4 レイアウトの構造</h3>
+                    <p>layout.tsx ファイルはそのディレクトリ以下のすべてのページに適用されるレイアウトを定義します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実装 2-3: 階層的なレイアウトの作成</h5>
+                        <p>ユーザー管理セクション用の専用レイアウトを作成します。</p>
+
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>ユーザーセクション用レイアウトを作成</strong>: src/app/users/layout.tsx を作成します。
+                                <pre class="code-block"><code class="language-typescript">// src/app/users/layout.tsx
+export const metadata = {
+  title: 'ユーザー管理',
+  description: 'ユーザー一覧・詳細ページ',
+};
+
+export default function UsersLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    &lt;div className="bg-gray-50 min-h-screen"&gt;
+      &lt;nav className="bg-white shadow"&gt;
+        &lt;div className="container mx-auto px-4 py-3"&gt;
+          &lt;h2 className="text-xl font-bold"&gt;ユーザー管理&lt;/h2&gt;
+        &lt;/div&gt;
+      &lt;/nav&gt;
+      &lt;div className="container mx-auto px-4 py-8"&gt;
+        {children}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+                            </li>
+                        </ol>
+
+                        <h6>動作確認</h6>
+                        <p>/users および /users/[id] ページにアクセスして、レイアウトが適用されていることを確認します。</p>
+
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>両ページ上部に「ユーザー管理」というナビゲーションが表示されます。</p>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">2.5 メタデータとSEO対策</h3>
+                    <p>各ページでmetadata を定義することで、SEO対策を実装できます。</p>
+
+                    <div class="exercise-container">
+                        <h5>実装 2-4: ページごとのメタデータ設定</h5>
+                        <p>Server Componentsのメタデータ定義を活用します。</p>
+
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>ホームページのメタデータを設定</strong>:
+                                <pre class="code-block"><code class="language-typescript">// src/app/page.tsx
+import { Metadata } from 'next';
+import Counter from '@/app/components/counter';
+
+export const metadata: Metadata = {
+  title: 'ユーザー管理システム | Home',
+  description: 'Next.js + Prisma + PostgreSQLで構築したユーザー管理システムです。',
+  keywords: ['Next.js', 'ユーザー管理', 'チュートリアル'],
+};
+
+export default function Home() {
+  // ... 既存のコード
+}</code></pre>
+                            </li>
+                        </ol>
+
+                        <h6>動作確認</h6>
+                        <p>ブラウザの開発者ツール（F12）で、ページソースの &lt;head&gt; セクションを確認します。</p>
+
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>&lt;meta&gt; タグが正しく設定され、検索エンジンがメタデータを認識できます。</p>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">2.6 エラーハンドリング</h3>
+                    <p>error.tsx ファイルでエラーをハンドルし、ユーザーフレンドリーなエラーページを表示できます。</p>
+
+                    <div class="exercise-container">
+                        <h5>実装 2-5: エラーページの作成</h5>
+                        <p>グローバルエラーハンドラーを実装します。</p>
+
+                        <h6>手順</h6>
+                        <ol>
+                            <li><strong>エラーページを作成</strong>: src/app/error.tsx を作成します。
+                                <pre class="code-block"><code class="language-typescript">// src/app/error.tsx
+'use client';
+
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  return (
+    &lt;div className="flex min-h-screen items-center justify-center bg-gray-100"&gt;
+      &lt;div className="text-center bg-white p-8 rounded shadow"&gt;
+        &lt;h1 className="text-3xl font-bold text-red-600 mb-4"&gt;エラーが発生しました&lt;/h1&gt;
+        &lt;p className="text-gray-600 mb-4"&gt;{error.message}&lt;/p&gt;
+        &lt;button
+          onClick={() =&gt; reset()}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        &gt;
+          もう一度試す
+        &lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+                            </li>
+                            <li><strong>404 Not Foundページを作成</strong>: src/app/not-found.tsx を作成します。
+                                <pre class="code-block"><code class="language-typescript">// src/app/not-found.tsx
+import Link from 'next/link';
+
+export default function NotFound() {
+  return (
+    &lt;div className="flex min-h-screen items-center justify-center bg-gray-100"&gt;
+      &lt;div className="text-center bg-white p-8 rounded shadow"&gt;
+        &lt;h1 className="text-5xl font-bold text-gray-900 mb-2"&gt;404&lt;/h1&gt;
+        &lt;p className="text-xl text-gray-600 mb-4"&gt;ページが見つかりません&lt;/p&gt;
+        &lt;Link href="/" className="text-blue-500 hover:underline"&gt;
+          ホームへ戻る
+        &lt;/Link&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+                            </li>
+                        </ol>
+
+                        <h6>動作確認</h6>
+                        <p>http://localhost:3000/undefined-page にアクセスして、404ページが表示されることを確認します。</p>
+
+                        <h6>期待される結果</h6>
+                        <div class="alert alert-success">
+                            <p>カスタムの404ページが表示されます。</p>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">2.7 ナビゲーション</h3>
+                    <p>Next.js の Link コンポーネントを使用した効率的なナビゲーションを実装します。</p>
+
+                    <div class="alert alert-light">
+                        <h6>ナビゲーション実装例</h6>
+                        <pre class="code-block"><code class="language-typescript">import Link from 'next/link';
+
+export default function Navigation() {
+  return (
+    &lt;nav className="flex gap-4"&gt;
+      &lt;Link href="/" className="text-blue-500 hover:underline"&gt;
+        ホーム
+      &lt;/Link&gt;
+      &lt;Link href="/users" className="text-blue-500 hover:underline"&gt;
+        ユーザー一覧
+      &lt;/Link&gt;
+      &lt;Link href="/users/123" className="text-blue-500 hover:underline"&gt;
+        ユーザー詳細(123)
+      &lt;/Link&gt;
+    &lt;/nav&gt;
+  );
+}</code></pre>
+                    </div>
+
+                    <!-- Step Completion Checklist -->
+                    <div class="quiz-container">
+                        <h5>ステップ完了チェック</h5>
+                        <p>以下の項目が完了していることを確認してください：</p>
+                        <ul class="list-unstyled">
+                            <li>☐ src/app/users/page.tsx でユーザー一覧ページを作成した</li>
+                            <li>☐ src/app/users/[id]/page.tsx で動的ルートを実装した</li>
+                            <li>☐ /users と /users/123 にアクセスしてページが表示されることを確認した</li>
+                            <li>☐ Client Component（Counter）を作成し、useStateで状態管理が動作することを確認した</li>
+                            <li>☐ src/app/users/layout.tsx でセクション用レイアウトを作成した</li>
+                            <li>☐ メタデータ（metadata）を設定し、ページのタイトルが変更されることを確認した</li>
+                            <li>☐ error.tsx と not-found.tsx でエラーページを実装した</li>
+                            <li>☐ Link コンポーネントを使用したナビゲーションが動作することを確認した</li>
+                        </ul>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="nav-buttons">
+                        <a href="nextjs-tutorial-1.html" class="btn btn-prev">← 前のステップ</a>
+                        <a href="nextjs-tutorial-3.html" class="btn btn-next">次のステップ →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 F-Circle. All rights reserved.<br>
+        本資料はAIツールを活用し、人間による編集・監修のもと作成されています。無断転載・再配布を禁じます。</p>
+    </footer>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Highlight.js Initialization -->
+    <script>hljs.highlightAll();</script>
+
+    <!-- Mermaid.js Initialization -->
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default'
+        });
+    </script>
+</body>
+</html>

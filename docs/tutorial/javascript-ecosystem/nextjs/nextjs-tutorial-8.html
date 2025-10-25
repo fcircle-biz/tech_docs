@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next.js実践チュートリアル ステップ8 - バリデーションとエラーハンドリング</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --nextjs-primary: #F7DF1E; --nextjs-dark: #000000; --nextjs-light: #1F2937; --success: #10b981; }
+        body { font-family: 'Noto Sans JP', sans-serif; padding-top: 56px; background-color: #f8fafc; }
+        .navbar { background-color: var(--nextjs-dark); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .navbar-brand { color: var(--nextjs-primary) !important; font-weight: 700; }
+        .sidebar { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; background-color: #ffffff; border-right: 1px solid #e5e7eb; }
+        .sidebar .nav-link { color: #4b5563; padding: 0.75rem 1.5rem; border-left: 3px solid transparent; }
+        .sidebar .nav-link.active { background-color: #fffbeb; color: var(--nextjs-dark); border-left-color: var(--nextjs-primary); font-weight: 600; }
+        .chapter-title { color: var(--nextjs-dark); border-bottom: 3px solid var(--nextjs-primary); padding-bottom: 0.5rem; font-weight: 700; font-size: 1.8rem; margin-top: 2rem; }
+        .section-title { color: var(--nextjs-light); margin-top: 1.5rem; font-weight: 600; font-size: 1.3rem; }
+        .highlight { background-color: #fffbeb; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid var(--nextjs-primary); }
+        .exercise-container { background-color: #e0f2fe; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #0284c7; }
+        .code-block { background-color: #1e1e1e; color: #d4d4d4; border-radius: 5px; padding: 1rem; margin: 1rem 0; overflow-x: auto; max-height: 450px; font-size: 0.85rem; }
+        .quiz-container { background-color: #f0fdf4; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid var(--success); }
+        main { background-color: #ffffff; margin: 1rem 0; padding: 2rem; border-radius: 8px; }
+        .footer { background-color: var(--nextjs-dark); color: #ffffff; margin-top: 3rem; padding: 2rem; text-align: center; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 2rem; }
+        .btn-prev, .btn-next { border: none; color: white; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; }
+        .btn-prev { background-color: #6b7280; }
+        .btn-next { background-color: var(--nextjs-primary); color: var(--nextjs-dark); font-weight: 600; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark fixed-top"><div class="container-fluid"><a class="navbar-brand"><i class="fas fa-js-square"></i> Next.js実践チュートリアル</a></div></nav>
+    <div class="container-fluid"><div class="row">
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse" style="padding: 1rem 0;">
+            <div class="position-sticky pt-3">
+                <h6 style="font-weight:700; color:var(--nextjs-dark); padding:0 1.5rem; margin:1rem 0;">チュートリアルステップ</h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-1.html">ステップ1: 環境構築</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-2.html">ステップ2: App Routerの基礎</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-3.html">ステップ3: DB設計とPrisma</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-4.html">ステップ4: ユーザー登録</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-5.html">ステップ5: 一覧・詳細表示</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-6.html">ステップ6: 更新・削除機能</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-7.html">ステップ7: 認証・セキュリティ</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="nextjs-tutorial-8.html">ステップ8: バリデーション</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-9.html">ステップ9: テスト・デバッグ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="nextjs-tutorial-10.html">ステップ10: デプロイ</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <h1 class="h2" style="margin-bottom: 2rem; padding-top: 1rem;">ステップ8: バリデーションとエラーハンドリング</h1>
+
+            <div id="step8">
+                <h2 class="chapter-title">高度なバリデーションとエラー処理</h2>
+
+                <div class="highlight">
+                    <h5>このステップで実装すること</h5>
+                    <ul>
+                        <li>zodによる高度なバリデーションスキーマ</li>
+                        <li>カスタムバリデーションルールの作成</li>
+                        <li>フィールドレベルとフォームレベルのエラー表示</li>
+                        <li>リアルタイムバリデーション（Client Side）</li>
+                        <li>サーバーサイドバリデーションの実装</li>
+                        <li>グローバルエラーハンドリング（error.tsx）</li>
+                        <li>Not Foundページのカスタマイズ（not-found.tsx）</li>
+                        <li>エラーバウンダリとエラーリカバリ</li>
+                        <li>トーストメッセージによるユーザー通知</li>
+                    </ul>
+                </div>
+
+                <h3 class="section-title">8.1 Zodによる高度なバリデーション</h3>
+
+                <div class="exercise-container">
+                    <h5>実装 8-1: カスタムバリデーションスキーマ</h5>
+                    <pre class="code-block"><code class="language-typescript">// src/lib/validations.ts を拡張
+import { z } from 'zod';
+
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/;
+
+export const userSchema = z.object({
+  name: z.string()
+    .min(2, 'お名前は2文字以上')
+    .max(50, 'お名前は50文字以下'),
+  email: z.string()
+    .email('正しいメールアドレスを入力')
+    .refine(
+      async (email) => {
+        const user = await prisma.user.findUnique({
+          where: { email },
+        });
+        return !user; // 既存ユーザーの場合はfalse
+      },
+      { message: 'このメールアドレスは既に登録されています' }
+    ),
+  password: z.string()
+    .min(8, 'パスワードは8文字以上')
+    .regex(passwordRegex, '大文字・小文字・数字を含めてください'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'パスワードが一致しません',
+  path: ['confirmPassword'],
+});</code></pre>
+                </div>
+
+                <h3 class="section-title">8.2 リアルタイムバリデーション</h3>
+
+                <div class="alert alert-light">
+                    <h6>Client Sideバリデーションの例</h6>
+                    <pre class="code-block"><code class="language-typescript">// 入力時にバリデーション
+'use client';
+
+import { userSchema } from '@/lib/validations';
+import { useState } from 'react';
+
+export default function ValidatingForm() {
+  const [errors, setErrors] = useState&lt;Record&lt;string, string&gt;&gt;({});
+
+  const handleChange = async (e: React.ChangeEvent&lt;HTMLInputElement&gt;) => {
+    const { name, value } = e.target;
+
+    try {
+      // 該当フィールドのバリデーション
+      await userSchema.pick({ [name]: true }).parseAsync({
+        [name]: value,
+      });
+      // バリデーション成功時はエラーをクリア
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const fieldError = error.errors[0];
+        setErrors((prev) => ({
+          ...prev,
+          [name]: fieldError.message,
+        }));
+      }
+    }
+  };
+
+  return (
+    &lt;div&gt;
+      &lt;input name="email" onChange={handleChange} /&gt;
+      {errors.email && &lt;p className="text-red-600"&gt;{errors.email}&lt;/p&gt;}
+    &lt;/div&gt;
+  );
+}</code></pre>
+                </div>
+
+                <h3 class="section-title">8.3 グローバルエラーハンドリング</h3>
+
+                <div class="alert alert-light">
+                    <h6>error.tsx の実装</h6>
+                    <pre class="code-block"><code class="language-typescript">// src/app/error.tsx
+'use client';
+
+interface ErrorProps {
+  error: Error & { digest?: string };
+  reset: () => void;
+}
+
+export default function GlobalError({ error, reset }: ErrorProps) {
+  return (
+    &lt;html&gt;
+      &lt;body&gt;
+        &lt;div className="flex items-center justify-center min-h-screen"&gt;
+          &lt;div className="text-center"&gt;
+            &lt;h1 className="text-3xl font-bold text-red-600"&gt;エラーが発生しました&lt;/h1&gt;
+            &lt;p className="text-gray-600 mt-2"&gt;{error.message}&lt;/p&gt;
+            &lt;button
+              onClick={() =&gt; reset()}
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+            &gt;
+              もう一度試す
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  );
+}</code></pre>
+                </div>
+
+                <h3 class="section-title">8.4 トーストメッセージ通知</h3>
+
+                <div class="alert alert-light">
+                    <h6>トーストメッセージコンポーネントの例</h6>
+                    <pre class="code-block"><code class="language-typescript">// src/app/components/toast.tsx
+'use client';
+
+import { useState, useEffect } from 'react';
+
+interface ToastProps {
+  message: string;
+  type: 'success' | 'error' | 'info';
+  duration?: number;
+}
+
+export function useToast() {
+  const [toast, setToast] = useState&lt;ToastProps | null&gt;(null);
+
+  const showToast = (message: string, type: ToastProps['type'], duration = 3000) => {
+    setToast({ message, type, duration });
+    setTimeout(() =&gt; setToast(null), duration);
+  };
+
+  return { toast, showToast };
+}
+
+export default function Toast({ message, type, duration = 3000 }: ToastProps) {
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() =&gt; setIsVisible(false), duration);
+    return () =&gt; clearTimeout(timer);
+  }, [duration]);
+
+  if (!isVisible) return null;
+
+  const bgColor = {
+    success: 'bg-green-100 text-green-800',
+    error: 'bg-red-100 text-red-800',
+    info: 'bg-blue-100 text-blue-800',
+  }[type];
+
+  return (
+    &lt;div className={`fixed bottom-4 right-4 p-4 rounded ${bgColor}`}&gt;
+      {message}
+    &lt;/div&gt;
+  );
+}</code></pre>
+                </div>
+
+                <h3 class="section-title">8.5 API エラーハンドリング</h3>
+
+                <div class="alert alert-light">
+                    <h6>Server Action のエラー処理パターン</h6>
+                    <pre class="code-block"><code class="language-typescript">// src/actions/user-actions.ts にエラーハンドリングを追加
+export async function createUser(formData: FormData) {
+  try {
+    // バリデーション
+    const data = userSchema.parse({...});
+
+    // データベース操作
+    const user = await prisma.user.create({ data });
+
+    revalidatePath('/users');
+
+    return { success: true, user };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        errors: error.flatten().fieldErrors,
+      };
+    }
+
+    if (error instanceof PrismaClientKnownRequestError) {
+      if (error.code === 'P2002') {
+        return {
+          success: false,
+          error: '既に登録されているメールアドレスです',
+        };
+      }
+    }
+
+    console.error('[Database Error]', error);
+    return {
+      success: false,
+      error: 'サーバーエラーが発生しました',
+    };
+  }
+}</code></pre>
+                </div>
+
+                <div class="quiz-container">
+                    <h5>ステップ完了チェック</h5>
+                    <ul class="list-unstyled">
+                        <li>☐ Zodのカスタムバリデーションルールを実装した</li>
+                        <li>☐ リアルタイムバリデーション（入力時のバリデーション）を実装した</li>
+                        <li>☐ フィールドレベルのエラーメッセージが表示される</li>
+                        <li>☐ error.tsx でグローバルエラーハンドリングを実装した</li>
+                        <li>☐ not-found.tsx で404ページをカスタマイズした</li>
+                        <li>☐ トーストメッセージでユーザー通知ができる</li>
+                        <li>☐ Server Actions でバリデーション・データベースエラーを処理した</li>
+                    </ul>
+                </div>
+
+                <div class="nav-buttons">
+                    <a href="nextjs-tutorial-7.html" class="btn btn-prev">← 前のステップ</a>
+                    <a href="nextjs-tutorial-9.html" class="btn btn-next">次のステップ →</a>
+                </div>
+            </div>
+        </main>
+    </div></div>
+
+    <footer class="footer">
+        <p>© 2025 F-Circle. All rights reserved.<br>本資料はAIツールを活用し、人間による編集・監修のもと作成されています。</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
