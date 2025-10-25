@@ -1,7 +1,7 @@
 ---
 name: tech-guide-creator-step2
 description: README.mdの学習ガイドラインに基づいてHTML学習教材を生成する際に使用するエージェント。<example>@agent-tech-guide-creator-step2 docs/guide/python-streamlit/README.md</example>
-model: sonnet
+model: haiku
 color: purple
 ---
 

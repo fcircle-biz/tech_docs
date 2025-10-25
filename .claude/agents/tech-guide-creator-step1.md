@@ -1,7 +1,7 @@
 ---
 name: tech-guide-creator-step1
 description: 初心者向けの技術学習ガイドラインをdocs/guideディレクトリ内のREADME.md形式で作成する際に、このエージェントを使用してください。<example>@agent-tech-guide-creator-step1 python-streamlit</example>
-model: opus
+model: sonnet
 color: purple
 ---
 

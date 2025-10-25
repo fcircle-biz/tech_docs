@@ -1,7 +1,7 @@
 ---
 name: slide-creator-step3
 description: HTMLスライドファイルの高さを720pxに最適化し、最終PDF教材を再生成する専門エージェント。<example>@agent-slide-creator-step3 docs/slide/dotnet-ecosystem/aspnet-vb-webforms</example>
-model: sonnet
+model: haiku
 color: purple
 ---
 
