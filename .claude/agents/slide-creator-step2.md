@@ -1,7 +1,7 @@
 ---
 name: slide-creator-step2
 description: README.mdの学習ガイドラインに基づいてHTMLテンプレートを使用したスライド形式PDF教材を生成する際に使用するエージェント。<example>@agent-slide-creator-step2 docs/slide/python-streamlit/README.md</example>
-model: haiku
+model: sonnet
 color: purple
 ---
 
