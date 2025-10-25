@@ -28,13 +28,6 @@ The repository is organized around major technology ecosystems:
 - **Data Analysis**: R, SAS, statistical analysis
 - **Legacy**: COBOL for mainframe systems
 
-### HTML Template System
-- **PDF Slide Templates**: Located in `templates/pdf_html/`
-- **Standard dimensions**: 1280×720px (16:9 ratio)
-- **CSS Framework**: Tailwind CSS 2.2.19
-- **Icons**: Font Awesome 6.4.0
-- **Color system**: Microsoft Blue (#0078d4) primary theme
-
 ## Common Development Commands
 
 ### HTML to PDF Conversion
