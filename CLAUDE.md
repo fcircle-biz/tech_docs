@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Japanese technical documentation repository containing comprehensive programming guides, tutorials, cheat sheets, and AI prompts. The repository focuses on creating HTML-based educational materials for various programming languages, frameworks, and technologies.
 
+**Technology & Knowledge Map**: See [tech-knowledge-map.md](tech-knowledge-map.md) for a comprehensive overview of all technology domains, certifications, and business knowledge areas covered in this repository.
+
 ## Key Architecture Components
 
 ### Documentation Structure
