@@ -36,6 +36,8 @@
 ### 主要カテゴリ
 
 - **プログラミング言語**: Python、Java、JavaScript、.NET、PHP、Ruby、Go、R、C/C++、COBOL
+- **開発手法・プロセス**: アジャイル開発、ウォーターフォール開発、DevOps、リーンソフトウェア開発、スパイラル開発
+- **設計手法・モデリング**: UML、ER図・データモデリング、要件定義・分析、システム設計、DDD（ドメイン駆動設計）、マイクロサービス設計
 - **クラウド/インフラ**: AWS、Azure、GCP、Kubernetes、Docker、Linux
 - **データ/AI**: Hadoop/Spark、TensorFlow、PyTorch、統計学、機械学習、SAS
 - **業務SaaS**: SAP、Salesforce、Power Platform、Microsoft Office
@@ -99,6 +101,10 @@
 ## 📖 学習ガイドライン
 
 各技術の基礎から応用まで段階的に学べる包括的な学習ガイドです。理論的な理解と実践的なスキルを両立できるよう構成されています。
+
+### 資格試験
+
+- **[ITパスポート試験学習ガイドライン](docs/guide/certification/it-passport/README.md)** - ITパスポート試験（情報処理技術者試験の入門レベル国家資格）の合格を目指す方向けに、体系的かつ効率的な学習カリキュラムを提供。ストラテジ系、マネジメント系、テクノロジ系の全分野を網羅し、過去問演習まで10章完成カリキュラム
 
 ### COBOL
 
