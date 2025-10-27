@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps学習教材 第2章 - バージョン管理とGit戦略</title>
+
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <style>
+        /* ベースレイアウト */
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+
+        /* DevOps用カラーテーマ */
+        .navbar {
+            background-color: #0d6efd;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+
+        /* タイトル */
+        .chapter-title {
+            color: #0d6efd;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #0d6efd;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title {
+            color: #0dcaf0;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* コンテンツボックス */
+        .quiz-container {
+            background-color: #cfe2ff;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #0d6efd;
+        }
+
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .highlight {
+            background-color: #fff3cd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
+        }
+
+        .info-box {
+            background-color: #e7f3ff;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #0d6efd;
+        }
+
+        /* コードブロック */
+        .code-block {
+            background-color: #1e1e1e;
+            color: white;
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        /* ナビゲーション */
+        .nav-link.active {
+            background-color: #0d6efd !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">DevOps学習教材</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="devops-learning-material-1.html">第1章</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#chapter2">第2章</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="devops-learning-material-3.html">第3章</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="README.html">目次</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#chapter2">
+                                第2章: バージョン管理とGit戦略
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section2-1">
+                                2.1 Gitワークフロー
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section2-2">
+                                2.2 ブランチ戦略
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section2-3">
+                                2.3 プルリクエストとコードレビュー
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section2-4">
+                                2.4 コミット規約とGit Hooks
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- 章ヘッダー -->
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第2章: バージョン管理とGit戦略</h1>
+                </div>
+
+                <div id="chapter2">
+                    <!-- 章タイトル -->
+                    <h2 class="chapter-title">効果的なコラボレーションの基盤</h2>
+
+                    <!-- 学習目標 -->
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>主要なGitワークフロー（Git Flow、GitHub Flow、GitLab Flow等）を理解する</li>
+                            <li>プロジェクトに適したブランチ戦略を選択できるようになる</li>
+                            <li>プルリクエスト・コードレビューのベストプラクティスを習得する</li>
+                            <li>コミットメッセージ規約（Conventional Commits）を学ぶ</li>
+                            <li>Git Hooksを活用した品質保証を実践する</li>
+                        </ul>
+                    </div>
+
+                    <!-- セクション2.1 -->
+                    <h3 class="section-title" id="section2-1">2.1 Gitワークフロー</h3>
+
+                    <p>Gitワークフローとは、チームがGitを使ってどのように協力するかを定義した規約・パターンです。プロジェクトの性質やチームの規模に応じて適切なワークフローを選択することが重要です。</p>
+
+                    <h4>主要なGitワークフローの比較</h4>
+
+                    <table class="table table-bordered">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>ワークフロー</th>
+                                <th>特徴</th>
+                                <th>適用シーン</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Git Flow</strong></td>
+                                <td>複数の長期ブランチ（main、develop）と短期ブランチ（feature、release、hotfix）を使用</td>
+                                <td>定期リリースがあるプロジェクト、複数バージョンのサポート</td>
+                            </tr>
+                            <tr>
+                                <td><strong>GitHub Flow</strong></td>
+                                <td>mainブランチとfeatureブランチのみのシンプルな構成</td>
+                                <td>継続的デプロイメント、Web アプリケーション</td>
+                            </tr>
+                            <tr>
+                                <td><strong>GitLab Flow</strong></td>
+                                <td>環境ブランチ（production、staging）を追加</td>
+                                <td>複数環境へのデプロイが必要なプロジェクト</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Trunk Based Development</strong></td>
+                                <td>常にmainブランチに直接コミット、短命なfeatureブランチ</td>
+                                <td>高頻度デプロイ、成熟したCI/CD環境</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4>Git Flow（伝統的なワークフロー）</h4>
+
+                    <div class="mermaid">
+                        gitGraph
+                            commit id: "initial"
+                            branch develop
+                            checkout develop
+                            commit id: "setup"
+                            branch feature/user-auth
+                            checkout feature/user-auth
+                            commit id: "add login"
+                            commit id: "add signup"
+                            checkout develop
+                            merge feature/user-auth
+                            branch release/v1.0
+                            checkout release/v1.0
+                            commit id: "version bump"
+                            checkout main
+                            merge release/v1.0 tag: "v1.0"
+                            checkout develop
+                            merge release/v1.0
+                    </div>
+
+                    <div class="info-box">
+                        <h6>Git Flowのブランチ構成</h6>
+                        <ul>
+                            <li><strong>main</strong>: 本番環境にデプロイされる安定版</li>
+                            <li><strong>develop</strong>: 開発の統合ブランチ</li>
+                            <li><strong>feature/*</strong>: 新機能開発用の短期ブランチ</li>
+                            <li><strong>release/*</strong>: リリース準備用のブランチ</li>
+                            <li><strong>hotfix/*</strong>: 本番の緊急修正用ブランチ</li>
+                        </ul>
+                    </div>
+
+                    <h4>GitHub Flow（シンプルなワークフロー）</h4>
+
+                    <div class="mermaid">
+                        gitGraph
+                            commit id: "initial"
+                            branch feature/add-profile
+                            checkout feature/add-profile
+                            commit id: "add profile page"
+                            commit id: "add tests"
+                            checkout main
+                            merge feature/add-profile tag: "deployed"
+                            branch feature/fix-bug
+                            checkout feature/fix-bug
+                            commit id: "fix validation"
+                            checkout main
+                            merge feature/fix-bug tag: "deployed"
+                    </div>
+
+                    <div class="info-box">
+                        <h6>GitHub Flowの原則</h6>
+                        <ol>
+                            <li>mainブランチは常にデプロイ可能な状態</li>
+                            <li>新機能や修正は必ずfeatureブランチで開発</li>
+                            <li>定期的にmainにプッシュしてフィードバックを得る</li>
+                            <li>プルリクエストを使ってレビューを受ける</li>
+                            <li>レビュー承認後、mainにマージして即座にデプロイ</li>
+                        </ol>
+                    </div>
+
+                    <h4>Trunk Based Development（最も迅速なワークフロー）</h4>
+
+                    <p>Trunk Based Developmentでは、開発者は常にmainブランチ（トランク）に頻繁にコミットし、短命なfeatureブランチ（1日以内）のみを使用します。</p>
+
+                    <div class="info-box">
+                        <h6>Trunk Based Developmentの特徴</h6>
+                        <ul>
+                            <li><strong>高頻度統合</strong>: 1日に複数回mainにマージ</li>
+                            <li><strong>Feature Flags</strong>: 未完成機能は機能フラグで隠蔽</li>
+                            <li><strong>強力なCI/CD</strong>: 自動テストとデプロイが必須</li>
+                            <li><strong>迅速なフィードバック</strong>: コンフリクトが少なく、問題の早期発見</li>
+                        </ul>
+                    </div>
+
+                    <!-- セクション2.2 -->
+                    <h3 class="section-title" id="section2-2">2.2 ブランチ戦略のベストプラクティス</h3>
+
+                    <h4>ブランチ命名規則</h4>
+
+                    <p>一貫した命名規則により、ブランチの目的が明確になり、チーム全体の理解が容易になります。</p>
+
+                    <pre class="code-block"><code class="language-bash"># 機能開発
+feature/user-authentication
+feature/payment-integration
+feature/JIRA-123-add-dashboard
+
+# バグ修正
+fix/login-validation-error
+fix/JIRA-456-fix-memory-leak
+
+# リリース準備
+release/v1.2.0
+release/2024-Q1
+
+# 緊急修正
+hotfix/security-patch
+hotfix/critical-data-loss
+
+# 実験・試作
+experiment/new-algorithm
+spike/performance-test</code></pre>
+
+                    <h4>ブランチ保護ルール</h4>
+
+                    <p>重要なブランチ（main、develop）には保護ルールを設定し、品質を担保します。</p>
+
+                    <div class="info-box">
+                        <h6>推奨される保護ルール</h6>
+                        <ul>
+                            <li><strong>直接プッシュの禁止</strong>: mainブランチへの直接コミットを防止</li>
+                            <li><strong>プルリクエスト必須</strong>: すべての変更はPR経由でマージ</li>
+                            <li><strong>レビュー承認必須</strong>: 最低1名（または2名）の承認が必要</li>
+                            <li><strong>CI/CD通過必須</strong>: すべてのテストが成功しないとマージ不可</li>
+                            <li><strong>コンフリクト解決必須</strong>: マージコンフリクトがないことを確認</li>
+                            <li><strong>署名コミット必須</strong>: GPG署名でコミット者の身元を保証（オプション）</li>
+                        </ul>
+                    </div>
+
+                    <h4>マージ戦略の選択</h4>
+
+                    <div class="mermaid">
+                        flowchart TD
+                            A["マージ戦略の選択"] --> B["Merge Commit<br/>（マージコミット）"]
+                            A --> C["Squash and Merge<br/>（スカッシュマージ）"]
+                            A --> D["Rebase and Merge<br/>（リベースマージ）"]
+
+                            B --> B1["履歴を完全保持<br/>すべてのコミットが残る"]
+                            C --> C1["複数コミットを1つに統合<br/>履歴がクリーンになる"]
+                            D --> D1["リニアな履歴<br/>マージコミット不要"]
+                    </div>
+
+                    <table class="table table-bordered">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>マージ戦略</th>
+                                <th>利点</th>
+                                <th>欠点</th>
+                                <th>推奨シーン</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Merge Commit</strong></td>
+                                <td>すべての履歴が保持される</td>
+                                <td>履歴が複雑になる</td>
+                                <td>履歴の完全性が重要な場合</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Squash and Merge</strong></td>
+                                <td>mainブランチの履歴がクリーン</td>
+                                <td>featureブランチの履歴が失われる</td>
+                                <td>多くのWIP commitがある場合</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Rebase and Merge</strong></td>
+                                <td>リニアな履歴で理解しやすい</td>
+                                <td>コンフリクト解決が複雑</td>
+                                <td>クリーンなコミット履歴を維持したい場合</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- セクション2.3 -->
+                    <h3 class="section-title" id="section2-3">2.3 プルリクエストとコードレビュー</h3>
+
+                    <h4>プルリクエストの目的</h4>
+
+                    <p>プルリクエスト（PR）/マージリクエスト（MR）は、単なるコードマージの手段ではなく、以下の重要な役割を果たします。</p>
+
+                    <ul>
+                        <li><strong>品質保証</strong>: コードレビューによるバグやセキュリティ問題の発見</li>
+                        <li><strong>知識共有</strong>: チーム全体でコードベースの理解を深める</li>
+                        <li><strong>設計議論</strong>: より良い実装方法についての対話</li>
+                        <li><strong>ドキュメント</strong>: 変更の意図や背景を記録</li>
+                    </ul>
+
+                    <h4>効果的なプルリクエストの書き方</h4>
+
+                    <pre class="code-block"><code class="language-markdown">## 概要
+ユーザー認証機能のパスワードリセット機能を追加
+
+## 背景・目的
+- ユーザーがパスワードを忘れた際に自己解決できるようにする
+- サポートチームの問い合わせ対応を削減
+
+## 変更内容
+- パスワードリセットAPIエンドポイントを追加 (`/api/auth/reset-password`)
+- メール送信サービスを統合
+- フロントエンドにリセットフォームを追加
+- セキュリティ: トークン有効期限を1時間に設定
+
+## テスト方法
+1. `/reset-password`ページにアクセス
+2. 登録済みメールアドレスを入力
+3. 受信したメールのリンクをクリック
+4. 新しいパスワードを設定
+
+## スクリーンショット
+（UIの変更がある場合は画像を添付）
+
+## チェックリスト
+- [x] ユニットテストを追加
+- [x] 統合テストを追加
+- [x] ドキュメントを更新
+- [x] セキュリティレビュー完了
+- [x] パフォーマンス影響を確認
+
+## 関連Issue
+Closes #123</code></pre>
+
+                    <h4>コードレビューのベストプラクティス</h4>
+
+                    <div class="info-box">
+                        <h6>レビュアーの心得</h6>
+                        <ul>
+                            <li><strong>建設的なフィードバック</strong>: 問題点だけでなく、改善案も提示</li>
+                            <li><strong>質問形式</strong>: 「ここは〇〇すべきだ」ではなく「〇〇した理由は？」</li>
+                            <li><strong>タイムリーなレビュー</strong>: 24時間以内にレビューを開始</li>
+                            <li><strong>コンテキストの理解</strong>: PRの目的と背景を把握してからレビュー</li>
+                            <li><strong>自動化可能な指摘は避ける</strong>: フォーマットやリントはツールに任せる</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-box">
+                        <h6>PR作成者の心得</h6>
+                        <ul>
+                            <li><strong>小さなPR</strong>: 300行以下が理想、大きい場合は分割</li>
+                            <li><strong>明確な説明</strong>: 何を、なぜ変更したかを記載</li>
+                            <li><strong>セルフレビュー</strong>: 提出前に自分でコードを見直す</li>
+                            <li><strong>CI/CD通過</strong>: テストが成功してからレビューを依頼</li>
+                            <li><strong>フィードバックへの対応</strong>: 建設的に受け止め、必要に応じて議論</li>
+                        </ul>
+                    </div>
+
+                    <!-- セクション2.4 -->
+                    <h3 class="section-title" id="section2-4">2.4 コミット規約とGit Hooks</h3>
+
+                    <h4>Conventional Commits（慣例的コミットメッセージ）</h4>
+
+                    <p>Conventional Commitsは、コミットメッセージに構造化されたフォーマットを適用する規約です。これにより、CHANGELOGの自動生成やバージョン管理が容易になります。</p>
+
+                    <pre class="code-block"><code class="language-bash"># 基本フォーマット
+&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;
+
+&lt;body&gt;
+
+&lt;footer&gt;</code></pre>
+
+                    <h5>Type（種類）</h5>
+                    <ul>
+                        <li><strong>feat</strong>: 新機能の追加</li>
+                        <li><strong>fix</strong>: バグ修正</li>
+                        <li><strong>docs</strong>: ドキュメントのみの変更</li>
+                        <li><strong>style</strong>: コードの意味に影響しない変更（フォーマット、セミコロン等）</li>
+                        <li><strong>refactor</strong>: バグ修正や機能追加を伴わないコードの改善</li>
+                        <li><strong>perf</strong>: パフォーマンス改善</li>
+                        <li><strong>test</strong>: テストの追加・修正</li>
+                        <li><strong>chore</strong>: ビルドプロセスやツールの変更</li>
+                        <li><strong>ci</strong>: CI/CD設定の変更</li>
+                    </ul>
+
+                    <h5>実例</h5>
+                    <pre class="code-block"><code class="language-bash"># 新機能
+feat(auth): add password reset functionality
+
+# バグ修正
+fix(api): fix null pointer exception in user service
+
+# Breaking Change（破壊的変更）
+feat(api): change response format to include metadata
+
+BREAKING CHANGE: API response now includes 'meta' field
+
+# 複数の変更
+feat(ui): add dark mode support
+
+- Add theme toggle button
+- Update color scheme
+- Save preference to localStorage
+
+Closes #234</code></pre>
+
+                    <h4>Git Hooksによる品質保証</h4>
+
+                    <p>Git Hooksは、Gitのイベント（コミット、プッシュ等）の前後に自動実行されるスクリプトです。これにより、コード品質を自動的に保証できます。</p>
+
+                    <h5>主要なGit Hooks</h5>
+
+                    <table class="table table-bordered">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Hook</th>
+                                <th>タイミング</th>
+                                <th>用途</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>pre-commit</strong></td>
+                                <td>コミット前</td>
+                                <td>リンター実行、フォーマット確認</td>
+                            </tr>
+                            <tr>
+                                <td><strong>commit-msg</strong></td>
+                                <td>コミットメッセージ作成後</td>
+                                <td>メッセージ形式の検証</td>
+                            </tr>
+                            <tr>
+                                <td><strong>pre-push</strong></td>
+                                <td>プッシュ前</td>
+                                <td>ユニットテストの実行</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h5>Huskyによる簡単なGit Hooks設定</h5>
+
+                    <pre class="code-block"><code class="language-bash"># Huskyのインストール（Node.jsプロジェクト）
+npm install --save-dev husky
+npx husky init
+
+# pre-commitフックの作成
+npx husky add .husky/pre-commit "npm test"
+npx husky add .husky/pre-commit "npm run lint"
+
+# commit-msgフックの作成（Conventional Commits検証）
+npx husky add .husky/commit-msg 'npx --no -- commitlint --edit "$1"'</code></pre>
+
+                    <!-- 実習 -->
+                    <div class="exercise-container">
+                        <h5>実習 2-1: GitHub Flowの実践</h5>
+                        <p>実際にGitHub Flowを使って開発プロセスを体験します。</p>
+
+                        <h6>手順</h6>
+                        <ol>
+                            <li>リポジトリをクローン（または新規作成）</li>
+                            <li>featureブランチを作成</li>
+                            <li>変更をコミット（Conventional Commits形式）</li>
+                            <li>リモートにプッシュ</li>
+                            <li>プルリクエストを作成</li>
+                            <li>レビューとマージ</li>
+                        </ol>
+
+                        <h6>実行例</h6>
+                        <pre class="code-block"><code class="language-bash"># 1. リポジトリのクローン
+git clone https://github.com/your-org/your-repo.git
+cd your-repo
+
+# 2. featureブランチの作成
+git checkout -b feature/add-user-profile
+
+# 3. ファイルを編集後、コミット
+git add src/profile.js
+git commit -m "feat(profile): add user profile page
+
+- Add profile component
+- Add API integration
+- Add unit tests
+
+Closes #45"
+
+# 4. リモートにプッシュ
+git push -u origin feature/add-user-profile
+
+# 5. GitHubでプルリクエストを作成（Web UIまたはGH CLI）
+gh pr create --title "Add user profile page" --body "See commit message"
+
+# 6. レビュー承認後、マージ
+gh pr merge --squash</code></pre>
+
+                        <h6>期待される結果</h6>
+                        <ul>
+                            <li>featureブランチがmainにマージされる</li>
+                            <li>CI/CDパイプラインが自動実行される</li>
+                            <li>関連Issueが自動クローズされる</li>
+                            <li>クリーンな履歴が保たれる</li>
+                        </ul>
+                    </div>
+
+                    <!-- 理解度確認 -->
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>
+                                <strong>Q: Git FlowとGitHub Flowの最も大きな違いは何ですか？</strong><br>
+                                A: Git Flowは複数の長期ブランチ（main、develop）と明確なリリースサイクルを持つのに対し、GitHub Flowはmainブランチのみを長期ブランチとし、継続的デプロイメントに適したシンプルな構成です。
+                            </li>
+                            <li>
+                                <strong>Q: Squash and Mergeのメリットとデメリットを説明してください。</strong><br>
+                                A: メリット：mainブランチの履歴がクリーンで理解しやすい。デメリット：featureブランチの詳細な履歴が失われる。多くのWIP commitがある場合に有効です。
+                            </li>
+                            <li>
+                                <strong>Q: 効果的なプルリクエストの条件を3つ挙げてください。</strong><br>
+                                A: (1) 適切なサイズ（300行以下が理想）、(2) 明確な説明（何を、なぜ変更したか）、(3) CI/CDテストの通過。
+                            </li>
+                            <li>
+                                <strong>Q: Conventional Commitsの「feat」と「fix」の違いは何ですか？</strong><br>
+                                A: 「feat」は新機能の追加、「fix」はバグ修正を表します。これによりCHANGELOGの自動生成やセマンティックバージョニングが可能になります。
+                            </li>
+                            <li>
+                                <strong>Q: Git Hooksの「pre-commit」は何に使用されますか？</strong><br>
+                                A: コミット前に自動実行されるスクリプトで、リンター実行やフォーマット確認など、コード品質の自動チェックに使用されます。
+                            </li>
+                        </ol>
+                    </div>
+
+                    <!-- まとめ -->
+                    <h3 class="section-title">まとめ</h3>
+                    <p>この章では、効果的なバージョン管理とGit戦略について学びました。</p>
+
+                    <div class="highlight">
+                        <h6>重要ポイント</h6>
+                        <ul>
+                            <li>プロジェクトに適したGitワークフロー（Git Flow、GitHub Flow等）を選択</li>
+                            <li>ブランチ命名規則とマージ戦略の統一でチームの効率向上</li>
+                            <li>プルリクエストとコードレビューで品質保証と知識共有</li>
+                            <li>Conventional Commitsで構造化されたコミット履歴</li>
+                            <li>Git Hooksで品質チェックを自動化</li>
+                        </ul>
+                    </div>
+
+                    <p>次の章では、「CI/CD基礎」について学びます。継続的インテグレーションと継続的デリバリーの概念を理解し、自動化されたビルド・テスト・デプロイのパイプラインを構築します。</p>
+
+                    <!-- 章間ナビゲーション -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="devops-learning-material-1.html" class="btn btn-secondary">← 前の章: DevOpsの基礎と文化</a>
+                        <a href="devops-learning-material-3.html" class="btn btn-primary">次の章: CI/CD基礎 →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- フッター -->
+    <footer class="bg-dark text-white mt-5">
+        <div class="container-fluid py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="mb-0">© 2025 F-Circle. All rights reserved.<br>
+本資料はAIツールを活用し、人間による編集・監修のもと作成されています。無断転載・再配布を禁じます。</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Highlight.js 初期化 -->
+    <script>hljs.highlightAll();</script>
+
+    <!-- Mermaid.js 初期化 -->
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default'
+        });
+    </script>
+</body>
+</html>
