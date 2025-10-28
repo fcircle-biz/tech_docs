@@ -147,6 +147,10 @@
 - **[Next.js学習ガイド](docs/guide/javascript-ecosystem/nextjs/README.md)** - Next.jsフレームワークを使用したモダンなReactアプリケーション開発の基礎を入門者向けに段階的に学習するためのカリキュラム（10章構成）
 - **[React学習ガイド](docs/guide/javascript-ecosystem/react/README.md)** - Reactライブラリを使用したモダンなWebアプリケーション開発の基礎を入門者向けに段階的に学習するためのカリキュラム（10章構成）
 
+### HTML/CSS
+
+- **[HTML/CSS学習ガイド](docs/guide/html-css/README.md)** - HTML/CSSの基礎から実践的なWebページ制作まで段階的に学習するためのカリキュラム。8つのHTML教材でWebデザインの基本をマスター
+
 ### Microsoft Office
 
 - **[Excel基本操作学習ガイド](docs/guide/microsoft-office/excel-basic/README.md)** - Excel基本操作から関数、VBA入門まで8章完成カリキュラム
