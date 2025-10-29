@@ -268,7 +268,7 @@
    - F統計量とF分布
    - ANOVAの仮定（正規性、等分散性、独立性）
    - R: aov(), summary()
-   - Python: scipy.stats.f_oneway(), statsmodels.ols()
+   - Python: scipy.stats.f_oneway(), statsmodels.formula.api.ols()
 
 2. **多重比較法**
    - 多重比較の問題とファミリーワイズエラー率
@@ -424,8 +424,8 @@
    - 事前分布、尤度、事後分布
    - 共役事前分布
    - ベイズ推定の例（ベルヌーイ分布、正規分布）
-   - R: bayesパッケージ
-   - Python: pymc3, scipy.stats
+   - R: rstanarm, brms, BayesFactor
+   - Python: PyMC (pymc), scipy.stats
 
 2. **ベイズ統計の応用**
    - ベイズ的仮説検定
@@ -457,7 +457,7 @@
    - Python: statsmodels.tsa.arima.model
 
 **演習課題:**
-- ベイズ推定による母平均の推定（コイン投げの例）
+- ベイズ推定による母比率の推定（コイン投げの例）
 - 株価データの時系列分析（トレンドと季節性の分解）
 - 売上データの自己相関分析
 - 簡単な時系列予測モデルの構築
@@ -560,7 +560,7 @@
 - [Python データ分析チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/python/python-data-analysis-cheatsheet.html) - pandasとnumpyの基本操作
 - [R言語 学習ガイドライン](../r-ecosystem/r/README.md) - R言語の詳細な学習ガイド
 - [Python 学習ガイドライン](../python-ecosystem/python/README.md) - Pythonの基礎学習
-- [機械学習入門ガイドライン](../machine-learning/ml-basics/README.md) - 統計学習の次のステップ
+- 機械学習入門ガイドライン（準備中） - 統計学習の次のステップ
 
 ## 学習目標
 
@@ -584,8 +584,8 @@
 
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
 
-- [機械学習入門](../machine-learning/ml-basics/README.md) - 予測モデルの構築と評価
-- [R言語による高度なデータ分析](../r-ecosystem/advanced-r/README.md) - Rの高度な機能
-- [Pythonデータサイエンス実践](../python-ecosystem/data-science/README.md) - 大規模データ分析
-- [実験計画法](../statistical-analysis/experimental-design/README.md) - 科学的実験の設計と分析
-- [生存時間分析](../statistical-analysis/survival-analysis/README.md) - 医療統計の専門分野
+- 機械学習入門（準備中） - 予測モデルの構築と評価
+- R言語による高度なデータ分析（準備中） - Rの高度な機能
+- Pythonデータサイエンス実践（準備中） - 大規模データ分析
+- 実験計画法（準備中） - 科学的実験の設計と分析
+- 生存時間分析（準備中） - 医療統計の専門分野
