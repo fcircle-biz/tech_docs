@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>機械学習学習教材 第6章 - モデルの評価と検証</title>
+
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+
+        .navbar {
+            background-color: #00897B;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            padding: 1rem;
+        }
+
+        .chapter-title {
+            color: #00897B;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 3px solid #00897B;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title {
+            color: #26a69a;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            padding-left: 0.5rem;
+            border-left: 4px solid #26a69a;
+        }
+
+        .quiz-container {
+            background-color: #e0f2f1;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #00897B;
+        }
+
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .highlight {
+            background-color: #fff9c4;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #fbc02d;
+        }
+
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
+        }
+
+        .code-block {
+            background-color: #1e1e1e;
+            color: white;
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .nav-link.active {
+            background-color: #00897B !important;
+            color: white !important;
+            border-radius: 5px;
+        }
+
+        .nav-link {
+            color: #333;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            background-color: #e0f2f1;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="README.html">
+                <strong>機械学習学習教材</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>学習章</span>
+                    </h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="machine-learning-learning-material-1.html">
+                                第1章: 機械学習の概要と環境構築
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="machine-learning-learning-material-2.html">
+                                第2章: 機械学習の基礎概念
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="machine-learning-learning-material-3.html">
+                                第3章: データの前処理
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="machine-learning-learning-material-4.html">
+                                第4章: 教師あり学習：回帰
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="machine-learning-learning-material-5.html">
+                                第5章: 教師あり学習：分類
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="machine-learning-learning-material-6.html">
+                                第6章: モデルの評価と検証
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="machine-learning-learning-material-7.html">
+                                第7章: 特徴量エンジニアリング
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="machine-learning-learning-material-8.html">
+                                第8章: アンサンブル学習
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="machine-learning-learning-material-9.html">
+                                第9章: 教師なし学習
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="machine-learning-learning-material-10.html">
+                                第10章: 実践プロジェクト開発
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第6章: モデルの評価と検証</h1>
+                </div>
+
+                <div id="chapter6">
+                    <h2 class="chapter-title">信頼性の高いモデル評価手法</h2>
+
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>交差検証の重要性と実装方法を理解する</li>
+                            <li>混同行列とROC曲線でモデル性能を可視化する</li>
+                            <li>ハイパーパラメータチューニングの手法を習得する</li>
+                            <li>学習曲線で過学習・未学習を診断する</li>
+                            <li>検証曲線でモデルの複雑さを最適化する</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">6.1 なぜ適切な評価が重要か</h3>
+                    <p>
+                        機械学習モデルの評価は、単にテストデータでの精度を見るだけでは不十分です。
+                        訓練データへの過学習を検出し、新しいデータに対する汎化性能を正しく推定するため、
+                        適切な評価手法を使うことが極めて重要です。
+                    </p>
+
+                    <h4>不適切な評価の問題</h4>
+                    <ul>
+                        <li><strong>データ漏洩</strong>: テストデータが訓練に使われ、性能が過大評価される</li>
+                        <li><strong>過学習の見逃し</strong>: 訓練データだけで評価すると、過学習を検出できない</li>
+                        <li><strong>運の影響</strong>: 1回の分割だけでは、データの分け方に依存した結果になる</li>
+                        <li><strong>汎化性能の誤推定</strong>: 実運用での性能が期待と大きく異なる</li>
+                    </ul>
+
+                    <div class="mermaid">
+                        flowchart TD
+                            A[全データ] --> B[訓練データ]
+                            A --> C[テストデータ]
+                            B --> D[モデル訓練]
+                            D --> E[訓練精度]
+                            D --> F[モデル]
+                            C --> G[テスト精度]
+                            F --> G
+                            E --> H{訓練精度 >> テスト精度?}
+                            H -->|Yes| I[過学習の疑い]
+                            H -->|No| J[良好な汎化]
+                            style A fill:#e3f2fd
+                            style I fill:#ffcdd2
+                            style J fill:#c8e6c9
+                    </div>
+
+                    <h3 class="section-title">6.2 交差検証（Cross-Validation）</h3>
+                    <p>
+                        <strong>交差検証</strong>は、データを複数の方法で分割し、
+                        それぞれで評価を行うことで、より信頼性の高い性能推定を得る手法です。
+                    </p>
+
+                    <h4>k分割交差検証（k-Fold Cross-Validation）</h4>
+                    <p>
+                        最もよく使われる交差検証の手法です。データをk個の等しいグループ（fold）に分割し、
+                        k回の訓練・評価を行います。
+                    </p>
+
+                    <ol>
+                        <li>データをk個のfoldに分割（例：k=5なら5つに分割）</li>
+                        <li>各回で、1つのfoldをテストデータ、残りを訓練データとする</li>
+                        <li>k回の評価結果の平均を最終的な性能指標とする</li>
+                    </ol>
+
+                    <div class="mermaid">
+                        flowchart TD
+                            A[全データ] --> B["Fold 1"]
+                            A --> C["Fold 2"]
+                            A --> D["Fold 3"]
+                            A --> E["Fold 4"]
+                            A --> F["Fold 5"]
+                            B --> G["回1: テスト"]
+                            C --> H["回2: テスト"]
+                            D --> I["回3: テスト"]
+                            E --> J["回4: テスト"]
+                            F --> K["回5: テスト"]
+                            G --> L[平均精度を算出]
+                            H --> L
+                            I --> L
+                            J --> L
+                            K --> L
+                            style A fill:#e3f2fd
+                            style L fill:#c8e6c9
+                    </div>
+
+                    <h4>交差検証の利点</h4>
+                    <ul>
+                        <li><strong>データの有効活用</strong>: すべてのデータが訓練とテストに使われる</li>
+                        <li><strong>安定した評価</strong>: 複数回の評価で偶然の影響を減らす</li>
+                        <li><strong>分散の推定</strong>: 性能のばらつきも把握できる</li>
+                        <li><strong>小規模データに有効</strong>: データが少ない場合に特に重要</li>
+                    </ul>
+
+                    <div class="exercise-container">
+                        <h5>実習 6-1: 交差検証の実装</h5>
+                        <p>k分割交差検証を使ってモデルを評価します。</p>
+                        <h6>手順</h6>
+                        <ol>
+                            <li>データの準備</li>
+                            <li>5分割交差検証の実行</li>
+                            <li>各foldのスコアと平均を確認</li>
+                        </ol>
+                        <h6>実装例</h6>
+                        <pre class="code-block"><code class="language-python">from sklearn.model_selection import cross_val_score, cross_validate
+from sklearn.linear_model import LogisticRegression
+
+# モデルの作成
+model = LogisticRegression(max_iter=1000)
+
+# 5分割交差検証
+scores = cross_val_score(model, X, y, cv=5, scoring='accuracy')
+
+print(f"各foldの精度: {scores}")
+print(f"平均精度: {scores.mean():.3f}")
+print(f"標準偏差: {scores.std():.3f}")
+
+# 複数の指標で評価
+scoring = ['accuracy', 'precision', 'recall', 'f1']
+cv_results = cross_validate(model, X, y, cv=5, scoring=scoring)
+
+for metric in scoring:
+    score_key = f'test_{metric}'
+    print(f"{metric}: {cv_results[score_key].mean():.3f}")</code></pre>
+                        <h6>解説</h6>
+                        <p>
+                            標準偏差が小さいほど、各foldで安定した性能を示しています。
+                            標準偏差が大きい場合、データの分割方法に性能が大きく依存していることを意味します。
+                        </p>
+                    </div>
+
+                    <h4>層化k分割交差検証（Stratified k-Fold）</h4>
+                    <p>
+                        クラスのバランスが偏っているデータでは、
+                        各foldでクラスの比率を保つ<strong>層化交差検証</strong>を使います。
+                    </p>
+
+                    <div class="exercise-container">
+                        <h5>実習 6-2: 層化交差検証</h5>
+                        <p>クラスの比率を保ちながら交差検証を行います。</p>
+                        <h6>実装例</h6>
+                        <pre class="code-block"><code class="language-python">from sklearn.model_selection import StratifiedKFold
+
+# 層化5分割交差検証
+skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+
+for fold, (train_idx, test_idx) in enumerate(skf.split(X, y), 1):
+    X_train, X_test = X[train_idx], X[test_idx]
+    y_train, y_test = y[train_idx], y[test_idx]
+
+    # 各foldのクラス分布を確認
+    print(f"Fold {fold} - クラス0: {sum(y_test==0)}, クラス1: {sum(y_test==1)}")</code></pre>
+                        <h6>重要性</h6>
+                        <p>
+                            分類問題では層化交差検証が推奨されます。
+                            各foldでクラスのバランスが保たれるため、より信頼性の高い評価ができます。
+                        </p>
+                    </div>
+
+                    <h3 class="section-title">6.3 混同行列とROC曲線</h3>
+                    <p>
+                        分類モデルの性能を視覚的に理解するため、
+                        混同行列とROC曲線を使います。
+                    </p>
+
+                    <h4>混同行列の可視化</h4>
+                    <p>
+                        混同行列をヒートマップで可視化することで、
+                        どのクラスがどのクラスと混同されやすいかを直感的に把握できます。
+                    </p>
+
+                    <div class="exercise-container">
+                        <h5>実習 6-3: 混同行列の可視化</h5>
+                        <p>混同行列をヒートマップで表示します。</p>
+                        <h6>実装例</h6>
+                        <pre class="code-block"><code class="language-python">from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+
+# モデル訓練と予測
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+
+# 混同行列の作成と可視化
+cm = confusion_matrix(y_test, y_pred)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm,
+                               display_labels=['クラス0', 'クラス1'])
+disp.plot(cmap='Blues')
+plt.title('混同行列')
+plt.show()
+
+print(cm)</code></pre>
+                        <h6>読み方</h6>
+                        <p>
+                            対角線上の値が大きいほど、正しく分類できています。
+                            対角線外の値は誤分類を示し、どのクラス間で混同が起きているかがわかります。
+                        </p>
+                    </div>
+
+                    <h4>ROC曲線とAUC</h4>
+                    <p>
+                        <strong>ROC曲線（Receiver Operating Characteristic curve）</strong>は、
+                        閾値を変化させたときの真陽性率と偽陽性率の関係を示します。
+                    </p>
+
+                    <ul>
+                        <li><strong>横軸</strong>: 偽陽性率（FPR） = FP / (FP + TN)</li>
+                        <li><strong>縦軸</strong>: 真陽性率（TPR / Recall） = TP / (TP + FN)</li>
+                        <li><strong>AUC（Area Under Curve）</strong>: ROC曲線の下の面積。1.0が最良、0.5はランダム</li>
+                    </ul>
+
+                    <div class="mermaid">
+                        flowchart LR
+                            A["AUC = 1.0"] --> B["完璧な分類"]
+                            C["AUC = 0.9～1.0"] --> D["優れた分類"]
+                            E["AUC = 0.8～0.9"] --> F["良い分類"]
+                            G["AUC = 0.7～0.8"] --> H["まずまずの分類"]
+                            I["AUC = 0.5"] --> J["ランダム予測"]
+                            style B fill:#c8e6c9
+                            style D fill:#c8e6c9
+                            style F fill:#fff9c4
+                            style H fill:#ffe0b2
+                            style J fill:#ffcdd2
+                    </div>
+
+                    <div class="exercise-container">
+                        <h5>実習 6-4: ROC曲線の描画</h5>
+                        <p>ROC曲線とAUCを計算して可視化します。</p>
+                        <h6>実装例</h6>
+                        <pre class="code-block"><code class="language-python">from sklearn.metrics import roc_curve, roc_auc_score, RocCurveDisplay
+
+# 確率予測（陽性クラスの確率）
+y_proba = model.predict_proba(X_test)[:, 1]
+
+# ROC曲線の計算
+fpr, tpr, thresholds = roc_curve(y_test, y_proba)
+auc = roc_auc_score(y_test, y_proba)
+
+# 可視化
+RocCurveDisplay.from_predictions(y_test, y_proba)
+plt.plot([0, 1], [0, 1], 'k--', label='ランダム (AUC=0.5)')
+plt.title(f'ROC曲線 (AUC={auc:.3f})')
+plt.show()
+
+print(f"AUC: {auc:.3f}")</code></pre>
+                        <h6>解釈</h6>
+                        <p>
+                            ROC曲線が左上に近いほど優れたモデルです。
+                            AUC=0.5の対角線はランダム予測を表し、それより下ならモデルは意味がありません。
+                        </p>
+                    </div>
+
+                    <h3 class="section-title">6.4 ハイパーパラメータチューニング</h3>
+                    <p>
+                        <strong>ハイパーパラメータ</strong>は、モデル訓練前に設定するパラメータです
+                        （例：決定木の深さ、k-NNのk）。
+                        最適なハイパーパラメータを見つけることで、モデルの性能を大きく向上できます。
+                    </p>
+
+                    <h4>グリッドサーチ（Grid Search）</h4>
+                    <p>
+                        候補となるハイパーパラメータの組み合わせを網羅的に試し、
+                        最も性能の良い組み合わせを選ぶ方法です。
+                    </p>
+
+                    <div class="mermaid">
+                        flowchart TD
+                            A[パラメータ候補を定義] --> B["すべての組み合わせを<br/>交差検証で評価"]
+                            B --> C[最良のパラメータを選択]
+                            C --> D[選択したパラメータで<br/>最終モデルを訓練]
+                            style A fill:#e3f2fd
+                            style B fill:#c8e6c9
+                            style C fill:#fff9c4
+                            style D fill:#c8e6c9
+                    </div>
+
+                    <div class="exercise-container">
+                        <h5>実習 6-5: グリッドサーチの実装</h5>
+                        <p>決定木の最適なハイパーパラメータを探索します。</p>
+                        <h6>実装例</h6>
+                        <pre class="code-block"><code class="language-python">from sklearn.model_selection import GridSearchCV
+from sklearn.tree import DecisionTreeClassifier
+
+# パラメータの候補を定義
+param_grid = {
+    'max_depth': [3, 5, 7, 10],
+    'min_samples_split': [2, 5, 10],
+    'min_samples_leaf': [1, 2, 4]
+}
+
+# グリッドサーチの実行
+tree = DecisionTreeClassifier(random_state=42)
+grid_search = GridSearchCV(tree, param_grid, cv=5, scoring='accuracy')
+grid_search.fit(X_train, y_train)
+
+# 最良のパラメータと精度
+print(f"最良のパラメータ: {grid_search.best_params_}")
+print(f"最良の精度: {grid_search.best_score_:.3f}")
+
+# 最良のモデルでテスト
+best_model = grid_search.best_estimator_
+test_score = best_model.score(X_test, y_test)
+print(f"テスト精度: {test_score:.3f}")</code></pre>
+                        <h6>注意点</h6>
+                        <p>
+                            候補が多いと計算時間が指数的に増加します。
+                            まず粗い範囲で探索し、次に細かい範囲で探索する段階的アプローチが有効です。
+                        </p>
+                    </div>
+
+                    <h4>ランダムサーチ（Random Search）</h4>
+                    <p>
+                        グリッドサーチのすべての組み合わせを試す代わりに、
+                        ランダムに選んだ組み合わせを試す方法です。計算量が少なく、意外に良い結果が得られます。
+                    </p>
+
+                    <div class="exercise-container">
+                        <h5>実習 6-6: ランダムサーチの実装</h5>
+                        <p>ランダムにパラメータを選んで探索します。</p>
+                        <h6>実装例</h6>
+                        <pre class="code-block"><code class="language-python">from sklearn.model_selection import RandomizedSearchCV
+from scipy.stats import randint
+
+# パラメータの分布を定義
+param_dist = {
+    'max_depth': randint(3, 15),
+    'min_samples_split': randint(2, 20),
+    'min_samples_leaf': randint(1, 10)
+}
+
+# ランダムサーチの実行（20回試行）
+random_search = RandomizedSearchCV(
+    tree, param_dist, n_iter=20, cv=5,
+    scoring='accuracy', random_state=42
+)
+random_search.fit(X_train, y_train)
+
+print(f"最良のパラメータ: {random_search.best_params_}")
+print(f"最良の精度: {random_search.best_score_:.3f}")</code></pre>
+                        <h6>使い分け</h6>
+                        <ul>
+                            <li><strong>グリッドサーチ</strong>: パラメータが少ない、確実に最良を見つけたい</li>
+                            <li><strong>ランダムサーチ</strong>: パラメータが多い、計算時間を節約したい</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">6.5 学習曲線と検証曲線</h3>
+                    <p>
+                        モデルの挙動を視覚的に理解し、過学習や未学習を診断するため、
+                        学習曲線と検証曲線を使います。
+                    </p>
+
+                    <h4>学習曲線（Learning Curve）</h4>
+                    <p>
+                        訓練データのサイズを変えながら、訓練スコアとテストスコアをプロットします。
+                        これにより、データ量の増加がモデル性能に与える影響を把握できます。
+                    </p>
+
+                    <h5>学習曲線から読み取れること</h5>
+                    <ul>
+                        <li><strong>過学習</strong>: 訓練スコアとテストスコアの差が大きい</li>
+                        <li><strong>未学習</strong>: 両方のスコアが低い</li>
+                        <li><strong>データ不足</strong>: データを増やすとテストスコアが上がる余地がある</li>
+                        <li><strong>適切な学習</strong>: 両方のスコアが高く、差が小さい</li>
+                    </ul>
+
+                    <div class="exercise-container">
+                        <h5>実習 6-7: 学習曲線の作成</h5>
+                        <p>データサイズを変えながらモデルの性能を評価します。</p>
+                        <h6>実装例</h6>
+                        <pre class="code-block"><code class="language-python">from sklearn.model_selection import learning_curve
+
+# 学習曲線の計算
+train_sizes, train_scores, test_scores = learning_curve(
+    model, X, y, cv=5, train_sizes=np.linspace(0.1, 1.0, 10),
+    scoring='accuracy'
+)
+
+# 平均と標準偏差を計算
+train_mean = train_scores.mean(axis=1)
+test_mean = test_scores.mean(axis=1)
+
+# 可視化
+plt.plot(train_sizes, train_mean, label='訓練スコア')
+plt.plot(train_sizes, test_mean, label='テストスコア')
+plt.xlabel('訓練データ数')
+plt.ylabel('精度')
+plt.title('学習曲線')
+plt.legend()
+plt.show()</code></pre>
+                        <h6>診断</h6>
+                        <ul>
+                            <li>訓練スコア >> テストスコア → 過学習。正則化やデータ追加を検討</li>
+                            <li>両方のスコアが低い → 未学習。モデルを複雑にするか特徴量を追加</li>
+                            <li>テストスコアが上昇傾向 → データを増やすと改善の余地あり</li>
+                        </ul>
+                    </div>
+
+                    <h4>検証曲線（Validation Curve）</h4>
+                    <p>
+                        特定のハイパーパラメータを変化させながら、訓練スコアとテストスコアをプロットします。
+                        最適なパラメータ値を見つけるのに役立ちます。
+                    </p>
+
+                    <div class="exercise-container">
+                        <h5>実習 6-8: 検証曲線の作成</h5>
+                        <p>決定木の深さを変えながら性能を評価します。</p>
+                        <h6>実装例</h6>
+                        <pre class="code-block"><code class="language-python">from sklearn.model_selection import validation_curve
+
+# 検証曲線の計算
+param_range = np.arange(1, 21)
+train_scores, test_scores = validation_curve(
+    DecisionTreeClassifier(random_state=42), X, y,
+    param_name='max_depth', param_range=param_range,
+    cv=5, scoring='accuracy'
+)
+
+# 平均を計算
+train_mean = train_scores.mean(axis=1)
+test_mean = test_scores.mean(axis=1)
+
+# 可視化
+plt.plot(param_range, train_mean, label='訓練スコア')
+plt.plot(param_range, test_mean, label='テストスコア')
+plt.xlabel('max_depth')
+plt.ylabel('精度')
+plt.title('検証曲線')
+plt.legend()
+plt.show()</code></pre>
+                        <h6>最適値の見つけ方</h6>
+                        <p>
+                            テストスコアが最大となる点が最適なパラメータ値です。
+                            それより複雑にすると過学習、単純にすると未学習の傾向があります。
+                        </p>
+                    </div>
+
+                    <div class="warning">
+                        <h5>注意：データ漏洩の防止</h5>
+                        <p>
+                            ハイパーパラメータチューニングは、テストデータを使わずに
+                            訓練データとバリデーションデータのみで行ってください。
+                            テストデータは最終評価のためだけに使い、チューニングには使いません。
+                        </p>
+                    </div>
+
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>
+                                <strong>交差検証の利点</strong><br>
+                                k分割交差検証を使う利点は何ですか？単純なtrain_test_splitと比較して説明してください。
+                            </li>
+                            <li>
+                                <strong>層化交差検証</strong><br>
+                                クラスのバランスが偏っている場合、なぜ層化交差検証を使うべきですか？
+                            </li>
+                            <li>
+                                <strong>ROC曲線の解釈</strong><br>
+                                AUC=0.7とAUC=0.9のモデルでは、どちらが優れていますか？その理由は？
+                            </li>
+                            <li>
+                                <strong>グリッドサーチとランダムサーチ</strong><br>
+                                それぞれの手法が適している状況を説明してください。
+                            </li>
+                            <li>
+                                <strong>学習曲線の診断</strong><br>
+                                訓練スコアが高いのにテストスコアが低い場合、どのような問題がありますか？どう対処しますか？
+                            </li>
+                            <li>
+                                <strong>検証曲線の活用</strong><br>
+                                検証曲線から、パラメータの最適値をどのように見つけますか？
+                            </li>
+                        </ol>
+                    </div>
+
+                    <h3 class="section-title">6.6 まとめ</h3>
+                    <div class="highlight">
+                        <h5>本章で学んだこと</h5>
+                        <ul>
+                            <li>交差検証で信頼性の高い性能推定を行う</li>
+                            <li>層化交差検証でクラスバランスを保つ</li>
+                            <li>混同行列で誤分類のパターンを可視化</li>
+                            <li>ROC曲線とAUCで分類性能を総合評価</li>
+                            <li>グリッドサーチやランダムサーチで最適なハイパーパラメータを探索</li>
+                            <li>学習曲線で過学習・未学習を診断</li>
+                            <li>検証曲線でパラメータの影響を分析</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="machine-learning-learning-material-5.html" class="btn btn-secondary">← 前の章</a>
+                        <a href="machine-learning-learning-material-7.html" class="btn btn-primary">次の章 →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white mt-5">
+        <div class="container-fluid py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="mb-0">© 2025 F-Circle. All rights reserved.<br>
+本資料はAIツールを活用し、人間による編集・監修のもと作成されています。無断転載・再配布を禁じます。</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default'
+        });
+    </script>
+</body>
+</html>
