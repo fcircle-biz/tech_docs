@@ -13,9 +13,9 @@ This is a Japanese technical documentation repository containing comprehensive p
 ### Documentation Structure
 - **docs/guide/**: Structured learning guides organized by technology ecosystem (10-chapter curricula)
 - **docs/tutorial/**: Step-by-step practical tutorials with hands-on projects (6-10 chapters)
+- **docs/slide/**: Slide-format educational materials
 - **docs/cheatsheet/**: Quick reference materials in HTML format
 - **docs/prompt/**: AI assistant prompts for various programming domains
-- **docs/slide/**: Slide-format educational materials
 - **specs/**: Reference specifications (e.g., user-management system specs)
 - **templates/**: HTML templates and styling systems
 
@@ -23,12 +23,43 @@ This is a Japanese technical documentation repository containing comprehensive p
 The repository is organized around major technology ecosystems:
 - **Java**: Spring Boot, JSP/Servlet, JDBC, Struts, JUnit
 - **Python**: Django, FastAPI, Streamlit, SQLAlchemy, SQLModel
-- **JavaScript**: React, Node.js, vanilla JavaScript
+- **JavaScript**: React, Next.js, vanilla JavaScript
 - **.NET**: ASP.NET, ASP.NET Core, VB.NET
 - **PHP**: Core PHP development
 - **Database**: SQL, Oracle, PL/SQL, PostgreSQL, DB2
 - **Data Analysis**: R, SAS, statistical analysis
 - **Legacy**: COBOL for mainframe systems
+
+### Folder Structure Classification System
+
+**CRITICAL**: All new educational content MUST follow the 9-category classification system defined in `tech-knowledge-map.md` and `docs/guide/README.md`:
+
+1. **Programming Languages** (`programming-languages/[ecosystem]/[technology]/`)
+   - Examples: `python-ecosystem/django/`, `java-ecosystem/spring/`, `dotnet-ecosystem/aspnet-vb/`
+
+2. **Web Technologies** (`web-technologies/[technology]/`)
+   - Example: `html-css/`
+
+3. **Development Processes** (`development-processes/[technology]/`)
+   - Examples: `agile-development/`, `devops/`, `waterfall-development/`
+
+4. **Design & Modeling** (`design-modeling/[category]/[technology]/`)
+   - Examples: `software-design/uml/`, `software-design/requirements-engineering/`
+
+5. **Cloud & Infrastructure** (`cloud-infrastructure/[technology]/`)
+   - Examples: `aws/`, `docker/`, `cloud-computing/`
+
+6. **Data & AI** (`data-ai-category/[category]/[technology]/`)
+   - Examples: `database/sql/`, `data-ai/machine-learning/`, `statistical-analysis/`
+
+7. **Business SaaS** (`business-saas/[technology]/`)
+   - Examples: `excel-basic/`, `vba/`
+
+8. **Certification** (`certification/[exam-name]/`)
+   - Example: `it-passport/`
+
+9. **Business Domain Knowledge** (`business-domain-knowledge/[domain]/`)
+   - Examples: `finance-accounting/`, `business-docs/`
 
 ## Common Development Commands
 
@@ -92,6 +123,20 @@ When creating new slide materials:
 4. Include proper navigation and page numbering
 5. Ensure accessibility with proper heading structure
 
+### File Naming Conventions
+- Learning materials: `[tech-name]-learning-material-[chapter-number].html`
+- Slide materials: `[tech-name]-slide-[number].html`
+- Tutorial chapters: `[tech-name]-tutorial-[chapter-number].html`
+- Use lowercase and hyphens (kebab-case)
+- Chapter numbers start from 1
+
+### GitHub Pages URL Format
+All educational content is deployed to GitHub Pages:
+- Base URL: `https://fcircle-biz.github.io/tech_docs/`
+- Guide format: `guide/[classification-path]/[file-name].html`
+- Tutorial format: `tutorial/[classification-path]/[file-name].html`
+- Slide format: `slide/[classification-path]/[file-name].html`
+
 ## Special Considerations
 
 ### Japanese Language Content
@@ -126,5 +171,13 @@ When creating content for different technologies:
 - Maintain consistent file structure
 - Use standardized headers and footers
 - Ensure proper cross-referencing between materials
+
+### Link Management
+**CRITICAL**: When adding cross-references between guides:
+1. ALWAYS verify the target file/directory exists before adding the link
+2. Use only links to existing educational materials in the repository
+3. Remove or avoid creating links to non-existent future materials
+4. Use relative paths for internal links within the same category
+5. Use full GitHub Pages URLs for cross-category references
 
 This repository serves as a comprehensive resource for Japanese-speaking developers learning various programming technologies through structured, hands-on approaches.
