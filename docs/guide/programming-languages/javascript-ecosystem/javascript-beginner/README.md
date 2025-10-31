@@ -19,7 +19,7 @@
 
 ## 📚 学習コンテンツ（8章構成）
 
-### [第1章：プログラミングって何？](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter1.html)
+### [第1章：プログラミングって何？](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter01.html)
 **実践プロジェクト**: 自己紹介プログラム
 
 プログラミングの基本概念を理解し、最初のJavaScriptプログラムを書きます。
@@ -36,7 +36,7 @@
 
 ---
 
-### [第2章：数字と文字を扱おう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter2.html)
+### [第2章：数字と文字を扱おう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter02.html)
 **実践プロジェクト**: 簡単な計算機
 
 変数の概念を学び、数値と文字列を扱えるようになります。
@@ -53,7 +53,7 @@
 
 ---
 
-### [第3章：条件によって処理を変えよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter3.html)
+### [第3章：条件によって処理を変えよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter03.html)
 **実践プロジェクト**: じゃんけんゲーム
 
 if文を使った条件分岐を学びます。
@@ -70,7 +70,7 @@ if文を使った条件分岐を学びます。
 
 ---
 
-### [第4章：繰り返し処理をマスターしよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter4.html)
+### [第4章：繰り返し処理をマスターしよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter04.html)
 **実践プロジェクト**: 数当てゲーム
 
 ループ処理と配列の基本を学びます。
@@ -87,7 +87,7 @@ if文を使った条件分岐を学びます。
 
 ---
 
-### [第5章：関数で処理をまとめよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter5.html)
+### [第5章：関数で処理をまとめよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter05.html)
 **実践プロジェクト**: 電卓機能
 
 関数を使って処理をまとめる方法を学びます。
@@ -104,7 +104,7 @@ if文を使った条件分岐を学びます。
 
 ---
 
-### [第6章：Webページを操作しよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter6.html)
+### [第6章：Webページを操作しよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter06.html)
 **実践プロジェクト**: インタラクティブなクイズアプリ
 
 HTMLとJavaScriptを連携させて、動的なWebページを作ります。
@@ -121,7 +121,7 @@ HTMLとJavaScriptを連携させて、動的なWebページを作ります。
 
 ---
 
-### [第7章：課題1 - ToDoリストアプリを作ろう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter7.html)
+### [第7章：課題1 - ToDoリストアプリを作ろう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter07.html)
 **実践プロジェクト**: 本格的なToDoリストアプリ
 
 これまでの知識を総動員して、実用的なToDoリストアプリケーションを作ります。
@@ -140,7 +140,7 @@ HTMLとJavaScriptを連携させて、動的なWebページを作ります。
 
 ---
 
-### [第8章：課題2 - 電卓アプリを作ろう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter8.html)
+### [第8章：課題2 - 電卓アプリを作ろう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter08.html)
 **実践プロジェクト**: 本格的な電卓アプリ
 
 美しいUIとしっかりとした計算機能を持つ電卓アプリを作ります。
@@ -318,7 +318,7 @@ HTMLとJavaScriptを連携させて、動的なWebページを作ります。
 
 ## 🎉 始めてみよう！
 
-準備ができたら、さっそく[第1章：プログラミングって何？](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter1.html)から始めてみましょう！
+準備ができたら、さっそく[第1章：プログラミングって何？](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter01.html)から始めてみましょう！
 
 **最初の一歩**: ブラウザを開いて、F12キーを押してみてください。これが開発者ツールです。ここであなたの最初のJavaScriptプログラムを書くことになります。
 

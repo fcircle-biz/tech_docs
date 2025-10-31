@@ -4,31 +4,31 @@
 
 ## 学習コンテンツ
 
-### [第1章：ウォームアップ（モダン開発環境構築）](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/javascript_chapter1.html)
+### [第1章：ウォームアップ（モダン開発環境構築）](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/javascript_chapter01.html)
 実践的なJavaScript開発に必要なモダンな開発環境のセットアップを行います。Node.js、npm、VS Code、ESLint/Prettierの詳細設定から、モジュールバンドラーやGit/GitHubの基本操作まで、プロフェッショナルなJavaScript開発のための基盤を整えます。
 
-### [第2章：JavaScript高度な構文と関数型プログラミング](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/javascript_chapter2.html)
+### [第2章：JavaScript高度な構文と関数型プログラミング](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/javascript_chapter02.html)
 ES6+の高度な構文、クロージャ、高階関数、再帰処理など、実践的なJavaScript開発で必要となる概念を体系的に習得します。関数型プログラミングのパラダイムを理解し、より複雑なアルゴリズムを実装します。
 
-### [第3章：高度なデータ操作とパフォーマンス最適化](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/javascript_chapter3.html)
+### [第3章：高度なデータ操作とパフォーマンス最適化](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/javascript_chapter03.html)
 配列とオブジェクトの高度な操作方法、関数型プログラミングによるデータ変換、WeakMap/WeakSetの活用、Proxyオブジェクトによるメタプログラミングなど、実践的なデータ操作とパフォーマンス最適化技法を学習します。
 
-### [第4章：高度なDOM操作とモダンWeb APIs](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/javascript_chapter4.html)
+### [第4章：高度なDOM操作とモダンWeb APIs](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/javascript_chapter04.html)
 高度なDOM操作技法、イベントデリゲーションとバブリング、Intersection Observer API、Web Componentsなど、モダンなWeb開発で必要となる高度な技術を習得します。パフォーマンス最適化（debounce、throttle）も含みます。
 
-### [第5章：非同期処理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/javascript_chapter5.html)
+### [第5章：非同期処理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/javascript_chapter05.html)
 Promise、async/await、XMLHttpRequest、Fetch APIなど、非同期プログラミングの基本概念と実装方法を学習します。外部APIとの通信やタイマー処理の実装も含まれます。
 
-### [第6章：モジュールとクラス](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/javascript_chapter6.html)
+### [第6章：モジュールとクラス](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/javascript_chapter06.html)
 ES6のモジュールシステム、クラスベースのオブジェクト指向プログラミング、インポート/エクスポート、継承、静的メソッドなど、大規模なアプリケーション開発に必要な構造化技術を学びます。
 
-### [第7章：Webアプリケーション開発基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/javascript_chapter7.html)
+### [第7章：Webアプリケーション開発基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/javascript_chapter07.html)
 ローカルストレージ、セッションストレージ、Web API、PWA（Progressive Web App）の基礎、レスポンシブデザインなど、実用的なWebアプリケーション開発に必要な技術を習得します。
 
-### [第8章：React/Vue.js入門](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/javascript_chapter8.html)
+### [第8章：React/Vue.js入門](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/javascript_chapter08.html)
 モダンなフロントエンドフレームワークであるReactまたはVue.jsの基礎を学習します。基本的なコンポーネント作成や簡単な状態管理など、フレームワークの基本概念を理解します。
 
-### [第9章：卒業プロジェクト & 発表](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/javascript_chapter9.html)
+### [第9章：卒業プロジェクト & 発表](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/javascript_chapter09.html)
 これまでに学習した知識を統合して、実用的なWebアプリケーションを作成します。プロジェクトの企画から設計、実装、デプロイ、発表まで、実際の開発現場で必要となるスキルを総合的に身に付けます。
 
 ## 学習の進め方
