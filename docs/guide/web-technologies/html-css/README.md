@@ -43,7 +43,7 @@
 
 ## 学習コンテンツ（5章構成 + 発展編）
 
-### [第1章：Webの基本を知ろう](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/html-css-learning-material-1.html)
+### [第1章：Webの基本を知ろう](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/html-css-learning-material-01.html)
 **実践プロジェクト**: Hello World ページと自己紹介ページ
 
 Webの仕組みとHTML/CSSの役割を理解し、最初のWebページを作ります。
@@ -68,7 +68,7 @@ Webの仕組みとHTML/CSSの役割を理解し、最初のWebページを作り
 
 ---
 
-### [第2章：HTMLの基本タグを学ぼう](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/html-css-learning-material-2.html)
+### [第2章：HTMLの基本タグを学ぼう](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/html-css-learning-material-02.html)
 **実践プロジェクト**: 構造化された自己紹介ページ
 
 HTMLの基本的なタグを習得し、構造化されたWebページを作ります。
@@ -97,7 +97,7 @@ HTMLの基本的なタグを習得し、構造化されたWebページを作り�
 
 ---
 
-### [第3章：CSSの基本を学ぼう](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/html-css-learning-material-3.html)
+### [第3章：CSSの基本を学ぼう](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/html-css-learning-material-03.html)
 **実践プロジェクト**: スタイル付き自己紹介ページ
 
 CSSを使ってWebページに色やスタイルを適用する方法を学びます。
@@ -127,7 +127,7 @@ CSSを使ってWebページに色やスタイルを適用する方法を学び�
 
 ---
 
-### [第4章：レイアウトとデザインの実践](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/html-css-learning-material-4.html)
+### [第4章：レイアウトとデザインの実践](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/html-css-learning-material-04.html)
 **実践プロジェクト**: ポートフォリオWebページ
 
 モダンなレイアウト技術を使って、美しいWebページを作ります。
@@ -158,7 +158,7 @@ CSSを使ってWebページに色やスタイルを適用する方法を学び�
 
 ---
 
-### [第5章：公開までの流れを学ぼう](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/html-css-learning-material-5.html)
+### [第5章：公開までの流れを学ぼう](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/html-css-learning-material-05.html)
 **実践プロジェクト**: GitHub Pagesでポートフォリオ公開
 
 作成したWebページをインターネット上に公開し、世界中からアクセスできるようにします。
@@ -192,7 +192,7 @@ CSSを使ってWebページに色やスタイルを適用する方法を学び�
 
 ## 発展編（オプション）
 
-### [発展編1：レスポンシブデザイン（スマホ対応）](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/html-css-learning-material-6.html)
+### [発展編1：レスポンシブデザイン（スマホ対応）](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/html-css-learning-material-06.html)
 **学習内容**:
 - レスポンシブデザインとは
 - メディアクエリの使い方
@@ -207,7 +207,7 @@ CSSを使ってWebページに色やスタイルを適用する方法を学び�
 
 ---
 
-### [発展編2：CSSアニメーション](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/html-css-learning-material-7.html)
+### [発展編2：CSSアニメーション](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/html-css-learning-material-07.html)
 **学習内容**:
 - transitionプロパティの活用
 - transformプロパティ（回転、拡大、移動）
@@ -223,7 +223,7 @@ CSSを使ってWebページに色やスタイルを適用する方法を学び�
 
 ---
 
-### [発展編3：CSSフレームワーク入門](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/html-css-learning-material-8.html)
+### [発展編3：CSSフレームワーク入門](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/html-css-learning-material-08.html)
 **学習内容**:
 - CSSフレームワークとは
 - Bootstrap 5の基礎
@@ -450,7 +450,7 @@ CSSを使ってWebページに色やスタイルを適用する方法を学び�
 
 ## 始めてみよう
 
-準備ができたら、さっそく[第1章：Webの基本を知ろう](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/html-css-learning-material-1.html)から始めてみましょう！
+準備ができたら、さっそく[第1章：Webの基本を知ろう](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/html-css-learning-material-01.html)から始めてみましょう！
 
 ### 最初の一歩
 

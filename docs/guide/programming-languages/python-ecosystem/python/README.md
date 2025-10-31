@@ -17,19 +17,19 @@
 - **推奨**: プログラミングへの興味と学習意欲
 
 ## 学習コンテンツ
-### [1. Python入門と開発環境構築](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/python-learning-material-1.html)
+### [1. Python入門と開発環境構築](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/python-learning-material-01.html)
 Pythonの特徴と用途、インストール方法、開発環境のセットアップ、最初のプログラムの作成と実行方法を学びます。
 
-### [2. 基本的な文法と変数](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/python-learning-material-2.html)
+### [2. 基本的な文法と変数](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/python-learning-material-02.html)
 変数の概念、基本的なデータ型（数値、文字列、ブール値）、演算子の使い方、型変換について学習します。
 
-### [3. 制御構造の基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/python-learning-material-3.html)
+### [3. 制御構造の基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/python-learning-material-03.html)
 条件分岐（if文）、繰り返し処理（for文、while文）、制御フローの操作（break、continue）について学びます。
 
-### [4. 関数とモジュール](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/python-learning-material-4.html)
+### [4. 関数とモジュール](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/python-learning-material-04.html)
 関数の定義と呼び出し、引数と戻り値、スコープとライフタイム、モジュールの作成とインポートについて学習します。
 
-### [5. データ構造の基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/python-learning-material-5.html)
+### [5. データ構造の基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/python-learning-material-05.html)
 リスト、タプル、辞書、セットなどの基本的なデータ構造と、それらの操作方法について詳しく学びます。
 
 **学習目標:**
@@ -76,7 +76,7 @@ Pythonの特徴と用途、インストール方法、開発環境のセット�
 - アンケート結果の重複回答を除去するプログラム（セット活用）
 - 商品の在庫管理システムの基本機能実装
 
-### [6. ファイル操作と例外処理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/python-learning-material-6.html)
+### [6. ファイル操作と例外処理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/python-learning-material-06.html)
 ファイルの読み書き、CSVファイルの処理、例外処理（try-except）、エラーハンドリングの基礎を学習します。
 
 **学習目標:**
@@ -123,7 +123,7 @@ Pythonの特徴と用途、インストール方法、開発環境のセット�
 - 設定ファイル（JSON）を読み書きするアプリケーション
 - ファイルが存在しない場合の適切なエラーハンドリング実装
 
-### [7. オブジェクト指向プログラミング入門](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/python-learning-material-7.html)
+### [7. オブジェクト指向プログラミング入門](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/python-learning-material-07.html)
 クラスとオブジェクト、メソッドと属性、コンストラクタ、継承の基本概念について学びます。
 
 **学習目標:**
@@ -170,7 +170,7 @@ Pythonの特徴と用途、インストール方法、開発環境のセット�
 - 学生管理システム（Studentクラスとその派生クラス）の作成
 - ファイル管理クラス（with文対応のコンテキストマネージャー）の実装
 
-### [8. 標準ライブラリの活用](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/python-learning-material-8.html)
+### [8. 標準ライブラリの活用](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/python-learning-material-08.html)
 os、datetime、random、mathなどの頻繁に使用される標準ライブラリの使い方を学習します。
 
 **学習目標:**
@@ -217,7 +217,7 @@ os、datetime、random、mathなどの頻繁に使用される標準ライブラ
 - 数学的シミュレーション（モンテカルロ法、統計計算）
 - テキスト処理ツール（正規表現による文書解析）
 
-### [9. 外部ライブラリとパッケージ管理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/python-learning-material-9.html)
+### [9. 外部ライブラリとパッケージ管理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/python-learning-material-09.html)
 pip、仮想環境（venv）、requirements.txt、人気のある外部ライブラリ（requests、pandas等）の使い方を学びます。
 
 **学習目標:**

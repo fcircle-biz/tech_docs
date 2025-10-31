@@ -20,31 +20,31 @@
 
 ## 学習コンテンツ
 
-### [1. VB.NET入門と開発環境構築](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/vbnet/vbnet-learning-material-1.html)
+### [1. VB.NET入門と開発環境構築](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/vbnet/vbnet-learning-material-01.html)
 VB.NETとは何か、.NET Frameworkの概要、Visual Studioのインストールと設定、初回プロジェクト作成について学習します。
 
-### [2. VB.NET基本文法](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/vbnet/vbnet-learning-material-2.html)
+### [2. VB.NET基本文法](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/vbnet/vbnet-learning-material-02.html)
 変数、データ型、定数、演算子、コメント、VB.NET特有の構文ルールについて学習します。
 
-### [3. 制御構造とプロシージャ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/vbnet/vbnet-learning-material-3.html)
+### [3. 制御構造とプロシージャ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/vbnet/vbnet-learning-material-03.html)
 If文、Select Case文、For文、While文、Do文などの制御構造と、Sub、Functionプロシージャについて学習します。
 
-### [4. 配列とコレクション](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/vbnet/vbnet-learning-material-4.html)
+### [4. 配列とコレクション](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/vbnet/vbnet-learning-material-04.html)
 一次元・多次元配列、動的配列、ArrayList、List(Of T)、Dictionary等のコレクションについて学習します。
 
-### [5. オブジェクト指向プログラミング基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/vbnet/vbnet-learning-material-5.html)
+### [5. オブジェクト指向プログラミング基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/vbnet/vbnet-learning-material-05.html)
 クラス、オブジェクト、プロパティ、メソッド、コンストラクタ、カプセル化の基本概念について学習します。
 
-### [6. オブジェクト指向プログラミング応用](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/vbnet/vbnet-learning-material-6.html)
+### [6. オブジェクト指向プログラミング応用](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/vbnet/vbnet-learning-material-06.html)
 継承、ポリモーフィズム、抽象クラス、インターフェース、オーバーライド、オーバーロードについて学習します。
 
-### [7. 例外処理とデバッグ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/vbnet/vbnet-learning-material-7.html)
+### [7. 例外処理とデバッグ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/vbnet/vbnet-learning-material-07.html)
 Try-Catch-Finally文、例外の種類、カスタム例外、Visual Studioでのデバッグ技法について学習します。
 
-### [8. ファイル操作と文字列処理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/vbnet/vbnet-learning-material-8.html)
+### [8. ファイル操作と文字列処理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/vbnet/vbnet-learning-material-08.html)
 ファイルの読み書き、StreamReader/Writer、文字列操作、正規表現、エンコーディングについて学習します。
 
-### [9. .NET Frameworkライブラリ活用](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/vbnet/vbnet-learning-material-9.html)
+### [9. .NET Frameworkライブラリ活用](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/vbnet/vbnet-learning-material-09.html)
 DateTime、Math、Random、System.IO、LINQ、ジェネリクス等の.NETライブラリ活用方法について学習します。
 
 ### [10. 実践的なアプリケーション開発](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/vbnet/vbnet-learning-material-10.html)

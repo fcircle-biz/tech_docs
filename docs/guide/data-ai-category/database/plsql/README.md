@@ -4,31 +4,31 @@
 
 ## 学習コンテンツ
 
-### [1. PL/SQLの基本](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-1.html)
+### [1. PL/SQLの基本](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-01.html)
 PL/SQLの概要と特徴、SQLとの違い、ブロック構造、匿名ブロックの作成方法について解説し、Oracle環境でのPL/SQL実行環境の設定方法を学びます。
 
-### [2. 変数とデータ型](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-2.html)
+### [2. 変数とデータ型](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-02.html)
 変数の宣言方法、各種データ型の選択と使い方、定数の定義、%TYPE属性と%ROWTYPE属性を使った変数宣言について学習します。
 
-### [3. 制御構造](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-3.html)
+### [3. 制御構造](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-03.html)
 IF文による条件分岐、CASE文、LOOP文、FOR文、WHILE文などの繰り返し処理と、EXIT文やCONTINUE文を使った制御フローについて学びます。
 
-### [4. プロシージャとファンクション](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-4.html)
+### [4. プロシージャとファンクション](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-04.html)
 ストアドプロシージャとファンクションの作成、パラメータの定義（IN、OUT、IN OUT）、戻り値の設定、実行方法について詳しく学習します。
 
-### [5. 例外処理](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-5.html)
+### [5. 例外処理](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-05.html)
 EXCEPTION句を使った例外処理の基本、定義済み例外の使い方、ユーザー定義例外の作成、RAISE文による例外の発生について学びます。
 
-### [6. カーソル](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-6.html)
+### [6. カーソル](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-06.html)
 明示カーソルと暗黙カーソルの違いと使い方、カーソルのライフサイクル、カーソル属性、カーソルFORループについて学習します。
 
-### [7. トリガー](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-7.html)
+### [7. トリガー](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-07.html)
 データベーストリガーの概念と種類、DMLトリガー（BEFORE/AFTER）、行レベルトリガーと文レベルトリガー、トリガーの作成と管理について学びます。
 
-### [8. パッケージ](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-8.html)
+### [8. パッケージ](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-08.html)
 パッケージの概念と利点、パッケージ仕様部（SPECIFICATION）と本体部（BODY）の作成、パッケージ変数とパッケージプロシージャの使い方を学習します。
 
-### [9. 動的SQL](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-9.html)
+### [9. 動的SQL](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-09.html)
 EXECUTE IMMEDIATE文を使った動的SQL実行、REF CURSORの使い方、DBMS_SQLパッケージの基本、動的SQLのセキュリティ対策について学びます。
 
 ### [10. パフォーマンスとベストプラクティス](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-10.html)

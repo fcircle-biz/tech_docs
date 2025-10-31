@@ -21,31 +21,31 @@
 
 ## 学習コンテンツ
 
-### [1. データベースとSQLの基礎概念](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-1.html)
+### [1. データベースとSQLの基礎概念](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-01.html)
 リレーショナルデータベースの基本概念、データベースの役割と重要性、SQLとは何かを理解し、学習環境のセットアップ方法を学習します。
 
-### [2. データベースの作成と基本的なデータ型](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-2.html)
+### [2. データベースの作成と基本的なデータ型](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-02.html)
 データベースとテーブルの作成方法、主要なデータ型（数値型、文字列型、日付型）の理解、主キーと外部キーの概念を学習します。
 
-### [3. データの操作：CRUD操作の基礎](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-3.html)
+### [3. データの操作：CRUD操作の基礎](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-03.html)
 INSERT文によるデータの挿入、SELECT文によるデータの検索、UPDATE文によるデータの更新、DELETE文によるデータの削除方法を習得します。
 
-### [4. SELECT文の詳細とデータの絞り込み](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-4.html)
+### [4. SELECT文の詳細とデータの絞り込み](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-04.html)
 WHERE句による条件指定、比較演算子と論理演算子の使用、LIKE演算子によるパターン検索、ORDER BY句によるソート、LIMIT句による件数制限を学習します。
 
-### [5. 結合（JOIN）によるテーブル連携](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-5.html)
+### [5. 結合（JOIN）によるテーブル連携](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-05.html)
 INNER JOINによる内部結合、LEFT/RIGHT JOINによる外部結合、複数テーブルの結合、自己結合の概念と実践的な使用方法を理解します。
 
-### [6. 集計関数とグループ化](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-6.html)
+### [6. 集計関数とグループ化](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-06.html)
 COUNT、SUM、AVG、MAX、MIN等の集計関数、GROUP BY句によるグループ化、HAVING句による集計結果の絞り込み方法を習得します。
 
-### [7. サブクエリと高度なクエリ技法](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-7.html)
+### [7. サブクエリと高度なクエリ技法](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-07.html)
 サブクエリの基本概念と使用方法、相関サブクエリ、EXISTS句の活用、WITH句（CTE）による可読性の高いクエリ作成を学習します。
 
-### [8. インデックスとパフォーマンス最適化](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-8.html)
+### [8. インデックスとパフォーマンス最適化](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-08.html)
 インデックスの仕組みと作成方法、実行計画の読み方、クエリパフォーマンスの改善手法、インデックス設計の基本原則を理解します。
 
-### [9. トランザクションとデータの整合性](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-9.html)
+### [9. トランザクションとデータの整合性](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-09.html)
 トランザクションの概念（ACID特性）、BEGIN/COMMIT/ROLLBACKの使用方法、制約（UNIQUE、CHECK、NOT NULL）による整合性保持を学習します。
 
 ### [10. 実践的なデータベース設計](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-10.html)

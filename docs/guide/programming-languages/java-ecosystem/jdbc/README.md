@@ -4,31 +4,31 @@
 
 ## 学習コンテンツ
 
-### [1. JDBCの基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-1.html)
+### [1. JDBCの基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-01.html)
 JDBCの概要、役割と重要性、アーキテクチャ、ドライバの種類と特徴、PostgreSQLを使った開発環境のセットアップ方法を解説します。
 
-### [2. データベース接続](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-2.html)
+### [2. データベース接続](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-02.html)
 DriverManagerクラスの使用方法、Connection・Statement・ResultSetの基本概念、データベース接続文字列（JDBC URL）の構成、実際の接続プログラム作成方法を学びます。
 
-### [3. 基本的なCRUD操作](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-3.html)
+### [3. 基本的なCRUD操作](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-03.html)
 SELECT文によるデータ取得、PreparedStatementを使用したデータ挿入、データの更新と削除の基本操作、そして実践的な住所録管理システムの作成方法を解説します。
 
-### [4. 例外処理とリソース管理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-4.html)
+### [4. 例外処理とリソース管理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-04.html)
 JDBCにおける例外の種類と処理方法、try-with-resources構文を使用した効率的なリソース管理、コネクションプールの基本概念と実装方法、例外処理を実装した実践的なJDBCプログラムの作成について学びます。
 
-### [5. 高度なJDBC機能](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-5.html)
+### [5. 高度なJDBC機能](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-05.html)
 バッチ処理によるパフォーマンス最適化、トランザクション管理（commit, rollback）、ストアドプロシージャとファンクションの呼び出し、在庫管理システムを例にしたトランザクション処理の実装について学びます。
 
-### [6. JDBCとオブジェクト指向設計](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-6.html)
+### [6. JDBCとオブジェクト指向設計](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-06.html)
 Data Access Object（DAO）パターンの実装、オブジェクトリレーショナルマッピング（ORM）の基本原理、JDBCを使ったデータベース操作とJavaコレクションの連携手法、実際のECサイトバックエンドでのDAOパターン適用方法について学びます。
 
-### [7. パフォーマンスとセキュリティ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-7.html)
+### [7. パフォーマンスとセキュリティ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-07.html)
 SQLインジェクションとその危険性、PreparedStatementを使用したSQLインジェクション対策、入力検証とエスケープ処理、JDBCアプリケーションのパフォーマンスチューニング手法、コネクションプールの効果的な利用方法について学びます。
 
-### [8. 総合プロジェクト - 図書館管理システム](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-8.html)
+### [8. 総合プロジェクト - 図書館管理システム](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-08.html)
 これまでに学んだJDBCの知識を活用して、実践的な図書館管理システムを構築します。要件分析、データベース設計、レイヤー化アーキテクチャの実装、データアクセス層（DAO）の構築、ビジネスロジック層の実装、UIの作成、テスト、ドキュメント作成までの一連の開発プロセスを学びます。
 
-### [9. JDBCリファレンス](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-9.html)
+### [9. JDBCリファレンス](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-09.html)
 JDBCの主要クラスとメソッド、JavaとPostgreSQLのデータ型マッピング、一般的なエラーコードと対処法などのリファレンス情報を学びます。実践的なJDBCプログラミングに役立つデバッグとトラブルシューティングのテクニックも紹介します。
 
 ### [10. データベース固有の設定](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-10.html)

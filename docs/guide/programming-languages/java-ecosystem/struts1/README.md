@@ -4,31 +4,31 @@
 
 ## 学習コンテンツ
 
-### [1. Struts 1.xの基本概念とMVCアーキテクチャ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts1/struts1-learning-material-1.html)
+### [1. Struts 1.xの基本概念とMVCアーキテクチャ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts1/struts1-learning-material-01.html)
 Struts 1.xフレームワークの概要と特徴、MVCアーキテクチャの理解、Web開発における位置づけについて学び、開発環境のセットアップを行います。
 
-### [2. 環境構築とプロジェクト作成](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts1/struts1-learning-material-2.html)
+### [2. 環境構築とプロジェクト作成](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts1/struts1-learning-material-02.html)
 Eclipse/IntelliJ IDEAでのStruts 1.x開発環境構築、Tomcatサーバーの設定、Maven/Antを使ったプロジェクト作成と必要なライブラリの導入を学習します。
 
-### [3. ActionクラスとActionForm](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts1/struts1-learning-material-3.html)
+### [3. ActionクラスとActionForm](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts1/struts1-learning-material-03.html)
 Strutsの中核となるActionクラスの作成方法、ActionFormによるフォームデータの管理、リクエスト処理の基本的な流れを理解し実装します。
 
-### [4. struts-config.xmlの設定と管理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts1/struts1-learning-material-4.html)
+### [4. struts-config.xmlの設定と管理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts1/struts1-learning-material-04.html)
 Strutsアプリケーションの設定ファイルであるstruts-config.xmlの構造、Action、ActionForm、Forward、Exception の設定方法を学習します。
 
-### [5. JSPとの連携とTagライブラリ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts1/struts1-learning-material-5.html)
+### [5. JSPとの連携とTagライブラリ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts1/struts1-learning-material-05.html)
 JSPページでのStrutsタグライブラリの使用方法、html:form、bean:write、logic:iterate等の基本タグの活用と動的なページ作成を学びます。
 
-### [6. バリデーション機能とエラーハンドリング](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts1/struts1-learning-material-6.html)
+### [6. バリデーション機能とエラーハンドリング](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts1/struts1-learning-material-06.html)
 Validator フレームワークを使った入力検証、validation.xmlの設定、カスタムバリデーションの実装、エラーメッセージの表示方法を習得します。
 
-### [7. セッション管理とセキュリティ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts1/struts1-learning-material-7.html)
+### [7. セッション管理とセキュリティ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts1/struts1-learning-material-07.html)
 HTTPセッションの活用、ログイン認証の実装、CSRF対策、XSS対策など、Webアプリケーションに必要なセキュリティ対策について学習します。
 
-### [8. 国際化（i18n）とプロパティファイル](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts1/struts1-learning-material-8.html)
+### [8. 国際化（i18n）とプロパティファイル](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts1/struts1-learning-material-08.html)
 多言語対応アプリケーションの作成、リソースバンドルの使用、メッセージプロパティファイルの管理、ロケール切り替え機能の実装を学びます。
 
-### [9. データベース連携と実践的開発](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts1/struts1-learning-material-9.html)
+### [9. データベース連携と実践的開発](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts1/struts1-learning-material-09.html)
 JDBCやO/Rマッパーとの連携、DAO パターンの実装、トランザクション管理、実際のCRUD操作を含む業務アプリケーションの開発手法を習得します。
 
 ### [10. デバッグ・テスト・デプロイメント](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts1/struts1-learning-material-10.html)
