@@ -730,13 +730,13 @@ AWS Well-Architected Frameworkに基づくベストプラクティス、コス�
 
 ### より高度なAWSスキル
 - [AWS認定ソリューションアーキテクト-プロフェッショナル対策](../certification/aws-sap/README.md) - 上級認定資格
-- [AWS上級ネットワーク設計](../cloud-infra/aws-advanced-networking/README.md) - Transit Gateway、Direct Connect等
-- [AWS DevOps エンジニア向けガイド](../cloud-infra/aws-devops/README.md) - CI/CD、インフラストラクチャ as Code
+- [AWS上級ネットワーク設計](../cloud-infrastructure/aws-advanced-networking/README.md) - Transit Gateway、Direct Connect等
+- [AWS DevOps エンジニア向けガイド](../cloud-infrastructure/aws-devops/README.md) - CI/CD、インフラストラクチャ as Code
 
 ### 関連技術
-- [Terraformによるインフラストラクチャ as Code](../cloud-infra/terraform/README.md) - IaCツールでのAWS管理
-- [Kubernetes完全ガイド](../cloud-infra/kubernetes/README.md) - EKSの深い理解
-- [Docker実践ガイド](../cloud-infra/docker/README.md) - コンテナ技術の詳細
+- [Terraformによるインフラストラクチャ as Code](../cloud-infrastructure/terraform/README.md) - IaCツールでのAWS管理
+- [Kubernetes完全ガイド](../cloud-infrastructure/kubernetes/README.md) - EKSの深い理解
+- [Docker実践ガイド](../cloud-infrastructure/docker/README.md) - コンテナ技術の詳細
 
 ### アプリケーション開発
 - [Python/FastAPIでのサーバーレスAPI開発](../../python-ecosystem/fastapi/README.md)

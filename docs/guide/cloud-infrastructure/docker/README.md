@@ -86,12 +86,12 @@ Dockerの効率的な使用方法とセキュリティ対策について学び�
 ## 関連リソース
 
 ### チートシート
-- [Dockerコマンドチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infra/docker-cheatsheet.html)（準備中）
-- [Docker Composeチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infra/docker-compose-cheatsheet.html)（準備中）
-- [Dockerfileベストプラクティスチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infra/dockerfile-cheatsheet.html)（準備中）
+- [Dockerコマンドチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infrastructure/docker-cheatsheet.html)（準備中）
+- [Docker Composeチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infrastructure/docker-compose-cheatsheet.html)（準備中）
+- [Dockerfileベストプラクティスチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infrastructure/dockerfile-cheatsheet.html)（準備中）
 
 ### 関連ガイドライン
-- [Kubernetes学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/kubernetes/README.html)（準備中）
+- [Kubernetes学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/kubernetes/README.html)（準備中）
 - [Linux基礎学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/os/linux/README.html)（準備中）
 
 ### 外部リソース

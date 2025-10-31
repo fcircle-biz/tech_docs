@@ -75,7 +75,7 @@ Strutsアプリケーションのデバッグ技術、JUnitを使った単体テ
 
 ## 関連リソース
 
-- [JSP チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/web-tech/jsp-cheatsheet.html) - JSP構文の参考資料
+- [JSP チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/web-technologies/jsp-cheatsheet.html) - JSP構文の参考資料
 - [Struts インフォグラフィック](https://fcircle-biz.github.io/tech_docs/cheatsheet/frameworks-libraries/struts-infographic.html) - Strutsの概要を視覚的にまとめた資料
 - [Java チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/java-cheatsheet.html) - Java基本構文の参考資料
 

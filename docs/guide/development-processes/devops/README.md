@@ -107,15 +107,15 @@ DevSecOps（セキュリティを組み込んだDevOps）の実践方法を学�
 
 ### チートシート
 - [Gitコマンドチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/git-cheatsheet.html)
-- [Dockerコマンドチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infra/docker-cheatsheet.html)（準備中）
-- [Kubernetesコマンドチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infra/kubernetes-cheatsheet.html)（準備中）
-- [Terraformチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infra/terraform-cheatsheet.html)（準備中）
-- [CI/CDベストプラクティスチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infra/cicd-cheatsheet.html)（準備中）
+- [Dockerコマンドチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infrastructure/docker-cheatsheet.html)（準備中）
+- [Kubernetesコマンドチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infrastructure/kubernetes-cheatsheet.html)（準備中）
+- [Terraformチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infrastructure/terraform-cheatsheet.html)（準備中）
+- [CI/CDベストプラクティスチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infrastructure/cicd-cheatsheet.html)（準備中）
 
 ### 関連ガイドライン
-- [Docker学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/docker/README.html)
-- [Kubernetes学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/kubernetes/README.html)（準備中）
-- [AWS学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/aws/README.html)（準備中）
+- [Docker学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/docker/README.html)
+- [Kubernetes学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/kubernetes/README.html)（準備中）
+- [AWS学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/README.html)（準備中）
 - [Linux基礎学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/os/linux/README.html)（準備中）
 
 ### 外部リソース

@@ -104,15 +104,15 @@ Google Cloud Platformの主要な基礎サービスについて学びます。GC
 ## 関連リソース
 
 ### チートシート
-- [AWSサービスチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infra/aws-cheatsheet.html)（準備中）
-- [Azureサービスチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infra/azure-cheatsheet.html)（準備中）
-- [GCPサービスチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infra/gcp-cheatsheet.html)（準備中）
-- [クラウドセキュリティチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infra/cloud-security-cheatsheet.html)（準備中）
+- [AWSサービスチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infrastructure/aws-cheatsheet.html)（準備中）
+- [Azureサービスチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infrastructure/azure-cheatsheet.html)（準備中）
+- [GCPサービスチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infrastructure/gcp-cheatsheet.html)（準備中）
+- [クラウドセキュリティチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infrastructure/cloud-security-cheatsheet.html)（準備中）
 
 ### 関連ガイドライン
 - [Docker学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/docker/README.html)
-- [Kubernetes学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/kubernetes/README.html)（準備中）
-- [Terraform学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/terraform/README.html)（準備中）
+- [Kubernetes学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/kubernetes/README.html)（準備中）
+- [Terraform学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/terraform/README.html)（準備中）
 - [Linux基礎学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/os/linux/README.html)（準備中）
 
 ### 外部リソース

@@ -72,7 +72,7 @@ UMLの歴史と目的、モデリングの重要性、UML 2.5の概要、図の�
 ## 関連リソース
 
 - [ソフトウェア設計パターンチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/design/design-patterns-cheatsheet.html)
-- [オブジェクト指向設計原則ガイド](https://fcircle-biz.github.io/tech_docs/guide/software-design/ood-principles/README.html)
+- [オブジェクト指向設計原則ガイド](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/ood-principles/README.html)
 - [アジャイル開発でのUML活用](https://fcircle-biz.github.io/tech_docs/guide/agile/uml-in-agile/README.html)
 - [PlantUMLクイックリファレンス](https://fcircle-biz.github.io/tech_docs/cheatsheet/tools/plantuml-cheatsheet.html)
 
@@ -93,7 +93,7 @@ UMLの歴史と目的、モデリングの重要性、UML 2.5の概要、図の�
 
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
 
-- [デザインパターン実践ガイド](https://fcircle-biz.github.io/tech_docs/guide/software-design/design-patterns/README.html)
-- [ドメイン駆動設計（DDD）入門](https://fcircle-biz.github.io/tech_docs/guide/software-design/ddd/README.html)
+- [デザインパターン実践ガイド](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/design-patterns/README.html)
+- [ドメイン駆動設計（DDD）入門](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/ddd/README.html)
 - [マイクロサービスアーキテクチャ設計](https://fcircle-biz.github.io/tech_docs/guide/architecture/microservices/README.html)
-- [SysML（システムモデリング言語）入門](https://fcircle-biz.github.io/tech_docs/guide/software-design/sysml/README.html)
+- [SysML（システムモデリング言語）入門](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/sysml/README.html)

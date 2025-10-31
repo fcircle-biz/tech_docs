@@ -96,7 +96,7 @@ UMLのユースケース図を使った要件モデリングを学びます。�
 
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
 
-- [ソフトウェアアーキテクチャ設計](https://fcircle-biz.github.io/tech_docs/guide/software-design/architecture/README.html)
+- [ソフトウェアアーキテクチャ設計](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/architecture/README.html)
 - [テスト設計技法](https://fcircle-biz.github.io/tech_docs/guide/testing/test-design/README.html)
 - [DevOps実践ガイド](https://fcircle-biz.github.io/tech_docs/guide/devops/ci-cd/README.html)
 - [プロダクトマネジメント入門](https://fcircle-biz.github.io/tech_docs/guide/product-management/pm-basics/README.html)

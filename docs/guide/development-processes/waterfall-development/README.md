@@ -75,8 +75,8 @@
 
 ## 関連リソース
 
-- [要件工学（Requirements Engineering）学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/software-design/requirements-engineering/README.html)
-- [UMLモデリング学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/software-design/uml/README.html)
+- [要件工学（Requirements Engineering）学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/requirements-engineering/README.html)
+- [UMLモデリング学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/README.html)
 - [プロジェクト管理チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/pm/project-management-cheatsheet.html)
 - [ソフトウェアテスト技法ガイド](https://fcircle-biz.github.io/tech_docs/guide/testing/test-design/README.html)
 - [Git/バージョン管理チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/tools/git-cheatsheet.html)
@@ -104,6 +104,6 @@
 
 - [アジャイル開発実践ガイド（Scrum）](https://fcircle-biz.github.io/tech_docs/guide/agile/scrum/README.html)
 - [DevOps実践ガイド](https://fcircle-biz.github.io/tech_docs/guide/devops/ci-cd/README.html)
-- [ソフトウェアアーキテクチャ設計](https://fcircle-biz.github.io/tech_docs/guide/software-design/architecture/README.html)
+- [ソフトウェアアーキテクチャ設計](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/architecture/README.html)
 - [プロダクトマネジメント入門](https://fcircle-biz.github.io/tech_docs/guide/product-management/pm-basics/README.html)
 - [セキュアコーディング実践ガイド](https://fcircle-biz.github.io/tech_docs/guide/security/secure-coding/README.html)

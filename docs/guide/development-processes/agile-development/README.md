@@ -73,10 +73,10 @@
 
 ## 関連リソース
 - [ウォーターフォール開発学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/development-processes/waterfall-development/README.html)
-- [要件定義学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/software-design/requirements-engineering/README.html)
-- [UML学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/software-design/uml/README.html)
-- [Git/GitHub学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/git/README.html)
-- [Docker学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/docker/README.html)
+- [要件定義学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/requirements-engineering/README.html)
+- [UML学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/README.html)
+- [Git/GitHub学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/git/README.html)
+- [Docker学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/docker/README.html)
 - [アジャイル開発チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/agile/agile-cheatsheet.html)
 - [スクラムチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/agile/scrum-cheatsheet.html)
 
@@ -99,4 +99,4 @@
 - [認定スクラムマスター（CSM）資格](https://fcircle-biz.github.io/tech_docs/guide/certification/scrum-master/README.html) - スクラムマスターとしての専門性を証明
 - [認定プロダクトオーナー（CSPO）資格](https://fcircle-biz.github.io/tech_docs/guide/certification/product-owner/README.html) - プロダクトオーナーとしてのスキルを認定
 - [DevOps学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/development-processes/devops/README.html) - アジャイル開発とDevOpsを統合
-- [リーン・スタートアップ学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-domain/lean-startup/README.html) - プロダクト開発とビジネス戦略を学ぶ
+- [リーン・スタートアップ学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/lean-startup/README.html) - プロダクト開発とビジネス戦略を学ぶ

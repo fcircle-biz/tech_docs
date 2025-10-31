@@ -79,8 +79,8 @@
 - [Word学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/word/README.html)
 - [Excel学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/excel/README.html)
 - [PowerPoint学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/powerpoint/README.html)
-- [ビジネスマナー学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-domain/business-manner/README.html)
-- [プレゼンテーション学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-domain/presentation/README.html)
+- [ビジネスマナー学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/business-manner/README.html)
+- [プレゼンテーション学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/presentation/README.html)
 - [ビジネス文書チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/business/business-docs-cheatsheet.html)
 - [敬語表現チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/business/keigo-cheatsheet.html)
 
@@ -100,7 +100,7 @@
 
 ## 次のステップ
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
-- [プレゼンテーション学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-domain/presentation/README.html) - 提案書をより効果的にプレゼンテーションするスキルを習得
-- [プロジェクトマネジメント学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/software-design/project-management/README.html) - プロジェクト文書作成とマネジメントスキルを学ぶ
-- [データ分析学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/data-ai/data-analysis/README.html) - データに基づく報告書作成スキルを向上
-- [ロジカルシンキング学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-domain/logical-thinking/README.html) - 論理的な文書構成力を強化
+- [プレゼンテーション学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/presentation/README.html) - 提案書をより効果的にプレゼンテーションするスキルを習得
+- [プロジェクトマネジメント学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/project-management/README.html) - プロジェクト文書作成とマネジメントスキルを学ぶ
+- [データ分析学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/data-analysis/README.html) - データに基づく報告書作成スキルを向上
+- [ロジカルシンキング学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/logical-thinking/README.html) - 論理的な文書構成力を強化

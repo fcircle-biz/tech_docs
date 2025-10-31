@@ -78,7 +78,7 @@ Webアプリケーションにおける認証・認可の実装、ASP.NETメン�
 ### 補完教材
 - [SQL学習ガイドライン](../../database/sql/README.md)
 - [Oracle学習ガイドライン](../../database/oracle/README.md)
-- [ASP.NETチートシート](../../../cheatsheet/web-tech/)
+- [ASP.NETチートシート](../../../cheatsheet/web-technologies/)
 
 ## 学習目標
 

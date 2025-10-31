@@ -253,8 +253,8 @@
 
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
 
-- [管理会計実践ガイド（予算管理・原価計算）](https://fcircle-biz.github.io/tech_docs/guide/business-domain/management-accounting/README.html)
+- [管理会計実践ガイド（予算管理・原価計算）](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/management-accounting/README.html)
 - [簿記3級・2級試験対策](https://fcircle-biz.github.io/tech_docs/guide/certification/boki/README.html)
-- [財務モデリング（Excelによる財務分析）](https://fcircle-biz.github.io/tech_docs/guide/business-domain/financial-modeling/README.html)
+- [財務モデリング（Excelによる財務分析）](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/financial-modeling/README.html)
 - [ビジネスデータ分析](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/business-analytics/README.html)
 - [ERPシステム（会計システム）入門](https://fcircle-biz.github.io/tech_docs/guide/business-systems/erp-basics/README.html)
