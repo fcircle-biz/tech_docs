@@ -19,25 +19,25 @@
 
 ## 学習コンテンツ
 
-### [1. JUnit基礎とセットアップ](https://fcircle-biz.github.io/tech_docs/guide/java-ecosystem/junit/junit-learning-material-1.html)
+### [1. JUnit基礎とセットアップ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/junit/junit-learning-material-1.html)
 JUnitの概要、プロジェクトへの導入方法、初回テストの作成と実行について学習します。
 
-### [2. 基本的なテストケースの作成](https://fcircle-biz.github.io/tech_docs/guide/java-ecosystem/junit/junit-learning-material-2.html)
+### [2. 基本的なテストケースの作成](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/junit/junit-learning-material-2.html)
 テストメソッドの書き方、基本的なアサーション、失敗するテストとパスするテストの作成を学習します。
 
-### [3. アサーションとマッチャー](https://fcircle-biz.github.io/tech_docs/guide/java-ecosystem/junit/junit-learning-material-3.html)
+### [3. アサーションとマッチャー](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/junit/junit-learning-material-3.html)
 様々なアサーションメソッド、AssertJライブラリ、カスタムマッチャーの使用方法を学習します。
 
-### [4. テストライフサイクルとアノテーション](https://fcircle-biz.github.io/tech_docs/guide/java-ecosystem/junit/junit-learning-material-4.html)
+### [4. テストライフサイクルとアノテーション](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/junit/junit-learning-material-4.html)
 @BeforeEach、@AfterEach、@BeforeAll、@AfterAllアノテーションとテストの前処理・後処理について学習します。
 
-### [5. パラメータ化テストと動的テスト](https://fcircle-biz.github.io/tech_docs/guide/java-ecosystem/junit/junit-learning-material-5.html)
+### [5. パラメータ化テストと動的テスト](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/junit/junit-learning-material-5.html)
 @ParameterizedTest、@ValueSource、@CsvSource、@DynamicTestを使用した効率的なテスト方法を学習します。
 
-### [6. 例外テストとタイムアウト](https://fcircle-biz.github.io/tech_docs/guide/java-ecosystem/junit/junit-learning-material-6.html)
+### [6. 例外テストとタイムアウト](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/junit/junit-learning-material-6.html)
 例外の発生を検証するテスト、タイムアウトテスト、パフォーマンステストの書き方を学習します。
 
-### [7. テストの組織化とベストプラクティス](https://fcircle-biz.github.io/tech_docs/guide/java-ecosystem/junit/junit-learning-material-7.html)
+### [7. テストの組織化とベストプラクティス](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/junit/junit-learning-material-7.html)
 テストクラスの構成、@Nested、@Tag、条件付き実行、テストコードの保守性向上について学習します。
 
 ## 学習の進め方

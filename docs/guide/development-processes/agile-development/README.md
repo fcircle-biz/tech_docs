@@ -27,34 +27,34 @@
 - **推奨**: バージョン管理システム（Git等）の基本操作
 
 ## 学習コンテンツ
-### [1. アジャイル開発の基礎と原則](https://fcircle-biz.github.io/tech_docs/guide/agile-development/agile-development-learning-material-1.html)
+### [1. アジャイル開発の基礎と原則](https://fcircle-biz.github.io/tech_docs/guide/development-processes/agile-development/agile-development-learning-material-1.html)
 アジャイル開発の歴史と背景、アジャイルソフトウェア開発宣言の4つの価値と12の原則、ウォーターフォール開発との違い、アジャイルのメリットとデメリット、アジャイルマインドセットの重要性、反復的・漸進的な開発プロセス、顧客協調と変化への対応、アジャイルが適している・適していないプロジェクトについて学びます。
 
-### [2. スクラムフレームワーク - 基礎編](https://fcircle-biz.github.io/tech_docs/guide/agile-development/agile-development-learning-material-2.html)
+### [2. スクラムフレームワーク - 基礎編](https://fcircle-biz.github.io/tech_docs/guide/development-processes/agile-development/agile-development-learning-material-2.html)
 スクラムの概要と3つの柱（透明性、検査、適応）、5つの価値観（確約、勇気、集中、公開、尊敬）、スクラムの3つのロール（プロダクトオーナー、スクラムマスター、開発チーム）、スクラムの5つのイベント（スプリント、スプリントプランニング、デイリースクラム、スプリントレビュー、スプリントレトロスペクティブ）、3つの作成物（プロダクトバックログ、スプリントバックログ、インクリメント）について学習します。
 
-### [3. カンバン手法とビジュアルマネジメント](https://fcircle-biz.github.io/tech_docs/guide/agile-development/agile-development-learning-material-3.html)
+### [3. カンバン手法とビジュアルマネジメント](https://fcircle-biz.github.io/tech_docs/guide/development-processes/agile-development/agile-development-learning-material-3.html)
 カンバンの起源と基本原則、カンバンボードの作成と活用方法、WIP（Work In Progress）制限の設定、フロー効率の改善、リードタイムとサイクルタイムの測定、ボトルネックの特定と解消、プルシステムの理解、カンバンとスクラムの違い、スクラムバン（Scrumban）の紹介、継続的な改善とカイゼン活動について学びます。
 
-### [4. ユーザーストーリーと要件定義](https://fcircle-biz.github.io/tech_docs/guide/agile-development/agile-development-learning-material-4.html)
+### [4. ユーザーストーリーと要件定義](https://fcircle-biz.github.io/tech_docs/guide/development-processes/agile-development/agile-development-learning-material-4.html)
 ユーザーストーリーとは何か、INVESTの原則（Independent、Negotiable、Valuable、Estimable、Small、Testable）、ユーザーストーリーの書き方とテンプレート、受け入れ基準（Acceptance Criteria）の定義、エピックとユーザーストーリーの関係、ストーリーマッピング技法、バックログの優先順位付け（MoSCoW法、価値対労力マトリクス）、ストーリーポイントと見積もり、プランニングポーカーについて学習します。
 
-### [5. スプリント計画と実行](https://fcircle-biz.github.io/tech_docs/guide/agile-development/agile-development-learning-material-5.html)
+### [5. スプリント計画と実行](https://fcircle-biz.github.io/tech_docs/guide/development-processes/agile-development/agile-development-learning-material-5.html)
 スプリントプランニングの目的と進め方、スプリントゴールの設定、キャパシティプランニングとベロシティの理解、タスク分解とタスクボードの活用、デイリースクラム（朝会）の効果的な実施方法、スプリント中の進捗管理とバーンダウンチャート、スプリントレビューの準備と実施、デモンストレーションのベストプラクティス、インクリメントの完成の定義（Definition of Done）について学びます。
 
-### [6. デイリースタンドアップとチームコミュニケーション](https://fcircle-biz.github.io/tech_docs/guide/agile-development/agile-development-learning-material-6.html)
+### [6. デイリースタンドアップとチームコミュニケーション](https://fcircle-biz.github.io/tech_docs/guide/development-processes/agile-development/agile-development-learning-material-6.html)
 デイリースタンドアップの目的と基本フォーマット、効果的なデイリースクラムの3つの質問（昨日やったこと、今日やること、障害）、タイムボックスの重要性（15分以内）、リモートチームでのスタンドアップ実施方法、よくあるアンチパターンと回避方法、チーム内の透明性とコラボレーション促進、問題の早期発見と対処、ペアプログラミングとモブプログラミングの導入について学習します。
 
-### [7. レトロスペクティブと継続的改善](https://fcircle-biz.github.io/tech_docs/guide/agile-development/agile-development-learning-material-7.html)
+### [7. レトロスペクティブと継続的改善](https://fcircle-biz.github.io/tech_docs/guide/development-processes/agile-development/agile-development-learning-material-7.html)
 スプリントレトロスペクティブの目的と重要性、レトロスペクティブの基本的な進め方とファシリテーション、KPT法（Keep、Problem、Try）、Start・Stop・Continue法、様々なレトロスペクティブ技法（タイムライン、5つのなぜ、感謝のシャワー）、心理的安全性の確保、改善アクションアイテムの特定と追跡、チームの成長と学習文化の醸成、実験とフィードバックループについて学びます。
 
-### [8. テスト駆動開発（TDD）とアジャイルテスティング](https://fcircle-biz.github.io/tech_docs/guide/agile-development/agile-development-learning-material-8.html)
+### [8. テスト駆動開発（TDD）とアジャイルテスティング](https://fcircle-biz.github.io/tech_docs/guide/development-processes/agile-development/agile-development-learning-material-8.html)
 テスト駆動開発（TDD）の基礎とRed-Green-Refactorサイクル、単体テストの書き方とベストプラクティス、テストファースト開発の利点、アジャイルテスティングの4象限、受け入れテスト駆動開発（ATDD）とビヘイビア駆動開発（BDD）、自動化テストの重要性、テストピラミッドの理解、継続的テストと品質の組み込み、探索的テストとセッションベーステスト管理について学習します。
 
-### [9. 継続的インテグレーション/デリバリー（CI/CD）](https://fcircle-biz.github.io/tech_docs/guide/agile-development/agile-development-learning-material-9.html)
+### [9. 継続的インテグレーション/デリバリー（CI/CD）](https://fcircle-biz.github.io/tech_docs/guide/development-processes/agile-development/agile-development-learning-material-9.html)
 継続的インテグレーション（CI）の原則と実践方法、継続的デリバリー（CD）と継続的デプロイメントの違い、ビルドパイプラインの構築、自動化ビルドと自動化テスト、バージョン管理とブランチ戦略（トランクベース開発、GitFlow）、CI/CDツール（Jenkins、GitHub Actions、GitLab CI、CircleCI）、デプロイメントの自動化、ロールバック戦略、インフラストラクチャーアズコード（IaC）の基礎について学びます。
 
-### [10. アジャイルチームの運営と組織への導入](https://fcircle-biz.github.io/tech_docs/guide/agile-development/agile-development-learning-material-10.html)
+### [10. アジャイルチームの運営と組織への導入](https://fcircle-biz.github.io/tech_docs/guide/development-processes/agile-development/agile-development-learning-material-10.html)
 自己組織化チームの構築と特性、クロスファンクショナルチームの重要性、プロダクトオーナーの役割と責任、スクラムマスターのサーバントリーダーシップ、ステークホルダーマネジメント、スケールドアジャイル（SAFe、LeSS、Nexus）の紹介、組織文化とアジャイルトランスフォーメーション、分散チームでのアジャイル実践、メトリクスと測定（ベロシティ、バーンダウン、リードタイム）、継続的な学習と改善のサイクルについて学習します。
 
 ## 学習の進め方
@@ -72,7 +72,7 @@
 - **合計学習期間**: 9-13週間（週5-7時間の学習を想定）
 
 ## 関連リソース
-- [ウォーターフォール開発学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/software-design/waterfall-development/README.html)
+- [ウォーターフォール開発学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/development-processes/waterfall-development/README.html)
 - [要件定義学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/software-design/requirements-engineering/README.html)
 - [UML学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/software-design/uml/README.html)
 - [Git/GitHub学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/git/README.html)
@@ -98,5 +98,5 @@
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
 - [認定スクラムマスター（CSM）資格](https://fcircle-biz.github.io/tech_docs/guide/certification/scrum-master/README.html) - スクラムマスターとしての専門性を証明
 - [認定プロダクトオーナー（CSPO）資格](https://fcircle-biz.github.io/tech_docs/guide/certification/product-owner/README.html) - プロダクトオーナーとしてのスキルを認定
-- [DevOps学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/devops/README.html) - アジャイル開発とDevOpsを統合
+- [DevOps学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/development-processes/devops/README.html) - アジャイル開発とDevOpsを統合
 - [リーン・スタートアップ学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-domain/lean-startup/README.html) - プロダクト開発とビジネス戦略を学ぶ

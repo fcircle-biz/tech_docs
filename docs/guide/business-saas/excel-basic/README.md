@@ -18,7 +18,7 @@
 
 ## 学習コンテンツ
 
-### [1. 基本操作と表示設定](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/excel-basic/excel-basic-learning-material-1.html)
+### [1. 基本操作と表示設定](https://fcircle-biz.github.io/tech_docs/guide/business-saas/excel-basic/excel-basic-learning-material-1.html)
 Excelの起動から保存まで、ファイル管理の基礎、データのコピー＆ペースト（書式あり・なし）、行と列の幅調整、罫線の設定方法、表示倍率の変更と目盛線の表示/非表示切り替えについて学習します。
 
 **学習内容:**
@@ -30,7 +30,7 @@ Excelの起動から保存まで、ファイル管理の基礎、データのコ
 - 表示倍率とページビューの切り替え
 - 目盛線とヘッダーの表示制御
 
-### [2. セル操作と書式設定](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/excel-basic/excel-basic-learning-material-2.html)
+### [2. セル操作と書式設定](https://fcircle-biz.github.io/tech_docs/guide/business-saas/excel-basic/excel-basic-learning-material-2.html)
 セルの書式設定の詳細、セル結合と解除、文字列と数値の扱い方、文字の配置（左寄せ・中央・右寄せ）、全選択と部分選択のテクニック、Ctrl・Shiftキーを使った効率的な選択方法について学習します。
 
 **学習内容:**
@@ -42,7 +42,7 @@ Excelの起動から保存まで、ファイル管理の基礎、データのコ
 - 範囲選択のショートカットキー（Ctrl+A、Ctrl+Shift+矢印）
 - 飛び飛びのセル選択（Ctrlキー活用）
 
-### [3. フィルタとウィンドウ操作](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/excel-basic/excel-basic-learning-material-3.html)
+### [3. フィルタとウィンドウ操作](https://fcircle-biz.github.io/tech_docs/guide/business-saas/excel-basic/excel-basic-learning-material-3.html)
 ウィンドウ枠の固定による見出し行・列の固定表示、オートフィルタの設定と活用、フィルタの条件設定、複数条件でのデータ抽出、フィルタ結果のコピーと集計について学習します。
 
 **学習内容:**
@@ -54,7 +54,7 @@ Excelの起動から保存まで、ファイル管理の基礎、データのコ
 - フィルタ適用時の注意点と制限事項
 - フィルタされたデータのコピーテクニック
 
-### [4. ページ設定と印刷](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/excel-basic/excel-basic-learning-material-4.html)
+### [4. ページ設定と印刷](https://fcircle-biz.github.io/tech_docs/guide/business-saas/excel-basic/excel-basic-learning-material-4.html)
 ページレイアウトの設定、用紙サイズと向きの変更、余白の調整、改ページの挿入と削除、印刷範囲の設定、印刷プレビューと各種印刷設定について学習します。
 
 **学習内容:**
@@ -67,7 +67,7 @@ Excelの起動から保存まで、ファイル管理の基礎、データのコ
 - 拡大縮小印刷（1ページに収める）
 - 印刷タイトル（行・列の繰り返し）
 
-### [5. オブジェクト操作](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/excel-basic/excel-basic-learning-material-5.html)
+### [5. オブジェクト操作](https://fcircle-biz.github.io/tech_docs/guide/business-saas/excel-basic/excel-basic-learning-material-5.html)
 図形、画像、グラフなどのオブジェクトの挿入と編集、オブジェクトの整列と配置、前面・背面の順序変更、グループ化とグループ解除、オブジェクトの書式設定について学習します。
 
 **学習内容:**
@@ -80,7 +80,7 @@ Excelの起動から保存まで、ファイル管理の基礎、データのコ
 - グループ化による一括操作
 - オブジェクトの固定と保護
 
-### [6. 基本関数](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/excel-basic/excel-basic-learning-material-6.html)
+### [6. 基本関数](https://fcircle-biz.github.io/tech_docs/guide/business-saas/excel-basic/excel-basic-learning-material-6.html)
 Excel関数の基本概念、数式の入力方法、基本的な集計関数（SUM、AVERAGE、COUNT）、論理関数（IF、AND、OR）、日付・時刻関数の基礎について学習します。
 
 **学習内容:**
@@ -93,7 +93,7 @@ Excel関数の基本概念、数式の入力方法、基本的な集計関数（
 - エラー処理（IFERROR、IFNA）
 - 関数のネスト（入れ子）
 
-### [7. VLOOKUP関数と論理値](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/excel-basic/excel-basic-learning-material-7.html)
+### [7. VLOOKUP関数と論理値](https://fcircle-biz.github.io/tech_docs/guide/business-saas/excel-basic/excel-basic-learning-material-7.html)
 VLOOKUP関数の仕組みと使い方、検索値と範囲の指定、完全一致と近似一致、TRUE/FALSE（論理値）の理解、INDEX/MATCH関数による代替方法について学習します。
 
 **学習内容:**
@@ -106,7 +106,7 @@ VLOOKUP関数の仕組みと使い方、検索値と範囲の指定、完全一�
 - INDEX関数とMATCH関数の組み合わせ
 - XLOOKUP関数（Microsoft 365版）
 
-### [8. VBAの基礎](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/excel-basic/excel-basic-learning-material-8.html)
+### [8. VBAの基礎](https://fcircle-biz.github.io/tech_docs/guide/business-saas/excel-basic/excel-basic-learning-material-8.html)
 VBAの開き方、開発タブの表示、Visual Basic Editorの基本操作、マクロの記録と実行、簡単なVBAコードの読み方と編集について学習します。
 
 **学習内容:**
@@ -135,7 +135,7 @@ VBAの開き方、開発タブの表示、Visual Basic Editorの基本操作、�
 ## 関連リソース
 - [Excelショートカットキーチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/tools/excel-shortcuts-cheatsheet.html)
 - [Excel関数リファレンス](https://fcircle-biz.github.io/tech_docs/cheatsheet/tools/excel-functions-reference.html)
-- [VBA学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/vba/README.md)
+- [VBA学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-saas/vba/README.md)
 
 ## 学習目標
 
@@ -155,5 +155,5 @@ VBAの開き方、開発タブの表示、Visual Basic Editorの基本操作、�
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
 
 - [Excel応用テクニック（ピボットテーブル、Power Query）](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/excel-advanced/README.md)
-- [VBAプログラミング実践](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/vba/README.md)
+- [VBAプログラミング実践](https://fcircle-biz.github.io/tech_docs/guide/business-saas/vba/README.md)
 - [Excelによるデータ分析入門](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/excel-analytics/README.md)

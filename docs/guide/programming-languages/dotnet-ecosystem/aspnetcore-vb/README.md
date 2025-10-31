@@ -23,34 +23,34 @@
 
 ## 学習コンテンツ
 
-### [1. ASP.NET Core入門と開発環境構築](https://fcircle-biz.github.io/tech_docs/guide/dotnet-ecosystem/aspnetcore-vb/aspnetcore-vb-learning-material-1.html)
+### [1. ASP.NET Core入門と開発環境構築](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/aspnetcore-vb/aspnetcore-vb-learning-material-1.html)
 ASP.NET Coreの概要、Web Formsとの違い、クロスプラットフォーム対応、開発環境のセットアップ、初めてのASP.NET Coreプロジェクト作成について学習します。
 
-### [2. MVCアーキテクチャの基礎](https://fcircle-biz.github.io/tech_docs/guide/dotnet-ecosystem/aspnetcore-vb/aspnetcore-vb-learning-material-2.html)
+### [2. MVCアーキテクチャの基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/aspnetcore-vb/aspnetcore-vb-learning-material-2.html)
 Model-View-Controllerパターンの概念、各コンポーネントの役割、リクエスト処理フロー、ルーティングの基本、アクションメソッドの作成について学習します。
 
-### [3. Razorビューとレイアウト](https://fcircle-biz.github.io/tech_docs/guide/dotnet-ecosystem/aspnetcore-vb/aspnetcore-vb-learning-material-3.html)
+### [3. Razorビューとレイアウト](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/aspnetcore-vb/aspnetcore-vb-learning-material-3.html)
 Razorシンタックス、ビューの作成、レイアウトページ、部分ビュー、ビューコンポーネント、Tag Helpers、VB.NET構文でのRazor記述について学習します。
 
-### [4. モデルバインディングとバリデーション](https://fcircle-biz.github.io/tech_docs/guide/dotnet-ecosystem/aspnetcore-vb/aspnetcore-vb-learning-material-4.html)
+### [4. モデルバインディングとバリデーション](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/aspnetcore-vb/aspnetcore-vb-learning-material-4.html)
 フォームデータの受け取り、モデルバインディングの仕組み、データアノテーション、カスタムバリデーション、クライアントサイドバリデーションの実装について学習します。
 
-### [5. 依存性注入とミドルウェア](https://fcircle-biz.github.io/tech_docs/guide/dotnet-ecosystem/aspnetcore-vb/aspnetcore-vb-learning-material-5.html)
+### [5. 依存性注入とミドルウェア](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/aspnetcore-vb/aspnetcore-vb-learning-material-5.html)
 DIコンテナの概念と利点、サービスの登録と解決、ミドルウェアパイプライン、カスタムミドルウェアの作成、リクエスト処理のカスタマイズについて学習します。
 
-### [6. Entity Framework Coreとデータアクセス](https://fcircle-biz.github.io/tech_docs/guide/dotnet-ecosystem/aspnetcore-vb/aspnetcore-vb-learning-material-6.html)
+### [6. Entity Framework Coreとデータアクセス](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/aspnetcore-vb/aspnetcore-vb-learning-material-6.html)
 Code Firstアプローチ、DbContextの設定、マイグレーション、LINQ to Entities、リポジトリパターン、VB.NETでのEntity Framework Core実装について学習します。
 
-### [7. Web APIの開発](https://fcircle-biz.github.io/tech_docs/guide/dotnet-ecosystem/aspnetcore-vb/aspnetcore-vb-learning-material-7.html)
+### [7. Web APIの開発](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/aspnetcore-vb/aspnetcore-vb-learning-material-7.html)
 RESTful APIの設計原則、APIコントローラーの作成、JSON形式のデータ交換、Swagger/OpenAPIの統合、CORSの設定、VB.NETでのWeb API実装について学習します。
 
-### [8. 認証と認可](https://fcircle-biz.github.io/tech_docs/guide/dotnet-ecosystem/aspnetcore-vb/aspnetcore-vb-learning-material-8.html)
+### [8. 認証と認可](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/aspnetcore-vb/aspnetcore-vb-learning-material-8.html)
 ASP.NET Core Identity、Cookie認証、JWT認証、ロールベースの認可、クレームベースの認可、外部認証プロバイダーの統合について学習します。
 
-### [9. 状態管理とキャッシング](https://fcircle-biz.github.io/tech_docs/guide/dotnet-ecosystem/aspnetcore-vb/aspnetcore-vb-learning-material-9.html)
+### [9. 状態管理とキャッシング](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/aspnetcore-vb/aspnetcore-vb-learning-material-9.html)
 セッション管理、TempData、ViewData、ViewBag、分散キャッシュ、メモリキャッシュ、レスポンスキャッシュの実装について学習します。
 
-### [10. 実践的なWebアプリケーション開発](https://fcircle-biz.github.io/tech_docs/guide/dotnet-ecosystem/aspnetcore-vb/aspnetcore-vb-learning-material-10.html)
+### [10. 実践的なWebアプリケーション開発](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/aspnetcore-vb/aspnetcore-vb-learning-material-10.html)
 学習した知識を統合して、ユーザー管理システムを含む実践的なWebアプリケーションを開発します。CRUD操作、ページング、検索、ファイルアップロード機能を実装します。
 
 ## 学習の進め方

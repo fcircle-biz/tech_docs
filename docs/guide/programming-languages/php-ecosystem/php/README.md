@@ -21,34 +21,34 @@
 
 ## 学習コンテンツ
 
-### [1. PHP基礎とセットアップ](https://fcircle-biz.github.io/tech_docs/guide/php-ecosystem/php/php-learning-material-1.html)
+### [1. PHP基礎とセットアップ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/php-ecosystem/php/php-learning-material-1.html)
 PHPとは何か、開発環境の構築、基本的な文法と実行方法について学習します。
 
-### [2. 変数とデータ型](https://fcircle-biz.github.io/tech_docs/guide/php-ecosystem/php/php-learning-material-2.html)
+### [2. 変数とデータ型](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/php-ecosystem/php/php-learning-material-2.html)
 変数の定義、文字列、数値、真偽値、null型の扱い方について学習します。
 
-### [3. 制御構造](https://fcircle-biz.github.io/tech_docs/guide/php-ecosystem/php/php-learning-material-3.html)
+### [3. 制御構造](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/php-ecosystem/php/php-learning-material-3.html)
 if文、switch文、for文、while文、foreach文を使った制御フローについて学習します。
 
-### [4. 関数](https://fcircle-biz.github.io/tech_docs/guide/php-ecosystem/php/php-learning-material-4.html)
+### [4. 関数](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/php-ecosystem/php/php-learning-material-4.html)
 関数の定義、引数の渡し方、戻り値、変数のスコープについて学習します。
 
-### [5. 配列と連想配列](https://fcircle-biz.github.io/tech_docs/guide/php-ecosystem/php/php-learning-material-5.html)
+### [5. 配列と連想配列](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/php-ecosystem/php/php-learning-material-5.html)
 配列の操作、多次元配列、連想配列、便利な配列関数について学習します。
 
-### [6. オブジェクト指向プログラミング](https://fcircle-biz.github.io/tech_docs/guide/php-ecosystem/php/php-learning-material-6.html)
+### [6. オブジェクト指向プログラミング](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/php-ecosystem/php/php-learning-material-6.html)
 クラスとオブジェクト、プロパティとメソッド、継承、インターフェースについて学習します。
 
-### [7. ファイル操作とフォーム処理](https://fcircle-biz.github.io/tech_docs/guide/php-ecosystem/php/php-learning-material-7.html)
+### [7. ファイル操作とフォーム処理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/php-ecosystem/php/php-learning-material-7.html)
 ファイルの読み書き、HTMLフォームからのデータ受信、ファイルアップロードについて学習します。
 
-### [8. データベース連携](https://fcircle-biz.github.io/tech_docs/guide/php-ecosystem/php/php-learning-material-8.html)
+### [8. データベース連携](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/php-ecosystem/php/php-learning-material-8.html)
 PostgreSQLとPDOを使ったデータベース接続、CRUD操作、プリペアドステートメントについて学習します。
 
-### [9. セッション管理とセキュリティ](https://fcircle-biz.github.io/tech_docs/guide/php-ecosystem/php/php-learning-material-9.html)
+### [9. セッション管理とセキュリティ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/php-ecosystem/php/php-learning-material-9.html)
 セッション、クッキー、XSS対策、SQLインジェクション対策、CSRF対策について学習します。
 
-### [10. 実践的なWebアプリケーション開発](https://fcircle-biz.github.io/tech_docs/guide/php-ecosystem/php/php-learning-material-10.html)
+### [10. 実践的なWebアプリケーション開発](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/php-ecosystem/php/php-learning-material-10.html)
 学習した知識を統合して、簡単なWebアプリケーション（掲示板、ログイン機能付きサイト等）を作成します。
 
 ## 学習の進め方

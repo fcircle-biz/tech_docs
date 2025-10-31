@@ -25,7 +25,7 @@
 
 ## 学習コンテンツ
 
-### [1. 会計の基本概念（導入）](https://fcircle-biz.github.io/tech_docs/guide/business-domain/finance-accounting/finance-accounting-learning-material-1.html)
+### [1. 会計の基本概念（導入）](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/finance-accounting/finance-accounting-learning-material-1.html)
 会計とは何か、財務会計と管理会計の違い、会計の目的とステークホルダー（株主、債権者、経営者、税務当局）への情報提供の重要性について学びます。企業活動と会計サイクル（取引→記帳→決算→報告）の全体像、現金主義と発生主義の違いとそれぞれのメリット・デメリット、継続企業の前提（ゴーイングコンサーン）、会計期間の概念と期間損益計算の基本を理解します。
 
 **学習内容:**
@@ -39,7 +39,7 @@
 - 実現主義：収益の認識基準（商品引渡し時など）
 - 費用収益対応の原則
 
-### [2. 取引と仕訳の基礎](https://fcircle-biz.github.io/tech_docs/guide/business-domain/finance-accounting/finance-accounting-learning-material-2.html)
+### [2. 取引と仕訳の基礎](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/finance-accounting/finance-accounting-learning-material-2.html)
 会計の基本となる5つの要素（資産・負債・純資産・収益・費用）の考え方、借方・貸方のルールと仕訳の基本構造について学びます。実務でよく発生する取引の仕訳演習（売上計上、仕入計上、給与支払い、経費処理、減価償却、前払費用、未払費用、売掛金・買掛金）を通じて、複式簿記の基礎を身につけます。勘定科目の分類とそれぞれの特徴、仕訳帳から総勘定元帳への転記プロセスを理解します。
 
 **学習内容:**
@@ -60,7 +60,7 @@
   - 減価償却：（借方）減価償却費 50,000 / （貸方）減価償却累計額 50,000
 - 練習問題とミニテスト（解答・解説付き）
 
-### [3. 財務諸表の構造](https://fcircle-biz.github.io/tech_docs/guide/business-domain/finance-accounting/finance-accounting-learning-material-3.html)
+### [3. 財務諸表の構造](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/finance-accounting/finance-accounting-learning-material-3.html)
 企業の財政状態を示す貸借対照表（B/S：Balance Sheet）の読み方、経営成績を示す損益計算書（P/L：Profit and Loss statement）の読み方、資金の流れを示すキャッシュ・フロー計算書（C/F：Cash Flow statement）の概要について学びます。3つの財務諸表のつながりと関係性、それぞれの表から読み取れる情報と経営上の意味、実在企業の決算書を使った分析演習を通じて、財務諸表を読み解く力を養います。
 
 **学習内容:**
@@ -90,7 +90,7 @@
   - 図解とフロー図での理解
   - 実在企業の決算書を使った演習
 
-### [4. 決算と会計処理の流れ](https://fcircle-biz.github.io/tech_docs/guide/business-domain/finance-accounting/finance-accounting-learning-material-4.html)
+### [4. 決算と会計処理の流れ](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/finance-accounting/finance-accounting-learning-material-4.html)
 日々の取引記帳から試算表作成、決算整理仕訳、財務諸表作成までの一連の流れを学びます。決算整理仕訳の主要項目（減価償却、前払費用・前受収益、未払費用・未収収益、貸倒引当金、棚卸資産の評価）の処理方法、税務申告との関係（会計上の利益と税務上の所得の違い）、会計ソフトでの実務イメージと自動化の現状について理解します。
 
 **学習内容:**
@@ -124,7 +124,7 @@
   - 自動仕訳機能と銀行連携
   - 決算書の自動作成機能
 
-### [5. 財務分析の基本](https://fcircle-biz.github.io/tech_docs/guide/business-domain/finance-accounting/finance-accounting-learning-material-5.html)
+### [5. 財務分析の基本](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/finance-accounting/finance-accounting-learning-material-5.html)
 財務諸表を使った経営分析の基本指標（収益性、安全性、成長性、効率性）について学びます。主要な財務指標の計算方法と意味（利益率、自己資本比率、ROE、ROA、流動比率、当座比率、売上高成長率、総資産回転率など）、業界平均との比較分析、簡単なケーススタディ（A社・B社の比較分析）を通じて、企業の財務状態と経営成績を評価する力を養います。自社や関連企業の決算書を読み解く実践演習も行います。
 
 **学習内容:**
@@ -161,7 +161,7 @@
   - セグメント情報の読み方
   - 経営者の定性情報の活用
 
-### [6. ビジネスでの活用](https://fcircle-biz.github.io/tech_docs/guide/business-domain/finance-accounting/finance-accounting-learning-material-6.html)
+### [6. ビジネスでの活用](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/finance-accounting/finance-accounting-learning-material-6.html)
 学んだ会計知識を実務でどう活用するかを学びます。予算管理と実績管理のつながり、予算の策定プロセスとPDCAサイクル、数字で説明するプレゼンテーションのコツ（データの可視化、グラフの使い方）、上司・経営層が財務データを見る視点とコミュニケーション方法、部門損益の考え方と管理会計の実践、原価計算の基本（製造原価、販売管理費の配賦）、損益分岐点分析（BEP分析）と意思決定への応用について学びます。
 
 **学習内容:**

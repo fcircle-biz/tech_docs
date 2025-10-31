@@ -22,34 +22,34 @@
 
 ## 学習コンテンツ
 
-### [1. ASP.NET Web Forms入門と開発環境構築](https://fcircle-biz.github.io/tech_docs/guide/dotnet-ecosystem/aspnet-vb/aspnet-vb-learning-material-1.html)
+### [1. ASP.NET Web Forms入門と開発環境構築](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/aspnet-vb/aspnet-vb-learning-material-1.html)
 ASP.NET Web Formsとは何か、Visual Studioでの開発環境構築、初回プロジェクト作成について学習します。
 
-### [2. Web FormsとWebコントロール](https://fcircle-biz.github.io/tech_docs/guide/dotnet-ecosystem/aspnet-vb/aspnet-vb-learning-material-2.html)
+### [2. Web FormsとWebコントロール](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/aspnet-vb/aspnet-vb-learning-material-2.html)
 Web Formsの基本コントロール（Label、TextBox、Button等）の使用方法とVB.NETとの違いについて学習します。
 
-### [3. イベント処理とPostBack](https://fcircle-biz.github.io/tech_docs/guide/dotnet-ecosystem/aspnet-vb/aspnet-vb-learning-material-3.html)
+### [3. イベント処理とPostBack](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/aspnet-vb/aspnet-vb-learning-material-3.html)
 ASP.NET Web Formsのイベントドリブンモデル、PostBackの仕組み、ページライフサイクルについて学習します。
 
-### [4. データ検証とエラーハンドリング](https://fcircle-biz.github.io/tech_docs/guide/dotnet-ecosystem/aspnet-vb/aspnet-vb-learning-material-4.html)
+### [4. データ検証とエラーハンドリング](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/aspnet-vb/aspnet-vb-learning-material-4.html)
 検証コントロール、カスタム検証、例外処理、ユーザビリティの向上について学習します。
 
-### [5. 状態管理（Session、ViewState、Cache）](https://fcircle-biz.github.io/tech_docs/guide/dotnet-ecosystem/aspnet-vb/aspnet-vb-learning-material-5.html)
+### [5. 状態管理（Session、ViewState、Cache）](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/aspnet-vb/aspnet-vb-learning-material-5.html)
 ASP.NETの状態管理技術、セッション管理、ViewState、アプリケーションキャッシュについて学習します。
 
-### [6. データベース連携（ADO.NET）](https://fcircle-biz.github.io/tech_docs/guide/dotnet-ecosystem/aspnet-vb/aspnet-vb-learning-material-6.html)
+### [6. データベース連携（ADO.NET）](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/aspnet-vb/aspnet-vb-learning-material-6.html)
 ADO.NETを使用したデータベース接続、DataSet、DataReader、CRUD操作の実装について学習します。
 
-### [7. データバインドとGridView](https://fcircle-biz.github.io/tech_docs/guide/dotnet-ecosystem/aspnet-vb/aspnet-vb-learning-material-7.html)
+### [7. データバインドとGridView](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/aspnet-vb/aspnet-vb-learning-material-7.html)
 データバインディング、GridView、DataList、Repeaterコントロールを使ったデータ表示について学習します。
 
-### [8. マスターページとナビゲーション](https://fcircle-biz.github.io/tech_docs/guide/dotnet-ecosystem/aspnet-vb/aspnet-vb-learning-material-8.html)
+### [8. マスターページとナビゲーション](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/aspnet-vb/aspnet-vb-learning-material-8.html)
 マスターページを使用した共通レイアウト、メニューコントロール、サイトマップの実装について学習します。
 
-### [9. セキュリティとメンバーシップ](https://fcircle-biz.github.io/tech_docs/guide/dotnet-ecosystem/aspnet-vb/aspnet-vb-learning-material-9.html)
+### [9. セキュリティとメンバーシップ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/aspnet-vb/aspnet-vb-learning-material-9.html)
 Webアプリケーションにおける認証・認可の実装、ASP.NETメンバーシップシステムの活用、ログインコントロールの使用方法、ロールベースアクセス制御について学習します。パスワードハッシュ化、XSS対策、セッション管理などのセキュリティベストプラクティスを習得できます。
 
-### [10. 実践的なWebアプリケーション開発](https://fcircle-biz.github.io/tech_docs/guide/dotnet-ecosystem/aspnet-vb/aspnet-vb-learning-material-10.html)
+### [10. 実践的なWebアプリケーション開発](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/dotnet-ecosystem/aspnet-vb/aspnet-vb-learning-material-10.html)
 これまで学習したすべての技術を統合して、完全な社員管理システムを構築します。3層アーキテクチャによる設計、パフォーマンス最適化、テスト戦略、デプロイメント、運用保守まで、実際のプロジェクトで必要となる実践的な開発スキルを習得できます。
 
 ## 学習の進め方

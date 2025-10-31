@@ -22,34 +22,34 @@
 - **推奨**: 線形代数と微積分の基礎知識
 
 ## 学習コンテンツ
-### [1. 機械学習の概要と環境構築](https://fcircle-biz.github.io/tech_docs/guide/data-ai/machine-learning/machine-learning-learning-material-1.html)
+### [1. 機械学習の概要と環境構築](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/machine-learning/machine-learning-learning-material-1.html)
 機械学習とは何か、その応用分野、機械学習の種類（教師あり学習、教師なし学習、強化学習）、開発環境のセットアップ方法を学びます。
 
-### [2. 機械学習の基礎概念](https://fcircle-biz.github.io/tech_docs/guide/data-ai/machine-learning/machine-learning-learning-material-2.html)
+### [2. 機械学習の基礎概念](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/machine-learning/machine-learning-learning-material-2.html)
 学習プロセスの理解、特徴量とラベル、訓練データとテストデータ、過学習と汎化、バイアス・バリアンストレードオフについて学習します。
 
-### [3. データの前処理](https://fcircle-biz.github.io/tech_docs/guide/data-ai/machine-learning/machine-learning-learning-material-3.html)
+### [3. データの前処理](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/machine-learning/machine-learning-learning-material-3.html)
 データの読み込みと確認、欠損値の処理、外れ値の検出と処理、データの正規化とスケーリング、カテゴリカル変数のエンコーディングを学びます。
 
-### [4. 教師あり学習：回帰](https://fcircle-biz.github.io/tech_docs/guide/data-ai/machine-learning/machine-learning-learning-material-4.html)
+### [4. 教師あり学習：回帰](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/machine-learning/machine-learning-learning-material-4.html)
 線形回帰の理論と実装、多項式回帰、正則化（Ridge、Lasso、ElasticNet）、回帰モデルの評価指標（MSE、RMSE、R²）について学習します。
 
-### [5. 教師あり学習：分類](https://fcircle-biz.github.io/tech_docs/guide/data-ai/machine-learning/machine-learning-learning-material-5.html)
+### [5. 教師あり学習：分類](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/machine-learning/machine-learning-learning-material-5.html)
 ロジスティック回帰、決定木、k近傍法（k-NN）、サポートベクターマシン（SVM）、分類モデルの評価指標（精度、適合率、再現率、F1スコア）を学びます。
 
-### [6. モデルの評価と検証](https://fcircle-biz.github.io/tech_docs/guide/data-ai/machine-learning/machine-learning-learning-material-6.html)
+### [6. モデルの評価と検証](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/machine-learning/machine-learning-learning-material-6.html)
 交差検証（k-分割交差検証）、混同行列とROC曲線、ハイパーパラメータチューニング（グリッドサーチ、ランダムサーチ）、学習曲線と検証曲線を学習します。
 
-### [7. 特徴量エンジニアリング](https://fcircle-biz.github.io/tech_docs/guide/data-ai/machine-learning/machine-learning-learning-material-7.html)
+### [7. 特徴量エンジニアリング](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/machine-learning/machine-learning-learning-material-7.html)
 特徴量の重要度分析、特徴量選択の手法、新しい特徴量の生成、次元削減（PCA、t-SNE）、時系列特徴量の作成について学びます。
 
-### [8. アンサンブル学習](https://fcircle-biz.github.io/tech_docs/guide/data-ai/machine-learning/machine-learning-learning-material-8.html)
+### [8. アンサンブル学習](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/machine-learning/machine-learning-learning-material-8.html)
 バギング（ランダムフォレスト）、ブースティング（AdaBoost、Gradient Boosting）、XGBoost、LightGBM、スタッキングの理論と実装を学習します。
 
-### [9. 教師なし学習](https://fcircle-biz.github.io/tech_docs/guide/data-ai/machine-learning/machine-learning-learning-material-9.html)
+### [9. 教師なし学習](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/machine-learning/machine-learning-learning-material-9.html)
 クラスタリング（k-means、階層的クラスタリング、DBSCAN）、次元削減の詳細、異常検知、アソシエーション分析の基礎を学びます。
 
-### [10. 実践プロジェクト開発](https://fcircle-biz.github.io/tech_docs/guide/data-ai/machine-learning/machine-learning-learning-material-10.html)
+### [10. 実践プロジェクト開発](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/machine-learning/machine-learning-learning-material-10.html)
 実データを使った予測モデル構築、Kaggleコンペティションへの参加準備、モデルのデプロイメント基礎、機械学習パイプラインの構築を実践します。
 
 ## 学習の進め方

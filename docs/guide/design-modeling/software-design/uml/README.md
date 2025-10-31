@@ -21,34 +21,34 @@
 
 ## 学習コンテンツ
 
-### [1. UML入門と基本概念](https://fcircle-biz.github.io/tech_docs/guide/software-design/uml/uml-learning-material-1.html)
+### [1. UML入門と基本概念](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-1.html)
 UMLの歴史と目的、モデリングの重要性、UML 2.5の概要、図の分類（構造図と振る舞い図）、モデリングツールの選定と環境構築について学びます。基本的な記法ルールと命名規則も習得します。
 
-### [2. クラス図の基礎](https://fcircle-biz.github.io/tech_docs/guide/software-design/uml/uml-learning-material-2.html)
+### [2. クラス図の基礎](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-2.html)
 オブジェクト指向設計の中核となるクラス図の作成方法を学びます。クラスの表記法、属性と操作の定義、可視性（public/private/protected）、関連・集約・コンポジション、多重度の表現、インターフェースと抽象クラスの記法を習得します。
 
-### [3. ユースケース図とアクター](https://fcircle-biz.github.io/tech_docs/guide/software-design/uml/uml-learning-material-3.html)
+### [3. ユースケース図とアクター](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-3.html)
 システムの機能要件を可視化するユースケース図の作成方法を学びます。アクターの識別、ユースケースの抽出、システム境界の定義、include/extend関係、汎化関係の表現方法を実践的な例題を通じて習得します。
 
-### [4. シーケンス図による相互作用モデリング](https://fcircle-biz.github.io/tech_docs/guide/software-design/uml/uml-learning-material-4.html)
+### [4. シーケンス図による相互作用モデリング](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-4.html)
 オブジェクト間の時系列的な相互作用を表現するシーケンス図を学びます。ライフライン、メッセージの種類（同期/非同期/リターン）、活性化ボックス、複合フラグメント（alt/opt/loop/par）、相互作用の使用について詳しく解説します。
 
-### [5. アクティビティ図によるワークフロー設計](https://fcircle-biz.github.io/tech_docs/guide/software-design/uml/uml-learning-material-5.html)
+### [5. アクティビティ図によるワークフロー設計](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-5.html)
 ビジネスプロセスやアルゴリズムを可視化するアクティビティ図の作成方法を学びます。開始/終了ノード、アクション、制御フロー、分岐と結合、並行処理（フォーク/ジョイン）、スイムレーンによる責任の明確化について習得します。
 
-### [6. ステートマシン図による状態遷移モデリング](https://fcircle-biz.github.io/tech_docs/guide/software-design/uml/uml-learning-material-6.html)
+### [6. ステートマシン図による状態遷移モデリング](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-6.html)
 オブジェクトのライフサイクルと状態遷移を表現するステートマシン図を学びます。状態の定義、遷移とトリガー、ガード条件、アクション（entry/do/exit）、複合状態、並行状態、履歴状態の概念と実装方法を習得します。
 
-### [7. コンポーネント図とデプロイメント図](https://fcircle-biz.github.io/tech_docs/guide/software-design/uml/uml-learning-material-7.html)
+### [7. コンポーネント図とデプロイメント図](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-7.html)
 システムの物理的な構造を表現する図法を学びます。コンポーネントの定義と依存関係、インターフェースの提供と要求、パッケージ図による論理構造、デプロイメント図によるハードウェア配置、ノードとアーティファクトの関係を理解します。
 
-### [8. その他の重要な図と高度な技法](https://fcircle-biz.github.io/tech_docs/guide/software-design/uml/uml-learning-material-8.html)
+### [8. その他の重要な図と高度な技法](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-8.html)
 コミュニケーション図、タイミング図、相互作用概要図、オブジェクト図など、その他のUML図を学びます。また、ステレオタイプ、タグ付き値、制約（OCL）などの拡張メカニズム、プロファイルの概念についても理解を深めます。
 
-### [9. UMLツールの実践活用](https://fcircle-biz.github.io/tech_docs/guide/software-design/uml/uml-learning-material-9.html)
+### [9. UMLツールの実践活用](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-9.html)
 主要なUMLツールの使い方を実践的に学びます。PlantUMLによるテキストベースの図作成、draw.ioでのビジュアル編集、商用ツール（Enterprise Architect、Visual Paradigm）の特徴、コード生成とリバースエンジニアリング、バージョン管理との連携方法を習得します。
 
-### [10. 実践的なシステム設計演習](https://fcircle-biz.github.io/tech_docs/guide/software-design/uml/uml-learning-material-10.html)
+### [10. 実践的なシステム設計演習](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-10.html)
 実際のシステム開発を想定した総合演習を行います。ECサイト、図書館管理システム、SNSアプリケーションなどの設計を通じて、要件分析から詳細設計まで、複数のUML図を組み合わせた統合的なモデリング手法を実践します。
 
 ## 学習の進め方

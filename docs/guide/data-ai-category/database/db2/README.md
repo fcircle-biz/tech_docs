@@ -23,28 +23,28 @@ SQLの基礎知識がない場合は、先に[SQL学習ガイド](../sql/README.
 
 ## 学習コンテンツ
 
-### [1. DB2 データベースの基本概念と環境構築](https://fcircle-biz.github.io/tech_docs/guide/database/db2/db2-learning-material-1.html)
+### [1. DB2 データベースの基本概念と環境構築](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/db2/db2-learning-material-1.html)
 IBM DB2の特徴と基本概念、エンタープライズデータベースとしての位置づけを理解し、Docker を使ったDB2 Community Edition環境の構築方法を学習します。
 
-### [2. Docker環境でのDB2 セットアップ](https://fcircle-biz.github.io/tech_docs/guide/database/db2/db2-learning-material-2.html)
+### [2. Docker環境でのDB2 セットアップ](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/db2/db2-learning-material-2.html)
 IBM公式のDocker imagesを使用してDB2データベース環境を構築し、コンテナの起動・停止・設定方法を習得します。また、永続化ストレージとライセンス設定も学びます。
 
-### [3. DB2クライアントツールの導入と基本操作](https://fcircle-biz.github.io/tech_docs/guide/database/db2/db2-learning-material-3.html)
+### [3. DB2クライアントツールの導入と基本操作](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/db2/db2-learning-material-3.html)
 DB2 Command Line Processor（CLP）とData Studio（またはDBeaver）のインストールから基本的な使い方まで、データベース接続設定、SQL実行、オブジェクト管理の操作方法を学習します。
 
-### [4. DB2 SQL の基本](https://fcircle-biz.github.io/tech_docs/guide/database/db2/db2-learning-material-4.html)
+### [4. DB2 SQL の基本](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/db2/db2-learning-material-4.html)
 DB2固有のSQL文法、データ型、制約、シーケンス、スキーマなど、DB2 SQLの基本的な機能と標準SQLとの違いを理解します。
 
-### [5. テーブル設計とインデックス基礎](https://fcircle-biz.github.io/tech_docs/guide/database/db2/db2-learning-material-5.html)
+### [5. テーブル設計とインデックス基礎](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/db2/db2-learning-material-5.html)
 DB2でのテーブル設計の基本的な考え方、インデックスの種類と作成方法、テーブルスペース管理、基本的なパフォーマンス向上のポイントを学習します。
 
-### [6. DB2 組み込み関数とストアドプロシージャ](https://fcircle-biz.github.io/tech_docs/guide/database/db2/db2-learning-material-6.html)
+### [6. DB2 組み込み関数とストアドプロシージャ](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/db2/db2-learning-material-6.html)
 DB2独自の組み込み関数（VARCHAR_FORMAT、COALESCE、CASEなど）、基本的な分析関数、簡単なストアドプロシージャの作成方法を習得します。
 
-### [7. ユーザー管理と基本的なセキュリティ](https://fcircle-biz.github.io/tech_docs/guide/database/db2/db2-learning-material-7.html)
+### [7. ユーザー管理と基本的なセキュリティ](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/db2/db2-learning-material-7.html)
 DB2の基本的なユーザー管理、ロールとグループの概念、基本的なオブジェクト権限とデータベース権限の設定方法を学習します。
 
-### [8. 基本的なデータベース管理操作](https://fcircle-biz.github.io/tech_docs/guide/database/db2/db2-learning-material-8.html)
+### [8. 基本的なデータベース管理操作](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/db2/db2-learning-material-8.html)
 DB2 Export/Importユーティリティを使った基本的なデータ移行、バックアップ・リストア操作、基本的な監視コマンドについて学習します。
 
 ## 学習の進め方

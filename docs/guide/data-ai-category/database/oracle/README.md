@@ -21,28 +21,28 @@ SQLの基礎知識がない場合は、先に[SQL学習ガイド](../sql/README.
 
 ## 学習コンテンツ
 
-### [1. Oracle データベースの基本概念と環境構築](https://fcircle-biz.github.io/tech_docs/guide/database/oracle/oracle-learning-material-1.html)
+### [1. Oracle データベースの基本概念と環境構築](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/oracle/oracle-learning-material-1.html)
 Oracleデータベースの特徴と基本概念、企業向けデータベースとしての位置づけを理解し、Docker を使ったOracle Database 19c/21c環境の構築方法を学習します。
 
-### [2. Docker環境でのOracle セットアップ](https://fcircle-biz.github.io/tech_docs/guide/database/oracle/oracle-learning-material-2.html)
+### [2. Docker環境でのOracle セットアップ](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/oracle/oracle-learning-material-2.html)
 Oracle公式のDocker imagesを使用してOracle Database環境を構築し、コンテナの起動・停止・設定方法を習得します。また、永続化ストレージの設定方法も学びます。
 
-### [3. SQL Developer の導入と基本操作](https://fcircle-biz.github.io/tech_docs/guide/database/oracle/oracle-learning-material-3.html)
+### [3. SQL Developer の導入と基本操作](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/oracle/oracle-learning-material-3.html)
 SQL Developerのインストールから基本的な使い方まで、データベース接続設定、SQLワークシート、オブジェクトブラウザの操作方法を学習します。
 
-### [4. Oracle SQL の基本](https://fcircle-biz.github.io/tech_docs/guide/database/oracle/oracle-learning-material-4.html)
+### [4. Oracle SQL の基本](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/oracle/oracle-learning-material-4.html)
 Oracle固有のSQL文法、データ型、制約、シーケンス、シノニムなど、Oracle SQLの基本的な機能と標準SQLとの違いを理解します。
 
-### [5. テーブル設計とインデックス基礎](https://fcircle-biz.github.io/tech_docs/guide/database/oracle/oracle-learning-material-5.html)
+### [5. テーブル設計とインデックス基礎](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/oracle/oracle-learning-material-5.html)
 Oracleでのテーブル設計の基本的な考え方、Bツリーインデックスの仕組みと作成方法、基本的なパフォーマンス向上のポイントを学習します。
 
-### [6. Oracle 組み込み関数](https://fcircle-biz.github.io/tech_docs/guide/database/oracle/oracle-learning-material-6.html)
+### [6. Oracle 組み込み関数](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/oracle/oracle-learning-material-6.html)
 Oracle独自の組み込み関数（TO_DATE、DECODE、NVLなど）、基本的な分析関数（ROW_NUMBER、RANKなど）を使ったデータ処理手法を習得します。
 
-### [7. ユーザー管理と基本的な権限制御](https://fcircle-biz.github.io/tech_docs/guide/database/oracle/oracle-learning-material-7.html)
+### [7. ユーザー管理と基本的な権限制御](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/oracle/oracle-learning-material-7.html)
 Oracleの基本的なユーザー管理、ロールの概念、基本的なオブジェクト権限とシステム権限の設定方法を学習します。
 
-### [8. 基本的なバックアップ操作](https://fcircle-biz.github.io/tech_docs/guide/database/oracle/oracle-learning-material-8.html)
+### [8. 基本的なバックアップ操作](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/oracle/oracle-learning-material-8.html)
 Data Pumpを使った論理バックアップ・リストアの基本操作、基本的なエクスポート・インポート手順について学習します。
 
 ## 学習の進め方

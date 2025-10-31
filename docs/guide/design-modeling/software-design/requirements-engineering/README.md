@@ -22,34 +22,34 @@
 
 ## 学習コンテンツ
 
-### [1. 要件工学の基礎と重要性](https://fcircle-biz.github.io/tech_docs/guide/software-design/requirements-engineering/requirements-engineering-learning-material-1.html)
+### [1. 要件工学の基礎と重要性](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/requirements-engineering/requirements-engineering-learning-material-1.html)
 要件工学の定義と目的、ソフトウェア開発における位置づけ、要件の種類（機能要件・非機能要件・制約条件）、要件工学プロセスの全体像、要件定義の失敗がもたらす影響とコスト、成功プロジェクトにおける要件管理の重要性について学びます。
 
-### [2. 要件獲得技法（Requirements Elicitation）](https://fcircle-biz.github.io/tech_docs/guide/software-design/requirements-engineering/requirements-engineering-learning-material-2.html)
+### [2. 要件獲得技法（Requirements Elicitation）](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/requirements-engineering/requirements-engineering-learning-material-2.html)
 ステークホルダーから要件を引き出すための各種技法を学びます。インタビュー技法、ワークショップファシリテーション、観察法、プロトタイピング、ブレインストーミング、質問票調査、既存文書分析、ユーザーストーリーマッピングなどの手法と、それぞれの適用場面を習得します。
 
-### [3. EARS（Easy Approach to Requirements Syntax）による要件記述](https://fcircle-biz.github.io/tech_docs/guide/software-design/requirements-engineering/requirements-engineering-learning-material-3.html)
+### [3. EARS（Easy Approach to Requirements Syntax）による要件記述](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/requirements-engineering/requirements-engineering-learning-material-3.html)
 シンプルで明確な要件記述のためのEARS記法を詳しく学びます。「When <条件>, the system shall <動作>」などの構文パターン、Ubiquitous（常時）、Event-driven（イベント駆動）、State-driven（状態駆動）、Optional（オプション）、Unwanted behavior（望ましくない動作）の5つのタイプと使い分けを実践的に習得します。
 
-### [4. ユーザーストーリーとアジャイル要件管理](https://fcircle-biz.github.io/tech_docs/guide/software-design/requirements-engineering/requirements-engineering-learning-material-4.html)
+### [4. ユーザーストーリーとアジャイル要件管理](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/requirements-engineering/requirements-engineering-learning-material-4.html)
 アジャイル開発における要件記述手法を学びます。「As a（役割）, I want（機能）, so that（目的）」形式でのユーザーストーリー作成、受け入れ条件の定義、INVEST原則（Independent、Negotiable、Valuable、Estimable、Small、Testable）、エピックとストーリーの分割、プロダクトバックログ管理について習得します。
 
-### [5. ユースケース図とユースケース記述](https://fcircle-biz.github.io/tech_docs/guide/software-design/requirements-engineering/requirements-engineering-learning-material-5.html)
+### [5. ユースケース図とユースケース記述](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/requirements-engineering/requirements-engineering-learning-material-5.html)
 UMLのユースケース図を使った要件モデリングを学びます。アクターの識別と分類、ユースケースの抽出と命名、システム境界の定義、include/extend/汎化関係の適切な使用、詳細なユースケース記述（事前条件、事後条件、基本フロー、代替フロー、例外フロー）の作成方法を実践的に習得します。
 
-### [6. 要件分析と優先度付け技法](https://fcircle-biz.github.io/tech_docs/guide/software-design/requirements-engineering/requirements-engineering-learning-material-6.html)
+### [6. 要件分析と優先度付け技法](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/requirements-engineering/requirements-engineering-learning-material-6.html)
 収集した要件の分析と優先順位付けの手法を学びます。MoSCoW法（Must have、Should have、Could have、Won't have）による優先度分類、カノモデルによる顧客満足度分析、ペアワイズ比較、100ドルテスト、リスク-価値マトリクス、依存関係分析、実現可能性評価の技法を習得します。
 
-### [7. 非機能要件の定義と管理](https://fcircle-biz.github.io/tech_docs/guide/software-design/requirements-engineering/requirements-engineering-learning-material-7.html)
+### [7. 非機能要件の定義と管理](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/requirements-engineering/requirements-engineering-learning-material-7.html)
 システムの品質特性に関する非機能要件を体系的に学びます。ISO/IEC 25010品質モデル、性能要件（レスポンスタイム、スループット、リソース使用率）、セキュリティ要件、可用性・信頼性要件、使いやすさ要件、保守性・移植性要件の定義方法と、測定可能な指標の設定について習得します。
 
-### [8. 要件の検証と妥当性確認](https://fcircle-biz.github.io/tech_docs/guide/software-design/requirements-engineering/requirements-engineering-learning-material-8.html)
+### [8. 要件の検証と妥当性確認](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/requirements-engineering/requirements-engineering-learning-material-8.html)
 要件の品質を確保するための検証・妥当性確認技法を学びます。要件レビューの実施方法、チェックリストによる検証、プロトタイプによる妥当性確認、モデル検証、トレーサビリティ分析、要件の曖昧性・矛盾・重複の検出、テストケースによる要件の検証可能性確認について習得します。
 
-### [9. 要件変更管理とトレーサビリティ](https://fcircle-biz.github.io/tech_docs/guide/software-design/requirements-engineering/requirements-engineering-learning-material-9.html)
+### [9. 要件変更管理とトレーサビリティ](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/requirements-engineering/requirements-engineering-learning-material-9.html)
 プロジェクト全体を通じた要件管理の手法を学びます。要件変更管理プロセス、変更要求の評価と影響分析、要件ベースライン管理、要件トレーサビリティマトリクス（RTM）の作成と活用、上流から下流への要件追跡、変更履歴管理、構成管理との連携について実践的に習得します。
 
-### [10. 実践的な要件定義書作成演習](https://fcircle-biz.github.io/tech_docs/guide/software-design/requirements-engineering/requirements-engineering-learning-material-10.html)
+### [10. 実践的な要件定義書作成演習](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/requirements-engineering/requirements-engineering-learning-material-10.html)
 実際のシステム開発を想定した総合演習を行います。ECサイト、在庫管理システム、予約システムなどのケーススタディを通じて、要件獲得から要件定義書作成、レビュー、変更管理まで、要件工学の全プロセスを実践します。業界標準のテンプレートを使用した文書作成も習得します。
 
 ## 学習の進め方
@@ -72,7 +72,7 @@ UMLのユースケース図を使った要件モデリングを学びます。�
 
 ## 関連リソース
 
-- [UMLモデリング学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/software-design/uml/README.html)
+- [UMLモデリング学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/README.html)
 - [アジャイル開発実践ガイド](https://fcircle-biz.github.io/tech_docs/guide/agile/scrum/README.html)
 - [プロジェクト管理チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/pm/project-management-cheatsheet.html)
 - [ビジネスアナリシス入門](https://fcircle-biz.github.io/tech_docs/guide/business-analysis/ba-fundamentals/README.html)

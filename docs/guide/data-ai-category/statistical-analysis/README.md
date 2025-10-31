@@ -27,7 +27,7 @@
 
 ## 学習コンテンツ
 
-### [1. 統計解析入門と環境構築](https://fcircle-biz.github.io/tech_docs/guide/statistical-analysis/statistical-analysis-learning-material-1.html)
+### [1. 統計解析入門と環境構築](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/statistical-analysis/statistical-analysis-learning-material-1.html)
 統計解析とは何か、その重要性と活用場面を理解し、RとPythonの開発環境をセットアップします。基本的なデータの読み込みと表示方法を学習します。
 
 **学習目標:**
@@ -67,7 +67,7 @@
 - データの基本情報（行数、列数、列名）の取得
 - 簡単なデータ操作（列の抽出、行のフィルタリング）
 
-### [2. 記述統計学の基礎](https://fcircle-biz.github.io/tech_docs/guide/statistical-analysis/statistical-analysis-learning-material-2.html)
+### [2. 記述統計学の基礎](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/statistical-analysis/statistical-analysis-learning-material-2.html)
 データの中心傾向（平均、中央値、最頻値）、ばらつき（分散、標準偏差、範囲）を理解し、ヒストグラムや箱ひげ図を使ったデータの視覚化方法を学習します。
 
 **学習目標:**
@@ -107,7 +107,7 @@
 - 外れ値の検出と処理方法の検討
 - データ分布の視覚化と特徴の記述
 
-### [3. 確率の基礎と確率分布](https://fcircle-biz.github.io/tech_docs/guide/statistical-analysis/statistical-analysis-learning-material-3.html)
+### [3. 確率の基礎と確率分布](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/statistical-analysis/statistical-analysis-learning-material-3.html)
 確率の基本概念、正規分布、二項分布、ポアソン分布などの主要な確率分布を理解し、実データへの当てはめ方法を学習します。
 
 **学習目標:**
@@ -158,7 +158,7 @@
 - ポアソン分布による事象発生率の分析（例：時間当たりの来客数）
 - 実データへの確率分布の当てはめと適合度評価
 
-### [4. 推測統計の基礎](https://fcircle-biz.github.io/tech_docs/guide/statistical-analysis/statistical-analysis-learning-material-4.html)
+### [4. 推測統計の基礎](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/statistical-analysis/statistical-analysis-learning-material-4.html)
 標本と母集団の関係、標本分布、中心極限定理を理解し、点推定と区間推定（信頼区間）の方法を学習します。
 
 **学習目標:**
@@ -205,7 +205,7 @@
 - 母比率の信頼区間の計算（例：支持率調査）
 - 必要標本サイズの計算（目標精度の設定）
 
-### [5. 仮説検定の基礎](https://fcircle-biz.github.io/tech_docs/guide/statistical-analysis/statistical-analysis-learning-material-5.html)
+### [5. 仮説検定の基礎](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/statistical-analysis/statistical-analysis-learning-material-5.html)
 仮説検定の基本的な考え方、帰無仮説と対立仮説、有意水準とp値を理解し、1標本t検定、2標本t検定、対応のあるt検定を実行します。
 
 **学習目標:**
@@ -253,7 +253,7 @@
 - トレーニング前後の成績の比較（対応のあるt検定）
 - p値の解釈と統計的有意性の判断
 
-### [6. 分散分析とカイ二乗検定](https://fcircle-biz.github.io/tech_docs/guide/statistical-analysis/statistical-analysis-learning-material-6.html)
+### [6. 分散分析とカイ二乗検定](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/statistical-analysis/statistical-analysis-learning-material-6.html)
 3群以上の平均値の比較を行う分散分析（ANOVA）、多重比較法、カテゴリカルデータの分析を行うカイ二乗検定を学習します。
 
 **学習目標:**
@@ -304,7 +304,7 @@
 - 性別と商品嗜好の関連性の分析（カイ二乗独立性検定）
 - 観測度数と期待度数の比較（適合度検定）
 
-### [7. 相関と回帰分析](https://fcircle-biz.github.io/tech_docs/guide/statistical-analysis/statistical-analysis-learning-material-7.html)
+### [7. 相関と回帰分析](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/statistical-analysis/statistical-analysis-learning-material-7.html)
 2変数間の関係性を分析する相関分析、予測モデルを構築する単回帰分析と重回帰分析、モデルの評価方法を学習します。
 
 **学習目標:**
@@ -356,7 +356,7 @@
 - 複数要因を考慮した住宅価格の予測（重回帰分析）
 - モデルの診断と改善（残差分析、変数変換）
 
-### [8. 多変量解析入門](https://fcircle-biz.github.io/tech_docs/guide/statistical-analysis/statistical-analysis-learning-material-8.html)
+### [8. 多変量解析入門](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/statistical-analysis/statistical-analysis-learning-material-8.html)
 多数の変数を同時に分析する手法として、主成分分析（PCA）、因子分析、クラスター分析を学習し、データの次元削減とパターン発見を行います。
 
 **学習目標:**
@@ -409,7 +409,7 @@
 - 顧客セグメンテーション（クラスター分析）
 - クラスターの特徴プロファイリング
 
-### [9. ベイズ統計と時系列分析](https://fcircle-biz.github.io/tech_docs/guide/statistical-analysis/statistical-analysis-learning-material-9.html)
+### [9. ベイズ統計と時系列分析](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/statistical-analysis/statistical-analysis-learning-material-9.html)
 ベイズの定理に基づくベイズ統計の基礎、時系列データの特徴と分析手法、トレンド・季節性・周期性の分析を学習します。
 
 **学習目標:**
@@ -462,7 +462,7 @@
 - 売上データの自己相関分析
 - 簡単な時系列予測モデルの構築
 
-### [10. ノンパラメトリック検定と実践プロジェクト](https://fcircle-biz.github.io/tech_docs/guide/statistical-analysis/statistical-analysis-learning-material-10.html)
+### [10. ノンパラメトリック検定と実践プロジェクト](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/statistical-analysis/statistical-analysis-learning-material-10.html)
 正規性の仮定が不要なノンパラメトリック検定（ウィルコクソン検定、マン・ホイットニーのU検定、クラスカル・ウォリス検定）を学び、総合的な統計解析プロジェクトを実施します。
 
 **学習目標:**

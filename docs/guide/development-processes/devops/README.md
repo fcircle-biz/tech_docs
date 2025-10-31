@@ -40,34 +40,34 @@
 
 ## 学習コンテンツ
 
-### [1. DevOpsの基礎と文化 - 現代的なソフトウェア開発・運用の理解](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/devops/devops-learning-material-1.html)
+### [1. DevOpsの基礎と文化 - 現代的なソフトウェア開発・運用の理解](https://fcircle-biz.github.io/tech_docs/guide/development-processes/devops/devops-learning-material-1.html)
 DevOpsの概念、歴史、文化的側面について学びます。DevOpsとは何か（開発と運用の統合）、DevOpsが生まれた背景（ウォーターフォール開発の課題、アジャイル開発の限界）、DevOpsの3つの道（フロー、フィードバック、継続的学習）、DevOpsがもたらすメリット（デリバリー速度の向上、品質改善、コラボレーション強化）、DevOpsの主要原則（自動化、測定、共有、継続的改善）、従来のITオペレーションとDevOpsの違い、DevOps文化の醸成方法（サイロの破壊、責任の共有、失敗から学ぶ文化）、DevOpsチームの構成と役割、主要なDevOpsツールエコシステムの概要について詳しく解説します。実際の企業でのDevOps導入事例も紹介します。
 
-### [2. バージョン管理とGit戦略 - 効果的なコラボレーションの基盤](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/devops/devops-learning-material-2.html)
+### [2. バージョン管理とGit戦略 - 効果的なコラボレーションの基盤](https://fcircle-biz.github.io/tech_docs/guide/development-processes/devops/devops-learning-material-2.html)
 Gitを使った効果的なバージョン管理とブランチ戦略について学びます。Gitの基本概念の復習（リポジトリ、コミット、ブランチ、マージ）、Gitワークフローの種類（Git Flow、GitHub Flow、GitLab Flow、Trunk Based Development）、ブランチ戦略のベストプラクティス、プルリクエスト/マージリクエストのプロセス、コードレビューの重要性と実践方法、コミットメッセージの書き方規約（Conventional Commits）、.gitignoreとGit属性の活用、Git Hooks（pre-commit、pre-push）、マージコンフリクトの解決戦略、Gitタグとリリース管理、モノレポ vs マルチレポの選択、実践：チーム開発シミュレーション（フィーチャーブランチ、レビュー、マージ）について解説します。効果的なチーム開発の基盤を構築できます。
 
-### [3. CI/CD基礎 - 継続的インテグレーションとデリバリー](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/devops/devops-learning-material-3.html)
+### [3. CI/CD基礎 - 継続的インテグレーションとデリバリー](https://fcircle-biz.github.io/tech_docs/guide/development-processes/devops/devops-learning-material-3.html)
 CI/CDの概念と基本的なパイプライン構築について学びます。CI/CDとは何か（継続的インテグレーション、継続的デリバリー、継続的デプロイメントの違い）、CI/CDがもたらすメリット（早期バグ発見、デプロイ頻度の向上、リスク削減）、CI/CDパイプラインの構成要素（ソース、ビルド、テスト、デプロイ）、主要なCI/CDツール（GitHub Actions、GitLab CI/CD、Jenkins、CircleCI、Travis CI）、GitHub Actionsの基礎（ワークフロー、ジョブ、ステップ、アクション）、YAML設定ファイルの記述方法、基本的なビルドパイプラインの作成、自動テストの統合（ユニットテスト、インテグレーションテスト）、ビルドアーティファクトの管理、環境変数とシークレット管理、実践プロジェクト：Node.js/Python/Java アプリの基本CI構築について解説します。自動化されたビルドとテストのプロセスを構築できるようになります。
 
-### [4. コンテナ技術とDocker - アプリケーションのパッケージング](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/devops/devops-learning-material-4.html)
+### [4. コンテナ技術とDocker - アプリケーションのパッケージング](https://fcircle-biz.github.io/tech_docs/guide/development-processes/devops/devops-learning-material-4.html)
 Dockerを使ったコンテナ化とDevOpsワークフローへの統合について学びます。コンテナ技術の復習（イメージ、コンテナ、レジストリ）、DevOpsにおけるコンテナの役割（環境の一貫性、移植性、迅速なデプロイ）、Dockerfileのベストプラクティス（マルチステージビルド、レイヤー最適化、セキュリティ）、コンテナイメージのタグ戦略（latest、セマンティックバージョニング、Git SHA）、コンテナレジストリの活用（Docker Hub、AWS ECR、Google GCR、Azure ACR、GitHub Container Registry）、Docker Composeによる開発環境の標準化、CI/CDパイプラインでのDockerイメージビルド自動化、イメージの脆弱性スキャン（Trivy、Snyk）、マルチアーキテクチャイメージのビルド（AMD64、ARM64）、実践プロジェクト：アプリケーションのコンテナ化とレジストリへの自動プッシュについて解説します。コンテナ技術をDevOpsワークフローに統合できるようになります。
 
-### [5. Kubernetesとコンテナオーケストレーション - スケーラブルなデプロイメント](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/devops/devops-learning-material-5.html)
+### [5. Kubernetesとコンテナオーケストレーション - スケーラブルなデプロイメント](https://fcircle-biz.github.io/tech_docs/guide/development-processes/devops/devops-learning-material-5.html)
 Kubernetesを使ったコンテナオーケストレーションの基礎を学びます。Kubernetesとは何か（コンテナオーケストレーションの必要性）、Kubernetesアーキテクチャ（マスターノード、ワーカーノード、コントロールプレーン）、主要なKubernetesリソース（Pod、Deployment、Service、ConfigMap、Secret）、Kubernetesマニフェストファイルの記述（YAML定義）、kubectl コマンドの基本操作、ローカル開発環境（Minikube、Kind、Docker Desktop Kubernetes）、名前空間によるリソース分離、ラベルとセレクタによるリソース管理、Serviceの種類（ClusterIP、NodePort、LoadBalancer、Ingress）、ConfigMapとSecretによる設定管理、ヘルスチェック（Liveness/Readiness Probe）、リソース制限（CPU、メモリ）、実践プロジェクト：マイクロサービスアプリケーションのKubernetesデプロイについて解説します。Kubernetesの基本概念と操作を習得できます。
 
-### [6. Infrastructure as Code (IaC) - インフラの自動化とコード管理](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/devops/devops-learning-material-6.html)
+### [6. Infrastructure as Code (IaC) - インフラの自動化とコード管理](https://fcircle-biz.github.io/tech_docs/guide/development-processes/devops/devops-learning-material-6.html)
 TerraformとAnsibleを使ったインフラ自動化について学びます。Infrastructure as Codeとは何か（インフラをコードで管理するメリット）、IaCの原則（宣言的構成、べき等性、バージョン管理）、主要なIaCツール（Terraform、Ansible、CloudFormation、Pulumi）、Terraformの基礎（プロバイダー、リソース、変数、出力、状態管理）、HCL（HashiCorp Configuration Language）の記述方法、Terraformワークフロー（init、plan、apply、destroy）、Terraformモジュールの作成と再利用、リモート状態管理（S3、Terraform Cloud）、Ansibleの基礎（インベントリ、Playbook、タスク、ハンドラー、ロール）、AnsibleとTerraformの使い分け（プロビジョニング vs 構成管理）、IaCのベストプラクティス（ディレクトリ構造、環境分離、シークレット管理）、実践プロジェクト：AWSインフラのコード化（VPC、EC2、RDS等）について解説します。インフラを自動化し、再現可能な環境構築ができるようになります。
 
-### [7. クラウドプラットフォームとDevOps - AWS/Azure/GCPの活用](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/devops/devops-learning-material-7.html)
+### [7. クラウドプラットフォームとDevOps - AWS/Azure/GCPの活用](https://fcircle-biz.github.io/tech_docs/guide/development-processes/devops/devops-learning-material-7.html)
 主要クラウドプラットフォームのDevOpsサービスと活用方法を学びます。クラウドネイティブとは何か（スケーラビリティ、弾力性、可用性）、AWS DevOpsサービス（CodePipeline、CodeBuild、CodeDeploy、ECS、EKS、Lambda）、Azure DevOpsサービス（Azure Pipelines、Azure Kubernetes Service、Azure DevOps）、GCP DevOpsサービス（Cloud Build、GKE、Cloud Run、Cloud Deploy）、マネージドKubernetesサービスの比較（EKS vs AKS vs GKE）、サーバーレスアーキテクチャとDevOps（AWS Lambda、Azure Functions、Google Cloud Functions）、クラウドネイティブCI/CD（クラウドネイティブビルド、デプロイ戦略）、マルチクラウド戦略とハイブリッドクラウド、クラウドコスト最適化（リソースタグ付け、自動スケーリング、スポットインスタンス）、クラウドセキュリティの基礎（IAM、ネットワークセキュリティグループ、暗号化）、実践プロジェクト：クラウドネイティブアプリケーションのデプロイパイプライン構築について解説します。クラウドプラットフォームを活用した効率的なDevOps実践ができるようになります。
 
-### [8. モニタリング、ロギング、オブザーバビリティ - システムの可視化](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/devops/devops-learning-material-8.html)
+### [8. モニタリング、ロギング、オブザーバビリティ - システムの可視化](https://fcircle-biz.github.io/tech_docs/guide/development-processes/devops/devops-learning-material-8.html)
 システムの監視、ログ管理、オブザーバビリティの実践方法を学びます。モニタリングとオブザーバビリティの違い（メトリクス、ログ、トレース）、モニタリングの4つのゴールデンシグナル（レイテンシ、トラフィック、エラー、飽和度）、Prometheusによるメトリクス収集（アーキテクチャ、PromQL、Exporter、アラート）、Grafanaによる可視化（ダッシュボード作成、データソース連携、アラート通知）、ロギング戦略（集中ログ管理の重要性、ログレベル、構造化ログ）、ELKスタック（Elasticsearch、Logstash、Kibana）とログ分析、Fluentd/Fluent Bitによるログ収集、分散トレーシング（Jaeger、Zipkin、OpenTelemetry）、アラート管理（アラート疲労の回避、エスカレーションポリシー、on-callローテーション）、SLI/SLO/SLAの設定（サービスレベル目標の定義）、クラウドネイティブモニタリング（CloudWatch、Azure Monitor、Cloud Monitoring）、実践プロジェクト：完全なオブザーバビリティスタックの構築について解説します。システムの健全性を監視し、問題を早期発見できるようになります。
 
-### [9. セキュリティとDevSecOps - セキュリティの組み込み](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/devops/devops-learning-material-9.html)
+### [9. セキュリティとDevSecOps - セキュリティの組み込み](https://fcircle-biz.github.io/tech_docs/guide/development-processes/devops/devops-learning-material-9.html)
 DevSecOps（セキュリティを組み込んだDevOps）の実践方法を学びます。DevSecOpsとは何か（セキュリティシフトレフト、開発ライフサイクル全体でのセキュリティ）、脅威モデリングとリスク評価、セキュアコーディングプラクティス、静的アプリケーションセキュリティテスト（SAST）（SonarQube、Checkmarx）、動的アプリケーションセキュリティテスト（DAST）、ソフトウェアコンポジション解析（SCA - 依存関係の脆弱性スキャン）、コンテナイメージのセキュリティスキャン（Trivy、Clair、Anchore）、シークレット管理（Vault、AWS Secrets Manager、Azure Key Vault）、CI/CDパイプラインへのセキュリティゲート統合、コンプライアンスと監査（SOC2、ISO27001、GDPR対応）、インフラセキュリティ（ネットワークセグメンテーション、最小権限の原則）、ランタイムセキュリティ（Falco、セキュリティポリシー）、インシデント対応計画、実践プロジェクト：セキュアなCI/CDパイプラインの構築について解説します。セキュリティを最初から組み込んだDevOpsプラクティスを実践できるようになります。
 
-### [10. DevOps実践とベストプラクティス - 本番運用とチーム成熟度向上](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/devops/devops-learning-material-10.html)
+### [10. DevOps実践とベストプラクティス - 本番運用とチーム成熟度向上](https://fcircle-biz.github.io/tech_docs/guide/development-processes/devops/devops-learning-material-10.html)
 実践的なDevOps運用とチームの成熟度向上について学びます。デプロイメント戦略（Blue-Green Deployment、Canary Deployment、Rolling Update、Feature Flags）、カオスエンジニアリングの基礎（Chaos Monkey、障害注入テスト）、ディザスタリカバリとバックアップ戦略、GitOpsの実践（ArgoCD、Flux、宣言的デプロイメント）、Platform Engineering（内部開発者プラットフォームの構築）、DevOpsメトリクスの測定（DORA Metrics - デプロイ頻度、変更のリードタイム、MTTR、変更失敗率）、ポストモーテム文化（障害から学ぶ、非難しない文化）、継続的改善プロセス（レトロスペクティブ、カイゼン）、チームトポロジーとコミュニケーション構造、DevOps成熟度モデル、スケーリングDevOps（大規模組織での実践）、DevOpsツールチェーンの最適化、次世代技術（WebAssembly、eBPF、Service Mesh）、実践プロジェクト：エンドツーエンドDevOpsパイプラインの完成について解説します。実務レベルでのDevOps運用と継続的改善ができるようになります。
 
 ## 学習の進め方

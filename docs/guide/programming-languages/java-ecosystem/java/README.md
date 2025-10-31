@@ -4,28 +4,28 @@
 
 ## 学習コンテンツ
 
-### [1. Java基礎](https://fcircle-biz.github.io/tech_docs/guide/java-ecosystem/java/java-learning-material-1.html)
+### [1. Java基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-1.html)
 Java言語の概要、JDKのインストール、開発環境のセットアップから最初のプログラム作成と実行の仕組みを解説します。
 
-### [2. Java言語の基本](https://fcircle-biz.github.io/tech_docs/guide/java-ecosystem/java/java-learning-material-2.html)
+### [2. Java言語の基本](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-2.html)
 変数、データ型、演算子、条件分岐、ループ構造、配列など、Java言語の基本構文要素を学びます。
 
-### [3. オブジェクト指向プログラミング入門](https://fcircle-biz.github.io/tech_docs/guide/java-ecosystem/java/java-learning-material-3.html)
+### [3. オブジェクト指向プログラミング入門](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-3.html)
 クラスとオブジェクト、フィールド、メソッド、コンストラクタ、アクセス修飾子、カプセル化の基本概念を解説します。
 
-### [4. オブジェクト指向プログラミング応用](https://fcircle-biz.github.io/tech_docs/guide/java-ecosystem/java/java-learning-material-4.html)
+### [4. オブジェクト指向プログラミング応用](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-4.html)
 継承、メソッドオーバーライド、ポリモーフィズム、抽象クラス、インターフェース、パッケージなど高度な概念を学びます。
 
-### [5. Java API基礎](https://fcircle-biz.github.io/tech_docs/guide/java-ecosystem/java/java-learning-material-5.html)
+### [5. Java API基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-5.html)
 String操作、Math/Random、日付時間処理、コレクションフレームワーク（リスト、セット、マップ）などの標準ライブラリを解説します。
 
-### [6. 例外処理](https://fcircle-biz.github.io/tech_docs/guide/java-ecosystem/java/java-learning-material-6.html)
+### [6. 例外処理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-6.html)
 try-catch構文、例外の種類、例外のスローと伝播、独自例外クラスの作成など例外処理の仕組みを学びます。
 
-### [7. 入出力操作](https://fcircle-biz.github.io/tech_docs/guide/java-ecosystem/java/java-learning-material-7.html)
+### [7. 入出力操作](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-7.html)
 ファイル操作、ストリーム処理、バッファリング、オブジェクトのシリアル化、Java NIOの基礎を解説します。
 
-### [8. コレクションフレームワーク応用](https://fcircle-biz.github.io/tech_docs/guide/java-ecosystem/java/java-learning-material-8.html)
+### [8. コレクションフレームワーク応用](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-8.html)
 イテレータ、ジェネリクス、比較インターフェース、ラムダ式、Stream API、Optionalクラスなど高度なコレクション操作を学びます。
 
 ## 学習の進め方

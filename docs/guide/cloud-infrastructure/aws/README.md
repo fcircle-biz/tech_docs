@@ -32,7 +32,7 @@
 
 ## 学習コンテンツ
 
-### [1. AWS入門とアカウント設定](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/aws/aws-learning-material-1.html)
+### [1. AWS入門とアカウント設定](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-1.html)
 クラウドコンピューティングの基本概念とAWSの全体像を理解し、AWSアカウントを作成してマネジメントコンソールの基本操作を習得します。
 
 **学習目標:**
@@ -77,7 +77,7 @@
 
 ---
 
-### [2. コンピューティングとネットワークの基礎（EC2・VPC）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/aws/aws-learning-material-2.html)
+### [2. コンピューティングとネットワークの基礎（EC2・VPC）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-2.html)
 AWSの仮想サーバーサービスであるEC2の基本から、仮想ネットワークであるVPCの設計・構築方法を学習します。
 
 **学習目標:**
@@ -125,7 +125,7 @@ AWSの仮想サーバーサービスであるEC2の基本から、仮想ネッ�
 
 ---
 
-### [3. ストレージサービス（S3・EBS）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/aws/aws-learning-material-3.html)
+### [3. ストレージサービス（S3・EBS）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-3.html)
 AWSの主要なストレージサービスであるS3（オブジェクトストレージ）とEBS（ブロックストレージ）の特徴と使い方を学習します。
 
 **学習目標:**
@@ -181,7 +181,7 @@ AWSの主要なストレージサービスであるS3（オブジェクトスト
 
 ---
 
-### [4. データベースサービス（RDS・DynamoDB）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/aws/aws-learning-material-4.html)
+### [4. データベースサービス（RDS・DynamoDB）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-4.html)
 AWSが提供するマネージドデータベースサービス（RDS、DynamoDB）の特徴と使い方、データベース設計のベストプラクティスを学習します。
 
 **学習目標:**
@@ -241,7 +241,7 @@ AWSが提供するマネージドデータベースサービス（RDS、DynamoDB
 
 ---
 
-### [5. ネットワークとコンテンツ配信（CloudFront・Route 53）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/aws/aws-learning-material-5.html)
+### [5. ネットワークとコンテンツ配信（CloudFront・Route 53）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-5.html)
 グローバルなコンテンツ配信を実現するCloudFrontと、DNSサービスであるRoute 53を使った高速で信頼性の高いネットワーク構成を学習します。
 
 **学習目標:**
@@ -302,7 +302,7 @@ AWSが提供するマネージドデータベースサービス（RDS、DynamoDB
 
 ---
 
-### [6. セキュリティとアクセス管理（IAM）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/aws/aws-learning-material-6.html)
+### [6. セキュリティとアクセス管理（IAM）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-6.html)
 AWSにおける認証と認可の仕組みを理解し、IAMを使ったセキュアなアクセス制御、暗号化、コンプライアンスのベストプラクティスを学習します。
 
 **学習目標:**
@@ -365,7 +365,7 @@ AWSにおける認証と認可の仕組みを理解し、IAMを使ったセキ�
 
 ---
 
-### [7. 監視と運用管理（CloudWatch・CloudTrail）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/aws/aws-learning-material-7.html)
+### [7. 監視と運用管理（CloudWatch・CloudTrail）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-7.html)
 AWSリソースの監視、ログ管理、アラート設定、自動化による運用効率化の方法を学習します。
 
 **学習目標:**
@@ -428,7 +428,7 @@ AWSリソースの監視、ログ管理、アラート設定、自動化によ�
 
 ---
 
-### [8. サーバーレスコンピューティング（Lambda・API Gateway）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/aws/aws-learning-material-8.html)
+### [8. サーバーレスコンピューティング（Lambda・API Gateway）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-8.html)
 サーバー管理不要のサーバーレスアーキテクチャを学び、Lambda関数の作成からAPI Gateway、イベント駆動型アーキテクチャまでを実装します。
 
 **学習目標:**
@@ -494,7 +494,7 @@ AWSリソースの監視、ログ管理、アラート設定、自動化によ�
 
 ---
 
-### [9. コンテナサービス（ECS・EKS）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/aws/aws-learning-material-9.html)
+### [9. コンテナサービス（ECS・EKS）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-9.html)
 コンテナ技術とAWSのコンテナオーケストレーションサービス（ECS、EKS）を学び、マイクロサービスアーキテクチャの実装を習得します。
 
 **学習目標:**
@@ -558,7 +558,7 @@ AWSリソースの監視、ログ管理、アラート設定、自動化によ�
 
 ---
 
-### [10. ベストプラクティスとコスト最適化](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/aws/aws-learning-material-10.html)
+### [10. ベストプラクティスとコスト最適化](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-10.html)
 AWS Well-Architected Frameworkに基づくベストプラクティス、コスト最適化手法、アーキテクチャ設計のパターンを学習します。
 
 **学習目標:**
@@ -751,7 +751,7 @@ AWS Well-Architected Frameworkに基づくベストプラクティス、コス�
 
 ## 始めてみよう
 
-準備ができたら、さっそく[第1章：AWS入門とアカウント設定](https://fcircle-biz.github.io/tech_docs/guide/cloud-infra/aws/aws-learning-material-1.html)から始めてみましょう！
+準備ができたら、さっそく[第1章：AWS入門とアカウント設定](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-1.html)から始めてみましょう！
 
 ### 最初の一歩
 
