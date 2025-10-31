@@ -21,8 +21,6 @@
 - **推奨**: リレーショナルデータベースの基本概念
 - **推奨**: オブジェクト指向プログラミングの基礎
 
-SQLの基礎知識がない場合は、先に[SQL学習ガイド](../sql/README.md)を学習することをお勧めします。
-
 ## 学習コンテンツ
 
 ### [1. SQLAlchemy入門と環境構築](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/sqlalchemy/python-sqlalchemy-learning-material-01.html)
@@ -68,8 +66,7 @@ Flask/FastAPIとの統合、コネクションプーリング、セキュリテ�
 
 ## 関連リソース
 
-- [Python学習ガイド](../../python-ecosystem/python/README.md) - Python基礎の学習ガイド
-- [SQL学習ガイド](../sql/README.md) - SQL基礎の学習ガイド（SQLAlchemy学習の前提知識）
+- [Python学習ガイド](../python/README.md) - Python基礎の学習ガイド
 - [SQL チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/databases/sql-cheatsheet.html) - SQL文の基本的な構文をまとめた参考資料
 
 ## 学習目標
@@ -91,6 +88,5 @@ Flask/FastAPIとの統合、コネクションプーリング、セキュリテ�
 
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
 
-- [FastAPI学習ガイドライン] - PythonのモダンなWebフレームワーク学習
-- [PostgreSQL学習ガイドライン] - 高度なデータベース機能の学習
-- [Django ORM学習ガイドライン] - Django フレームワークでのORM活用
+- [FastAPI学習ガイドライン](../fastapi/README.md) - PythonのモダンなWebフレームワーク学習
+- [Django学習ガイドライン](../django/README.md) - Django フレームワークでのORM活用

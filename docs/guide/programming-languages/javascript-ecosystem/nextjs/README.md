@@ -71,7 +71,6 @@ Vercelへのデプロイ、環境変数管理、本番ビルド最適化、カ�
 ## 関連リソース
 - [JavaScript中級学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/README.html)
 - [React学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/README.html)
-- [TypeScript学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/README.html)
 - [JavaScript基礎チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/javascript/javascript-cheatsheet.html)
 - [React Hooksチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/javascript/react-hooks-cheatsheet.html)
 
@@ -90,7 +89,4 @@ Vercelへのデプロイ、環境変数管理、本番ビルド最適化、カ�
 - Core Web Vitalsを意識したユーザー体験の良いWebアプリケーションを開発できる
 
 ## 次のステップ
-このガイドライン完了後は、以下の学習に進むことをお勧めします：
-- [TypeScript + Next.js フルスタック開発](https://fcircle-biz.github.io/tech_docs/guide/fullstack/nextjs-typescript/README.html)
-- [Next.js + Prisma データベース統合](https://fcircle-biz.github.io/tech_docs/guide/database/prisma-nextjs/README.html)
-- [React Native でモバイルアプリ開発](https://fcircle-biz.github.io/tech_docs/guide/mobile/react-native/README.html)
+このガイドライン完了後は、さらに高度なWeb開発技術やフレームワークの学習に進むことをお勧めします。TypeScriptの型安全性を活用した開発や、データベース統合、モバイルアプリ開発など、実践的なスキルを身につけることができます。

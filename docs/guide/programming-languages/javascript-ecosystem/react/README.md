@@ -75,7 +75,6 @@ Context APIを使用したグローバル状態管理、useContextフック、�
 - [JavaScript初級学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/README.html)
 - [JavaScript中級学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/README.html)
 - [Next.js学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nextjs/README.html)
-- [TypeScript学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/README.html)
 - [JavaScript基礎チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/javascript/javascript-cheatsheet.html)
 - [React Hooksチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/javascript/react-hooks-cheatsheet.html)
 - [ES6+チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/javascript/es6-cheatsheet.html)
@@ -99,6 +98,3 @@ Context APIを使用したグローバル状態管理、useContextフック、�
 ## 次のステップ
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
 - [Next.js学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nextjs/README.html) - ReactベースのフルスタックフレームワークでSEOとパフォーマンスを最適化
-- [TypeScript学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/README.html) - 型安全性を導入してより堅牢なReactアプリケーションを開発
-- [Redux学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/state-management/redux/README.html) - 大規模アプリケーション向けの状態管理
-- [React Native学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/mobile/react-native/README.html) - Reactの知識を活かしてモバイルアプリ開発に挑戦
