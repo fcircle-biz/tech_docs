@@ -60,7 +60,23 @@ color: purple
 - [関連する上級ガイドラインへのリンク]
 ```
 
-3. **適切なリンク形式の適用**: GitHub Pages形式 `https://fcircle-biz.github.io/guide/[分野]/[技術]/[ファイル名].html` を使用し、ディレクトリ構造 `/docs/guide/[分野]/[技術]/` に従います。
+3. **適切なリンク形式の適用**:
+   - **必須**: 新しいガイドライン作成前に、必ず `/tech-knowledge-map.md` を参照して、対象技術がどの分類に属するかを確認してください
+   - **分類体系**: tech-knowledge-map.mdに定義された9つの主要分類のいずれかに配置します：
+     1. プログラミング言語 (`programming-languages/[エコシステム]/[技術]/`)
+     2. Web技術 (`web-technologies/[技術]/`)
+     3. 開発手法・プロセス (`development-processes/[技術]/`)
+     4. 設計手法・モデリング (`design-modeling/[カテゴリ]/[技術]/`)
+     5. クラウド／インフラ (`cloud-infrastructure/[技術]/`)
+     6. データ／AI (`data-ai-category/[カテゴリ]/[技術]/`)
+     7. 業務SaaS／プラットフォーム (`business-saas/[技術]/`)
+     8. 資格・認定試験 (`certification/[試験名]/`)
+     9. 業務知識・スキル (`business-domain-knowledge/[分野]/`)
+   - **例**: Pythonの場合 → `programming-languages/python-ecosystem/python/`
+   - **例**: AWSの場合 → `cloud-infrastructure/aws/`
+   - **例**: 機械学習の場合 → `data-ai-category/data-ai/machine-learning/`
+   - GitHub Pages URL形式: `https://fcircle-biz.github.io/tech_docs/guide/[分類パス]/[ファイル名].html`
+   - ディレクトリ構造: `/docs/guide/[分類パス]/`
 
 4. **初心者向け設計**: 明確な前提条件、論理的進行、実践的な学習目標を持つ、技術の新規学習者に特別に調整されたコンテンツを作成します。
 
@@ -71,9 +87,15 @@ color: purple
 7. **実践的要素の組み込み**: 実践的な演習、実世界の応用、測定可能な学習成果を組み込みます。
 
 8. **一貫性の維持**: 以下の確立された標準に従います：
-   - ファイル命名規則：`[技術名]-learning-material-[章番号].html`
-   - ディレクトリ構造：`/docs/guide/[分野]/[技術]/`
-   - GitHub Pages URL形式：`https://fcircle-biz.github.io/tech_docs/guide/[分野]/[技術]/[ファイル名].html`
-   - 小文字とハイフンを使用、章番号は1から開始
+   - **ファイル命名規則**: `[技術名]-learning-material-[章番号].html`
+   - **ディレクトリ構造**: `/docs/guide/[tech-knowledge-map.mdに基づく分類パス]/`
+     - 必ず `/docs/guide/README.md` の分類体系と `/tech-knowledge-map.md` を参照してパスを決定
+     - エコシステム単位で構成（例: `python-ecosystem/`, `java-ecosystem/`）
+   - **GitHub Pages URL形式**: `https://fcircle-biz.github.io/tech_docs/guide/[分類パス]/[ファイル名].html`
+   - **命名規則**: 小文字とハイフン(kebab-case)を使用、章番号は1から開始
+   - **パス例**:
+     - Python Django: `/docs/guide/programming-languages/python-ecosystem/django/`
+     - AWS: `/docs/guide/cloud-infrastructure/aws/`
+     - Excel VBA: `/docs/guide/business-saas/vba/`
 
 初心者向けの完全なロードマップとして機能する包括的な学習ガイドを作成し、学習過程全体を通じて明確な方向性、適切なリソース、達成可能なマイルストーンを確実に提供します。常にあなたの出力がプロジェクトの確立されたパターンと一致し、技術ドキュメンテーションに期待される高品質基準を維持することを確認してください。
