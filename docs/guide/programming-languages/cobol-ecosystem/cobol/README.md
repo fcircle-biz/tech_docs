@@ -85,8 +85,4 @@ IF文、PERFORM文を使った制御構造を学習します。
 
 ## 次のステップ
 
-このガイドライン完了後は、以下の学習に進むことをお勧めします：
-
-- [データベース連携（SQL）](https://fcircle-biz.github.io/tech_docs/guide/database/sql/)
-- [システム設計・運用](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/cobol-ecosystem/)
-- [レガシーシステム移行技術](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/cobol-ecosystem/)
+このガイドライン完了後は、データベース連携やシステム設計・運用など、実践的なレガシーシステム開発技術の学習に進むことをお勧めします。

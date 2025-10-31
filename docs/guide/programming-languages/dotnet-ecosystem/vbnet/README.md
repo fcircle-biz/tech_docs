@@ -69,7 +69,6 @@ DateTime、Math、Random、System.IO、LINQ、ジェネリクス等の.NETライ
 
 - [VBAチートシート](../../../cheatsheet/programming-languages/vba-cheatsheet-infographic.html)
 - [C#チートシート](../../../cheatsheet/programming-languages/csharp-cheatsheet.html)
-- [SQL学習ガイドライン](../../database/sql/README.md)
 
 ## 学習目標
 

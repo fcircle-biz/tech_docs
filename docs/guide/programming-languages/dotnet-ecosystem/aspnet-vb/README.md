@@ -76,9 +76,7 @@ Webアプリケーションにおける認証・認可の実装、ASP.NETメン�
 - [VB.NET学習ガイドライン](../vbnet/README.md) ✅ **履修済み前提**
 
 ### 補完教材
-- [SQL学習ガイドライン](../../database/sql/README.md)
-- [Oracle学習ガイドライン](../../database/oracle/README.md)
-- [ASP.NETチートシート](../../../cheatsheet/web-technologies/)
+- 追加の学習リソースについては、関連する技術ドキュメントをご参照ください。
 
 ## 学習目標
 

@@ -67,8 +67,7 @@ PostgreSQLとPDOを使ったデータベース接続、CRUD操作、プリペア
 
 ## 関連リソース
 
-- [SQL学習ガイドライン](../../../database/sql/README.md)
-- [JavaScript学習ガイドライン](../../frontend/javascript-beginner/README.md)
+- [JavaScript初級学習ガイドライン](../../javascript-ecosystem/javascript-beginner/README.md)
 - [HTML/CSS基礎知識](https://developer.mozilla.org/ja/docs/Learn)
 
 ## 学習目標

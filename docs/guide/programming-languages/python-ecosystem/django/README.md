@@ -82,8 +82,3 @@ Django TestCaseクラス、モデル・ビュー・フォームのテスト、�
 - Django REST Frameworkを使用してRESTful APIを開発できる
 - テスト駆動開発（TDD）の手法でDjangoアプリケーションを開発できる
 - 本番環境へのデプロイメントとパフォーマンス最適化ができる
-
-## 次のステップ
-このガイドライン完了後は、以下の学習に進むことをお勧めします：
-- [React + Django フルスタック開発](https://fcircle-biz.github.io/tech_docs/guide/fullstack/react-django/README.html)
-- [AWS/GCPへのDjangoアプリデプロイ](https://fcircle-biz.github.io/tech_docs/guide/cloud/django-deployment/README.html)

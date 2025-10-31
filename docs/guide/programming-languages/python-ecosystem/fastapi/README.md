@@ -83,5 +83,4 @@ Uvicorn/Gunicornでの実行、Dockerコンテナ化、環境変数管理、ロ�
 - Dockerを使用したコンテナ化とデプロイメントができる
 
 ## 次のステップ
-このガイドライン完了後は、以下の学習に進むことをお勧めします：
-- [Kubernetes によるコンテナオーケストレーション](https://fcircle-biz.github.io/tech_docs/guide/devops/kubernetes/README.html)
+このガイドライン完了後は、さらに高度なバックエンド開発技術やクラウドインフラの学習に進むことをお勧めします。Kubernetesなどのコンテナオーケストレーションツールやマイクロサービスアーキテクチャなど、実践的なスキルを身につけることができます。
