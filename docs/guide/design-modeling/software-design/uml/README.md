@@ -73,7 +73,6 @@ UMLの歴史と目的、モデリングの重要性、UML 2.5の概要、図の�
 
 - [ソフトウェア設計パターンチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/design/design-patterns-cheatsheet.html)
 - [オブジェクト指向設計原則ガイド](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/ood-principles/README.html)
-- [アジャイル開発でのUML活用](https://fcircle-biz.github.io/tech_docs/guide/agile/uml-in-agile/README.html)
 - [PlantUMLクイックリファレンス](https://fcircle-biz.github.io/tech_docs/cheatsheet/tools/plantuml-cheatsheet.html)
 
 ## 学習目標
@@ -95,5 +94,4 @@ UMLの歴史と目的、モデリングの重要性、UML 2.5の概要、図の�
 
 - [デザインパターン実践ガイド](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/design-patterns/README.html)
 - [ドメイン駆動設計（DDD）入門](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/ddd/README.html)
-- [マイクロサービスアーキテクチャ設計](https://fcircle-biz.github.io/tech_docs/guide/architecture/microservices/README.html)
 - [SysML（システムモデリング言語）入門](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/sysml/README.html)

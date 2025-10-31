@@ -365,7 +365,6 @@ pip、仮想環境（venv）、requirements.txt、人気のある外部ライブ
 ## 関連リソース
 - [Python初心者向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/python/python-basics-cheatsheet.html)
 - [Pythonデータ分析チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/python/python-data-analysis-cheatsheet.html)
-- [Pythonライブラリ活用ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python-libraries/README.html)
 
 ## 学習目標
 このガイドを完了すると、以下のスキルを身につけることができます：
@@ -378,6 +377,3 @@ pip、仮想環境（venv）、requirements.txt、人気のある外部ライブ
 
 ## 次のステップ
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
-- [Python Webフレームワーク（Django/Flask）入門](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/web-frameworks/README.html)
-- [Pythonによるデータサイエンス入門](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/python-data-science/README.html)
-- [Python自動化スクリプト開発](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/automation/README.html)

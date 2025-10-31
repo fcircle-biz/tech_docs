@@ -73,9 +73,7 @@ UMLのユースケース図を使った要件モデリングを学びます。�
 ## 関連リソース
 
 - [UMLモデリング学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/README.html)
-- [アジャイル開発実践ガイド](https://fcircle-biz.github.io/tech_docs/guide/agile/scrum/README.html)
 - [プロジェクト管理チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/pm/project-management-cheatsheet.html)
-- [ビジネスアナリシス入門](https://fcircle-biz.github.io/tech_docs/guide/business-analysis/ba-fundamentals/README.html)
 
 ## 学習目標
 
@@ -96,7 +94,6 @@ UMLのユースケース図を使った要件モデリングを学びます。�
 
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
 
-- [ソフトウェアアーキテクチャ設計](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/architecture/README.html)
 - [テスト設計技法](https://fcircle-biz.github.io/tech_docs/guide/testing/test-design/README.html)
 - [DevOps実践ガイド](https://fcircle-biz.github.io/tech_docs/guide/devops/ci-cd/README.html)
 - [プロダクトマネジメント入門](https://fcircle-biz.github.io/tech_docs/guide/product-management/pm-basics/README.html)

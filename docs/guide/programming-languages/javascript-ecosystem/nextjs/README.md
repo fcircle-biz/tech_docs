@@ -94,4 +94,3 @@ Vercelへのデプロイ、環境変数管理、本番ビルド最適化、カ�
 - [TypeScript + Next.js フルスタック開発](https://fcircle-biz.github.io/tech_docs/guide/fullstack/nextjs-typescript/README.html)
 - [Next.js + Prisma データベース統合](https://fcircle-biz.github.io/tech_docs/guide/database/prisma-nextjs/README.html)
 - [React Native でモバイルアプリ開発](https://fcircle-biz.github.io/tech_docs/guide/mobile/react-native/README.html)
-- [マイクロフロントエンド アーキテクチャ](https://fcircle-biz.github.io/tech_docs/guide/architecture/micro-frontends/README.html)

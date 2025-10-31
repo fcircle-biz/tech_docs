@@ -80,6 +80,3 @@ Streamlit Cloudへのデプロイ、secrets管理、環境変数の設定、パ�
 
 ## 次のステップ
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
-- [Python Webフレームワーク（Django/Flask）入門](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/web-frameworks/README.html)
-- [Pythonによる機械学習アプリケーション開発](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/ml-applications/README.html)
-- [データ可視化の高度なテクニック](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/advanced-visualization/README.html)

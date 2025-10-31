@@ -86,5 +86,4 @@ Django TestCaseクラス、モデル・ビュー・フォームのテスト、�
 ## 次のステップ
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
 - [React + Django フルスタック開発](https://fcircle-biz.github.io/tech_docs/guide/fullstack/react-django/README.html)
-- [マイクロサービスアーキテクチャ入門](https://fcircle-biz.github.io/tech_docs/guide/architecture/microservices/README.html)
 - [AWS/GCPへのDjangoアプリデプロイ](https://fcircle-biz.github.io/tech_docs/guide/cloud/django-deployment/README.html)

@@ -69,8 +69,6 @@ R Markdownを使用した動的レポートと資料作成を学習します
 ## 関連リソース
 
 - [R言語チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/r-cheatsheet.html)
-- [統計学基礎ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/statistics/README.html)
-- [データ可視化ベストプラクティス](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/visualization/README.html)
 
 ## 学習目標
 
@@ -90,6 +88,3 @@ R Markdownを使用した動的レポートと資料作成を学習します
 
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
 
-- [機械学習入門ガイドライン (R)](https://fcircle-biz.github.io/tech_docs/guide/ai/machine-learning-r/README.html)
-- [高度な統計解析ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/advanced-statistics/README.html)
-- [Shinyアプリケーション開発ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/shiny/README.html)

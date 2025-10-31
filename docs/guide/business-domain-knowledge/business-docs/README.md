@@ -75,14 +75,8 @@
 - **合計学習期間**: 9-14週間（週3-5時間の学習と実践を想定）
 
 ## 関連リソース
-- [Microsoft Office学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/README.html)
-- [Word学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/word/README.html)
-- [Excel学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/excel/README.html)
-- [PowerPoint学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/powerpoint/README.html)
-- [ビジネスマナー学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/business-manner/README.html)
-- [プレゼンテーション学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/presentation/README.html)
-- [ビジネス文書チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/business/business-docs-cheatsheet.html)
-- [敬語表現チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/business/keigo-cheatsheet.html)
+- [Excel基礎学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-saas/excel-basic/README.html)
+- [VBA学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-saas/vba/README.html)
 
 ## 学習目標
 このガイドを完了すると、以下のスキルを身につけることができます：
@@ -100,7 +94,5 @@
 
 ## 次のステップ
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
-- [プレゼンテーション学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/presentation/README.html) - 提案書をより効果的にプレゼンテーションするスキルを習得
-- [プロジェクトマネジメント学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/project-management/README.html) - プロジェクト文書作成とマネジメントスキルを学ぶ
-- [データ分析学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/data-analysis/README.html) - データに基づく報告書作成スキルを向上
-- [ロジカルシンキング学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/logical-thinking/README.html) - 論理的な文書構成力を強化
+- [Excel基礎学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-saas/excel-basic/README.html) - データに基づく報告書作成スキルを向上
+- [会計・財務学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/finance-accounting/README.html) - 財務報告書の理解と作成スキルを習得

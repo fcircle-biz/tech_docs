@@ -84,6 +84,4 @@ Uvicorn/Gunicornでの実行、Dockerコンテナ化、環境変数管理、ロ�
 
 ## 次のステップ
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
-- [マイクロサービスアーキテクチャ入門](https://fcircle-biz.github.io/tech_docs/guide/architecture/microservices/README.html)
-- [GraphQL API開発入門](https://fcircle-biz.github.io/tech_docs/guide/api/graphql/README.html)
 - [Kubernetes によるコンテナオーケストレーション](https://fcircle-biz.github.io/tech_docs/guide/devops/kubernetes/README.html)

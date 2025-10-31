@@ -102,8 +102,6 @@
 
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
 
-- [アジャイル開発実践ガイド（Scrum）](https://fcircle-biz.github.io/tech_docs/guide/agile/scrum/README.html)
 - [DevOps実践ガイド](https://fcircle-biz.github.io/tech_docs/guide/devops/ci-cd/README.html)
-- [ソフトウェアアーキテクチャ設計](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/architecture/README.html)
 - [プロダクトマネジメント入門](https://fcircle-biz.github.io/tech_docs/guide/product-management/pm-basics/README.html)
 - [セキュアコーディング実践ガイド](https://fcircle-biz.github.io/tech_docs/guide/security/secure-coding/README.html)

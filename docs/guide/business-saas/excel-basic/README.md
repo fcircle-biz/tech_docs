@@ -154,6 +154,4 @@ VBAの開き方、開発タブの表示、Visual Basic Editorの基本操作、�
 
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
 
-- [Excel応用テクニック（ピボットテーブル、Power Query）](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/excel-advanced/README.md)
 - [VBAプログラミング実践](https://fcircle-biz.github.io/tech_docs/guide/business-saas/vba/README.md)
-- [Excelによるデータ分析入門](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/excel-analytics/README.md)

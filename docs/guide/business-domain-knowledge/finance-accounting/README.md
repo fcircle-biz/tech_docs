@@ -227,11 +227,9 @@
 
 ## 関連リソース
 
-- [Excel基本操作ガイド](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/excel-basic/README.html)
-- [Excel VBAプログラミング](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/vba/README.html)
-- [データ分析基礎](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/basics/README.html)
-- [プレゼンテーション資料作成ガイド](https://fcircle-biz.github.io/tech_docs/guide/microsoft-office/powerpoint/README.html)
-- [ビジネス数学チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/business/business-math-cheatsheet.html)
+- [Excel基礎学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-saas/excel-basic/README.html)
+- [VBA学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-saas/vba/README.html)
+- [ビジネス文書学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/business-docs/README.html)
 
 ## 学習目標
 
@@ -253,8 +251,5 @@
 
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
 
-- [管理会計実践ガイド（予算管理・原価計算）](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/management-accounting/README.html)
-- [簿記3級・2級試験対策](https://fcircle-biz.github.io/tech_docs/guide/certification/boki/README.html)
-- [財務モデリング（Excelによる財務分析）](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/financial-modeling/README.html)
-- [ビジネスデータ分析](https://fcircle-biz.github.io/tech_docs/guide/data-analytics/business-analytics/README.html)
-- [ERPシステム（会計システム）入門](https://fcircle-biz.github.io/tech_docs/guide/business-systems/erp-basics/README.html)
+- [Excel基礎学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-saas/excel-basic/README.html) - Excelによる財務分析スキルを向上
+- [ビジネス文書学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-domain-knowledge/business-docs/README.html) - 財務報告書の作成スキルを習得

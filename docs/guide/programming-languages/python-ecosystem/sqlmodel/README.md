@@ -88,4 +88,3 @@ Alembicを使ったマイグレーション、スキーマ変更の管理、本�
 
 - [FastAPI上級ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/fastapi-advanced/README.html)
 - [Python非同期プログラミング](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python-async/README.html)
-- [マイクロサービス開発ガイド](https://fcircle-biz.github.io/tech_docs/guide/architecture/microservices/README.html)
