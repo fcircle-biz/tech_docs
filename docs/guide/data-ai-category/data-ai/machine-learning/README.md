@@ -80,7 +80,5 @@
 
 ## 次のステップ
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
-- [深層学習（ディープラーニング）入門](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/deep-learning/README.html)
-- [自然言語処理入門](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/nlp/README.html)
-- [コンピュータビジョン入門](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/computer-vision/README.html)
-- [MLOps入門](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/mlops/README.html)
+- [統計解析学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/statistical-analysis/README.html) - 統計学の基礎を深め、データ分析力を向上
+- [Python学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/README.html) - Pythonプログラミングスキルをさらに強化
