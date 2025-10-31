@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python学習教材 第6章 - ファイル操作と例外処理</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    
+    <style>
+        /* Python専用カラーテーマ */
+        :root {
+            --python-primary: #3776ab;
+            --python-secondary: #ffd43b;
+            --python-accent: #4b8bbe;
+            --python-bg-light: #f0f6fc;
+            --python-bg-yellow: #fffbf0;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+
+        .navbar {
+            background-color: var(--python-primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .chapter-title {
+            color: var(--python-primary);
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 3px solid var(--python-primary);
+            padding-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .section-title {
+            color: var(--python-accent);
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+        }
+
+        .quiz-container {
+            background-color: var(--python-bg-light);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--python-primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .highlight {
+            background-color: var(--python-bg-yellow);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--python-secondary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .nav-link.active {
+            background-color: var(--python-primary) !important;
+            color: white !important;
+        }
+
+        .nav-link {
+            color: #6c757d;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: var(--python-bg-light);
+            color: var(--python-primary);
+        }
+
+        pre {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            color: var(--python-primary);
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background-color: var(--python-primary);
+            border-color: var(--python-primary);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--python-accent);
+            border-color: var(--python-accent);
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../README.html">
+                <strong>Python学習教材</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../README.html">学習ガイド</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../../../../cheatsheet/python/python-basics-cheatsheet.html">チートシート</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>学習章</span>
+                    </h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="python-learning-material-01.html">
+                                第1章: Python入門と開発環境構築
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="python-learning-material-02.html">
+                                第2章: 基本的な文法と変数
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="python-learning-material-03.html">
+                                第3章: 制御構造の基礎
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="python-learning-material-04.html">
+                                第4章: 関数とモジュール
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="python-learning-material-05.html">
+                                第5章: データ構造の基礎
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="python-learning-material-06.html">
+                                第6章: ファイル操作と例外処理
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="python-learning-material-07.html">
+                                第7章: オブジェクト指向プログラミング入門
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="python-learning-material-08.html">
+                                第8章: 標準ライブラリの活用
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="python-learning-material-09.html">
+                                第9章: 外部ライブラリとパッケージ管理
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="python-learning-material-10.html">
+                                第10章: 実践プロジェクト開発
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第6章: ファイル操作と例外処理</h1>
+                </div>
+
+                <div id="chapter6">
+                    <h2 class="chapter-title">ファイル操作と例外処理</h2>
+                    
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>ファイルの開閉、読み込み、書き込みの基本操作を習得する</li>
+                            <li>with文を使った安全なファイル操作の方法を理解する</li>
+                            <li>CSVファイルやJSONファイルなど実用的なデータ形式を扱えるようになる</li>
+                            <li>例外処理の仕組みを理解し、エラーに強いプログラムを作成する</li>
+                            <li>デバッグとログ出力の基本技術を身につける</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">6.1 ファイル操作の基礎</h3>
+                    <p>ファイル操作は、データの永続化や外部システムとの連携において重要な機能です。Pythonでは<code>open()</code>関数を使ってファイルを操作します。</p>
+                    
+                    <h4>基本的なファイル操作</h4>
+                    <pre><code># ファイルの基本的な開き方
+file = open("sample.txt", "r", encoding="utf-8")
+content = file.read()
+file.close()  # 必ずファイルを閉じる
+
+# with文を使った安全な方法（推奨）
+with open("sample.txt", "r", encoding="utf-8") as file:
+    content = file.read()
+    print(content)
+# with文を抜けると自動的にファイルが閉じられる
+
+# ファイルモードの種類
+# "r": 読み取り専用（デフォルト）
+# "w": 書き込み専用（既存内容を上書き）
+# "a": 追記モード
+# "x": 新規作成専用（既存ファイルがあるとエラー）
+# "b": バイナリモード（例：rb, wb）</code></pre>
+
+                    <h4>テキストファイルの読み書き</h4>
+                    <pre><code># ファイルの書き込み
+with open("output.txt", "w", encoding="utf-8") as file:
+    file.write("Hello, Python!\n")
+    file.write("ファイル操作の練習です。\n")
+
+# ファイルの読み込み（1行ずつ）
+with open("output.txt", "r", encoding="utf-8") as file:
+    for line_number, line in enumerate(file, 1):
+        print(f"行{line_number}: {line.strip()}")
+
+# 全行を一度に読み込み
+with open("output.txt", "r", encoding="utf-8") as file:
+    lines = file.readlines()
+    print(f"総行数: {len(lines)}")
+
+# ファイルの追記
+with open("output.txt", "a", encoding="utf-8") as file:
+    file.write("追加された行です。\n")</code></pre>
+
+                    <div class="exercise-container">
+                        <h5>実習 6-1: テキストファイル分析ツール</h5>
+                        <p>テキストファイルの文字数、単語数、行数を分析するプログラムを作成しましょう。</p>
+                        
+                        <h6>コード例</h6>
+                        <pre><code>import os
+
+def analyze_text_file(filename):
+    """テキストファイルを分析する関数"""
+    if not os.path.exists(filename):
+        print(f"エラー: ファイル '{filename}' が見つかりません")
+        return None
+    
+    try:
+        with open(filename, "r", encoding="utf-8") as file:
+            content = file.read()
+            lines = content.split('\n')
+            words = content.split()
+            
+            # 分析結果を辞書で返す
+            analysis = {
+                "filename": filename,
+                "file_size": os.path.getsize(filename),
+                "char_count": len(content),
+                "char_count_no_spaces": len(content.replace(' ', '').replace('\n', '')),
+                "word_count": len(words),
+                "line_count": len(lines)
+            }
+            
+            return analysis
+    
+    except UnicodeDecodeError:
+        print(f"エラー: ファイル '{filename}' の文字エンコーディングが対応していません")
+        return None
+    except Exception as e:
+        print(f"エラー: {e}")
+        return None
+
+def display_analysis(analysis):
+    """分析結果を表示"""
+    if analysis:
+        print(f"\n=== ファイル分析結果: {analysis['filename']} ===")
+        print(f"ファイルサイズ: {analysis['file_size']} バイト")
+        print(f"文字数（スペース含む）: {analysis['char_count']} 文字")
+        print(f"文字数（スペース除く）: {analysis['char_count_no_spaces']} 文字")
+        print(f"単語数: {analysis['word_count']} 単語")
+        print(f"行数: {analysis['line_count']} 行")
+
+# サンプルファイルを作成
+sample_text = """Python is a powerful programming language.
+It is easy to learn and versatile.
+Many developers love Python for its simplicity.
+"""
+
+with open("sample_analysis.txt", "w", encoding="utf-8") as file:
+    file.write(sample_text)
+
+# ファイル分析を実行
+result = analyze_text_file("sample_analysis.txt")
+display_analysis(result)</code></pre>
+                    </div>
+
+                    <h3 class="section-title">6.2 構造化データの処理</h3>
+                    <p>CSVやJSONなどの構造化データ形式は、データ交換やデータベース連携でよく使用されます。</p>
+                    
+                    <h4>CSVファイルの操作</h4>
+                    <pre><code>import csv
+
+# CSVファイルの書き込み
+data = [
+    ["名前", "年齢", "職業"],
+    ["田中太郎", 25, "エンジニア"],
+    ["佐藤花子", 30, "デザイナー"],
+    ["山田次郎", 35, "マネージャー"]
+]
+
+with open("employees.csv", "w", newline="", encoding="utf-8") as file:
+    writer = csv.writer(file)
+    writer.writerows(data)
+
+# CSVファイルの読み込み
+with open("employees.csv", "r", encoding="utf-8") as file:
+    reader = csv.reader(file)
+    headers = next(reader)  # ヘッダー行を読み取り
+    print(f"ヘッダー: {headers}")
+    
+    for row in reader:
+        print(f"データ: {row}")
+
+# 辞書形式でのCSV操作
+with open("employees.csv", "r", encoding="utf-8") as file:
+    reader = csv.DictReader(file)
+    for row in reader:
+        print(f"{row['名前']} さんは {row['年齢']} 歳の {row['職業']} です")</code></pre>
+
+                    <h4>JSONファイルの操作</h4>
+                    <pre><code>import json
+
+# JSONデータの作成と保存
+employee_data = {
+    "employees": [
+        {"id": 1, "name": "田中太郎", "department": "開発部", "skills": ["Python", "JavaScript"]},
+        {"id": 2, "name": "佐藤花子", "department": "デザイン部", "skills": ["Photoshop", "Illustrator"]},
+        {"id": 3, "name": "山田次郎", "department": "営業部", "skills": ["営業", "交渉"]}
+    ]
+}
+
+# JSONファイルに保存
+with open("employees.json", "w", encoding="utf-8") as file:
+    json.dump(employee_data, file, ensure_ascii=False, indent=2)
+
+# JSONファイルから読み込み
+with open("employees.json", "r", encoding="utf-8") as file:
+    loaded_data = json.load(file)
+    
+    for employee in loaded_data["employees"]:
+        print(f"ID: {employee['id']}, 名前: {employee['name']}")
+        print(f"部署: {employee['department']}")
+        print(f"スキル: {', '.join(employee['skills'])}\n")</code></pre>
+
+                    <h3 class="section-title">6.3 例外処理の基本</h3>
+                    <p>例外処理は、プログラムの実行中に発生するエラーを適切に処理するためのメカニズムです。</p>
+                    
+                    <h4>try-except文の基本</h4>
+                    <pre><code># 基本的な例外処理
+try:
+    number = int(input("数値を入力してください: "))
+    result = 100 / number
+    print(f"結果: {result}")
+except ValueError:
+    print("エラー: 数値を入力してください")
+except ZeroDivisionError:
+    print("エラー: ゼロで割ることはできません")
+except Exception as e:
+    print(f"予期しないエラーが発生しました: {e}")
+
+# else節とfinally節
+try:
+    file = open("data.txt", "r")
+except FileNotFoundError:
+    print("ファイルが見つかりません")
+else:
+    # 例外が発生しなかった場合に実行
+    print("ファイルの読み込みに成功しました")
+    content = file.read()
+    print(content)
+finally:
+    # 例外の有無に関わらず必ず実行
+    if 'file' in locals() and not file.closed:
+        file.close()
+        print("ファイルを閉じました")</code></pre>
+
+                    <div class="exercise-container">
+                        <h5>実習 6-2: 堅牢な設定ファイル管理システム</h5>
+                        <p>例外処理を活用した設定ファイル管理システムを作成しましょう。</p>
+                        
+                        <h6>コード例</h6>
+                        <pre><code>import json
+import os
+from datetime import datetime
+
+class ConfigManager:
+    def __init__(self, config_file="settings.json"):
+        self.config_file = config_file
+        self.default_config = {
+            "app_name": "MyApplication",
+            "version": "1.0.0",
+            "debug_mode": False,
+            "max_connections": 100,
+            "created_at": datetime.now().isoformat()
+        }
+    
+    def load_config(self):
+        """設定ファイルを読み込む"""
+        try:
+            with open(self.config_file, "r", encoding="utf-8") as file:
+                config = json.load(file)
+                print(f"設定ファイル '{self.config_file}' を読み込みました")
+                return config
+        
+        except FileNotFoundError:
+            print(f"設定ファイル '{self.config_file}' が見つかりません")
+            print("デフォルト設定を作成します...")
+            self.save_config(self.default_config)
+            return self.default_config
+        
+        except json.JSONDecodeError as e:
+            print(f"設定ファイルの形式が正しくありません: {e}")
+            print("バックアップを作成してデフォルト設定を使用します...")
+            self.create_backup()
+            return self.default_config
+        
+        except PermissionError:
+            print(f"設定ファイル '{self.config_file}' の読み込み権限がありません")
+            return self.default_config
+        
+        except Exception as e:
+            print(f"予期しないエラーが発生しました: {e}")
+            return self.default_config
+    
+    def save_config(self, config):
+        """設定をファイルに保存する"""
+        try:
+            with open(self.config_file, "w", encoding="utf-8") as file:
+                json.dump(config, file, ensure_ascii=False, indent=2)
+                print(f"設定を '{self.config_file}' に保存しました")
+                return True
+        
+        except PermissionError:
+            print(f"設定ファイル '{self.config_file}' への書き込み権限がありません")
+            return False
+        
+        except Exception as e:
+            print(f"設定の保存中にエラーが発生しました: {e}")
+            return False
+    
+    def create_backup(self):
+        """現在のファイルのバックアップを作成"""
+        if os.path.exists(self.config_file):
+            backup_name = f"{self.config_file}.backup"
+            try:
+                with open(self.config_file, "r") as src, open(backup_name, "w") as dst:
+                    dst.write(src.read())
+                print(f"バックアップファイル '{backup_name}' を作成しました")
+            except Exception as e:
+                print(f"バックアップの作成に失敗しました: {e}")
+    
+    def update_setting(self, key, value):
+        """設定項目を更新"""
+        config = self.load_config()
+        config[key] = value
+        config["updated_at"] = datetime.now().isoformat()
+        return self.save_config(config)
+
+# 使用例
+config_manager = ConfigManager()
+
+# 設定を読み込み
+settings = config_manager.load_config()
+print(f"\n現在の設定: {json.dumps(settings, ensure_ascii=False, indent=2)}")
+
+# 設定を更新
+config_manager.update_setting("debug_mode", True)
+config_manager.update_setting("max_connections", 200)</code></pre>
+                    </div>
+
+                    <h3 class="section-title">6.4 エラーハンドリングとデバッグ</h3>
+                    <p>効果的なデバッグとエラー処理は、品質の高いプログラムを作成するために不可欠です。</p>
+                    
+                    <h4>ログ出力とデバッグ</h4>
+                    <pre><code>import logging
+from datetime import datetime
+
+# ログ設定
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('app.log', encoding='utf-8'),
+        logging.StreamHandler()
+    ]
+)
+
+def divide_numbers(a, b):
+    """数値の除算を行う関数（ログ付き）"""
+    logging.info(f"除算開始: {a} ÷ {b}")
+    
+    try:
+        if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
+            raise TypeError("引数は数値である必要があります")
+        
+        if b == 0:
+            raise ZeroDivisionError("ゼロで割ることはできません")
+        
+        result = a / b
+        logging.info(f"除算成功: 結果 = {result}")
+        return result
+    
+    except (TypeError, ZeroDivisionError) as e:
+        logging.error(f"除算エラー: {e}")
+        return None
+    except Exception as e:
+        logging.critical(f"予期しないエラー: {e}")
+        return None
+
+# アサーション（デバッグ用）
+def validate_user_age(age):
+    """年齢の妥当性をチェック"""
+    assert isinstance(age, int), "年齢は整数である必要があります"
+    assert 0 <= age <= 150, "年齢は0歳から150歳の間である必要があります"
+    return True
+
+# 使用例
+print(divide_numbers(10, 2))   # 正常ケース
+print(divide_numbers(10, 0))   # エラーケース
+print(divide_numbers("10", 2)) # エラーケース
+
+# アサーションのテスト
+try:
+    validate_user_age(25)  # 正常
+    validate_user_age(-5)  # エラー
+except AssertionError as e:
+    print(f"検証エラー: {e}")</code></pre>
+
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li><strong>問題1:</strong> with文を使うメリットは何ですか？</li>
+                            <li><strong>問題2:</strong> CSVファイルとJSONファイルの主な違いは？</li>
+                            <li><strong>問題3:</strong> try-except文のelse節はいつ実行されますか？</li>
+                            <li><strong>問題4:</strong> 以下のコードで何がエラーになりますか？<br>
+                                <code>with open("file.txt", "r") as f:<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;content = f.read()<br>
+                                print(f.read())</code>
+                            </li>
+                        </ol>
+                        
+                        <details style="margin-top: 1rem;">
+                            <summary>解答を見る</summary>
+                            <div style="margin-top: 0.5rem;">
+                                <p><strong>解答:</strong></p>
+                                <ol>
+                                    <li>自動的にファイルが閉じられ、例外が発生してもリソースが適切に解放される</li>
+                                    <li>CSV：表形式データ、軽量、シンプル / JSON：階層構造、柔軟、Web API で一般的</li>
+                                    <li>try文で例外が発生しなかった場合</li>
+                                    <li>with文を抜けた後にファイルオブジェクトを使用しようとしてエラー</li>
+                                </ol>
+                            </div>
+                        </details>
+                    </div>
+
+                    <h3 class="section-title">6.5 まとめ</h3>
+                    <p>この章では、ファイル操作と例外処理について学習しました。適切なエラーハンドリングは、実用的なプログラムを作成するための重要なスキルです。</p>
+
+                    <div class="highlight">
+                        <h6>重要なポイント</h6>
+                        <ul>
+                            <li>with文を使用した安全なファイル操作</li>
+                            <li>CSVとJSONによる構造化データの処理</li>
+                            <li>適切な例外処理によるエラー対応</li>
+                            <li>ログ出力を活用したデバッグ</li>
+                            <li>ユーザーフレンドリーなエラーメッセージの表示</li>
+                        </ul>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="python-learning-material-05.html" class="btn btn-secondary">← 前の章: データ構造の基礎</a>
+                        <a href="python-learning-material-07.html" class="btn btn-primary">次の章: オブジェクト指向プログラミング入門 →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Highlight.js 初期化 -->
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

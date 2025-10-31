@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAS学習教材 第5章 - PROC（プロシージャ）の基本</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts - Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    
+    <style>
+        /* SAS用カスタムCSS */
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            padding-top: 56px;
+        }
+
+        .navbar {
+            background-color: #0066cc;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+
+        .chapter-title {
+            color: #0066cc;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title {
+            color: #3399ff;
+            margin-top: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .quiz-container {
+            background-color: #e6f2ff;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #0066cc;
+        }
+
+        .exercise-container {
+            background-color: #f3e5f5;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .highlight {
+            background-color: #ffecb3;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .warning {
+            background-color: #ffebee;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #f44336;
+        }
+
+        .nav-link.active {
+            background-color: #0066cc !important;
+            color: white !important;
+        }
+
+        .code-block {
+            background-color: #1e1e1e;
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        code {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../../../README.md">SAS学習ガイド</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="README.md">ホーム</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#chapter5">第5章</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- サイドバー -->
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading px-3 mt-4 mb-1 text-muted">目次</h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#chapter5">第5章: PROC（プロシージャ）の基本</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#5-1">5.1 PROC PRINT</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#5-2">5.2 PROC SORT</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#5-3">5.3 PROC FREQ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#5-4">5.4 PROC MEANS</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#5-5">5.5 PROC UNIVARIATE</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- メインコンテンツ -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第5章: PROC（プロシージャ）の基本</h1>
+                </div>
+
+                <div id="chapter5">
+                    <h2 class="chapter-title">データ要約と基本的な分析手法</h2>
+                    
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>PROC PRINTによるデータの表示とレポート作成</li>
+                            <li>PROC SORTを使ったデータの並び替え</li>
+                            <li>PROC FREQによる度数分布と クロス集計</li>
+                            <li>PROC MEANSによる記述統計の計算</li>
+                            <li>PROC UNIVARIATEによる詳細な統計分析</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title" id="5-1">5.1 PROC PRINT</h3>
+                    <p>PROC PRINTは最も基本的なプロシージャで、データセットの内容を表示します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 5-1: PROC PRINTの活用</h5>
+                        <h6>サンプルデータの作成</h6>
+                        <pre class="code-block"><code class="language-sql">data sales_data;
+    input region $ salesperson $ product $ sales_amount quarter;
+    datalines;
+East 田中 ProductA 150000 1
+East 田中 ProductB 120000 1
+West 佐藤 ProductA 180000 1
+West 佐藤 ProductC 95000 1
+North 鈴木 ProductB 140000 2
+North 鈴木 ProductA 165000 2
+South 高橋 ProductC 110000 2
+South 高橋 ProductA 125000 2
+East 田中 ProductA 160000 2
+West 佐藤 ProductB 135000 2
+;
+run;</code></pre>
+                        
+                        <h6>基本的なPROC PRINT</h6>
+                        <pre class="code-block"><code class="language-sql">/* 基本的な表示 */
+proc print data=sales_data;
+    title "売上データ一覧";
+run;
+
+/* 特定の変数のみ表示 */
+proc print data=sales_data;
+    var region salesperson sales_amount;
+    title "地域別売上担当者一覧";
+run;
+
+/* 条件を指定した表示 */
+proc print data=sales_data;
+    where sales_amount > 140000;
+    var salesperson product sales_amount;
+    title "高売上商品（14万円超）";
+run;
+
+/* 観測番号を非表示 */
+proc print data=sales_data noobs;
+    var region product sales_amount;
+    title "観測番号なし表示";
+run;</code></pre>
+                    </div>
+
+                    <h3 class="section-title" id="5-2">5.2 PROC SORT</h3>
+                    <p>データを指定した変数でソートします。多くのプロシージャで必要な前処理です。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 5-2: データのソート</h5>
+                        <h6>実行例</h6>
+                        <pre class="code-block"><code class="language-sql">/* 単一変数でのソート */
+proc sort data=sales_data out=sales_sorted;
+    by sales_amount;
+run;
+
+proc print data=sales_sorted;
+    title "売上金額の昇順";
+run;
+
+/* 降順ソート */
+proc sort data=sales_data out=sales_desc;
+    by descending sales_amount;
+run;
+
+/* 複数変数でのソート */
+proc sort data=sales_data out=sales_multi;
+    by region descending sales_amount;
+run;
+
+proc print data=sales_multi;
+    title "地域別、売上金額降順";
+run;
+
+/* 重複行の削除 */
+proc sort data=sales_data out=unique_salespeople nodupkey;
+    by salesperson;
+run;
+
+proc print data=unique_salespeople;
+    title "営業担当者一覧（重複なし）";
+run;</code></pre>
+                    </div>
+
+                    <h3 class="section-title" id="5-3">5.3 PROC FREQ</h3>
+                    <p>度数分布表やクロス集計表を作成し、カテゴリカルデータの分析を行います。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 5-3: 度数分布とクロス集計</h5>
+                        <h6>実行例</h6>
+                        <pre class="code-block"><code class="language-sql">/* 単純度数分布 */
+proc freq data=sales_data;
+    tables region;
+    title "地域別度数分布";
+run;
+
+/* 複数変数の度数分布 */
+proc freq data=sales_data;
+    tables region product quarter;
+    title "各変数の度数分布";
+run;
+
+/* クロス集計表 */
+proc freq data=sales_data;
+    tables region * product;
+    title "地域×商品のクロス集計";
+run;
+
+/* パーセンテージの表示 */
+proc freq data=sales_data;
+    tables region * quarter / nocol norow;
+    title "地域×四半期（セル内パーセンテージのみ）";
+run;
+
+/* カイ二乗検定 */
+proc freq data=sales_data;
+    tables region * product / chisq;
+    title "地域と商品の独立性検定";
+run;</code></pre>
+                    </div>
+
+                    <h3 class="section-title" id="5-4">5.4 PROC MEANS</h3>
+                    <p>数値データの記述統計を計算します。平均、標準偏差、最大・最小値などを求められます。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 5-4: 記述統計の計算</h5>
+                        <h6>実行例</h6>
+                        <pre class="code-block"><code class="language-sql">/* 基本的な記述統計 */
+proc means data=sales_data;
+    var sales_amount;
+    title "売上金額の基本統計";
+run;
+
+/* 詳細な統計量 */
+proc means data=sales_data n mean std min max median q1 q3;
+    var sales_amount;
+    title "売上金額の詳細統計";
+run;
+
+/* グループ別統計 */
+proc sort data=sales_data;
+    by region;
+run;
+
+proc means data=sales_data;
+    by region;
+    var sales_amount;
+    title "地域別売上統計";
+run;
+
+/* CLASS文を使ったグループ別統計 */
+proc means data=sales_data mean std min max;
+    class region quarter;
+    var sales_amount;
+    title "地域・四半期別売上統計";
+run;
+
+/* 出力データセットの作成 */
+proc means data=sales_data noprint;
+    class region;
+    var sales_amount;
+    output out=region_stats 
+           mean=avg_sales 
+           std=std_sales 
+           n=count_sales;
+run;
+
+proc print data=region_stats;
+    title "地域別統計（データセット出力）";
+run;</code></pre>
+                    </div>
+
+                    <h3 class="section-title" id="5-5">5.5 PROC UNIVARIATE</h3>
+                    <p>より詳細な記述統計とデータの分布を分析します。</p>
+
+                    <div class="exercise-container">
+                        <h5>実習 5-5: 詳細な統計分析</h5>
+                        <h6>実行例</h6>
+                        <pre class="code-block"><code class="language-sql">/* 基本的なUNIVARIATE */
+proc univariate data=sales_data;
+    var sales_amount;
+    title "売上金額の詳細分析";
+run;
+
+/* ヒストグラムと正規性検定 */
+proc univariate data=sales_data normal;
+    var sales_amount;
+    histogram sales_amount / normal;
+    title "売上金額の分布分析";
+run;
+
+/* パーセンタイルの指定 */
+proc univariate data=sales_data;
+    var sales_amount;
+    output out=percentiles 
+           pctlpts=10 25 50 75 90 95 99
+           pctlpre=P;
+run;
+
+proc print data=percentiles;
+    title "売上金額のパーセンタイル";
+run;
+
+/* 外れ値の識別 */
+proc univariate data=sales_data plot;
+    var sales_amount;
+    id salesperson product;  /* 外れ値の識別用 */
+    title "外れ値の識別";
+run;</code></pre>
+                    </div>
+
+                    <div class="warning">
+                        <h6>プロシージャ使用時の注意点</h6>
+                        <ul>
+                            <li>BY文を使う前には必ずPROC SORTでソートが必要</li>
+                            <li>CLASS文はソート不要だが、BY文より柔軟性が低い</li>
+                            <li>大きなデータセットではWHERE文で条件を絞る</li>
+                            <li>出力データセットを作成する場合はNOPRINTオプションを使用</li>
+                        </ul>
+                    </div>
+
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>データセットの内容を表示する最も基本的なプロシージャは何ですか？</li>
+                            <li>データを降順でソートするキーワードは何ですか？</li>
+                            <li>カテゴリカルデータの度数分布を作成するプロシージャは何ですか？</li>
+                            <li>数値データの平均や標準偏差を計算するプロシージャは何ですか？</li>
+                            <li>BY文を使用する前に必ず実行すべきプロシージャは何ですか？</li>
+                        </ol>
+                        <div class="mt-3">
+                            <small class="text-muted">解答例：1) PROC PRINT 2) DESCENDING 3) PROC FREQ 4) PROC MEANS 5) PROC SORT</small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="sas-learning-material-04.html" class="btn btn-secondary">← 前の章</a>
+                        <a href="sas-learning-material-06.html" class="btn btn-primary">次の章 →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Highlight.js 初期化 -->
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

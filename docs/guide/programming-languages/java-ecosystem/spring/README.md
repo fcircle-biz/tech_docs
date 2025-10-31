@@ -37,7 +37,7 @@ REST API開発とSpring WebClientを使った外部API連携について学習�
 ### [11. さらに一歩進んだSpring開発へ②](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-11.html)
 Java RecordsとSpring Data JDBCを組み合わせた高度な開発手法と、集約ルート（Aggregate Root）を使った1対多の関連モデルの設計について学びます。Java Recordsの基本概念と利点、Spring Data JDBCとJava Recordsの連携方法、ドメイン駆動設計（DDD）の考え方に基づいた集約ルートの概念と実装、1対多の関連を持つデータモデルの設計と実装方法などを学習します。プロジェクト管理システムの実装例を通じて、より効率的で保守性の高いSpringアプリケーションの開発手法を習得できます。
 
-### [補足①：Spring Data JPA入門](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-ex-1.html)
+### [補足①：Spring Data JPA入門](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-ex-01.html)
 Spring Data JPAの基本から応用まで学習します。JPAの基本概念と設定方法、エンティティの定義と主要アノテーションの使い方、エンティティ間のリレーションシップ（@OneToMany、@ManyToOne、@ManyToManyなど）、遅延読み込み（Lazy Loading）とN+1問題への対処法、HibernateとJPAのメリットと注意点、Spring Data JDBCとJPAの使い分け基準などを詳しく解説します。実際のコード例を通じて、Spring Data JPAを効果的に活用する方法を習得できます。
 
 ## 学習の進め方

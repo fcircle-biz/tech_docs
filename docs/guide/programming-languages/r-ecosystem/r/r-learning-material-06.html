@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R言語学習教材 第6章 - データの前処理と変換 (dplyr)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; padding-top: 56px; }
+        .navbar { background-color: #0066cc; }
+        .sidebar { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; }
+        .chapter-title { color: #0066cc; margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #0066cc; padding-bottom: 0.5rem; }
+        .section-title { color: #3399ff; margin-top: 1.2rem; margin-bottom: 0.8rem; }
+        .quiz-container { background-color: #e6f2ff; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #0066cc; }
+        .exercise-container { background-color: #f3e5f5; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #9c27b0; }
+        .highlight { background-color: #cce6ff; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #0066cc; }
+        .warning { background-color: #ffebee; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #f44336; }
+        .nav-link.active { background-color: #0066cc !important; color: white !important; }
+        .code-block { background-color: #1e1e1e; border-radius: 5px; padding: 1rem; margin: 1rem 0; }
+        code { background-color: #f8f9fa; padding: 0.2rem 0.4rem; border-radius: 3px; color: #d63384; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../../../index.html"><strong>Tech Docs</strong></a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../../guide/index.html">学習ガイド</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../../../cheatsheet/index.html">チートシート</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading px-3 mt-4 mb-1 text-muted"><span>R言語学習教材</span></h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-01.html">第1章: R言語の基礎とRStudio入門</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-02.html">第2章: データ型と基本操作</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-03.html">第3章: データフレームと基本統計</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-04.html">第4章: データの読み込みと書き出し</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-05.html">第5章: データの可視化 (ggplot2)</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="r-learning-material-06.html">第6章: データの前処理と変換 (dplyr)</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-07.html">第7章: 統計解析の基礎</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-08.html">第8章: 回帰分析</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-09.html">第9章: 時系列データ分析</a></li>
+                        <li class="nav-item"><a class="nav-link" href="r-learning-material-10.html">第10章: レポート作成 (R Markdown)</a></li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">第6章: データの前処理と変換 (dplyr)</h1>
+                </div>
+
+                <div id="chapter6">
+                    <h2 class="chapter-title">dplyrで効率的なデータ操作をマスターしよう</h2>
+                    
+                    <div class="highlight">
+                        <h5>この章で学ぶこと</h5>
+                        <ul>
+                            <li>dplyrパッケージの基本機能</li>
+                            <li>パイプ演算子（%>%）の活用</li>
+                            <li>filter(), select(), mutate(), arrange()の使い方</li>
+                            <li>グループ化とsummarise()による集計</li>
+                            <li>複数データフレームの結合（join）</li>
+                            <li>実際のデータ分析における前処理手順</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="section-title">6.1 dplyrとは</h3>
+                    <p><strong>dplyr</strong>はデータ操作のための直感的で高速なパッケージです。SQLライクな操作をRで実現できます。</p>
+
+                    <h4>パッケージのインストールと読み込み</h4>
+                    <pre class="code-block"><code class="language-r"># tidyverseに含まれるdplyrをインストール
+install.packages("tidyverse")
+library(dplyr)
+
+# パイプ演算子の使用
+library(magrittr)</code></pre>
+
+                    <h4>5つの主要動詞</h4>
+                    <ul>
+                        <li><code>filter()</code>: 行をフィルタリング</li>
+                        <li><code>select()</code>: 列を選択</li>
+                        <li><code>mutate()</code>: 新しい列を作成</li>
+                        <li><code>arrange()</code>: 行を並び替え</li>
+                        <li><code>summarise()</code>: データを要約</li>
+                    </ul>
+
+                    <div class="exercise-container">
+                        <h5>実習 6-1: dplyrの基本操作</h5>
+                        <p>mtcarsデータセットを使用してdplyrの基本機能を実践しましょう。</p>
+                        <h6>実行例</h6>
+                        <pre class="code-block"><code class="language-r">library(dplyr)
+data(mtcars)
+
+# filter: 燃費が20mpg以上の車のみ
+high_mpg_cars <- mtcars %>% filter(mpg >= 20)
+nrow(high_mpg_cars)
+
+# select: 特定の列のみ選択
+basic_info <- mtcars %>% select(mpg, cyl, hp, wt)
+head(basic_info)
+
+# mutate: 新しい列を作成
+mtcars_extended <- mtcars %>% 
+  mutate(
+    kpl = mpg * 0.425,  # km/Lに変換
+    hp_per_wt = hp / wt  # パワーウェイトレシオ
+  )
+
+# arrange: ソート
+sorted_cars <- mtcars %>% arrange(desc(mpg))
+head(sorted_cars)</code></pre>
+                    </div>
+
+                    <h3 class="section-title">6.2 パイプ演算子（%>%）</h3>
+                    <p>パイプ演算子を使うことで、複数の操作を連鎖させて読みやすいコードを書けます。</p>
+
+                    <h4>パイプの基本</h4>
+                    <pre class="code-block"><code class="language-r"># パイプなし（ネスト）
+result <- arrange(select(filter(mtcars, mpg > 20), mpg, cyl, hp), desc(mpg))
+
+# パイプあり（読みやすい）
+result <- mtcars %>%
+  filter(mpg > 20) %>%
+  select(mpg, cyl, hp) %>%
+  arrange(desc(mpg))</code></pre>
+
+                    <h4>複合操作の例</h4>
+                    <pre class="code-block"><code class="language-r"># 4気筒車の燃費分析
+four_cylinder_analysis <- mtcars %>%
+  filter(cyl == 4) %>%
+  mutate(efficiency_class = ifelse(mpg > median(mpg), "高効率", "標準")) %>%
+  select(mpg, wt, hp, efficiency_class) %>%
+  arrange(desc(mpg))
+
+print(four_cylinder_analysis)</code></pre>
+
+                    <h3 class="section-title">6.3 グループ化と集計</h3>
+
+                    <h4>group_by()とsummarise()</h4>
+                    <pre class="code-block"><code class="language-r"># シリンダー数別の統計
+cylinder_stats <- mtcars %>%
+  group_by(cyl) %>%
+  summarise(
+    count = n(),
+    avg_mpg = mean(mpg),
+    avg_hp = mean(hp),
+    avg_wt = mean(wt),
+    .groups = 'drop'
+  )
+
+print(cylinder_stats)</code></pre>
+
+                    <h4>複数変数でのグループ化</h4>
+                    <pre class="code-block"><code class="language-r"># シリンダー数とギア数での分析
+detailed_stats <- mtcars %>%
+  group_by(cyl, gear) %>%
+  summarise(
+    cars = n(),
+    mpg_mean = mean(mpg),
+    mpg_sd = sd(mpg),
+    .groups = 'drop'
+  ) %>%
+  arrange(cyl, gear)
+
+print(detailed_stats)</code></pre>
+
+                    <div class="exercise-container">
+                        <h5>実習 6-2: データの集計と分析</h5>
+                        <p>アイリスデータセットを使用してグループ別の統計量を計算しましょう。</p>
+                        <h6>実行例</h6>
+                        <pre class="code-block"><code class="language-r">library(dplyr)
+data(iris)
+
+# 種類別の詳細統計
+species_analysis <- iris %>%
+  group_by(Species) %>%
+  summarise(
+    count = n(),
+    sepal_length_mean = round(mean(Sepal.Length), 2),
+    sepal_length_sd = round(sd(Sepal.Length), 2),
+    sepal_width_mean = round(mean(Sepal.Width), 2),
+    petal_length_mean = round(mean(Petal.Length), 2),
+    petal_area_mean = round(mean(Petal.Length * Petal.Width), 2),
+    .groups = 'drop'
+  )
+
+print(species_analysis)
+
+# 大きな花びらを持つ花の割合
+iris_with_large_petals <- iris %>%
+  mutate(large_petal = Petal.Length > mean(Petal.Length)) %>%
+  group_by(Species) %>%
+  summarise(
+    large_petal_ratio = mean(large_petal),
+    .groups = 'drop'
+  )
+
+print(iris_with_large_petals)</code></pre>
+                    </div>
+
+                    <h3 class="section-title">6.4 データフレームの結合</h3>
+
+                    <h4>join関数の種類</h4>
+                    <pre class="code-block"><code class="language-r"># サンプルデータの作成
+students <- data.frame(
+  id = 1:4,
+  name = c("田中", "佐藤", "鈴木", "高橋")
+)
+
+scores <- data.frame(
+  student_id = c(1, 2, 3, 5),
+  math = c(85, 92, 78, 88),
+  english = c(78, 85, 92, 75)
+)
+
+# left_join: 左側のテーブルを基準
+result_left <- students %>% left_join(scores, by = c("id" = "student_id"))
+
+# inner_join: 両方に存在するもののみ
+result_inner <- students %>% inner_join(scores, by = c("id" = "student_id"))
+
+# full_join: すべてを結合
+result_full <- students %>% full_join(scores, by = c("id" = "student_id"))</code></pre>
+
+                    <h3 class="section-title">6.5 実践的なデータクリーニング</h3>
+
+                    <h4>欠損値の処理</h4>
+                    <pre class="code-block"><code class="language-r"># 欠損値を含むデータの例
+messy_data <- data.frame(
+  name = c("田中", "佐藤", NA, "鈴木", "高橋"),
+  age = c(25, NA, 30, 28, 35),
+  score = c(85, 90, 78, NA, 92)
+)
+
+# 欠損値の確認と処理
+cleaned_data <- messy_data %>%
+  filter(!is.na(name)) %>%  # 名前がNAでない行のみ
+  mutate(
+    age = ifelse(is.na(age), median(age, na.rm = TRUE), age),
+    score = ifelse(is.na(score), mean(score, na.rm = TRUE), score)
+  )
+
+print(cleaned_data)</code></pre>
+
+                    <h4>データ型の変換</h4>
+                    <pre class="code-block"><code class="language-r"># 文字列と数値の変換
+data_conversion <- data.frame(
+  category = c("A", "B", "C", "A", "B"),
+  value_char = c("10", "15", "20", "12", "18")
+) %>%
+  mutate(
+    category_factor = as.factor(category),
+    value_numeric = as.numeric(value_char),
+    category_num = as.numeric(category_factor)
+  )</code></pre>
+
+                    <div class="exercise-container">
+                        <h5>実習 6-3: 実践的なデータ処理パイプライン</h5>
+                        <p>複雑なデータ処理パイプラインを構築しましょう。</p>
+                        <h6>実行例</h6>
+                        <pre class="code-block"><code class="language-r"># 複雑なデータ処理の例
+comprehensive_analysis <- mtcars %>%
+  # 行名を列として追加
+  mutate(car_name = rownames(mtcars)) %>%
+  # 新しい指標を計算
+  mutate(
+    efficiency_score = mpg / wt,
+    power_class = case_when(
+      hp < 100 ~ "低出力",
+      hp < 200 ~ "中出力", 
+      TRUE ~ "高出力"
+    ),
+    is_sports_car = ifelse(hp > 150 & qsec < 17, TRUE, FALSE)
+  ) %>%
+  # フィルタリング
+  filter(cyl %in% c(4, 6, 8)) %>%
+  # グループ別集計
+  group_by(cyl, power_class) %>%
+  summarise(
+    count = n(),
+    avg_mpg = round(mean(mpg), 1),
+    avg_efficiency = round(mean(efficiency_score), 2),
+    sports_car_ratio = round(mean(is_sports_car), 2),
+    .groups = 'drop'
+  ) %>%
+  # 結果の並び替え
+  arrange(cyl, desc(avg_efficiency))
+
+print(comprehensive_analysis)</code></pre>
+                    </div>
+
+                    <div class="quiz-container">
+                        <h5>理解度確認クイズ</h5>
+                        <ol>
+                            <li>dplyrの5つの主要動詞を挙げて、それぞれの機能を説明してください。</li>
+                            <li>パイプ演算子（%>%）の利点を2つ説明してください。</li>
+                            <li>left_joinとinner_joinの違いを説明してください。</li>
+                            <li>group_by()とsummarise()を組み合わせる目的は何ですか？</li>
+                            <li>以下の処理をパイプを使って書き直してください：<br>
+                                <code>result <- arrange(filter(select(mtcars, mpg, cyl), cyl == 4), mpg)</code></li>
+                        </ol>
+                        <details>
+                            <summary>解答例</summary>
+                            <ol>
+                                <li>filter(行選択)、select(列選択)、mutate(列作成)、arrange(並び替え)、summarise(要約)</li>
+                                <li>コードの可読性向上、処理の流れが明確</li>
+                                <li>left_join:左テーブル全て保持、inner_join:共通部分のみ</li>
+                                <li>グループ別の統計量計算</li>
+                                <li>mtcars %>% select(mpg, cyl) %>% filter(cyl == 4) %>% arrange(mpg)</li>
+                            </ol>
+                        </details>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="r-learning-material-05.html" class="btn btn-secondary">← 前の章</a>
+                        <a href="r-learning-material-07.html" class="btn btn-primary">次の章 →</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Highlight.js 初期化 -->
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
