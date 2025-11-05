@@ -52,6 +52,7 @@ tech-knowledge-map.mdに基づく技術分野別の学習教材インデック�
 Webページの基礎技術とフロントエンド開発
 
 - [HTML/CSS](./web-technologies/html-css/) - Webページの基礎（マークアップ、スタイリング、レスポンシブデザイン）
+- [Tailwind CSS](./web-technologies/tailwind-css/) - ユーティリティファーストCSSフレームワーク、レスポンシブデザイン、コンポーネント構築
 
 ---
 
@@ -153,7 +154,8 @@ docs/guide/
 │   ├── cobol-ecosystem/            # COBOL
 │   └── sas-ecosystem/              # SAS
 ├── web-technologies/                # Web基礎技術
-│   └── html-css/                   # HTML/CSS
+│   ├── html-css/                   # HTML/CSS
+│   └── tailwind-css/               # Tailwind CSS
 ├── development-processes/           # 開発手法・プロセス
 │   ├── agile-development/          # アジャイル開発
 │   ├── waterfall-development/      # ウォーターフォール開発
