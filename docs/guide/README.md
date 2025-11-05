@@ -53,6 +53,7 @@ Webページの基礎技術とフロントエンド開発
 
 - [HTML/CSS](./web-technologies/html-css/) - Webページの基礎（マークアップ、スタイリング、レスポンシブデザイン）
 - [Bootstrap](./web-technologies/bootstrap/) - レスポンシブWebデザインフレームワーク、グリッドシステム、UIコンポーネント
+- [Tailwind CSS](./web-technologies/tailwind-css/) - ユーティリティファーストCSSフレームワーク、レスポンシブデザイン、コンポーネント構築
 
 ---
 
@@ -156,6 +157,7 @@ docs/guide/
 ├── web-technologies/                # Web基礎技術
 │   ├── html-css/                   # HTML/CSS
 │   └── bootstrap/                  # Bootstrap
+│   └── tailwind-css/               # Tailwind CSS
 ├── development-processes/           # 開発手法・プロセス
 │   ├── agile-development/          # アジャイル開発
 │   ├── waterfall-development/      # ウォーターフォール開発
