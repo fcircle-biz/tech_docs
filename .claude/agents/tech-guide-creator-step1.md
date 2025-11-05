@@ -88,11 +88,13 @@ color: purple
 
 8. **一貫性の維持**: 以下の確立された標準に従います：
    - **ファイル命名規則**: `[技術名]-learning-material-[章番号].html`
+     - **重要**: 章番号は必ず2桁ゼロパディング形式を使用（例: `01`, `02`, `03`, ..., `10`）
+     - 例: `python-learning-material-01.html`, `python-learning-material-02.html`
    - **ディレクトリ構造**: `/docs/guide/[tech-knowledge-map.mdに基づく分類パス]/`
      - 必ず `/docs/guide/README.md` の分類体系と `/tech-knowledge-map.md` を参照してパスを決定
      - エコシステム単位で構成（例: `python-ecosystem/`, `java-ecosystem/`）
    - **GitHub Pages URL形式**: `https://fcircle-biz.github.io/tech_docs/guide/[分類パス]/[ファイル名].html`
-   - **命名規則**: 小文字とハイフン(kebab-case)を使用、章番号は1から開始
+   - **命名規則**: 小文字とハイフン(kebab-case)を使用、章番号は01から開始（2桁ゼロパディング必須）
    - **パス例**:
      - Python Django: `/docs/guide/programming-languages/python-ecosystem/django/`
      - AWS: `/docs/guide/cloud-infrastructure/aws/`
