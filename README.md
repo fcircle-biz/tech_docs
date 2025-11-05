@@ -71,6 +71,8 @@
 ### Web技術
 
 - **[HTML/CSS学習ガイド](docs/guide/web-technologies/html-css/README.md)** - HTML/CSSの基礎から実践的なWebページ制作まで段階的に学習するためのカリキュラム。8つのHTML教材でWebデザインの基本をマスター
+- **[Bootstrap学習ガイド](docs/guide/web-technologies/bootstrap/README.md)** - Bootstrapフレームワークを使用したレスポンシブWebデザインの基礎から実践まで10章完成カリキュラム。グリッドシステム、UIコンポーネント、カスタマイズ方法まで体系的に習得
+- **[Tailwind CSS学習ガイド](docs/guide/web-technologies/tailwind-css/README.md)** - Tailwind CSSフレームワークを使用したユーティリティファーストのWebデザインを10章で完全習得
 
 ### 開発手法・プロセス
 

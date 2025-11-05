@@ -156,7 +156,7 @@ docs/guide/
 │   └── sas-ecosystem/              # SAS
 ├── web-technologies/                # Web基礎技術
 │   ├── html-css/                   # HTML/CSS
-│   └── bootstrap/                  # Bootstrap
+│   ├── bootstrap/                  # Bootstrap
 │   └── tailwind-css/               # Tailwind CSS
 ├── development-processes/           # 開発手法・プロセス
 │   ├── agile-development/          # アジャイル開発
