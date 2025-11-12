@@ -243,18 +243,8 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="step5-docker-containerization.html">
-                                <i class="fab fa-docker"></i> ステップ5: Dockerコンテナ化
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="step6-docker-compose-integration.html">
-                                <i class="fas fa-layer-group"></i> ステップ6: docker-compose統合環境
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="step7-testing-troubleshooting.html">
-                                <i class="fas fa-check-circle"></i> ステップ7: 動作確認とトラブルシューティング
+                            <a class="nav-link" href="step5-testing.html">
+                                <i class="fas fa-check-circle"></i> ステップ5: 動作確認
                             </a>
                         </li>
                     </ul>
@@ -321,16 +311,24 @@
                                 <pre class="code-block"><code class="language-java">package com.example.aichat;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * チャットフォームオブジェクト
  * ユーザーからのメッセージ入力を受け取る
+ *
+ * Lombokアノテーションによりboilerplateコードを削減
  */
+@Data                    // getter/setter/toString/equals/hashCodeを自動生成
+@NoArgsConstructor       // デフォルトコンストラクタ(Spring MVCで必要)
+@AllArgsConstructor      // 全フィールドを引数に取るコンストラクタ
 public class ChatForm {
 
     /**
      * ユーザーが入力したメッセージ
-     * @NotBlank: 必須入力チェック（null、空文字、空白のみを禁止）
+     * @NotBlank: 必須入力チェック(null、空文字、空白のみを禁止)
      */
     @NotBlank(message = "メッセージを入力してください")
     private String message;
@@ -340,35 +338,15 @@ public class ChatForm {
      * フォーム送信後、コントローラーで設定される
      */
     private String response;
-
-    // デフォルトコンストラクタ（Spring MVCで必要）
-    public ChatForm() {
-    }
-
-    // 便利なコンストラクタ（テスト用）
-    public ChatForm(String message) {
-        this.message = message;
-    }
-
-    // Getter/Setter（Spring MVCでフォームバインディングに使用される）
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getResponse() {
-        return response;
-    }
-
-    public void setResponse(String response) {
-        this.response = response;
-    }
 }</code></pre>
                             </li>
-
+                            <li><strong>Lombokアノテーションの説明</strong>:
+                                <ul>
+                                    <li><code>@Data</code>: getter/setter、toString、equals、hashCodeメソッドを自動生成</li>
+                                    <li><code>@NoArgsConstructor</code>: 引数なしのデフォルトコンストラクタを生成(Spring MVCのフォームバインディングに必要)</li>
+                                    <li><code>@AllArgsConstructor</code>: 全フィールドを引数に取るコンストラクタを生成(テスト用に便利)</li>
+                                </ul>
+                            </li>
                             <li><strong>フィールドの説明</strong>:
                                 <ul>
                                     <li><code>message</code>: ユーザーが入力する質問やメッセージ（必須）</li>
@@ -430,7 +408,7 @@ public class ChatForm {
                                 <p>app/src/main/java/com/example/aichat/ChatController.javaを作成：</p>
                                 <pre class="code-block"><code class="language-java">package com.example.aichat;
 
-import jakarta.validation.Valid;
+import org.springframework.validation.annotation.Validated;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
@@ -515,7 +493,7 @@ public class ChatController {
  */
 @PostMapping("/chat")
 public String sendMessage(
-        @Valid @ModelAttribute ChatForm chatForm,
+        @Validated @ModelAttribute ChatForm chatForm,
         BindingResult bindingResult,
         Model model) {
 
@@ -562,9 +540,9 @@ public String sendMessage(
 
                             <li><strong>コードの詳細説明</strong>:
                                 <ul>
-                                    <li><code>@Valid</code>: Bean Validationを有効化（@NotBlankがチェックされる）</li>
+                                    <li><code>@Validated</code>: Bean Validationを有効化（@NotBlankがチェックされる）</li>
                                     <li><code>@ModelAttribute</code>: フォームデータをChatFormオブジェクトにバインド</li>
-                                    <li><code>BindingResult</code>: バリデーション結果を受け取る（必ず@Validの直後に配置）</li>
+                                    <li><code>BindingResult</code>: バリデーション結果を受け取る（必ず@Validatedの直後に配置）</li>
                                     <li><code>bindingResult.hasErrors()</code>: バリデーションエラーがあればtrueを返す</li>
                                     <li><code>try-catch</code>: AI呼び出し中のエラーをハンドリング</li>
                                 </ul>

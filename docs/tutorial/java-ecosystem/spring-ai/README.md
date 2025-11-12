@@ -22,34 +22,35 @@ Spring AIフレームワークとOllama、Qwen3大規模言語モデルを使用
 - 最新のAI技術をWebアプリケーションに統合したい方
 
 ### 特徴
-- **最新技術スタック**: Spring Boot 3.4.0、Spring AI 1.0.0-M6、Qwen3:7b
+- **最新技術スタック**: Spring Boot 3.4.0、Spring AI 1.0.0-M6、Qwen3:1.7b
 - **ローカル実行**: Ollamaによる完全なオンプレミスAI環境
-- **シンプル設計**: JavaScript不要、サーバーサイドレンダリングのみ
+- **シンプル設計**: JavaScript最小限、サーバーサイドレンダリング中心
 - **段階的構築**: 基本的なSpring Bootアプリから始めて機能を追加
 - **実践重視**: 動作する実用的なAIチャットアプリケーションを構築
-- **Docker統合**: docker-compose一発で全環境が起動する自動化設定
 - **コスト不要**: 外部APIキー不要、完全にローカルで動作
+- **軽量**: 1.7Bパラメータモデルで低スペックPCでも動作
 
 ## 前提条件・環境要件
 
 ### 必要なソフトウェア
-- **JDK**: Java Development Kit 17以上（推奨: JDK 17 LTS）
+- **JDK**: Java Development Kit 21 LTS(Oracleサイトからダウンロード)
 - **IDE**: Visual Studio Code（推奨）
   - Extension Pack for Java
   - Spring Boot Extension Pack
   - Docker Extension
   - Gradle Extension Pack
+  - Lombok Annotations Support for VS Code
 - **ビルドツール**: Gradle 7.6以上（Gradle Wrapperを使用）
-- **コンテナ**: Docker Desktop（最新版）
+- **コンテナ**: Rancher Desktop（最新版）
   - Docker Engine 20.10以上
   - Docker Compose V2対応
 - **バージョン管理**: Git
 - **OS**: Linux/Windows/Mac（Docker対応環境）
 
 ### ハードウェア要件
-- **RAM**: 最低8GB（推奨: 16GB以上）
-  - Qwen3:7bモデルは約4GBのメモリを使用
-- **ストレージ**: 空き容量10GB以上
+- **RAM**: 最低4GB（推奨: 8GB以上）
+  - Qwen3:1.7bモデルは約2GBのメモリを使用
+- **ストレージ**: 空き容量5GB以上
   - Ollamaモデルダウンロード用
 - **CPU**: マルチコアプロセッサ推奨
   - LLM推論にはCPUパワーが必要
@@ -65,16 +66,17 @@ Spring AIフレームワークとOllama、Qwen3大規模言語モデルを使用
 ## チュートリアル構成
 
 ### Step 1: [環境構築とプロジェクト作成](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/spring-ai/step1-environment-setup.html)
-- JDK 17のインストールと環境変数設定
+- JDK 21のインストールと環境変数設定
 - Visual Studio Codeのセットアップと必要な拡張機能
-- Docker Desktopのインストールと動作確認
-- Gradleプロジェクトの作成（Groovy DSL）
-- build.gradleの設定（Spring Boot 3.4.0、Spring AI BOM 1.0.0-M6）
-- 必要な依存関係の追加（web、thymeleaf、spring-ai-ollama）
+  - Lombok Annotations Support for VS Codeのインストール
+- Rancher Desktopのインストールと動作確認
+- Spring Initializrを使用したプロジェクト作成(Gradle)
+- 必要な依存関係の選択(web、thymeleaf、spring-ai-ollama、lombok)
+- Lombokの設定とアノテーションプロセッサの有効化
 - Hello Worldアプリケーションの作成と実行
 
 **所要時間**: 2時間
-**習得内容**: Java開発環境構築、Gradleビルド、Spring Bootプロジェクト初期化
+**習得内容**: Java開発環境構築、Gradleビルド、Spring Bootプロジェクト初期化、Lombok統合
 
 ### Step 2: [Spring AIとOllamaの統合設定](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/spring-ai/step2-spring-ai-ollama-integration.html)
 - Spring AIフレームワークの概要と仕組み
@@ -93,13 +95,14 @@ Spring AIフレームワークとOllama、Qwen3大規模言語モデルを使用
 - GETリクエストハンドラ（初期画面表示）
 - POSTリクエストハンドラ（チャット送信処理）
 - ChatFormオブジェクトの作成とバリデーション
-- @NotBlankバリデーションの実装
+  - Lombokアノテーション（@Data、@NoArgsConstructor、@AllArgsConstructor）の活用
+  - @NotBlankバリデーションの実装
 - ChatClientを使用したAI応答取得
 - プロンプトエンジニアリングの基礎
 - 同期処理によるシンプルな実装（WebFlux不使用）
 
 **所要時間**: 3時間
-**習得内容**: Springコントローラー実装、フォーム処理、AI統合
+**習得内容**: Springコントローラー実装、フォーム処理、AI統合、Lombok活用
 
 ### Step 4: [Thymeleafビューの作成](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/spring-ai/step4-thymeleaf-view.html)
 - Thymeleafテンプレートエンジンの設定
@@ -115,49 +118,15 @@ Spring AIフレームワークとOllama、Qwen3大規模言語モデルを使用
 **所要時間**: 2.5時間
 **習得内容**: Thymeleafテンプレート、Bootstrap統合、フォームUI実装
 
-### Step 5: [Dockerコンテナ化](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/spring-ai/step5-docker-containerization.html)
-- マルチステージDockerfileの作成
-- ビルドステージ（Gradle）の設定
-- ランタイムステージ（JRE）の最適化
-- アプリケーションJARのビルドと実行
-- Dockerイメージのビルドと動作確認
-- イメージサイズの最適化テクニック
-- ヘルスチェックエンドポイントの実装
+### Step 5: [動作確認](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/spring-ai/step5-testing.html)
+- アプリケーションの起動と動作確認
+- チャット機能のテスト
+- バリデーションエラーの確認
+- AI応答の確認
+- 基本的なトラブルシューティング
 
-**所要時間**: 2時間
-**習得内容**: Docker基礎、マルチステージビルド、コンテナ化ベストプラクティス
-
-### Step 6: [docker-composeによる統合環境構築](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/spring-ai/step6-docker-compose-integration.html)
-- docker-compose.ymlの作成と設定
-- ollamaサービスの定義と設定
-- Qwen3:7bモデルの自動pull設定
-- appサービス（Spring Boot）の定義
-- サービス間の依存関係設定（depends_on）
-- ヘルスチェックによる起動順序制御
-- ネットワーク設定とサービス間通信
-- ボリュームマウントとデータ永続化
-- 環境変数の管理と設定
-- docker-compose up一発での全環境起動
-
-**所要時間**: 3時間
-**習得内容**: Docker Compose、マルチコンテナ管理、サービス連携
-
-### Step 7: [動作確認とトラブルシューティング](https://fcircle-biz.github.io/tech_docs/tutorial/java-ecosystem/spring-ai/step7-operation-troubleshooting.html)
-- docker-composeでの全体起動と確認
-- Ollamaモデルpullの確認方法
-- Spring Bootアプリケーションのログ確認
-- AIチャットアプリケーションの動作テスト
-- よくあるエラーとその対処法
-  - Ollamaモデルが見つからない場合
-  - メモリ不足エラーの対応
-  - コンテナ起動順序の問題
-  - ネットワーク接続エラー
-- パフォーマンスチューニング
-- ログレベルの調整とデバッグ方法
-- 本番環境への展開準備
-
-**所要時間**: 2時間
-**習得内容**: トラブルシューティング、デバッグ手法、運用ノウハウ
+**所要時間**: 1時間
+**習得内容**: 動作確認手順、基本的なデバッグ方法
 
 ## 作成するアプリケーション
 
@@ -171,29 +140,27 @@ Spring AIフレームワークとOllama、Qwen3大規模言語モデルを使用
 ### 主な機能
 1. **AIチャット機能**
    - ユーザーからの質問入力（textarea）
-   - AI（Qwen3:7b）による回答生成
+   - AI（Qwen3:1.7b）による回答生成
    - 回答の整形表示（preタグで改行保持）
    - 同一ページでのリアルタイム表示
 
 2. **技術的特徴**
-   - サーバーサイドレンダリング（JavaScript不使用）
+   - サーバーサイドレンダリング（JavaScript最小限）
    - 同期処理による簡潔な実装
    - Bootstrap 5によるレスポンシブデザイン
    - フォームバリデーション（空白チェック）
-   - Docker Composeによる自動環境構築
+   - 処理中メッセージ表示によるUX向上
 
 ### プロジェクト構造
 ```
 ai-chat/
-├── build.gradle              # Gradleビルド設定
+├── build.gradle              # Gradleビルド設定（Lombok含む）
 ├── settings.gradle           # Gradleプロジェクト設定
-├── Dockerfile                # Spring Bootアプリコンテナ定義
-├── docker-compose.yml        # マルチコンテナ統合設定
 └── src/main/
     ├── java/com/example/aichat/
     │   ├── AiChatApplication.java    # メインクラス
     │   ├── ChatController.java        # チャットコントローラー
-    │   └── ChatForm.java              # フォームオブジェクト
+    │   └── ChatForm.java              # フォームオブジェクト（Lombok使用）
     └── resources/
         ├── application.yml            # アプリケーション設定
         └── templates/
@@ -201,14 +168,14 @@ ai-chat/
 ```
 
 ### 使用技術スタック
-- **言語・フレームワーク**: Java 17、Spring Boot 3.4.0
+- **言語・フレームワーク**: Java 21、Spring Boot 3.4.0
 - **AI統合**: Spring AI 1.0.0-M6、spring-ai-ollama-spring-boot-starter
-- **LLMプロバイダー**: Ollama、Qwen3:7b（7Bパラメータモデル）
+- **LLMプロバイダー**: Ollama、Qwen3:1.7b（1.7Bパラメータモデル）
 - **テンプレートエンジン**: Thymeleaf
 - **CSSフレームワーク**: Bootstrap 5.3.3（CDN）
 - **ビルドツール**: Gradle 7.6+（Groovy DSL）
-- **コンテナ**: Docker、Docker Compose
 - **バリデーション**: Spring Validation（Bean Validation）
+- **コード簡略化**: Lombok（ボイラープレートコード削減）
 
 ## 学習のポイント
 
@@ -233,10 +200,14 @@ ai-chat/
 - **高品質な応答**: GPT-3.5レベルの性能
 
 ### 実装パターン
-- **シンプル設計**: JavaScript不使用、サーバーサイドのみで完結
+- **シンプル設計**: JavaScript最小限、サーバーサイド中心の実装
 - **同期処理**: WebFluxなしの従来型Webアプリケーション
 - **1ページ完結**: ページ遷移なしのシンプルなUX
-- **Docker統合**: docker-compose up一発で全環境が起動
+- **処理中表示**: ユーザーフィードバックによる優れたUX
+- **コード効率化**: Lombokによるボイラープレートコード削減
+  - getter/setterの自動生成（@Data）
+  - コンストラクタの自動生成（@NoArgsConstructor、@AllArgsConstructor）
+  - @ToString、@EqualsAndHashCodeの自動実装
 
 ## 次のステップ
 
@@ -282,10 +253,10 @@ ai-chat/
 ### よくある質問
 
 **Q: Ollamaモデルのダウンロードに時間がかかる**
-A: Qwen3:7bモデルは約4GBのサイズがあります。初回起動時には10-30分程度かかることがあります。ネットワーク速度に依存します。
+A: Qwen3:1.7bモデルは約1GBのサイズがあります。初回起動時には2-5分程度かかることがあります。ネットワーク速度に依存します。
 
 **Q: メモリ不足エラーが発生する**
-A: Qwen3:7bは最低8GBのRAMが必要です。他のアプリケーションを終了するか、より小さいモデル（例: qwen3:3b）を使用してください。
+A: Qwen3:1.7bは最低4GBのRAMで動作します。さらに軽量なモデルが必要な場合は、qwen3:0.5bも利用可能です。
 
 **Q: AIの応答が遅い**
 A: CPUでの推論は時間がかかります。GPUがあればOllamaのGPU対応版を使用することで高速化できます。

@@ -236,18 +236,8 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="step5-docker-containerization.html">
-                                <i class="fab fa-docker"></i> ステップ5: Dockerコンテナ化
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="step6-docker-compose-integration.html">
-                                <i class="fas fa-layer-group"></i> ステップ6: docker-compose統合環境
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="step7-testing-troubleshooting.html">
-                                <i class="fas fa-check-circle"></i> ステップ7: 動作確認とトラブルシューティング
+                            <a class="nav-link" href="step5-testing.html">
+                                <i class="fas fa-check-circle"></i> ステップ5: 動作確認
                             </a>
                         </li>
                     </ul>
@@ -274,7 +264,7 @@
                             <li><strong>Thymeleaf式言語</strong> - th:field、th:if、th:text、th:errorsの活用</li>
                             <li><strong>バリデーションエラー表示</strong> - フィールドエラーメッセージの表示</li>
                             <li><strong>AI応答の整形表示</strong> - preタグで改行を保持した表示</li>
-                            <li><strong>JavaScript不使用</strong> - サーバーサイドレンダリングのみで完結</li>
+                            <li><strong>処理中メッセージ表示</strong> - JavaScriptによるフォーム送信時のローディング表示</li>
                         </ul>
                         <p><strong>所要時間：</strong> 約2.5時間</p>
                     </div>
@@ -404,6 +394,26 @@ mkdir -p app/src/main/resources/templates</code></pre>
             font-size: 0.75rem;
             padding: 5px 10px;
         }
+
+        .loading-message {
+            display: none;
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .loading-message.show {
+            display: block;
+        }
+
+        .spinner-border {
+            width: 2rem;
+            height: 2rem;
+            margin-right: 10px;
+        }
     &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
@@ -418,6 +428,15 @@ mkdir -p app/src/main/resources/templates</code></pre>
             &lt;/div&gt;
 
             &lt;div class="card-body"&gt;
+                &lt;!-- AI処理中メッセージ --&gt;
+                &lt;div id="loadingMessage" class="loading-message"&gt;
+                    &lt;div class="spinner-border text-warning" role="status"&gt;
+                        &lt;span class="visually-hidden"&gt;処理中...&lt;/span&gt;
+                    &lt;/div&gt;
+                    &lt;h5 class="mt-2"&gt;&lt;i class="fas fa-hourglass-half"&gt;&lt;/i&gt; AIが回答を生成しています...&lt;/h5&gt;
+                    &lt;p class="mb-0"&gt;処理には数分程度かかる場合があります。しばらくお待ちください。&lt;/p&gt;
+                &lt;/div&gt;
+
                 &lt;!-- AI応答表示エリア --&gt;
                 &lt;div class="response-area" th:if="${chatForm.response != null}"&gt;
                     &lt;!-- ユーザーメッセージ --&gt;
@@ -478,6 +497,32 @@ mkdir -p app/src/main/resources/templates</code></pre>
 
     &lt;!-- Bootstrap JavaScript --&gt;
     &lt;script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"&gt;&lt;/script&gt;
+
+    &lt;!-- フォーム送信時の処理中メッセージ表示 --&gt;
+    &lt;script&gt;
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatForm = document.querySelector('form');
+            const submitButton = chatForm.querySelector('button[type="submit"]');
+            const loadingMessage = document.getElementById('loadingMessage');
+
+            chatForm.addEventListener('submit', function(event) {
+                // バリデーションチェック（空の場合は送信しない）
+                const messageField = chatForm.querySelector('#message');
+                if (!messageField.value.trim()) {
+                    return; // バリデーションエラーがあれば処理を続行
+                }
+
+                // 処理中メッセージを表示
+                loadingMessage.classList.add('show');
+
+                // 送信ボタンを無効化してテキスト変更
+                submitButton.disabled = true;
+                submitButton.innerHTML = '&lt;i class="fas fa-spinner fa-spin"&gt;&lt;/i&gt; 処理中...';
+
+                // フォームを送信（preventDefault不要）
+            });
+        });
+    &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
                             </li>
@@ -503,7 +548,9 @@ cd app
 
                             <p><strong>メッセージ送信後:</strong></p>
                             <ul class="mb-0">
-                                <li>ユーザーの質問が青い枠で表示される</li>
+                                <li>送信ボタンを押すと「AIが回答を生成しています...」というメッセージが表示される</li>
+                                <li>送信ボタンが無効化され、「処理中...」というテキストとスピナーアイコンが表示される</li>
+                                <li>AI処理完了後、ユーザーの質問が青い枠で表示される</li>
                                 <li>AIの回答がオレンジの枠で表示される</li>
                                 <li>改行が正しく保持されて表示される</li>
                             </ul>
@@ -601,8 +648,78 @@ cd app
                         </ol>
                     </div>
 
+                    <!-- セクション4.4: 処理中メッセージ表示の実装 -->
+                    <h3 class="section-title">4.4 処理中メッセージ表示の実装</h3>
+                    <p>AI処理には数分程度時間がかかるため、ユーザーに処理中であることを明示的に伝える必要があります。JavaScriptを使用して、フォーム送信時にローディングメッセージを表示します。</p>
+
+                    <div class="concept-box">
+                        <h6><i class="fas fa-lightbulb"></i> 処理中メッセージ表示の仕組み</h6>
+                        <ol>
+                            <li><strong>フォーム送信イベントのリスニング</strong>: JavaScriptでformのsubmitイベントを監視</li>
+                            <li><strong>バリデーションチェック</strong>: 空白入力の場合はメッセージを表示しない</li>
+                            <li><strong>ローディングメッセージ表示</strong>: 黄色の背景に警告アイコンとスピナーを表示</li>
+                            <li><strong>送信ボタンの無効化</strong>: disabled属性を追加して二重送信を防止</li>
+                            <li><strong>ボタンテキストの変更</strong>: 「送信」から「処理中...」に変更</li>
+                            <li><strong>スピナーアイコン追加</strong>: Font Awesomeのfa-spinnerアイコンを回転表示</li>
+                        </ol>
+                    </div>
+
+                    <div class="exercise-container">
+                        <h5><i class="fas fa-tasks"></i> 実習 4-2: 処理中メッセージのテスト</h5>
+                        <p>実際に処理中メッセージが表示されることを確認しましょう：</p>
+
+                        <h6><i class="fas fa-list-ol"></i> 手順</h6>
+                        <ol>
+                            <li>ブラウザでhttp://localhost:8080/chatにアクセス</li>
+                            <li>テキストエリアに「Javaの特徴を教えてください」と入力</li>
+                            <li>「送信」ボタンをクリック</li>
+                            <li>以下が表示されることを確認：
+                                <ul>
+                                    <li>黄色い背景の「AIが回答を生成しています...」メッセージ</li>
+                                    <li>回転するスピナーアイコン</li>
+                                    <li>送信ボタンが「処理中...」に変わり無効化される</li>
+                                </ul>
+                            </li>
+                            <li>数分程度待つとAI応答が表示され、処理中メッセージが消えることを確認</li>
+                        </ol>
+                    </div>
+
+                    <div class="concept-box">
+                        <h6><i class="fas fa-code"></i> JavaScriptコードの詳細解説</h6>
+                        <pre class="code-block"><code class="language-javascript">// DOMContentLoadedイベント：HTML読み込み完了後に実行
+document.addEventListener('DOMContentLoaded', function() {
+    const chatForm = document.querySelector('form');
+    const submitButton = chatForm.querySelector('button[type="submit"]');
+    const loadingMessage = document.getElementById('loadingMessage');
+
+    // フォーム送信時のイベントリスナー
+    chatForm.addEventListener('submit', function(event) {
+        // 入力値が空白のみの場合はスキップ（バリデーションエラー）
+        const messageField = chatForm.querySelector('#message');
+        if (!messageField.value.trim()) {
+            return; // 処理を中断してバリデーションに任せる
+        }
+
+        // 処理中メッセージを表示（CSSクラスを追加）
+        loadingMessage.classList.add('show');
+
+        // 送信ボタンを無効化して二重送信を防止
+        submitButton.disabled = true;
+        submitButton.innerHTML = '&lt;i class="fas fa-spinner fa-spin"&gt;&lt;/i&gt; 処理中...';
+    });
+});</code></pre>
+
+                        <p><strong>重要なポイント：</strong></p>
+                        <ul class="mb-0">
+                            <li><code>event.preventDefault()</code>を呼ばない理由：フォーム送信を続行させる必要があるため</li>
+                            <li><code>trim()</code>メソッド：空白のみの入力を検出してバリデーションに任せる</li>
+                            <li><code>classList.add('show')</code>：CSSのdisplay:blockを適用してメッセージを表示</li>
+                            <li><code>fa-spin</code>クラス：Font Awesomeのスピナーアイコンを回転させる</li>
+                        </ul>
+                    </div>
+
                     <!-- 画面レイアウト図 -->
-                    <h3 class="section-title">4.4 チャット画面のレイアウト構成</h3>
+                    <h3 class="section-title">4.5 チャット画面のレイアウト構成</h3>
                     <p>実装したチャット画面のレイアウト構造を図で確認します。</p>
 
                     <div class="mermaid">
@@ -614,10 +731,16 @@ cd app
                             end
 
                             subgraph Body
+                                LoadingMsg["処理中メッセージ<br/>（送信時のみ表示）"]
                                 Condition{応答あり?}
                                 ResponseArea["応答表示エリア"]
                                 InfoAlert["初回表示メッセージ"]
                                 Form["チャットフォーム"]
+                            end
+
+                            subgraph LoadingMsg
+                                Spinner["スピナーアイコン"]
+                                LoadText["AIが回答を生成中<br/>数分程度お待ちください"]
                             end
 
                             subgraph ResponseArea
@@ -628,7 +751,7 @@ cd app
                             subgraph Form
                                 TextArea["テキストエリア<br/>th:field"]
                                 ErrorMsg["バリデーションエラー<br/>th:errors"]
-                                SubmitBtn["送信ボタン"]
+                                SubmitBtn["送信ボタン<br/>（処理中は無効化）"]
                             end
 
                             Condition -- はい --> ResponseArea
@@ -640,6 +763,7 @@ cd app
                             Form --> SubmitBtn
 
                             style Header fill:#f57c00,color:#fff
+                            style LoadingMsg fill:#fff3cd
                             style ResponseArea fill:#fff3e0
                             style UserMsg fill:#e3f2fd
                             style AIRes fill:#ffe0b2
@@ -659,6 +783,8 @@ cd app
                             <li><input type="checkbox"> http://localhost:8080/chatでチャット画面が表示される</li>
                             <li><input type="checkbox"> メッセージを送信するとAI応答が表示される</li>
                             <li><input type="checkbox"> 空白で送信するとバリデーションエラーが表示される</li>
+                            <li><input type="checkbox"> 送信ボタンを押すと処理中メッセージが表示される</li>
+                            <li><input type="checkbox"> 送信ボタンが無効化され、スピナーアイコンが表示される</li>
                             <li><input type="checkbox"> レスポンシブデザインが適用されている</li>
                         </ul>
                     </div>
@@ -688,13 +814,13 @@ cd app
                     <!-- 次のステップ -->
                     <div class="alert alert-info alert-custom">
                         <h6><i class="fas fa-forward"></i> 次のステップの予告</h6>
-                        <p><strong>ステップ5: Dockerコンテナ化</strong>では、以下の内容を実装します：</p>
+                        <p><strong>ステップ5: 動作確認</strong>では、以下の内容を実施します：</p>
                         <ul class="mb-0">
-                            <li>マルチステージDockerfileの作成</li>
-                            <li>ビルドステージ（Gradle）の設定</li>
-                            <li>ランタイムステージ（JRE）の最適化</li>
-                            <li>Dockerイメージのビルドと動作確認</li>
-                            <li>イメージサイズの最適化テクニック</li>
+                            <li>アプリケーションの起動と動作確認</li>
+                            <li>チャット機能のテスト</li>
+                            <li>バリデーションエラーの確認</li>
+                            <li>AI応答の確認</li>
+                            <li>基本的なトラブルシューティング</li>
                         </ul>
                     </div>
 
@@ -703,8 +829,8 @@ cd app
                         <a href="step3-chat-implementation.html" class="btn btn-secondary">
                             <i class="fas fa-arrow-left"></i> 前のステップ：チャット機能実装
                         </a>
-                        <a href="step5-docker-containerization.html" class="btn btn-primary">
-                            次のステップ：Dockerコンテナ化 <i class="fas fa-arrow-right"></i>
+                        <a href="step5-testing.html" class="btn btn-primary">
+                            次のステップ：動作確認 <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
