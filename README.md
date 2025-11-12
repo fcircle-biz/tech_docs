@@ -132,6 +132,7 @@
 
 ### Java
 
+- **[Spring AI + Ollama + Qwen3実践チュートリアル](docs/tutorial/java-ecosystem/spring-ai/README.md)** - Spring AIフレームワークとOllama、Qwen3大規模言語モデルを使用した、モダンなAI対話型Webアプリケーション開発の実践的なチュートリアル。Docker環境でローカルLLMを構築し、簡潔なサーバーサイドレンダリングでAIチャット機能を実装（5章構成）
 - **[Spring Boot + Gradle実践チュートリアル](docs/tutorial/java-ecosystem/spring-boot-gradle/README.md)** - Spring BootとGradleを使用したモダンなJava Webアプリケーション開発の実践的なチュートリアル。Docker環境でのPostgreSQL連携、Spring MVC、Spring Data JPA、Thymeleafによるユーザー管理システム開発（10章構成）
 - **[JSP/Servlet/JDBC実践チュートリアル](docs/tutorial/java-ecosystem/jsp-servlet-jdbc/README.md)** - Eclipse IDEを使用したJavaのWebアプリケーション開発基礎技術（JSP、Servlet、JDBC）を学ぶ実践的なチュートリアル。MVCパターンに基づいたユーザー管理システム開発（7章構成）
 - **[Struts 1.x実践チュートリアル](docs/tutorial/java-ecosystem/struts1/README.md)** - Apache Struts 1.xフレームワークを使用したWebアプリケーション開発の実践的なチュートリアル（6章構成）
