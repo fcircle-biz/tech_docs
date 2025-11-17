@@ -104,6 +104,7 @@ Webページの基礎技術とフロントエンド開発
 
 - [Excel Basic](./business-saas/excel-basic/) - Excel基礎、数式、関数、グラフ、ピボットテーブル
 - [VBA](./business-saas/vba/) - VBAプログラミング、マクロ作成、Excel自動化、Office連携
+- [SAP](./business-saas/sap/) - SAP ERP、SAP S/4HANA、ABAP、SAP HANA、Fiori
 
 ---
 
@@ -181,7 +182,8 @@ docs/guide/
 │   └── statistical-analysis/       # 統計解析
 ├── business-saas/                   # 業務SaaS／プラットフォーム
 │   ├── excel-basic/                # Excel基礎
-│   └── vba/                        # VBA
+│   ├── vba/                        # VBA
+│   └── sap/                        # SAP
 ├── certification/                   # 資格・認定試験
 │   └── it-passport/                # ITパスポート
 └── business-domain-knowledge/       # 業務知識・スキル
