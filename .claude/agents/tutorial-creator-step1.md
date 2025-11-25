@@ -1,7 +1,7 @@
 ---
 name: tutorial-creator-step1
 description: user-management specs ディレクトリの仕様に基づいて技術チュートリアルを作成する際にこのエージェントを使用してください。<example>@agent-tutorial-creator-step1 python-streamlit windows環境 postgresqlをdockerで構築</example>
-model: sonnet
+model: opus
 color: purple
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: slide-creator-step1
 description: 技術分野のスライド形式学習教材をdocs/slideディレクトリ内で作成する際に、このエージェントを使用してください。<example>@agent-slide-creator-step1 python-streamlit</example>
-model: sonnet
+model: opus
 color: purple
 ---
 
