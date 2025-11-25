@@ -88,6 +88,7 @@
 ### クラウド・インフラ
 
 - **[AWS学習ガイド](docs/guide/cloud-infrastructure/aws/README.md)** - AWS（Amazon Web Services）の基礎から実践的なクラウドサービス活用まで10章完成カリキュラム
+- **[AWS Terraform学習ガイド](docs/guide/cloud-infrastructure/aws-terraform/README.md)** - AWS上でTerraformを使用したInfrastructure as Code（IaC）の基礎から実践まで10章完成カリキュラム。HCL構文、VPC/EC2構築、ステート管理、モジュール化、CI/CD統合まで体系的に習得
 - **[クラウドコンピューティング学習ガイド](docs/guide/cloud-infrastructure/cloud-computing/README.md)** - クラウドコンピューティングの基本概念からIaaS、PaaS、SaaSまで10章完成カリキュラム
 - **[Docker学習ガイド](docs/guide/cloud-infrastructure/docker/README.md)** - Dockerの基礎から実践的なコンテナ運用まで10章完成カリキュラム。コンテナ技術の基本概念、イメージ管理、Dockerfile作成、Docker Compose、ボリューム、ネットワーク、マルチコンテナアプリケーション構築、セキュリティ、本番環境デプロイまで網羅
 
