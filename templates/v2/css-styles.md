@@ -52,7 +52,28 @@ html { scroll-behavior: smooth; }
 
 /* サイドバートランジション */
 .sidebar-transition {
-    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, width 0.15s ease-out;
+}
+
+/* サイドバーリサイズ機能 */
+.sidebar-resizable {
+    min-width: 240px;
+    max-width: 480px;
+}
+.sidebar-resize-handle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 6px;
+    height: 100%;
+    cursor: ew-resize;
+    background: transparent;
+    transition: background 0.2s;
+    z-index: 10;
+}
+.sidebar-resize-handle:hover,
+.sidebar-resize-handle.resizing {
+    background: linear-gradient(to right, transparent, rgba(var(--primary-rgb, 59, 130, 246), 0.3));
 }
 
 /* コードコピーボタン */
@@ -82,7 +103,7 @@ html { scroll-behavior: smooth; }
 
 ### ヘッダー（ナビゲーションバー）
 ```html
-<header class="fixed top-0 left-0 right-0 z-50 bg-primary-600 text-white shadow-lg">
+<header class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-primary-600 via-primary-500 to-primary-600 text-white shadow-lg">
     <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
             <!-- 内容 -->
@@ -93,16 +114,62 @@ html { scroll-behavior: smooth; }
 
 ### サイドバー
 ```html
-<!-- デスクトップ: sticky表示, モバイル: スライドイン -->
-<aside class="fixed md:sticky top-16 left-0 z-40 w-72 h-[calc(100vh-4rem)]
-              bg-white border-r border-slate-200 overflow-y-auto
-              transform -translate-x-full md:translate-x-0 sidebar-transition">
+<!-- デスクトップ: sticky表示, モバイル: スライドイン, リサイズ可能 -->
+<aside id="sidebar" class="fixed md:sticky top-16 left-0 z-40 w-80 h-[calc(100vh-4rem)]
+              bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
+              transform -translate-x-full md:translate-x-0 sidebar-transition sidebar-resizable">
+    <!-- リサイズハンドル -->
+    <div id="sidebar-resize-handle" class="sidebar-resize-handle hidden md:block"></div>
+    <!-- サイドバー内容 -->
+</aside>
+```
+
+### サイドバーリサイズ用JavaScript
+```javascript
+// サイドバーリサイズ機能
+const sidebar = document.getElementById('sidebar');
+const resizeHandle = document.getElementById('sidebar-resize-handle');
+let isResizing = false;
+let startX, startWidth;
+
+resizeHandle?.addEventListener('mousedown', (e) => {
+    isResizing = true;
+    startX = e.clientX;
+    startWidth = sidebar.offsetWidth;
+    resizeHandle.classList.add('resizing');
+    document.body.style.cursor = 'ew-resize';
+    document.body.style.userSelect = 'none';
+});
+
+document.addEventListener('mousemove', (e) => {
+    if (!isResizing) return;
+    const diff = e.clientX - startX;
+    const newWidth = Math.min(Math.max(startWidth + diff, 240), 480);
+    sidebar.style.width = newWidth + 'px';
+});
+
+document.addEventListener('mouseup', () => {
+    if (isResizing) {
+        isResizing = false;
+        resizeHandle.classList.remove('resizing');
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+        // サイドバー幅をローカルストレージに保存
+        localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
+    }
+});
+
+// ページ読み込み時にサイドバー幅を復元
+const savedWidth = localStorage.getItem('sidebarWidth');
+if (savedWidth && window.innerWidth >= 768) {
+    sidebar.style.width = savedWidth + 'px';
+}
 ```
 
 ### メインコンテンツ
 ```html
 <main class="flex-1 min-w-0">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
         <!-- 内容 -->
     </div>
 </main>
@@ -121,7 +188,7 @@ html { scroll-behavior: smooth; }
 
 ### 学習目標 / 目的カード（黄色系）
 ```html
-<div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl p-6">
+<div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl p-5">
     <div class="flex items-start gap-4">
         <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg flex items-center justify-center">
             <i class="fas fa-lightbulb text-white"></i>
@@ -141,7 +208,7 @@ html { scroll-behavior: smooth; }
 
 ### 実習カード（紫系）
 ```html
-<div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-6">
+<div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5">
     <div class="flex items-start gap-4">
         <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
             <i class="fas fa-code text-white"></i>
@@ -156,7 +223,7 @@ html { scroll-behavior: smooth; }
 
 ### クイズ / 確認カード（青系）
 ```html
-<div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-6">
+<div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-5">
     <div class="flex items-start gap-4">
         <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
             <i class="fas fa-question text-white"></i>
@@ -171,7 +238,7 @@ html { scroll-behavior: smooth; }
 
 ### 動作確認カード（緑系）
 ```html
-<div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-6">
+<div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5">
     <div class="flex items-start gap-4">
         <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
             <i class="fas fa-play text-white"></i>
@@ -185,7 +252,7 @@ html { scroll-behavior: smooth; }
 
 ### 警告カード（赤系）
 ```html
-<div class="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 rounded-xl p-6">
+<div class="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 rounded-xl p-5">
     <div class="flex items-start gap-4">
         <div class="flex-shrink-0 w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center">
             <i class="fas fa-exclamation-triangle text-white"></i>
@@ -200,7 +267,7 @@ html { scroll-behavior: smooth; }
 
 ### ヒントカード（緑系）
 ```html
-<div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-6">
+<div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5">
     <div class="flex items-start gap-4">
         <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
             <i class="fas fa-lightbulb text-white"></i>
@@ -245,7 +312,7 @@ html { scroll-behavior: smooth; }
 
 ### 章タイトル（h1）
 ```html
-<h1 class="text-3xl font-bold text-slate-900 mb-2">[章タイトル]</h1>
+<h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">[章タイトル]</h1>
 ```
 
 ### セクションタイトル（h2）
@@ -296,7 +363,7 @@ html { scroll-behavior: smooth; }
 
 ### 章間ナビゲーション
 ```html
-<nav class="flex items-center justify-between pt-8 mt-8 border-t border-slate-200">
+<nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
     <!-- 前へ -->
     <a href="[前ページ].html"
        class="group flex items-center gap-3 px-4 py-3 rounded-xl

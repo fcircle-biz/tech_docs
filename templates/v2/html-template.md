@@ -73,7 +73,28 @@
 
         /* サイドバートランジション */
         .sidebar-transition {
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, width 0.15s ease-out;
+        }
+
+        /* サイドバーリサイズ機能 */
+        .sidebar-resizable {
+            min-width: 240px;
+            max-width: 480px;
+        }
+        .sidebar-resize-handle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 6px;
+            height: 100%;
+            cursor: ew-resize;
+            background: transparent;
+            transition: background 0.2s;
+            z-index: 10;
+        }
+        .sidebar-resize-handle:hover,
+        .sidebar-resize-handle.resizing {
+            background: linear-gradient(to right, transparent, rgba(var(--primary-rgb, 59, 130, 246), 0.3));
         }
 
         /* スムーズスクロール */
@@ -93,23 +114,13 @@
 </head>
 <body class="font-sans bg-slate-50 text-slate-800 antialiased">
     <!-- ヘッダー/ナビゲーションバー -->
-    <header class="fixed top-0 left-0 right-0 z-50 bg-primary-600 text-white shadow-lg">
+    <header class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-primary-600 via-primary-500 to-primary-600 text-white shadow-lg">
         <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <!-- ロゴ/タイトル -->
                 <div class="flex items-center gap-3">
                     <i class="fab fa-[技術アイコン] text-2xl"></i>
                     <span class="text-lg font-semibold">[技術名]学習教材</span>
-                </div>
-
-                <!-- デスクトップナビ -->
-                <div class="hidden md:flex items-center gap-6">
-                    <a href="#" class="hover:text-primary-200 transition-colors">
-                        <i class="fas fa-home mr-1"></i>ホーム
-                    </a>
-                    <a href="[チートシートパス]" class="hover:text-primary-200 transition-colors">
-                        <i class="fas fa-file-alt mr-1"></i>チートシート
-                    </a>
                 </div>
 
                 <!-- モバイルメニューボタン -->
@@ -123,9 +134,12 @@
     <!-- メインレイアウト -->
     <div class="flex min-h-screen pt-16">
         <!-- サイドバー -->
-        <aside id="sidebar" class="fixed md:sticky top-16 left-0 z-40 w-72 h-[calc(100vh-4rem)]
-                                   bg-white border-r border-slate-200 overflow-y-auto
-                                   transform -translate-x-full md:translate-x-0 sidebar-transition">
+        <aside id="sidebar" class="fixed md:sticky top-16 left-0 z-40 w-80 h-[calc(100vh-4rem)]
+                                   bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
+                                   transform -translate-x-full md:translate-x-0 sidebar-transition sidebar-resizable"
+               style="--sidebar-width: 320px;">
+            <!-- リサイズハンドル -->
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle hidden md:block"></div>
             <div class="p-4">
                 <!-- 進捗インジケーター -->
                 <div class="mb-6 p-4 bg-primary-50 rounded-xl">
@@ -187,7 +201,7 @@
 
         <!-- メインコンテンツ -->
         <main class="flex-1 min-w-0">
-            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
                 <!-- パンくずリスト -->
                 <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
                     <a href="#" class="hover:text-primary-600 transition-colors">ホーム</a>
@@ -198,20 +212,20 @@
                 </nav>
 
                 <!-- 章ヘッダー -->
-                <header class="mb-8">
+                <header class="mb-6">
                     <div class="flex items-center gap-3 mb-2">
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
                                      bg-primary-100 text-primary-700">
                             第X章
                         </span>
                     </div>
-                    <h1 class="text-3xl font-bold text-slate-900 mb-2">[章タイトル]</h1>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">[章タイトル]</h1>
                     <p class="text-slate-600">[章の概要説明]</p>
                 </header>
 
                 <!-- 学習目標カード -->
                 <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
-                            rounded-xl p-6 mb-8">
+                            rounded-xl p-5 mb-6">
                     <div class="flex items-start gap-4">
                         <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
                                     flex items-center justify-center">
@@ -266,7 +280,7 @@ hello_world()</code></pre>
 
                 <!-- 実習カード -->
                 <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
-                            rounded-xl p-6 my-8">
+                            rounded-xl p-5 my-6">
                     <div class="flex items-start gap-4">
                         <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
                                     flex items-center justify-center">
@@ -307,7 +321,7 @@ print(f"合計: {result}")</code></pre>
 
                 <!-- 理解度確認クイズ -->
                 <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
-                            rounded-xl p-6 my-8">
+                            rounded-xl p-5 my-6">
                     <div class="flex items-start gap-4">
                         <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
                                     flex items-center justify-center">
@@ -344,7 +358,7 @@ print(f"合計: {result}")</code></pre>
                 </div>
 
                 <!-- 章間ナビゲーション -->
-                <nav class="flex items-center justify-between pt-8 mt-8 border-t border-slate-200">
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
                     <a href="[前章ファイル名].html"
                        class="group flex items-center gap-3 px-4 py-3 rounded-xl
                               bg-slate-100 hover:bg-slate-200 transition-colors">
@@ -448,6 +462,44 @@ print(f"合計: {result}")</code></pre>
                     icon.classList.add('fa-copy');
                 }, 2000);
             });
+        }
+
+        // サイドバーリサイズ機能
+        const resizeHandle = document.getElementById('sidebar-resize-handle');
+        let isResizing = false;
+        let startX, startWidth;
+
+        resizeHandle?.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            startX = e.clientX;
+            startWidth = sidebar.offsetWidth;
+            resizeHandle.classList.add('resizing');
+            document.body.style.cursor = 'ew-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            const diff = e.clientX - startX;
+            const newWidth = Math.min(Math.max(startWidth + diff, 240), 480);
+            sidebar.style.width = newWidth + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                resizeHandle.classList.remove('resizing');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+                // サイドバー幅をローカルストレージに保存
+                localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
+            }
+        });
+
+        // ページ読み込み時にサイドバー幅を復元
+        const savedWidth = localStorage.getItem('sidebarWidth');
+        if (savedWidth && window.innerWidth >= 768) {
+            sidebar.style.width = savedWidth + 'px';
         }
     </script>
 </body>
