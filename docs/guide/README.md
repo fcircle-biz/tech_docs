@@ -79,6 +79,7 @@ Webページの基礎技術とフロントエンド開発
 クラウドサービスとインフラストラクチャ
 
 - [AWS](./cloud-infrastructure/aws/) - AWS基礎、EC2、S3、RDS、Lambda、CloudFormation
+- [AWS Terraform](./cloud-infrastructure/aws-terraform/) - Terraform、IaC、HCL構文、ステート管理、モジュール化
 - [Cloud Computing](./cloud-infrastructure/cloud-computing/) - クラウドコンピューティング基礎、IaaS、PaaS、SaaS
 - [Docker](./cloud-infrastructure/docker/) - コンテナ技術、Dockerfile、Docker Compose、イメージ管理
 
@@ -169,6 +170,7 @@ docs/guide/
 │       └── requirements-engineering/ # 要件定義
 ├── cloud-infrastructure/            # クラウド／インフラ
 │   ├── aws/                        # AWS
+│   ├── aws-terraform/              # AWS Terraform
 │   ├── cloud-computing/            # クラウドコンピューティング
 │   └── docker/                     # Docker
 ├── data-ai-category/               # データベース、データ／AI
