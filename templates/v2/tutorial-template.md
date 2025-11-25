@@ -1,0 +1,750 @@
+# チュートリアルHTMLテンプレート v2 (Tailwind CSS版)
+
+## 基本HTML構造（チュートリアル用）
+
+```html
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[技術名]チュートリアル ステップX - [ステップタイトル]</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // 技術固有色をここで定義（例：Django/Python）
+                        primary: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <style>
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        html { scroll-behavior: smooth; }
+
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+
+        .code-block-wrapper { position: relative; }
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .code-block-wrapper:hover .copy-btn { opacity: 1; }
+
+        /* チェックリスト用 */
+        .checkbox-item input:checked + span {
+            text-decoration: line-through;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-primary-600 text-white shadow-lg">
+        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- ロゴ/タイトル -->
+                <div class="flex items-center gap-3">
+                    <i class="fab fa-[技術アイコン] text-2xl"></i>
+                    <span class="text-lg font-semibold">[技術名]実践チュートリアル</span>
+                </div>
+
+                <!-- デスクトップナビ -->
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="#" class="hover:text-primary-200 transition-colors">
+                        <i class="fas fa-home mr-1"></i>ホーム
+                    </a>
+                    <a href="[ガイドパス]" class="hover:text-primary-200 transition-colors">
+                        <i class="fas fa-book mr-1"></i>学習ガイド
+                    </a>
+                </div>
+
+                <!-- モバイルメニューボタン -->
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-primary-700 transition-colors">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-16">
+        <!-- サイドバー -->
+        <aside id="sidebar" class="fixed md:sticky top-16 left-0 z-40 w-72 h-[calc(100vh-4rem)]
+                                   bg-white border-r border-slate-200 overflow-y-auto
+                                   transform -translate-x-full md:translate-x-0 sidebar-transition">
+            <div class="p-4">
+                <!-- プロジェクト概要 -->
+                <div class="mb-6 p-4 bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl border border-primary-200">
+                    <h3 class="font-semibold text-primary-800 mb-2">
+                        <i class="fas fa-rocket mr-2"></i>プロジェクト概要
+                    </h3>
+                    <p class="text-sm text-primary-700">[プロジェクトの簡単な説明]</p>
+                </div>
+
+                <!-- 進捗インジケーター -->
+                <div class="mb-6 p-4 bg-slate-100 rounded-xl">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-slate-600">実装進捗</span>
+                        <span class="text-sm font-bold text-primary-600">ステップ 3/10</span>
+                    </div>
+                    <div class="w-full bg-slate-200 rounded-full h-2.5">
+                        <div class="bg-primary-500 h-2.5 rounded-full transition-all duration-500"
+                             style="width: 30%"></div>
+                    </div>
+                </div>
+
+                <!-- ステップリスト -->
+                <nav>
+                    <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-2">
+                        チュートリアルステップ
+                    </h2>
+                    <ul class="space-y-1">
+                        <!-- 完了済みステップ -->
+                        <li>
+                            <a href="[ステップ1ファイル名].html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-7 h-7 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check"></i>
+                                </span>
+                                <div class="flex-1 min-w-0">
+                                    <span class="block text-sm font-medium truncate">ステップ1</span>
+                                    <span class="block text-xs text-slate-500 truncate">[タイトル]</span>
+                                </div>
+                            </a>
+                        </li>
+                        <!-- 完了済みステップ -->
+                        <li>
+                            <a href="[ステップ2ファイル名].html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-7 h-7 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check"></i>
+                                </span>
+                                <div class="flex-1 min-w-0">
+                                    <span class="block text-sm font-medium truncate">ステップ2</span>
+                                    <span class="block text-xs text-slate-500 truncate">[タイトル]</span>
+                                </div>
+                            </a>
+                        </li>
+                        <!-- アクティブなステップ -->
+                        <li>
+                            <a href="[ステップ3ファイル名].html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      bg-primary-100 text-primary-700 font-medium ring-2 ring-primary-500">
+                                <span class="flex-shrink-0 w-7 h-7 flex items-center justify-center
+                                             bg-primary-500 text-white text-sm font-bold rounded-full">3</span>
+                                <div class="flex-1 min-w-0">
+                                    <span class="block text-sm font-medium truncate">ステップ3</span>
+                                    <span class="block text-xs text-primary-600 truncate">[タイトル]</span>
+                                </div>
+                                <i class="fas fa-arrow-right text-primary-400"></i>
+                            </a>
+                        </li>
+                        <!-- 未完了ステップ -->
+                        <li>
+                            <a href="[ステップ4ファイル名].html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-7 h-7 flex items-center justify-center
+                                             bg-slate-200 text-slate-500 text-sm rounded-full">4</span>
+                                <div class="flex-1 min-w-0">
+                                    <span class="block text-sm font-medium truncate">ステップ4</span>
+                                    <span class="block text-xs text-slate-400 truncate">[タイトル]</span>
+                                </div>
+                            </a>
+                        </li>
+                        <!-- 必要に応じてステップを追加 -->
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- サイドバーオーバーレイ（モバイル用） -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="#" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="#" class="hover:text-primary-600 transition-colors">[技術名]</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">ステップX</span>
+                </nav>
+
+                <!-- ステップヘッダー -->
+                <header class="mb-8">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full
+                                     bg-primary-100 text-primary-700 text-sm font-semibold">
+                            <span class="w-6 h-6 flex items-center justify-center
+                                         bg-primary-500 text-white rounded-full text-xs">X</span>
+                            ステップX
+                        </span>
+                        <span class="text-sm text-slate-500">
+                            <i class="fas fa-clock mr-1"></i>所要時間: 約30分
+                        </span>
+                    </div>
+                    <h1 class="text-3xl font-bold text-slate-900 mb-2">[ステップタイトル]</h1>
+                    <p class="text-slate-600">[ステップの概要説明]</p>
+                </header>
+
+                <!-- このステップの目標 -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-6 mb-8">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-flag-checkered text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">このステップで実装すること</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-caret-right text-amber-500 mt-1"></i>
+                                    <span>[実装項目1]</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-caret-right text-amber-500 mt-1"></i>
+                                    <span>[実装項目2]</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-caret-right text-amber-500 mt-1"></i>
+                                    <span>[実装項目3]</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 前提条件 -->
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-8">
+                    <div class="flex items-start gap-3">
+                        <i class="fas fa-info-circle text-blue-500 text-lg mt-0.5"></i>
+                        <div>
+                            <h3 class="font-semibold text-blue-800 mb-2">前提条件</h3>
+                            <ul class="space-y-1 text-blue-900 text-sm">
+                                <li class="flex items-center gap-2">
+                                    <i class="fas fa-check text-blue-500"></i>
+                                    <span>[前提条件1]</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i class="fas fa-check text-blue-500"></i>
+                                    <span>[前提条件2]</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクションコンテンツ -->
+                <section class="mb-10">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-6">
+                        X.1 [セクションタイトル]
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-6">
+                        [手順の説明をここに記述します。]
+                    </p>
+
+                    <!-- 実装手順カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                                rounded-xl overflow-hidden mb-8">
+                        <div class="bg-purple-100 px-6 py-3 border-b border-purple-200">
+                            <h3 class="font-semibold text-purple-800 flex items-center gap-2">
+                                <i class="fas fa-hammer"></i>
+                                実装 X-1: [具体的な実装タスク]
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-purple-900 mb-6">[実装の目的・概要]</p>
+
+                            <!-- 手順リスト -->
+                            <div class="space-y-6">
+                                <!-- 手順1 -->
+                                <div class="flex gap-4">
+                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
+                                                flex items-center justify-center text-white font-bold text-sm">1</div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-purple-800 mb-2">[操作項目]</h4>
+                                        <p class="text-purple-900 text-sm mb-3">[詳細な手順説明]</p>
+                                        <div class="code-block-wrapper">
+                                            <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                                <span class="text-slate-400 text-sm">[ファイル名]</span>
+                                                <button class="copy-btn text-slate-400 hover:text-white" onclick="copyCode(this)">
+                                                    <i class="fas fa-copy"></i>
+                                                </button>
+                                            </div>
+                                            <pre class="!mt-0 !rounded-t-none"><code class="language-python"># コード例
+def example():
+    pass</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 手順2 -->
+                                <div class="flex gap-4">
+                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
+                                                flex items-center justify-center text-white font-bold text-sm">2</div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-purple-800 mb-2">[操作項目]</h4>
+                                        <p class="text-purple-900 text-sm mb-3">[詳細な手順説明]</p>
+                                        <div class="code-block-wrapper">
+                                            <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                                <span class="text-slate-400 text-sm">ターミナル</span>
+                                                <button class="copy-btn text-slate-400 hover:text-white" onclick="copyCode(this)">
+                                                    <i class="fas fa-copy"></i>
+                                                </button>
+                                            </div>
+                                            <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># コマンド例
+python manage.py runserver</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 動作確認セクション -->
+                <section class="mb-10">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-6">
+                        X.2 動作確認
+                    </h2>
+
+                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200
+                                rounded-xl p-6 mb-6">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg
+                                        flex items-center justify-center">
+                                <i class="fas fa-play text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-lg font-semibold text-emerald-800 mb-3">動作確認</h3>
+                                <p class="text-emerald-900 mb-4">[確認方法の説明]</p>
+
+                                <div class="code-block-wrapper mb-4">
+                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                        <span class="text-slate-400 text-sm">ターミナル</span>
+                                        <button class="copy-btn text-slate-400 hover:text-white" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre class="!mt-0 !rounded-t-none"><code class="language-bash">[確認コマンド]</code></pre>
+                                </div>
+
+                                <h4 class="font-medium text-emerald-800 mb-2">
+                                    <i class="fas fa-check-circle mr-2"></i>期待される結果
+                                </h4>
+                                <div class="bg-white/60 rounded-lg p-4 border border-emerald-200">
+                                    <pre class="text-emerald-900 text-sm whitespace-pre-wrap">[成功時の出力例または動作]</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- トラブルシューティング -->
+                <section class="mb-10">
+                    <div class="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200
+                                rounded-xl overflow-hidden">
+                        <div class="bg-orange-100 px-6 py-3 border-b border-orange-200">
+                            <h3 class="font-semibold text-orange-800 flex items-center gap-2">
+                                <i class="fas fa-tools"></i>
+                                トラブルシューティング
+                            </h3>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <!-- エラー1 -->
+                            <details class="group">
+                                <summary class="flex items-center gap-3 cursor-pointer list-none
+                                               p-3 rounded-lg bg-white border border-orange-200
+                                               hover:bg-orange-50 transition-colors">
+                                    <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                    <span class="font-medium text-orange-800">[エラー内容]</span>
+                                    <i class="fas fa-chevron-down ml-auto text-orange-400
+                                              transition-transform group-open:rotate-180"></i>
+                                </summary>
+                                <div class="mt-3 pl-10 text-orange-900">
+                                    <p class="mb-2"><strong>原因:</strong> [エラーの原因]</p>
+                                    <p><strong>解決方法:</strong> [解決手順]</p>
+                                    <div class="code-block-wrapper mt-3">
+                                        <pre class="!rounded-lg"><code class="language-bash">[修正コマンドまたはコード]</code></pre>
+                                    </div>
+                                </div>
+                            </details>
+
+                            <!-- エラー2 -->
+                            <details class="group">
+                                <summary class="flex items-center gap-3 cursor-pointer list-none
+                                               p-3 rounded-lg bg-white border border-orange-200
+                                               hover:bg-orange-50 transition-colors">
+                                    <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                    <span class="font-medium text-orange-800">[エラー内容]</span>
+                                    <i class="fas fa-chevron-down ml-auto text-orange-400
+                                              transition-transform group-open:rotate-180"></i>
+                                </summary>
+                                <div class="mt-3 pl-10 text-orange-900">
+                                    <p class="mb-2"><strong>原因:</strong> [エラーの原因]</p>
+                                    <p><strong>解決方法:</strong> [解決手順]</p>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ステップ完了チェック -->
+                <section class="mb-10">
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200
+                                rounded-xl p-6">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                        flex items-center justify-center">
+                                <i class="fas fa-clipboard-check text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-lg font-semibold text-blue-800 mb-4">ステップ完了チェック</h3>
+                                <p class="text-blue-900 mb-4">以下の項目が完了していることを確認してください：</p>
+
+                                <ul class="space-y-3">
+                                    <li class="checkbox-item flex items-center gap-3">
+                                        <input type="checkbox" id="check1"
+                                               class="w-5 h-5 rounded border-blue-300 text-blue-500
+                                                      focus:ring-blue-500 cursor-pointer">
+                                        <label for="check1" class="text-blue-900 cursor-pointer">
+                                            [チェック項目1]
+                                        </label>
+                                    </li>
+                                    <li class="checkbox-item flex items-center gap-3">
+                                        <input type="checkbox" id="check2"
+                                               class="w-5 h-5 rounded border-blue-300 text-blue-500
+                                                      focus:ring-blue-500 cursor-pointer">
+                                        <label for="check2" class="text-blue-900 cursor-pointer">
+                                            [チェック項目2]
+                                        </label>
+                                    </li>
+                                    <li class="checkbox-item flex items-center gap-3">
+                                        <input type="checkbox" id="check3"
+                                               class="w-5 h-5 rounded border-blue-300 text-blue-500
+                                                      focus:ring-blue-500 cursor-pointer">
+                                        <label for="check3" class="text-blue-900 cursor-pointer">
+                                            [チェック項目3]
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 現在のファイル構成 -->
+                <section class="mb-10">
+                    <div class="bg-slate-100 border border-slate-200 rounded-xl p-6">
+                        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-folder-tree text-slate-500"></i>
+                            現在のプロジェクト構成
+                        </h3>
+                        <pre class="bg-slate-800 text-slate-100 rounded-lg p-4 text-sm overflow-x-auto"><code>myproject/
+├── manage.py
+├── myproject/
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── myapp/
+│   ├── __init__.py
+│   ├── models.py      # ← 今回作成
+│   ├── views.py
+│   └── urls.py
+└── requirements.txt</code></pre>
+                    </div>
+                </section>
+
+                <!-- ステップ間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-8 mt-8 border-t border-slate-200">
+                    <a href="[前ステップファイル名].html"
+                       class="group flex items-center gap-3 px-5 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
+                                  transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前のステップ</span>
+                            <span class="text-slate-700 font-medium">[前ステップタイトル]</span>
+                        </div>
+                    </a>
+                    <a href="[次ステップファイル名].html"
+                       class="group flex items-center gap-3 px-5 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors shadow-lg shadow-primary-500/30">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次のステップ</span>
+                            <span class="font-medium">[次ステップタイトル]</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
+    </div>
+
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="#" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- JavaScript -->
+    <script>
+        // Highlight.js 初期化
+        hljs.highlightAll();
+
+        // Mermaid.js 初期化
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose'
+        });
+
+        // モバイルメニュー制御
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const menuBtn = document.getElementById('mobile-menu-btn');
+
+        menuBtn?.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        });
+
+        overlay?.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        });
+
+        // スクロールトップボタン表示制御
+        const scrollTopBtn = document.getElementById('scroll-top-btn');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.remove('opacity-0', 'invisible', 'translate-y-4');
+            } else {
+                scrollTopBtn.classList.add('opacity-0', 'invisible', 'translate-y-4');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // コードコピー機能
+        function copyCode(btn) {
+            const code = btn.closest('.code-block-wrapper').querySelector('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const icon = btn.querySelector('i');
+                icon.classList.remove('fa-copy');
+                icon.classList.add('fa-check');
+                setTimeout(() => {
+                    icon.classList.remove('fa-check');
+                    icon.classList.add('fa-copy');
+                }, 2000);
+            });
+        }
+
+        // チェックリストの状態をローカルストレージに保存
+        document.querySelectorAll('.checkbox-item input').forEach((checkbox, index) => {
+            const key = `step-${window.location.pathname}-check-${index}`;
+
+            // 保存された状態を復元
+            const saved = localStorage.getItem(key);
+            if (saved === 'true') {
+                checkbox.checked = true;
+            }
+
+            // 状態変更を保存
+            checkbox.addEventListener('change', () => {
+                localStorage.setItem(key, checkbox.checked);
+            });
+        });
+    </script>
+</body>
+</html>
+```
+
+## チュートリアル専用コンポーネント
+
+### プロジェクト概要カード
+```html
+<div class="p-4 bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl border border-primary-200">
+    <h3 class="font-semibold text-primary-800 mb-2">
+        <i class="fas fa-rocket mr-2"></i>プロジェクト概要
+    </h3>
+    <p class="text-sm text-primary-700">[プロジェクトの説明]</p>
+</div>
+```
+
+### 実装手順カード（番号付き）
+```html
+<div class="flex gap-4">
+    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
+                flex items-center justify-center text-white font-bold text-sm">1</div>
+    <div class="flex-1">
+        <h4 class="font-medium text-purple-800 mb-2">[操作項目]</h4>
+        <p class="text-purple-900 text-sm mb-3">[詳細な手順説明]</p>
+        <!-- コードブロック -->
+    </div>
+</div>
+```
+
+### 動作確認カード
+```html
+<div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-6">
+    <!-- 内容 -->
+</div>
+```
+
+### トラブルシューティング（折りたたみ）
+```html
+<details class="group">
+    <summary class="flex items-center gap-3 cursor-pointer list-none
+                   p-3 rounded-lg bg-white border border-orange-200
+                   hover:bg-orange-50 transition-colors">
+        <i class="fas fa-exclamation-triangle text-orange-500"></i>
+        <span class="font-medium text-orange-800">[エラー内容]</span>
+        <i class="fas fa-chevron-down ml-auto text-orange-400
+                  transition-transform group-open:rotate-180"></i>
+    </summary>
+    <div class="mt-3 pl-10 text-orange-900">
+        <p><strong>原因:</strong> [エラーの原因]</p>
+        <p><strong>解決方法:</strong> [解決手順]</p>
+    </div>
+</details>
+```
+
+### インタラクティブチェックリスト
+```html
+<ul class="space-y-3">
+    <li class="checkbox-item flex items-center gap-3">
+        <input type="checkbox" id="check1"
+               class="w-5 h-5 rounded border-blue-300 text-blue-500
+                      focus:ring-blue-500 cursor-pointer">
+        <label for="check1" class="text-blue-900 cursor-pointer">
+            [チェック項目]
+        </label>
+    </li>
+</ul>
+```
+チェック状態はローカルストレージに自動保存されます。
+
+### ファイル構成表示
+```html
+<pre class="bg-slate-800 text-slate-100 rounded-lg p-4 text-sm overflow-x-auto"><code>myproject/
+├── manage.py
+├── myproject/
+│   ├── settings.py      # ← 編集箇所
+│   └── urls.py
+└── myapp/
+    ├── models.py        # ← 今回作成
+    └── views.py</code></pre>
+```
+
+## ステップ状態の表現
+
+### 完了済みステップ
+```html
+<span class="flex-shrink-0 w-7 h-7 flex items-center justify-center
+             bg-emerald-500 text-white text-xs rounded-full">
+    <i class="fas fa-check"></i>
+</span>
+```
+
+### アクティブなステップ
+```html
+<span class="flex-shrink-0 w-7 h-7 flex items-center justify-center
+             bg-primary-500 text-white text-sm font-bold rounded-full">3</span>
+```
+
+### 未完了ステップ
+```html
+<span class="flex-shrink-0 w-7 h-7 flex items-center justify-center
+             bg-slate-200 text-slate-500 text-sm rounded-full">4</span>
+```
+
+## UX改善ポイント
+
+1. **進捗の可視化**: サイドバーに明確な進捗インジケーター
+2. **ステップ状態**: 完了/現在/未完了が一目でわかる
+3. **インタラクティブチェックリスト**: 完了項目をチェックして進捗管理
+4. **トラブルシューティングの折りたたみ**: 必要な時だけ展開
+5. **ローカルストレージ保存**: チェック状態がブラウザに記憶される
+6. **所要時間表示**: 各ステップの目安時間を明示
+7. **ファイル構成の可視化**: 現在の状態と変更箇所をハイライト

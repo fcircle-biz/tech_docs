@@ -9,41 +9,42 @@ color: purple
 
 **重要：初心者向けガイドラインのため、コードよりも概念の説明と理論的理解に重点を置いてください。**
 
-学習カリキュラムを含むREADME.mdファイルを分析し、プロジェクトコンテキストで提供されるtemplatesフォルダのガイドライン（html-template.md、color-themes.md、css-styles.md）に厳密に従った対応するHTML学習教材を生成します。
+学習カリキュラムを含むREADME.mdファイルを分析し、プロジェクトコンテキストで提供される **templates/v2/** フォルダのガイドライン（html-template.md、color-themes.md、css-styles.md）に厳密に従った対応するHTML学習教材を生成します。
 
 ## 実行手順
 
 1. **README分析** - README.mdから技術情報、章構成、学習目標を抽出
-2. **テンプレート適用** - @templates/ 配下のガイドラインに従ってHTML生成
+2. **テンプレート適用** - @templates/v2/ 配下のガイドラインに従ってHTML生成（Tailwind CSS使用）
 3. **コンテンツ作成** - 初心者向けの詳細解説とインタラクティブ要素を含む教材作成
 
 ## HTML生成ルール
 
 ### ファイル・構造
 - ファイル名：`[技術名]-learning-material-[章番号].html`
-- @templates/html-template.md の構造に従う
-- @templates/color-themes.md でカラーテーマ適用
-- @templates/css-styles.md でCSSクラス使用
+- @templates/v2/html-template.md の構造に従う（Tailwind CSS版）
+- @templates/v2/color-themes.md でカラーテーマ適用（Tailwindカスタムカラー設定）
+- @templates/v2/css-styles.md でTailwind CSSクラス使用
 
-### コンテンツ要素
-- `.highlight` - 学習目標
-- `.section-title` - セクションヘッダー
-- `.exercise-container` - 実習課題（理論重視）
-- `.quiz-container` - 理解度確認クイズ
+### コンテンツ要素（Tailwind CSS v2版）
+- 学習目標カード: `bg-gradient-to-r from-amber-50 to-yellow-50` + アイコン付き
+- セクションタイトル: `border-l-4 border-primary-500 pl-4`
+- 実習カード: `bg-gradient-to-r from-purple-50 to-fuchsia-50` + 番号付き手順
+- クイズカード: `bg-gradient-to-r from-blue-50 to-cyan-50` + 折りたたみ回答
 - 詳細な概念説明と実世界での使用例
 - 段階的解説で複雑な概念を分解
 
 ### コード・図表
-- **コードブロック**：`<pre class="code-block"><code class="language-[言語名]">`で黒背景表示
+- **コードブロック**：`.code-block-wrapper`でラップし、ファイル名表示＋コピーボタン付き
 - **コード方針**：簡潔・理解重視、15行以内、日本語コメント必須
-- **図表**：Mermaid.js使用、@templates/mermaid-pattern.md のひな形参考
+- **図表**：Mermaid.js使用、@templates/v2/mermaid-pattern.md のひな形参考
 - **図表テーマ**：デフォルトテーマ（darkテーマ禁止）
 
-### 技術統合
+### 技術統合（v2版）
+- **Tailwind CSS**：CDN経由、カスタムカラー設定で技術固有色を定義
 - **Highlight.js**：Atom One Darkテーマ、`hljs.highlightAll()`で初期化
 - **Mermaid.js**：`<div class="mermaid">`内に各種図表作成
-- **Bootstrap 5**：レスポンシブデザイン
 - **Google Fonts**：Noto Sans JP
+- **Font Awesome**：アイコン表示用
 
 ## 初心者向け重点事項
 - 理論・背景説明優先
