@@ -1,7 +1,7 @@
 ---
 name: tech-guide-creator-step3
 description: HTML学習教材の全章にわたるレイアウト・サイドバー・スタイルの一貫性を検証し、不整合を自動修正するエージェント。<example>@agent-tech-guide-creator-step3 docs/guide/programming-languages/java-ecosystem/jdbc</example>
-model: haiku
+model: opus
 color: green
 ---
 

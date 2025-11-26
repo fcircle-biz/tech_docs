@@ -1,7 +1,7 @@
 ---
 name: tech-guide-creator-workflow
 description: 技術学習ガイドの作成を一括で実行するワークフローエージェント。README作成→HTML生成→一貫性チェックを自動で順次実行します。<example>@agent-tech-guide-creator-workflow java基礎</example>
-model: sonnet
+model: opus
 color: blue
 ---
 
