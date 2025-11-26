@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java学習教材 第12章 - ラムダ式とStream API</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            200: '#fed7aa',
+                            300: '#fdba74',
+                            400: '#fb923c',
+                            500: '#f97316',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                            800: '#9a3412',
+                            900: '#7c2d12',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <style>
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, width 0.15s ease-out;
+        }
+
+        .sidebar-resizable {
+            min-width: 240px;
+            max-width: 480px;
+        }
+
+        .sidebar-resize-handle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 6px;
+            height: 100%;
+            cursor: ew-resize;
+            background: transparent;
+            transition: background 0.2s;
+            z-index: 10;
+        }
+
+        .sidebar-resize-handle:hover,
+        .sidebar-resize-handle.resizing {
+            background: linear-gradient(to right, transparent, rgba(249, 115, 22, 0.3));
+        }
+
+        html { scroll-behavior: smooth; }
+
+        .code-block-wrapper { position: relative; }
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .code-block-wrapper:hover .copy-btn { opacity: 1; }
+
+        .header-rich {
+            background: linear-gradient(135deg,
+                #c2410c 0%,
+                #f97316 50%,
+                #fb923c 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .header-rich::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px);
+            animation: bgSlide 10s linear infinite;
+        }
+        @keyframes bgSlide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(50px); }
+        }
+
+        .header-rich-shadow {
+            box-shadow:
+                0 4px 6px -1px rgba(249, 115, 22, 0.2),
+                0 10px 25px -5px rgba(249, 115, 22, 0.3),
+                0 0 50px rgba(249, 115, 22, 0.15);
+        }
+
+        .icon-rotate-hover {
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .icon-rotate-hover:hover {
+            transform: rotate(360deg) scale(1.2);
+        }
+    </style>
+</head>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <div class="flex items-center gap-4">
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fab fa-java text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">Java学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級〜中級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>プログラミング言語</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 90分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバー -->
+        <aside id="sidebar" class="fixed md:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
+                                   bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
+                                   transform -translate-x-full md:translate-x-0 sidebar-transition sidebar-resizable">
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle hidden md:block"></div>
+            <div class="p-4">
+                <div class="mb-6 p-4 bg-primary-50 rounded-xl">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-primary-700">学習進捗</span>
+                        <span class="text-sm text-primary-600">12/12章</span>
+                    </div>
+                    <div class="w-full bg-primary-100 rounded-full h-2">
+                        <div class="bg-primary-500 h-2 rounded-full transition-all duration-300" style="width: 100.0%"></div>
+                    </div>
+                    <p class="text-xs text-primary-600 mt-2 font-medium">完了おめでとうございます！</p>
+                </div>
+
+                <nav>
+                    <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-2">
+                        学習章
+                    </h2>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="java-learning-material-01.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">環境構築と最初の一歩</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-02.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">変数とデータ型</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-03.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">演算子と式</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-04.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">条件分岐</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-05.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">繰り返し処理</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-06.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">配列</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-07.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">メソッド</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-08.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">クラスとオブジェクト</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-09.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">継承とポリモーフィズム</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-10.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">例外処理とJava API</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-11.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">コレクションフレームワーク</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-12.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary-100 text-primary-700 font-medium">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-primary-500 text-white text-xs rounded-full">12</span>
+                                <span class="truncate">ラムダ式とStream API</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="../../../../../index.html" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="../../../../guide.html" class="hover:text-primary-600 transition-colors">学習ガイド</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="../java.html" class="hover:text-primary-600 transition-colors">Java</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第12章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-700">
+                            第12章（最終章）
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">ラムダ式とStream API</h1>
+                    <p class="text-slate-600">Java 8で導入されたラムダ式とStream APIを学び、より簡潔で宣言的なモダンJavaプログラミングをマスターします</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl p-5 mb-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>ラムダ式の構文と使い方を理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>関数型インターフェースの概念を理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>Stream APIを使ったデータ処理ができる</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>メソッド参照とOptionalを活用できる</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション1: ラムダ式とは -->
+                <section class="mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800 border-l-4 border-primary-500 pl-4 mb-4">
+                        12.1 ラムダ式とは
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>ラムダ式</strong>は、無名関数（名前のない関数）を簡潔に記述するための構文です。Java 8から導入され、コードをより読みやすく、関数型プログラミングのスタイルで書けるようになりました。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3">従来の書き方との比較</h3>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">LambdaComparison.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.*;
+
+public class LambdaComparison {
+    public static void main(String[] args) {
+        List&lt;String&gt; names = Arrays.asList("太郎", "花子", "一郎");
+
+        // 従来の書き方（匿名クラス）
+        Collections.sort(names, new Comparator&lt;String&gt;() {
+            @Override
+            public int compare(String s1, String s2) {
+                return s1.compareTo(s2);
+            }
+        });
+
+        // ラムダ式を使った書き方（簡潔！）
+        Collections.sort(names, (s1, s2) -&gt; s1.compareTo(s2));
+
+        // さらに短く（メソッド参照）
+        Collections.sort(names, String::compareTo);
+
+        System.out.println(names);
+    }
+}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3">ラムダ式の構文</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        ラムダ式は、<code>(引数リスト) -&gt; { 処理 }</code> という形式で記述します。
+                    </p>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-4">
+                        <div class="space-y-3">
+                            <div>
+                                <div class="text-sm font-mono text-slate-700 mb-1">(String s) -&gt; { return s.length(); }</div>
+                                <div class="text-xs text-slate-500">完全形：型指定、波括弧、return文</div>
+                            </div>
+                            <div>
+                                <div class="text-sm font-mono text-slate-700 mb-1">(s) -&gt; s.length()</div>
+                                <div class="text-xs text-slate-500">省略形：型推論、1文なので波括弧とreturnを省略</div>
+                            </div>
+                            <div>
+                                <div class="text-sm font-mono text-slate-700 mb-1">s -&gt; s.length()</div>
+                                <div class="text-xs text-slate-500">最短形：引数が1つなら括弧も省略可</div>
+                            </div>
+                            <div>
+                                <div class="text-sm font-mono text-slate-700 mb-1">() -&gt; System.out.println("Hello")</div>
+                                <div class="text-xs text-slate-500">引数なし：空の括弧</div>
+                            </div>
+                            <div>
+                                <div class="text-sm font-mono text-slate-700 mb-1">(a, b) -&gt; a + b</div>
+                                <div class="text-xs text-slate-500">複数引数：カンマで区切る</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">LambdaSyntax.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.function.*;
+
+public class LambdaSyntax {
+    public static void main(String[] args) {
+        // 引数なし、戻り値なし
+        Runnable r = () -&gt; System.out.println("実行中");
+        r.run(); // 実行中
+
+        // 引数1つ、戻り値あり
+        Function&lt;String, Integer&gt; len = s -&gt; s.length();
+        System.out.println(len.apply("Hello")); // 5
+
+        // 引数2つ、戻り値あり
+        BiFunction&lt;Integer, Integer, Integer&gt; add = (a, b) -&gt; a + b;
+        System.out.println(add.apply(3, 5)); // 8
+
+        // 複数行の処理
+        Consumer&lt;String&gt; greet = name -&gt; {
+            String message = "こんにちは、" + name + "さん";
+            System.out.println(message);
+        };
+        greet.accept("太郎"); // こんにちは、太郎さん
+    }
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション2: 関数型インターフェース -->
+                <section class="mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800 border-l-4 border-primary-500 pl-4 mb-4">
+                        12.2 関数型インターフェース
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>関数型インターフェース</strong>は、<strong>抽象メソッドが1つだけ</strong>のインターフェースです。ラムダ式はこの関数型インターフェースの実装として機能します。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3">主要な標準関数型インターフェース</h3>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-4">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-slate-300">
+                                    <th class="text-left py-2 px-3 text-slate-700 font-semibold">インターフェース</th>
+                                    <th class="text-left py-2 px-3 text-slate-700 font-semibold">メソッド</th>
+                                    <th class="text-left py-2 px-3 text-slate-700 font-semibold">用途</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-slate-200">
+                                    <td class="py-2 px-3 font-mono text-xs text-slate-600">Predicate&lt;T&gt;</td>
+                                    <td class="py-2 px-3 font-mono text-xs text-slate-600">boolean test(T t)</td>
+                                    <td class="py-2 px-3 text-slate-600">条件判定</td>
+                                </tr>
+                                <tr class="border-b border-slate-200">
+                                    <td class="py-2 px-3 font-mono text-xs text-slate-600">Function&lt;T, R&gt;</td>
+                                    <td class="py-2 px-3 font-mono text-xs text-slate-600">R apply(T t)</td>
+                                    <td class="py-2 px-3 text-slate-600">変換</td>
+                                </tr>
+                                <tr class="border-b border-slate-200">
+                                    <td class="py-2 px-3 font-mono text-xs text-slate-600">Consumer&lt;T&gt;</td>
+                                    <td class="py-2 px-3 font-mono text-xs text-slate-600">void accept(T t)</td>
+                                    <td class="py-2 px-3 text-slate-600">消費（処理）</td>
+                                </tr>
+                                <tr class="border-b border-slate-200">
+                                    <td class="py-2 px-3 font-mono text-xs text-slate-600">Supplier&lt;T&gt;</td>
+                                    <td class="py-2 px-3 font-mono text-xs text-slate-600">T get()</td>
+                                    <td class="py-2 px-3 text-slate-600">供給（生成）</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 px-3 font-mono text-xs text-slate-600">BiFunction&lt;T,U,R&gt;</td>
+                                    <td class="py-2 px-3 font-mono text-xs text-slate-600">R apply(T t, U u)</td>
+                                    <td class="py-2 px-3 text-slate-600">2引数変換</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">FunctionalInterfaces.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.function.*;
+
+public class FunctionalInterfaces {
+    public static void main(String[] args) {
+        // Predicate: 条件判定（T → boolean）
+        Predicate&lt;Integer&gt; isPositive = n -&gt; n &gt; 0;
+        System.out.println(isPositive.test(5));  // true
+        System.out.println(isPositive.test(-3)); // false
+
+        // Function: 変換（T → R）
+        Function&lt;String, Integer&gt; toLength = s -&gt; s.length();
+        System.out.println(toLength.apply("Java")); // 4
+
+        // Consumer: 消費（T → void）
+        Consumer&lt;String&gt; print = s -&gt; System.out.println("値: " + s);
+        print.accept("Hello"); // 値: Hello
+
+        // Supplier: 供給（() → T）
+        Supplier&lt;Double&gt; random = () -&gt; Math.random();
+        System.out.println(random.get()); // ランダムな値
+
+        // BiFunction: 2引数変換（T, U → R）
+        BiFunction&lt;Integer, Integer, Integer&gt; multiply = (a, b) -&gt; a * b;
+        System.out.println(multiply.apply(3, 4)); // 12
+    }
+}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3">独自の関数型インターフェース</h3>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">CustomFunctionalInterface.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">@FunctionalInterface
+interface Calculator {
+    int calculate(int a, int b); // 抽象メソッド1つ
+}
+
+public class CustomFunctionalInterface {
+    public static void main(String[] args) {
+        // ラムダ式で実装
+        Calculator add = (a, b) -&gt; a + b;
+        Calculator subtract = (a, b) -&gt; a - b;
+        Calculator multiply = (a, b) -&gt; a * b;
+
+        System.out.println(add.calculate(5, 3));      // 8
+        System.out.println(subtract.calculate(5, 3)); // 2
+        System.out.println(multiply.calculate(5, 3)); // 15
+    }
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション3: メソッド参照 -->
+                <section class="mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800 border-l-4 border-primary-500 pl-4 mb-4">
+                        12.3 メソッド参照
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>メソッド参照</strong>は、既存のメソッドをラムダ式として使用する簡潔な記法です。<code>::</code>演算子を使って記述します。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">MethodReference.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.*;
+import java.util.function.*;
+
+public class MethodReference {
+    public static void main(String[] args) {
+        List&lt;String&gt; names = Arrays.asList("太郎", "花子", "一郎");
+
+        // 1. 静的メソッド参照
+        // ラムダ: s -&gt; Integer.parseInt(s)
+        Function&lt;String, Integer&gt; parse = Integer::parseInt;
+        System.out.println(parse.apply("123")); // 123
+
+        // 2. インスタンスメソッド参照（特定のオブジェクト）
+        String prefix = "Hello, ";
+        // ラムダ: s -&gt; prefix.concat(s)
+        Function&lt;String, String&gt; greet = prefix::concat;
+        System.out.println(greet.apply("World")); // Hello, World
+
+        // 3. インスタンスメソッド参照（任意のオブジェクト）
+        // ラムダ: s -&gt; s.toUpperCase()
+        names.replaceAll(String::toUpperCase);
+        System.out.println(names); // [太郎, 花子, 一郎]
+
+        // 4. コンストラクタ参照
+        // ラムダ: () -&gt; new ArrayList&lt;&gt;()
+        Supplier&lt;List&lt;String&gt;&gt; listSupplier = ArrayList::new;
+        List&lt;String&gt; newList = listSupplier.get();
+    }
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション4: Stream APIの基礎 -->
+                <section class="mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800 border-l-4 border-primary-500 pl-4 mb-4">
+                        12.4 Stream APIの基礎
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>Stream API</strong>は、コレクションに対する操作を宣言的に記述できるAPIです。データ処理のパイプラインを構築し、効率的にデータを処理できます。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3">Streamの特徴</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-600 mb-4 ml-4">
+                        <li><strong>遅延評価:</strong> 終端操作が呼ばれるまで中間操作は実行されない</li>
+                        <li><strong>一度限り:</strong> Streamは一度消費すると再利用できない</li>
+                        <li><strong>元のコレクションを変更しない:</strong> 新しいStreamを生成する</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3">Streamの生成</h3>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">StreamCreation.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.*;
+import java.util.stream.*;
+
+public class StreamCreation {
+    public static void main(String[] args) {
+        // コレクションから
+        List&lt;Integer&gt; list = Arrays.asList(1, 2, 3, 4, 5);
+        Stream&lt;Integer&gt; stream1 = list.stream();
+
+        // 配列から
+        String[] arr = {"A", "B", "C"};
+        Stream&lt;String&gt; stream2 = Arrays.stream(arr);
+
+        // 値から直接
+        Stream&lt;String&gt; stream3 = Stream.of("X", "Y", "Z");
+
+        // 範囲指定
+        IntStream range = IntStream.range(1, 6); // 1, 2, 3, 4, 5
+        IntStream rangeClosed = IntStream.rangeClosed(1, 5); // 1, 2, 3, 4, 5
+
+        // 無限Stream
+        Stream&lt;Double&gt; randoms = Stream.generate(Math::random);
+        Stream&lt;Integer&gt; naturals = Stream.iterate(0, n -&gt; n + 1);
+    }
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション5: Stream APIの中間操作 -->
+                <section class="mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800 border-l-4 border-primary-500 pl-4 mb-4">
+                        12.5 Stream APIの中間操作
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>中間操作</strong>は、Streamを別のStreamに変換する操作です。遅延評価されるため、終端操作が呼ばれるまで実行されません。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">IntermediateOperations.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.*;
+import java.util.stream.*;
+
+public class IntermediateOperations {
+    public static void main(String[] args) {
+        List&lt;Integer&gt; numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+        // filter: 条件に合う要素を抽出
+        List&lt;Integer&gt; evens = numbers.stream()
+            .filter(n -&gt; n % 2 == 0)
+            .collect(Collectors.toList());
+        System.out.println("偶数: " + evens); // [2, 4, 6, 8, 10]
+
+        // map: 要素を変換
+        List&lt;Integer&gt; squares = numbers.stream()
+            .map(n -&gt; n * n)
+            .collect(Collectors.toList());
+        System.out.println("2乗: " + squares);
+
+        // sorted: ソート
+        List&lt;Integer&gt; sorted = numbers.stream()
+            .sorted(Comparator.reverseOrder())
+            .collect(Collectors.toList());
+        System.out.println("降順: " + sorted);
+
+        // distinct: 重複除去
+        List&lt;Integer&gt; withDupes = Arrays.asList(1, 2, 2, 3, 3, 3);
+        List&lt;Integer&gt; unique = withDupes.stream()
+            .distinct()
+            .collect(Collectors.toList());
+        System.out.println("重複除去: " + unique); // [1, 2, 3]
+
+        // limit: 要素数を制限
+        List&lt;Integer&gt; first3 = numbers.stream()
+            .limit(3)
+            .collect(Collectors.toList());
+        System.out.println("最初の3つ: " + first3); // [1, 2, 3]
+
+        // skip: 指定数をスキップ
+        List&lt;Integer&gt; after5 = numbers.stream()
+            .skip(5)
+            .collect(Collectors.toList());
+        System.out.println("5つスキップ: " + after5);
+    }
+}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3">flatMap - ネストした構造をフラット化</h3>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">FlatMapExample.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.*;
+import java.util.stream.*;
+
+public class FlatMapExample {
+    public static void main(String[] args) {
+        List&lt;List&lt;Integer&gt;&gt; nested = Arrays.asList(
+            Arrays.asList(1, 2, 3),
+            Arrays.asList(4, 5),
+            Arrays.asList(6, 7, 8, 9)
+        );
+
+        // flatMap: ネストを解除してフラット化
+        List&lt;Integer&gt; flat = nested.stream()
+            .flatMap(list -&gt; list.stream())
+            .collect(Collectors.toList());
+        System.out.println(flat); // [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+        // 文字列を単語に分割してフラット化
+        List&lt;String&gt; sentences = Arrays.asList(
+            "Hello World",
+            "Java Stream API"
+        );
+        List&lt;String&gt; words = sentences.stream()
+            .flatMap(s -&gt; Arrays.stream(s.split(" ")))
+            .collect(Collectors.toList());
+        System.out.println(words); // [Hello, World, Java, Stream, API]
+    }
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション6: Stream APIの終端操作 -->
+                <section class="mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800 border-l-4 border-primary-500 pl-4 mb-4">
+                        12.6 Stream APIの終端操作
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>終端操作</strong>は、Streamの処理を実行し、結果を返す操作です。終端操作が呼ばれると、パイプライン全体が実行されます。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">TerminalOperations.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.*;
+import java.util.stream.*;
+
+public class TerminalOperations {
+    public static void main(String[] args) {
+        List&lt;Integer&gt; numbers = Arrays.asList(1, 2, 3, 4, 5);
+
+        // forEach: 各要素に処理を適用
+        numbers.stream().forEach(n -&gt; System.out.print(n + " "));
+        System.out.println();
+
+        // count: 要素数をカウント
+        long count = numbers.stream()
+            .filter(n -&gt; n &gt; 3)
+            .count();
+        System.out.println("3より大きい数: " + count); // 2
+
+        // collect: Listに収集
+        List&lt;Integer&gt; doubled = numbers.stream()
+            .map(n -&gt; n * 2)
+            .collect(Collectors.toList());
+        System.out.println("2倍: " + doubled);
+
+        // reduce: 集約処理
+        int sum = numbers.stream()
+            .reduce(0, (a, b) -&gt; a + b);
+        System.out.println("合計: " + sum); // 15
+
+        // min/max: 最小値・最大値
+        Optional&lt;Integer&gt; min = numbers.stream().min(Integer::compareTo);
+        Optional&lt;Integer&gt; max = numbers.stream().max(Integer::compareTo);
+        min.ifPresent(m -&gt; System.out.println("最小: " + m)); // 1
+        max.ifPresent(m -&gt; System.out.println("最大: " + m)); // 5
+
+        // anyMatch/allMatch/noneMatch: 条件判定
+        boolean hasEven = numbers.stream().anyMatch(n -&gt; n % 2 == 0);
+        boolean allPositive = numbers.stream().allMatch(n -&gt; n &gt; 0);
+        boolean noneNegative = numbers.stream().noneMatch(n -&gt; n &lt; 0);
+        System.out.println("偶数あり: " + hasEven);        // true
+        System.out.println("全て正: " + allPositive);       // true
+        System.out.println("負の数なし: " + noneNegative);  // true
+    }
+}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3">Collectorsの活用</h3>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">CollectorsExample.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.*;
+import java.util.stream.*;
+
+public class CollectorsExample {
+    public static void main(String[] args) {
+        List&lt;String&gt; words = Arrays.asList(
+            "apple", "banana", "cherry", "apricot", "blueberry");
+
+        // toList: リストに収集
+        List&lt;String&gt; list = words.stream()
+            .filter(w -&gt; w.startsWith("a"))
+            .collect(Collectors.toList());
+        System.out.println(list); // [apple, apricot]
+
+        // toSet: セットに収集
+        Set&lt;String&gt; set = words.stream()
+            .collect(Collectors.toSet());
+
+        // joining: 文字列結合
+        String joined = words.stream()
+            .collect(Collectors.joining(", "));
+        System.out.println(joined); // apple, banana, cherry, apricot, blueberry
+
+        // groupingBy: グループ化
+        Map&lt;Integer, List&lt;String&gt;&gt; byLength = words.stream()
+            .collect(Collectors.groupingBy(String::length));
+        System.out.println(byLength);
+        // {5=[apple], 6=[banana, cherry], 7=[apricot], 9=[blueberry]}
+
+        // partitioningBy: 2つに分割
+        Map&lt;Boolean, List&lt;String&gt;&gt; partition = words.stream()
+            .collect(Collectors.partitioningBy(w -&gt; w.length() &gt; 6));
+        System.out.println("長い: " + partition.get(true));
+        System.out.println("短い: " + partition.get(false));
+    }
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション7: Optionalクラス -->
+                <section class="mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800 border-l-4 border-primary-500 pl-4 mb-4">
+                        12.7 Optionalクラス
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>Optional</strong>は、null値を安全に扱うためのコンテナクラスです。NullPointerExceptionを防ぎ、値の有無を明示的に表現できます。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">OptionalExample.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.*;
+
+public class OptionalExample {
+    public static void main(String[] args) {
+        // Optionalの生成
+        Optional&lt;String&gt; opt1 = Optional.of("Hello");
+        Optional&lt;String&gt; opt2 = Optional.ofNullable(null);
+        Optional&lt;String&gt; opt3 = Optional.empty();
+
+        // 値の取得
+        if (opt1.isPresent()) {
+            System.out.println(opt1.get()); // Hello
+        }
+
+        // ifPresent: 値があれば処理
+        opt1.ifPresent(s -&gt; System.out.println("値: " + s));
+
+        // orElse: 値がなければデフォルト値
+        String s1 = opt2.orElse("デフォルト");
+        System.out.println(s1); // デフォルト
+
+        // orElseGet: 値がなければSupplierから取得
+        String s2 = opt2.orElseGet(() -&gt; "生成された値");
+
+        // orElseThrow: 値がなければ例外
+        try {
+            String s3 = opt2.orElseThrow(() -&gt;
+                new NoSuchElementException("値なし"));
+        } catch (NoSuchElementException e) {
+            System.out.println(e.getMessage());
+        }
+
+        // map: 値を変換
+        Optional&lt;Integer&gt; length = opt1.map(String::length);
+        System.out.println(length.get()); // 5
+
+        // filter: 条件でフィルタ
+        Optional&lt;String&gt; filtered = opt1.filter(s -&gt; s.length() &gt; 3);
+        System.out.println(filtered.isPresent()); // true
+    }
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- 実習カード -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 my-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3">
+                                実習 12-1: Stream APIで統計処理
+                            </h3>
+                            <p class="text-purple-900 mb-4">数値リストから統計情報（合計、平均、最大、最小）を計算しましょう。</p>
+
+                            <h4 class="font-medium text-purple-800 mb-2">実装例</h4>
+                            <pre class="!bg-slate-800 !rounded-lg text-sm"><code class="language-java">import java.util.*;
+import java.util.stream.*;
+
+public class StreamStatistics {
+    public static void main(String[] args) {
+        List&lt;Integer&gt; scores = Arrays.asList(85, 92, 78, 95, 88, 73, 90);
+
+        // 合計
+        int sum = scores.stream()
+            .mapToInt(Integer::intValue)
+            .sum();
+        System.out.println("合計: " + sum);
+
+        // 平均
+        double average = scores.stream()
+            .mapToInt(Integer::intValue)
+            .average()
+            .orElse(0.0);
+        System.out.println("平均: " + average);
+
+        // 最大・最小
+        int max = scores.stream()
+            .mapToInt(Integer::intValue)
+            .max()
+            .orElse(0);
+        int min = scores.stream()
+            .mapToInt(Integer::intValue)
+            .min()
+            .orElse(0);
+        System.out.println("最大: " + max + ", 最小: " + min);
+
+        // IntSummaryStatisticsで一括取得
+        IntSummaryStatistics stats = scores.stream()
+            .mapToInt(Integer::intValue)
+            .summaryStatistics();
+        System.out.println("統計: " + stats);
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 実習カード2 -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 my-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3">
+                                実習 12-2: 商品データの処理
+                            </h3>
+                            <p class="text-purple-900 mb-4">商品リストから条件に合う商品を抽出・ソート・表示しましょう。</p>
+
+                            <h4 class="font-medium text-purple-800 mb-2">実装例</h4>
+                            <pre class="!bg-slate-800 !rounded-lg text-sm"><code class="language-java">import java.util.*;
+import java.util.stream.*;
+
+class Product {
+    String name;
+    int price;
+
+    Product(String name, int price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        return name + ": " + price + "円";
+    }
+}
+
+public class ProductStream {
+    public static void main(String[] args) {
+        List&lt;Product&gt; products = Arrays.asList(
+            new Product("りんご", 150),
+            new Product("バナナ", 80),
+            new Product("みかん", 100),
+            new Product("ぶどう", 300),
+            new Product("いちご", 250)
+        );
+
+        // 150円以上の商品を価格の高い順に表示
+        products.stream()
+            .filter(p -&gt; p.price &gt;= 150)
+            .sorted((p1, p2) -&gt; p2.price - p1.price)
+            .forEach(System.out::println);
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-5 my-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q1. ラムダ式を使う利点は何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 font-medium">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <strong>回答:</strong> コードが簡潔になり、匿名クラスのボイラープレートコードを削減できます。また、関数型プログラミングのスタイルで、より宣言的にコードを記述できます。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q2. 中間操作と終端操作の違いを説明してください。</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 font-medium">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <strong>回答:</strong> 中間操作（filter、mapなど）は新しいStreamを返し、遅延評価されます。終端操作（collect、forEachなど）は結果を返し、パイプライン全体を実行します。終端操作が呼ばれて初めて中間操作が実行されます。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q3. Optionalクラスを使う目的は何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 font-medium">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <strong>回答:</strong> null値を安全に扱い、NullPointerExceptionを防ぐためです。値の有無を明示的に表現でき、値がない場合の処理を強制することでより堅牢なコードが書けます。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q4. メソッド参照の種類を3つ挙げてください。</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 font-medium">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <strong>回答:</strong> (1)静的メソッド参照（クラス名::メソッド名）、(2)インスタンスメソッド参照（オブジェクト::メソッド名）、(3)コンストラクタ参照（クラス名::new）の3種類があります。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 完了おめでとうカード -->
+                <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-300 rounded-xl p-6 mb-6">
+                    <div class="text-center">
+                        <div class="inline-block p-4 bg-emerald-400 rounded-full mb-4">
+                            <i class="fas fa-trophy text-white text-4xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-emerald-800 mb-3">🎉 学習完了おめでとうございます！</h3>
+                        <p class="text-emerald-900 mb-4">
+                            Java基礎の全12章を完了しました。プログラミングの基本からモダンJavaの機能まで、幅広い知識を習得しました。
+                        </p>
+                        <div class="bg-white/50 rounded-lg p-4 mb-4">
+                            <h4 class="font-semibold text-emerald-800 mb-2">習得したスキル</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-emerald-900">
+                                <div>✓ Java環境構築と基本構文</div>
+                                <div>✓ オブジェクト指向プログラミング</div>
+                                <div>✓ 例外処理とエラーハンドリング</div>
+                                <div>✓ コレクションフレームワーク</div>
+                                <div>✓ ラムダ式とStream API</div>
+                                <div>✓ モダンJavaの機能</div>
+                            </div>
+                        </div>
+                        <h4 class="font-semibold text-emerald-800 mb-2">次のステップ</h4>
+                        <div class="flex flex-wrap justify-center gap-3">
+                            <a href="https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/"
+                               class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-medium transition-colors">
+                                Spring学習へ進む
+                            </a>
+                            <a href="https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/"
+                               class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors">
+                                JDBC学習へ進む
+                            </a>
+                            <a href="https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/junit/"
+                               class="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-colors">
+                                JUnit学習へ進む
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <a href="java-learning-material-11.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600 transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">第11章: コレクション</span>
+                        </div>
+                    </a>
+                    <a href="https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-emerald-100 block">次のステップ</span>
+                            <span class="font-medium">Java学習ガイド一覧</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
+    </div>
+
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- 描画用Canvasオーバーレイ -->
+    <canvas id="drawing-canvas" class="fixed inset-0 z-[100] pointer-events-none"></canvas>
+
+    <!-- 描画ツールバー -->
+    <div id="drawing-toolbar" class="fixed right-4 top-1/2 -translate-y-1/2 z-[110]
+                                     bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl
+                                     border border-slate-200 p-2 flex flex-col gap-1
+                                     transition-all duration-300">
+        <button id="toolbar-toggle"
+                class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                       flex items-center justify-center transition-colors mb-2"
+                title="ツールバーを開く">
+            <i class="fas fa-chevron-left text-slate-600"></i>
+        </button>
+
+        <div id="toolbar-content" class="hidden flex-col gap-1">
+            <button id="pen-tool"
+                    class="tool-btn w-10 h-10 rounded-xl bg-primary-100 text-primary-600
+                           hover:bg-primary-200 flex items-center justify-center transition-colors"
+                    title="ペン (P)">
+                <i class="fas fa-pen"></i>
+            </button>
+
+            <button id="eraser-tool"
+                    class="tool-btn w-10 h-10 rounded-xl bg-slate-100 text-slate-600
+                           hover:bg-slate-200 flex items-center justify-center transition-colors"
+                    title="消しゴム (E)">
+                <i class="fas fa-eraser"></i>
+            </button>
+
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <div id="color-picker" class="flex flex-col gap-1">
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-red-400 bg-red-500
+                               hover:scale-110 transition-transform" data-color="#ef4444" title="赤"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-blue-400 bg-blue-500
+                               hover:scale-110 transition-transform" data-color="#3b82f6" title="青"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-slate-600 bg-slate-800
+                               hover:scale-110 transition-transform active-color" data-color="#1e293b" title="黒"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-emerald-400 bg-emerald-500
+                               hover:scale-110 transition-transform" data-color="#10b981" title="緑"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-amber-400 bg-amber-500
+                               hover:scale-110 transition-transform" data-color="#f59e0b" title="黄"></button>
+            </div>
+
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <div id="stroke-width" class="flex flex-col gap-1">
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors" data-width="2" title="細い">
+                    <div class="w-4 h-0.5 bg-slate-600 rounded-full"></div>
+                </button>
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors active-stroke" data-width="4" title="普通">
+                    <div class="w-4 h-1 bg-slate-600 rounded-full"></div>
+                </button>
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors" data-width="8" title="太い">
+                    <div class="w-4 h-2 bg-slate-600 rounded-full"></div>
+                </button>
+            </div>
+
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <button id="undo-btn"
+                    class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600
+                           hover:bg-slate-200 flex items-center justify-center transition-colors
+                           disabled:opacity-40 disabled:cursor-not-allowed"
+                    title="元に戻す (Ctrl+Z)" disabled>
+                <i class="fas fa-undo"></i>
+            </button>
+
+            <button id="clear-btn"
+                    class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600
+                           hover:bg-rose-200 flex items-center justify-center transition-colors"
+                    title="全消去 (C)">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Highlight.js 初期化
+        hljs.highlightAll();
+
+        // Mermaid.js 初期化
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose'
+        });
+
+        // モバイルメニュー制御
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const menuBtn = document.getElementById('mobile-menu-btn');
+
+        menuBtn?.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        });
+
+        overlay?.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        });
+
+        // スクロールトップボタン表示制御
+        const scrollTopBtn = document.getElementById('scroll-top-btn');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.remove('opacity-0', 'invisible', 'translate-y-4');
+            } else {
+                scrollTopBtn.classList.add('opacity-0', 'invisible', 'translate-y-4');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // コードコピー機能
+        function copyCode(btn) {
+            const code = btn.closest('.code-block-wrapper').querySelector('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const icon = btn.querySelector('i');
+                icon.classList.remove('fa-copy');
+                icon.classList.add('fa-check');
+                setTimeout(() => {
+                    icon.classList.remove('fa-check');
+                    icon.classList.add('fa-copy');
+                }, 2000);
+            });
+        }
+
+        // サイドバーリサイズ機能
+        const resizeHandle = document.getElementById('sidebar-resize-handle');
+        let isResizing = false;
+        let startX, startWidth;
+
+        resizeHandle?.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            startX = e.clientX;
+            startWidth = sidebar.offsetWidth;
+            resizeHandle.classList.add('resizing');
+            document.body.style.cursor = 'ew-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            const diff = e.clientX - startX;
+            const newWidth = Math.min(Math.max(startWidth + diff, 240), 480);
+            sidebar.style.width = newWidth + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                resizeHandle.classList.remove('resizing');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+                localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
+            }
+        });
+
+        const savedWidth = localStorage.getItem('sidebarWidth');
+        if (savedWidth && window.innerWidth >= 768) {
+            sidebar.style.width = savedWidth + 'px';
+        }
+
+        // 描画ツールバー折りたたみ機能
+        const toolbarToggle = document.getElementById('toolbar-toggle');
+        const toolbarContent = document.getElementById('toolbar-content');
+        let isToolbarOpen = false;
+
+        toolbarToggle?.addEventListener('click', () => {
+            isToolbarOpen = !isToolbarOpen;
+            const icon = toolbarToggle.querySelector('i');
+
+            if (isToolbarOpen) {
+                toolbarContent.classList.remove('hidden');
+                toolbarContent.classList.add('flex');
+                icon.classList.remove('fa-chevron-left');
+                icon.classList.add('fa-chevron-right');
+                toolbarToggle.title = 'ツールバーを閉じる';
+            } else {
+                toolbarContent.classList.add('hidden');
+                toolbarContent.classList.remove('flex');
+                icon.classList.remove('fa-chevron-right');
+                icon.classList.add('fa-chevron-left');
+                toolbarToggle.title = 'ツールバーを開く';
+            }
+        });
+    </script>
+
+    <script src="../../../../../common/drawing-tool.js"></script>
+</body>
+</html>
