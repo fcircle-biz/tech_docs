@@ -274,28 +274,34 @@
         });
     };
 
-    // サイドバーリサイズ機能
+    // サイドバーリサイズ機能（タブレット・PC対応）
     const resizeHandle = document.getElementById('sidebar-resize-handle');
     let isResizing = false;
     let startX, startWidth;
 
-    resizeHandle?.addEventListener('mousedown', (e) => {
+    // リサイズ開始処理（共通）
+    function startResize(clientX) {
+        // タブレット・PC（768px以上）でのみリサイズ可能
+        if (window.innerWidth < 768) return;
+
         isResizing = true;
-        startX = e.clientX;
+        startX = clientX;
         startWidth = sidebar.offsetWidth;
         resizeHandle.classList.add('resizing');
         document.body.style.cursor = 'ew-resize';
         document.body.style.userSelect = 'none';
-    });
+    }
 
-    document.addEventListener('mousemove', (e) => {
+    // リサイズ中の処理（共通）
+    function doResize(clientX) {
         if (!isResizing) return;
-        const diff = e.clientX - startX;
+        const diff = clientX - startX;
         const newWidth = Math.min(Math.max(startWidth + diff, 240), 480);
         sidebar.style.width = newWidth + 'px';
-    });
+    }
 
-    document.addEventListener('mouseup', () => {
+    // リサイズ終了処理（共通）
+    function endResize() {
         if (isResizing) {
             isResizing = false;
             resizeHandle.classList.remove('resizing');
@@ -304,9 +310,40 @@
             // サイドバー幅をローカルストレージに保存
             localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
         }
+    }
+
+    // マウスイベント（PC・タブレット）
+    resizeHandle?.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        startResize(e.clientX);
     });
 
-    // ページ読み込み時にサイドバー幅を復元
+    document.addEventListener('mousemove', (e) => {
+        doResize(e.clientX);
+    });
+
+    document.addEventListener('mouseup', () => {
+        endResize();
+    });
+
+    // タッチイベント（タブレット・スマホ）
+    resizeHandle?.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        startResize(touch.clientX);
+    });
+
+    document.addEventListener('touchmove', (e) => {
+        if (!isResizing) return;
+        const touch = e.touches[0];
+        doResize(touch.clientX);
+    });
+
+    document.addEventListener('touchend', () => {
+        endResize();
+    });
+
+    // ページ読み込み時にサイドバー幅を復元（タブレット・PC）
     const savedWidth = localStorage.getItem('sidebarWidth');
     if (savedWidth && window.innerWidth >= 768) {
         sidebar.style.width = savedWidth + 'px';
