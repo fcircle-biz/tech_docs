@@ -7,7 +7,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.1">
     <title>[技術名]学習教材 第X章 - [章タイトル]</title>
 
     <!-- Tailwind CSS CDN -->
