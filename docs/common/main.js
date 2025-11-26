@@ -174,19 +174,69 @@
         });
     }
 
-    // モバイルメニュー制御
+    // サイドバー開閉制御（PC・モバイル共通）
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebar-overlay');
-    const menuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
 
-    menuBtn?.addEventListener('click', () => {
-        sidebar.classList.toggle('-translate-x-full');
-        overlay.classList.toggle('hidden');
-    });
+    // サイドバーの初期状態を設定
+    // 非PC環境（タブレット・スマホ）では閉じた状態
+    // PC環境では前回の状態を復元、なければ開いた状態
+    if (!isPC) {
+        // 非PC環境では閉じる
+        sidebar?.classList.add('-translate-x-full');
+        overlay?.classList.add('hidden');
+    } else {
+        // PC環境では前回の状態を復元
+        const savedSidebarState = localStorage.getItem('sidebarOpen');
+        if (savedSidebarState === 'false') {
+            sidebar?.classList.add('sidebar-closed');
+            if (sidebarToggleBtn) {
+                const icon = sidebarToggleBtn.querySelector('i');
+                icon?.classList.remove('fa-chevron-left');
+                icon?.classList.add('fa-chevron-right');
+            }
+        }
+    }
 
+    // サイドバー開閉関数
+    function toggleSidebar() {
+        if (!isPC) {
+            // モバイル：スライドイン/アウト
+            sidebar?.classList.toggle('-translate-x-full');
+            overlay?.classList.toggle('hidden');
+        } else {
+            // PC：表示/非表示（幅を変更）
+            const isClosed = sidebar?.classList.toggle('sidebar-closed');
+
+            // アイコン変更
+            if (sidebarToggleBtn) {
+                const icon = sidebarToggleBtn.querySelector('i');
+                if (isClosed) {
+                    icon?.classList.remove('fa-chevron-left');
+                    icon?.classList.add('fa-chevron-right');
+                } else {
+                    icon?.classList.remove('fa-chevron-right');
+                    icon?.classList.add('fa-chevron-left');
+                }
+            }
+
+            // 状態を保存
+            localStorage.setItem('sidebarOpen', isClosed ? 'false' : 'true');
+        }
+    }
+
+    // モバイルメニューボタン
+    mobileMenuBtn?.addEventListener('click', toggleSidebar);
+
+    // PCサイドバートグルボタン
+    sidebarToggleBtn?.addEventListener('click', toggleSidebar);
+
+    // オーバーレイクリック
     overlay?.addEventListener('click', () => {
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
+        sidebar?.classList.add('-translate-x-full');
+        overlay?.classList.add('hidden');
     });
 
     // スクロールトップボタン表示制御
