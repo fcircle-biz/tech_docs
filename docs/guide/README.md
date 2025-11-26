@@ -60,6 +60,7 @@ Webページの基礎技術とフロントエンド開発
 ### 3. 開発手法・プロセス (Development Processes)
 現代的な開発プロセスとチーム開発手法
 
+- [Git/GitHub入門](./development-processes/git-github/) - バージョン管理入門（Git基礎、GitHub活用、ブランチ、プルリクエスト）
 - [Agile Development](./development-processes/agile-development/) - アジャイル開発（Scrum、XP、Kanban、スプリント、レトロスペクティブ）
 - [Waterfall Development](./development-processes/waterfall-development/) - ウォーターフォール開発（要件定義→設計→実装→テスト→運用保守）
 - [DevOps](./development-processes/devops/) - DevOps（CI/CD、Infrastructure as Code、自動化、監視、フィードバックループ）
@@ -161,6 +162,7 @@ docs/guide/
 │   ├── bootstrap/                  # Bootstrap
 │   └── tailwind-css/               # Tailwind CSS
 ├── development-processes/           # 開発手法・プロセス
+│   ├── git-github/                 # Git/GitHub入門
 │   ├── agile-development/          # アジャイル開発
 │   ├── waterfall-development/      # ウォーターフォール開発
 │   └── devops/                     # DevOps
