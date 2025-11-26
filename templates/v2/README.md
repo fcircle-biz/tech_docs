@@ -19,6 +19,7 @@ templates/v2/
 ├── html/                                    # コピー用HTMLテンプレートとJavaScript
 │   ├── learning-material-template.html      # 学習教材用テンプレート
 │   ├── tutorial-template.html               # チュートリアル用テンプレート
+│   ├── styles.css                           # 共通カスタムスタイル（外部CSS）
 │   ├── main.js                              # 共通機能（サイドバー、描画ツールバー生成等）
 │   └── drawing-tool.js                      # 描画ツール機能
 ├── reference/                               # 参照用ドキュメント
@@ -71,29 +72,34 @@ templates/v2/
 | React | Cyan (`#06b6d4`) | `fab fa-react` |
 | .NET/C# | Violet (`#8b5cf6`) | `fab fa-microsoft` |
 
-### 4. 共通JavaScriptの配置
+### 4. 共通ファイルの配置
 
-テンプレートは共通JavaScriptファイル（`main.js` と `drawing-tool.js`）を使用します。
+テンプレートは共通ファイル（`styles.css`、`main.js`、`drawing-tool.js`）を使用します。
 
-**重要：依存を避けるため、各技術フォルダ内に直接JSファイルをコピーしてください。**
+**重要：依存を避けるため、各技術フォルダ内に直接ファイルをコピーしてください。**
 
 #### 手順
 
-1. **JSファイルをコピー**
+1. **共通ファイルをコピー**
    ```bash
    # Javaガイドを作成する場合の例
+   cp templates/v2/html/styles.css docs/guide/programming-languages/java-ecosystem/java/
    cp templates/v2/html/main.js docs/guide/programming-languages/java-ecosystem/java/
    cp templates/v2/html/drawing-tool.js docs/guide/programming-languages/java-ecosystem/java/
 
    # Pythonチュートリアルを作成する場合の例
+   cp templates/v2/html/styles.css docs/tutorial/programming-languages/python-ecosystem/django/
    cp templates/v2/html/main.js docs/tutorial/programming-languages/python-ecosystem/django/
    cp templates/v2/html/drawing-tool.js docs/tutorial/programming-languages/python-ecosystem/django/
    ```
 
 2. **HTMLファイルでのパス設定**
 
-   テンプレート内のスクリプト参照は以下のようになっています：
+   テンプレート内のファイル参照は以下のようになっています：
    ```html
+   <!-- カスタムスタイル -->
+   <link rel="stylesheet" href="styles.css">
+
    <!-- 共通JavaScript -->
    <script src="main.js"></script>
 
@@ -103,9 +109,22 @@ templates/v2/
 
    配置場所によって相対パスを調整してください：
    - **ルート階層** (`docs/guide/.../java/*.html`)
-     - `main.js` のまま
+     - `styles.css`、`main.js`、`drawing-tool.js` のまま
    - **サブディレクトリ** (`docs/guide/.../java/v1/*.html`)
-     - `../main.js` に変更
+     - `../styles.css`、`../main.js`、`../drawing-tool.js` に変更
+
+#### styles.cssについて
+
+`styles.css` には以下の共通カスタムスタイルが含まれています：
+- スクロールバーのカスタマイズ
+- コードブロックのライン番号スタイル
+- サイドバーのトランジション・リサイズ機能
+- コードコピーボタンのスタイル
+- ヘッダーのリッチデザイン（グラデーション・アニメーション）
+- レスポンシブ対応のメディアクエリ
+
+**技術固有のカラー調整が必要な場合**は、各技術フォルダの`styles.css`を編集してください。
+例えば、Java用（オレンジ系）、Python用（ブルー系）など、技術に応じた色調整が可能です。
 
 #### main.jsの機能
 
@@ -241,7 +260,26 @@ templates/v2/
 ### Q: 技術アイコンが表示されない
 **A:** Font Awesome CDNが正しく読み込まれているか確認してください。また、使用するアイコンクラス（例: `fab fa-python`）が正しいか確認してください。
 
+### Q: スタイルが適用されない
+**A:** 以下を確認してください：
+1. `styles.css` のパスが正しく設定されているか（配置場所に応じて相対パスを調整）
+2. `styles.css` が正しくコピーされているか
+3. ブラウザの開発者ツールでCSSファイルが404エラーになっていないか
+4. キャッシュをクリアしてページを再読み込みしてみる
+
+### Q: 複数の技術フォルダで異なる色テーマを使いたい
+**A:** 各技術フォルダの `styles.css` を個別に編集することで、技術ごとに異なる色調整が可能です。例えば、ヘッダーのグラデーション色やサイドバーのハイライト色を変更できます。
+
 ## バージョン履歴
+
+### v2.3.0 (2025-01-27)
+- **CSS外部化対応**: インラインCSSを外部ファイル化
+- `templates/v2/html/styles.css` を追加（共通カスタムスタイル）
+- HTMLテンプレートのインラインCSSを `<link rel="stylesheet" href="styles.css">` に置換
+- 各技術フォルダに `styles.css` をコピーして配置する方式を採用
+- HTMLファイルのコード量を約128行（約5KB）削減
+- メンテナンス性向上：CSS修正時は1ファイルのみ編集すればOK
+- エージェント定義（tech-guide-creator-step2.md）にCSS配置手順を追加
 
 ### v2.2.0 (2025-11-27)
 - 共通JavaScriptファイルの管理方法を変更
