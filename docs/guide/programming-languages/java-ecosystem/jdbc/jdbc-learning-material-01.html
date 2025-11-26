@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.1">
+    <title>JDBC学習教材 第1章 - JDBCの概要と環境構築</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            200: '#fed7aa',
+                            300: '#fdba74',
+                            400: '#fb923c',
+                            500: '#f97316',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                            800: '#9a3412',
+                            900: '#7c2d12',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <style>
+        /* スクロールバーカスタマイズ */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* コードブロックのラインナンバー */
+        .hljs-ln-numbers {
+            user-select: none;
+            text-align: right;
+            color: #6b7280;
+            padding-right: 12px;
+            border-right: 1px solid #374151;
+        }
+
+        /* サイドバートランジション */
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, width 0.15s ease-out;
+        }
+
+        /* サイドバーリサイズ機能 */
+        .sidebar-resizable {
+            min-width: 240px;
+            max-width: 480px;
+        }
+        .sidebar-resize-handle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 6px;
+            height: 100%;
+            cursor: ew-resize;
+            background: transparent;
+            transition: background 0.2s;
+            z-index: 10;
+        }
+        .sidebar-resize-handle:hover,
+        .sidebar-resize-handle.resizing {
+            background: linear-gradient(to right, transparent, rgba(249, 115, 22, 0.3));
+        }
+
+        /* スムーズスクロール */
+        html { scroll-behavior: smooth; }
+
+        /* コードコピーボタン */
+        .code-block-wrapper { position: relative; }
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .code-block-wrapper:hover .copy-btn { opacity: 1; }
+
+        /* ヘッダー情報リッチデザイン */
+        .header-rich {
+            background: linear-gradient(135deg,
+                #c2410c 0%,
+                #f97316 50%,
+                #fb923c 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .header-rich::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px);
+            animation: bgSlide 10s linear infinite;
+        }
+        @keyframes bgSlide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(50px); }
+        }
+
+        .header-rich-shadow {
+            box-shadow:
+                0 4px 6px -1px rgba(249, 115, 22, 0.2),
+                0 10px 25px -5px rgba(249, 115, 22, 0.3),
+                0 0 50px rgba(249, 115, 22, 0.15);
+        }
+
+        .icon-rotate-hover {
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .icon-rotate-hover:hover {
+            transform: rotate(360deg) scale(1.2);
+        }
+    </style>
+</head>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fab fa-java text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
+
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">JDBC学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>プログラミング言語</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 40分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右側: モバイルメニューボタン -->
+                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバー -->
+        <aside id="sidebar" class="fixed md:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
+                                   bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
+                                   transform -translate-x-full md:translate-x-0 sidebar-transition sidebar-resizable"
+               style="--sidebar-width: 320px;">
+            <!-- リサイズハンドル -->
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle hidden md:block"></div>
+            <div class="p-4">
+                <!-- 進捗インジケーター -->
+                <div class="mb-6 p-4 bg-primary-50 rounded-xl">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-primary-700">学習進捗</span>
+                        <span class="text-sm text-primary-600">1/10章</span>
+                    </div>
+                    <div class="w-full bg-primary-100 rounded-full h-2">
+                        <div class="bg-primary-500 h-2 rounded-full transition-all duration-300" style="width: 10%"></div>
+                    </div>
+                </div>
+
+                <!-- 章リスト -->
+                <nav>
+                    <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-2">
+                        学習章
+                    </h2>
+                    <ul class="space-y-1">
+                        <!-- 第1章（現在） -->
+                        <li>
+                            <a href="jdbc-learning-material-01.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      bg-primary-100 text-primary-700 font-medium">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-primary-500 text-white text-xs rounded-full">1</span>
+                                <span class="truncate">JDBCの概要と環境構築</span>
+                            </a>
+                        </li>
+
+                        <!-- 第2章 -->
+                        <li>
+                            <a href="jdbc-learning-material-02.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">2</span>
+                                <span class="truncate">データベース接続の基本</span>
+                            </a>
+                        </li>
+
+                        <!-- 第3章 -->
+                        <li>
+                            <a href="jdbc-learning-material-03.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">3</span>
+                                <span class="truncate">データの取得（SELECT文）</span>
+                            </a>
+                        </li>
+
+                        <!-- 第4章 -->
+                        <li>
+                            <a href="jdbc-learning-material-04.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">4</span>
+                                <span class="truncate">データの登録・更新・削除</span>
+                            </a>
+                        </li>
+
+                        <!-- 第5章 -->
+                        <li>
+                            <a href="jdbc-learning-material-05.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">5</span>
+                                <span class="truncate">PreparedStatementの活用</span>
+                            </a>
+                        </li>
+
+                        <!-- 第6章 -->
+                        <li>
+                            <a href="jdbc-learning-material-06.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">6</span>
+                                <span class="truncate">例外処理とリソース管理</span>
+                            </a>
+                        </li>
+
+                        <!-- 第7章 -->
+                        <li>
+                            <a href="jdbc-learning-material-07.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">7</span>
+                                <span class="truncate">トランザクション管理</span>
+                            </a>
+                        </li>
+
+                        <!-- 第8章 -->
+                        <li>
+                            <a href="jdbc-learning-material-08.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">8</span>
+                                <span class="truncate">DAOパターン入門</span>
+                            </a>
+                        </li>
+
+                        <!-- 第9章 -->
+                        <li>
+                            <a href="jdbc-learning-material-09.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">9</span>
+                                <span class="truncate">実践演習 - 商品管理システム</span>
+                            </a>
+                        </li>
+
+                        <!-- 第10章 -->
+                        <li>
+                            <a href="jdbc-learning-material-10.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">10</span>
+                                <span class="truncate">よくある問題と解決策</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- サイドバーオーバーレイ（モバイル用） -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="../" class="hover:text-primary-600 transition-colors">Java</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="./" class="hover:text-primary-600 transition-colors">JDBC</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第1章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第1章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">JDBCの概要と環境構築</h1>
+                    <p class="text-slate-600">JDBCとは何か、なぜJDBCが必要なのかを理解し、開発環境のセットアップを行います。JDBCアーキテクチャの基本構造とドライバの役割についても解説します。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>JDBCの役割とデータベース接続の仕組みを理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>JDBCアーキテクチャとドライバの種類を把握する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>開発環境のセットアップとJDBCドライバの導入方法を習得する</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション 1.1 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        1.1 JDBCとは
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        JDBC（Java Database Connectivity）は、Javaプログラムからリレーショナルデータベースに接続し、SQL文を実行してデータを操作するための標準APIです。JDBCを使用することで、異なるデータベース製品（PostgreSQL、MySQL、Oracleなど）に対して、ほぼ同じコードでアクセスできます。
+                    </p>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 my-4 rounded-r">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+                            <div>
+                                <p class="font-medium text-blue-900 mb-1">なぜJDBCが必要なのか？</p>
+                                <p class="text-blue-800 text-sm">
+                                    Javaアプリケーションでデータを永続化（保存）するには、データベースが不可欠です。JDBCは、Javaとデータベースの橋渡しをする役割を果たし、標準化されたインターフェースを提供することで、開発者が効率的にデータベース操作を実装できるようにします。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mermaid図表 -->
+                    <div class="my-6 bg-white p-4 rounded-lg border border-slate-200">
+                        <p class="text-sm font-medium text-slate-700 mb-3">JDBCの位置づけ</p>
+                        <div class="mermaid">
+graph TB
+    A[Javaアプリケーション] --> B[JDBC API]
+    B --> C[JDBCドライバ]
+    C --> D[PostgreSQL]
+    C --> E[MySQL]
+    C --> F[Oracle]
+
+    style A fill:#fff7ed,stroke:#f97316,stroke-width:2px
+    style B fill:#dbeafe,stroke:#3b82f6,stroke-width:2px
+    style C fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style D fill:#dcfce7,stroke:#16a34a
+    style E fill:#dcfce7,stroke:#16a34a
+    style F fill:#dcfce7,stroke:#16a34a
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション 1.2 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        1.2 JDBCアーキテクチャとドライバ
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        JDBCアーキテクチャは、主に以下の3つの層で構成されています。
+                    </p>
+
+                    <div class="bg-slate-50 rounded-lg p-5 mb-4">
+                        <h3 class="font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                            <i class="fas fa-layer-group text-primary-500"></i>
+                            3層構造
+                        </h3>
+                        <ol class="space-y-3">
+                            <li class="flex items-start gap-3">
+                                <span class="flex-shrink-0 w-6 h-6 bg-primary-500 text-white rounded-full
+                                             flex items-center justify-center text-sm font-medium">1</span>
+                                <div>
+                                    <strong>JDBC API層：</strong>
+                                    <span class="text-slate-600">Javaアプリケーションが使用する標準インターフェース（java.sql パッケージ）</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="flex-shrink-0 w-6 h-6 bg-primary-500 text-white rounded-full
+                                             flex items-center justify-center text-sm font-medium">2</span>
+                                <div>
+                                    <strong>JDBCドライバマネージャ：</strong>
+                                    <span class="text-slate-600">適切なドライバを選択し、接続を管理</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="flex-shrink-0 w-6 h-6 bg-primary-500 text-white rounded-full
+                                             flex items-center justify-center text-sm font-medium">3</span>
+                                <div>
+                                    <strong>JDBCドライバ：</strong>
+                                    <span class="text-slate-600">データベース固有の実装を提供（各データベースベンダーが提供）</span>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <h3 class="font-semibold text-slate-800 mb-3 mt-6">JDBCドライバの種類</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        現在の実務では、<strong>Type 4ドライバ（Pure Javaドライバ）</strong>が主流です。これは100% Javaで実装されたドライバで、プラットフォームに依存せず、直接データベースと通信します。
+                    </p>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full border border-slate-200 rounded-lg">
+                            <thead class="bg-slate-100">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-slate-700 font-medium border-b">ドライバ種類</th>
+                                    <th class="px-4 py-2 text-left text-slate-700 font-medium border-b">説明</th>
+                                    <th class="px-4 py-2 text-left text-slate-700 font-medium border-b">使用状況</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white">
+                                <tr>
+                                    <td class="px-4 py-2 border-b text-slate-600">Type 1</td>
+                                    <td class="px-4 py-2 border-b text-slate-600">JDBC-ODBCブリッジ</td>
+                                    <td class="px-4 py-2 border-b text-slate-600">非推奨（廃止）</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 border-b text-slate-600">Type 2</td>
+                                    <td class="px-4 py-2 border-b text-slate-600">ネイティブAPIドライバ</td>
+                                    <td class="px-4 py-2 border-b text-slate-600">ほぼ使用されない</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 border-b text-slate-600">Type 3</td>
+                                    <td class="px-4 py-2 border-b text-slate-600">ネットワークプロトコル</td>
+                                    <td class="px-4 py-2 border-b text-slate-600">限定的</td>
+                                </tr>
+                                <tr class="bg-green-50">
+                                    <td class="px-4 py-2 text-slate-800 font-medium">Type 4</td>
+                                    <td class="px-4 py-2 text-slate-800">Pure Javaドライバ</td>
+                                    <td class="px-4 py-2 text-green-700 font-medium">
+                                        <i class="fas fa-check-circle"></i> 主流（推奨）
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- セクション 1.3 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        1.3 開発環境のセットアップ
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        JDBC開発を始めるには、以下の環境を準備する必要があります。
+                    </p>
+
+                    <h3 class="font-semibold text-slate-800 mb-3 mt-6">1. JDKのインストール</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Java Development Kit（JDK）11以上をインストールします。Oracle JDKまたはOpenJDKのいずれかを選択できます。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">バージョン確認（ターミナル）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># Javaバージョンの確認
+java -version
+
+# コンパイラバージョンの確認
+javac -version</code></pre>
+                    </div>
+
+                    <h3 class="font-semibold text-slate-800 mb-3 mt-6">2. IDEのインストール</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        以下のいずれかのIDEを推奨します：
+                    </p>
+                    <ul class="list-disc list-inside space-y-2 text-slate-600 mb-4">
+                        <li><strong>Eclipse IDE for Enterprise Java Developers</strong> - 無料でJava EE開発に特化</li>
+                        <li><strong>IntelliJ IDEA</strong> - Community Edition（無料）またはUltimate Edition</li>
+                        <li><strong>Visual Studio Code</strong> - 軽量で拡張機能が豊富</li>
+                    </ul>
+
+                    <h3 class="font-semibold text-slate-800 mb-3 mt-6">3. データベースのインストール</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        本教材では<strong>PostgreSQL</strong>を推奨しますが、MySQLでも学習可能です。
+                    </p>
+
+                    <div class="bg-slate-50 rounded-lg p-5 mb-4">
+                        <h4 class="font-semibold text-slate-800 mb-3">PostgreSQLのインストール手順</h4>
+                        <ol class="space-y-2 text-slate-600">
+                            <li>1. 公式サイト（https://www.postgresql.org/download/）からインストーラをダウンロード</li>
+                            <li>2. インストーラを実行し、デフォルト設定で進める</li>
+                            <li>3. ポート番号はデフォルト（5432）を使用</li>
+                            <li>4. スーパーユーザー（postgres）のパスワードを設定</li>
+                            <li>5. インストール完了後、pgAdmin4で接続確認</li>
+                        </ol>
+                    </div>
+
+                    <h3 class="font-semibold text-slate-800 mb-3 mt-6">4. JDBCドライバの取得</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        使用するデータベースに対応したJDBCドライバをダウンロードします。
+                    </p>
+
+                    <div class="bg-blue-50 rounded-lg p-4 mb-4">
+                        <h4 class="font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                            <i class="fas fa-download"></i>
+                            主要データベースのJDBCドライバ
+                        </h4>
+                        <ul class="space-y-2 text-blue-800 text-sm">
+                            <li>
+                                <strong>PostgreSQL：</strong>
+                                <a href="https://jdbc.postgresql.org/" class="text-blue-600 underline" target="_blank">
+                                    https://jdbc.postgresql.org/
+                                </a>
+                            </li>
+                            <li>
+                                <strong>MySQL：</strong>
+                                <a href="https://dev.mysql.com/downloads/connector/j/" class="text-blue-600 underline" target="_blank">
+                                    https://dev.mysql.com/downloads/connector/j/
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- セクション 1.4 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        1.4 JDBCドライバの導入方法
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        JDBCドライバをプロジェクトに組み込む方法は、主に2通りあります。
+                    </p>
+
+                    <h3 class="font-semibold text-slate-800 mb-3 mt-6">方法1：JARファイルを直接追加（従来の方法）</h3>
+                    <div class="bg-slate-50 rounded-lg p-5 mb-4">
+                        <ol class="space-y-3 text-slate-600">
+                            <li class="flex items-start gap-3">
+                                <span class="flex-shrink-0 w-6 h-6 bg-slate-200 rounded-full
+                                             flex items-center justify-center text-sm font-medium">1</span>
+                                <span>JDBCドライバのJARファイルをダウンロード（例：postgresql-42.6.0.jar）</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="flex-shrink-0 w-6 h-6 bg-slate-200 rounded-full
+                                             flex items-center justify-center text-sm font-medium">2</span>
+                                <span>プロジェクト内にlibフォルダを作成し、JARファイルを配置</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="flex-shrink-0 w-6 h-6 bg-slate-200 rounded-full
+                                             flex items-center justify-center text-sm font-medium">3</span>
+                                <span>IDE上でビルドパスにJARファイルを追加</span>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <h3 class="font-semibold text-slate-800 mb-3 mt-6">方法2：Mavenを使用（推奨）</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Mavenを使用すると、依存関係を自動的に管理できます。pom.xmlに以下の設定を追加します。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">pom.xml（PostgreSQLの場合）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-xml">&lt;dependencies&gt;
+    &lt;!-- PostgreSQL JDBCドライバ --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.postgresql&lt;/groupId&gt;
+        &lt;artifactId&gt;postgresql&lt;/artifactId&gt;
+        &lt;version&gt;42.6.0&lt;/version&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
+                    </div>
+
+                    <div class="bg-green-50 border-l-4 border-green-400 p-4 my-4 rounded-r">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                            <div>
+                                <p class="font-medium text-green-900 mb-1">Mavenを使用するメリット</p>
+                                <ul class="text-green-800 text-sm list-disc list-inside space-y-1">
+                                    <li>依存関係の自動解決とバージョン管理</li>
+                                    <li>プロジェクト共有時の環境構築が簡単</li>
+                                    <li>セキュリティアップデートの適用が容易</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 実習カード -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                            rounded-xl p-5 my-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3">
+                                実習 1-1: 環境確認プログラムの作成
+                            </h3>
+                            <p class="text-purple-900 mb-4">JDBCドライバが正しく導入されているかを確認する簡単なプログラムを作成しましょう。</p>
+
+                            <h4 class="font-medium text-purple-800 mb-2">手順</h4>
+                            <ol class="space-y-3 mb-4">
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">1</span>
+                                    <span>新しいJavaプロジェクトを作成し、JDBCドライバをビルドパスに追加</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">2</span>
+                                    <span>以下のコードを入力し、実行してみましょう</span>
+                                </li>
+                            </ol>
+
+                            <h4 class="font-medium text-purple-800 mb-2">実行例</h4>
+                            <div class="code-block-wrapper my-4">
+                                <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                    <span class="text-slate-400 text-sm">JdbcDriverTest.java</span>
+                                    <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                            onclick="copyCode(this)">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                                <pre class="!mt-0 !rounded-t-none"><code class="language-java">public class JdbcDriverTest {
+    public static void main(String[] args) {
+        try {
+            // JDBCドライバのクラスをロード
+            Class.forName("org.postgresql.Driver");
+            System.out.println("JDBCドライバが正常にロードされました！");
+        } catch (ClassNotFoundException e) {
+            System.err.println("JDBCドライバが見つかりません: " + e.getMessage());
+        }
+    }
+}</code></pre>
+                            </div>
+
+                            <h4 class="font-medium text-purple-800 mt-4 mb-2">期待される結果</h4>
+                            <div class="bg-white/50 rounded-lg p-3 text-purple-900">
+                                <code>JDBCドライバが正常にロードされました！</code>
+                            </div>
+
+                            <div class="mt-4 bg-purple-100 rounded-lg p-3">
+                                <p class="text-sm text-purple-800">
+                                    <strong>注意：</strong>MySQLを使用する場合は、<code>org.postgresql.Driver</code>を<code>com.mysql.cj.jdbc.Driver</code>に変更してください。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q1. JDBCの正式名称は何ですか？また、その役割を簡潔に説明してください。</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <strong>回答：</strong>Java Database Connectivity。Javaプログラムからデータベースに接続し、SQL文を実行してデータを操作するための標準APIです。異なるデータベース製品に対してほぼ同じコードでアクセスできる統一されたインターフェースを提供します。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q2. 現在主流のJDBCドライバの種類は何ですか？その特徴も答えてください。</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <strong>回答：</strong>Type 4ドライバ（Pure Javaドライバ）。100% Javaで実装されており、プラットフォームに依存せず、直接データベースと通信できるのが特徴です。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q3. JDBCドライバをプロジェクトに導入する方法を2つ挙げ、それぞれの特徴を説明してください。</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <strong>回答：</strong><br>
+                                            1. <strong>JARファイルを直接追加：</strong>ドライバのJARファイルをダウンロードしてプロジェクトのビルドパスに追加する従来の方法。シンプルだが、バージョン管理が手動になる。<br>
+                                            2. <strong>Mavenを使用：</strong>pom.xmlに依存関係を記述することで自動的にドライバを取得する方法。依存関係の自動解決、バージョン管理が容易で、プロジェクト共有時の環境構築も簡単になる（推奨）。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- まとめセクション -->
+                <div class="bg-slate-100 rounded-xl p-6 my-8">
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-bookmark text-primary-500"></i>
+                        この章のまとめ
+                    </h3>
+                    <ul class="space-y-2 text-slate-700">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-green-500 mt-1 flex-shrink-0"></i>
+                            <span>JDBCは、Javaプログラムからデータベースにアクセスするための標準APIである</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-green-500 mt-1 flex-shrink-0"></i>
+                            <span>Type 4ドライバ（Pure Javaドライバ）が現在の主流で、プラットフォーム非依存が特徴</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-green-500 mt-1 flex-shrink-0"></i>
+                            <span>開発環境にはJDK、IDE、データベース、JDBCドライバが必要</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-green-500 mt-1 flex-shrink-0"></i>
+                            <span>JDBCドライバの導入にはMavenを使用する方法が推奨される</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <div class="w-1/3">
+                        <!-- 第1章なので前の章へのリンクなし -->
+                    </div>
+                    <a href="jdbc-learning-material-02.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">データベース接続の基本</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
+    </div>
+
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- 描画用Canvasオーバーレイ -->
+    <canvas id="drawing-canvas" class="fixed inset-0 z-[100] pointer-events-none"></canvas>
+
+    <!-- 描画ツールバー（右端） -->
+    <div id="drawing-toolbar" class="fixed right-4 top-1/2 -translate-y-1/2 z-[110]
+                                     bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl
+                                     border border-slate-200 p-2 flex flex-col gap-1
+                                     transition-all duration-300">
+        <!-- ツールバー折りたたみボタン -->
+        <button id="toolbar-toggle"
+                class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                       flex items-center justify-center transition-colors mb-2"
+                title="ツールバーを開く">
+            <i class="fas fa-chevron-left text-slate-600"></i>
+        </button>
+
+        <div id="toolbar-content" class="hidden flex-col gap-1">
+            <!-- ペンツール -->
+            <button id="pen-tool"
+                    class="tool-btn w-10 h-10 rounded-xl bg-primary-100 text-primary-600
+                           hover:bg-primary-200 flex items-center justify-center transition-colors"
+                    title="ペン (P)">
+                <i class="fas fa-pen"></i>
+            </button>
+
+            <!-- 消しゴムツール -->
+            <button id="eraser-tool"
+                    class="tool-btn w-10 h-10 rounded-xl bg-slate-100 text-slate-600
+                           hover:bg-slate-200 flex items-center justify-center transition-colors"
+                    title="消しゴム (E)">
+                <i class="fas fa-eraser"></i>
+            </button>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 色選択 -->
+            <div id="color-picker" class="flex flex-col gap-1">
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-red-400 bg-red-500
+                               hover:scale-110 transition-transform" data-color="#ef4444" title="赤"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-blue-400 bg-blue-500
+                               hover:scale-110 transition-transform" data-color="#3b82f6" title="青"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-slate-600 bg-slate-800
+                               hover:scale-110 transition-transform active-color" data-color="#1e293b" title="黒"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-emerald-400 bg-emerald-500
+                               hover:scale-110 transition-transform" data-color="#10b981" title="緑"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-amber-400 bg-amber-500
+                               hover:scale-110 transition-transform" data-color="#f59e0b" title="黄"></button>
+            </div>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 線の太さ -->
+            <div id="stroke-width" class="flex flex-col gap-1">
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors" data-width="2" title="細い">
+                    <div class="w-4 h-0.5 bg-slate-600 rounded-full"></div>
+                </button>
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors active-stroke" data-width="4" title="普通">
+                    <div class="w-4 h-1 bg-slate-600 rounded-full"></div>
+                </button>
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors" data-width="8" title="太い">
+                    <div class="w-4 h-2 bg-slate-600 rounded-full"></div>
+                </button>
+            </div>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 元に戻す -->
+            <button id="undo-btn"
+                    class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600
+                           hover:bg-slate-200 flex items-center justify-center transition-colors
+                           disabled:opacity-40 disabled:cursor-not-allowed"
+                    title="元に戻す (Ctrl+Z)" disabled>
+                <i class="fas fa-undo"></i>
+            </button>
+
+            <!-- 全消去 -->
+            <button id="clear-btn"
+                    class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600
+                           hover:bg-rose-200 flex items-center justify-center transition-colors"
+                    title="全消去 (C)">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Highlight.js 初期化
+        hljs.highlightAll();
+
+        // Mermaid.js 初期化
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose'
+        });
+
+        // モバイルメニュー制御
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const menuBtn = document.getElementById('mobile-menu-btn');
+
+        menuBtn?.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        });
+
+        overlay?.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        });
+
+        // スクロールトップボタン表示制御
+        const scrollTopBtn = document.getElementById('scroll-top-btn');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.remove('opacity-0', 'invisible', 'translate-y-4');
+            } else {
+                scrollTopBtn.classList.add('opacity-0', 'invisible', 'translate-y-4');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // コードコピー機能
+        function copyCode(btn) {
+            const code = btn.closest('.code-block-wrapper').querySelector('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const icon = btn.querySelector('i');
+                icon.classList.remove('fa-copy');
+                icon.classList.add('fa-check');
+                setTimeout(() => {
+                    icon.classList.remove('fa-check');
+                    icon.classList.add('fa-copy');
+                }, 2000);
+            });
+        }
+
+        // サイドバーリサイズ機能
+        const resizeHandle = document.getElementById('sidebar-resize-handle');
+        let isResizing = false;
+        let startX, startWidth;
+
+        resizeHandle?.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            startX = e.clientX;
+            startWidth = sidebar.offsetWidth;
+            resizeHandle.classList.add('resizing');
+            document.body.style.cursor = 'ew-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            const diff = e.clientX - startX;
+            const newWidth = Math.min(Math.max(startWidth + diff, 240), 480);
+            sidebar.style.width = newWidth + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                resizeHandle.classList.remove('resizing');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+                // サイドバー幅をローカルストレージに保存
+                localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
+            }
+        });
+
+        // ページ読み込み時にサイドバー幅を復元
+        const savedWidth = localStorage.getItem('sidebarWidth');
+        if (savedWidth && window.innerWidth >= 768) {
+            sidebar.style.width = savedWidth + 'px';
+        }
+
+        // 描画ツールバー折りたたみ機能
+        const toolbarToggle = document.getElementById('toolbar-toggle');
+        const toolbarContent = document.getElementById('toolbar-content');
+        let isToolbarOpen = false;
+
+        toolbarToggle?.addEventListener('click', () => {
+            isToolbarOpen = !isToolbarOpen;
+            const icon = toolbarToggle.querySelector('i');
+
+            if (isToolbarOpen) {
+                toolbarContent.classList.remove('hidden');
+                toolbarContent.classList.add('flex');
+                icon.classList.remove('fa-chevron-left');
+                icon.classList.add('fa-chevron-right');
+                toolbarToggle.title = 'ツールバーを閉じる';
+            } else {
+                toolbarContent.classList.add('hidden');
+                toolbarContent.classList.remove('flex');
+                icon.classList.remove('fa-chevron-right');
+                icon.classList.add('fa-chevron-left');
+                toolbarToggle.title = 'ツールバーを開く';
+            }
+        });
+    </script>
+
+    <!-- 描画ツール -->
+    <script src="../../../../common/drawing-tool.js"></script>
+</body>
+</html>
