@@ -8,11 +8,13 @@
  * 3. DrawingTool.init() を呼び出す
  *
  * キーボードショートカット:
- * - D: 描画モード ON/OFF
+ * - D: ツールバー開閉（描画モードON/OFF）
  * - P: ペンツール
  * - E: 消しゴムツール
  * - C: 全消去
  * - Ctrl+Z: 元に戻す
+ *
+ * ツールバーを開くと描画モードON、閉じるとOFFになります
  */
 
 const DrawingTool = (function() {
@@ -27,7 +29,7 @@ const DrawingTool = (function() {
     let isDrawingMode = false;
     let isDrawing = false;
     let currentTool = 'pen';
-    let currentColor = '#1e293b';
+    let currentColor = '#ef4444';
     let currentWidth = 4;
     let lastX = 0;
     let lastY = 0;
@@ -86,12 +88,7 @@ const DrawingTool = (function() {
      * イベントリスナー設定
      */
     function setupEventListeners() {
-        // 描画モード切替
-        if (drawingToggle) {
-            drawingToggle.addEventListener('click', toggleDrawingMode);
-        }
-
-        // ツールバー折りたたみ
+        // ツールバー折りたたみ（描画モード切替も統合）
         if (toolbarToggle) {
             toolbarToggle.addEventListener('click', toggleToolbar);
         }
@@ -149,7 +146,7 @@ const DrawingTool = (function() {
      */
     function setInitialState() {
         // 初期色にリングを追加
-        const defaultColorBtn = document.querySelector('.color-btn[data-color="#1e293b"]');
+        const defaultColorBtn = document.querySelector('.color-btn[data-color="#ef4444"]');
         if (defaultColorBtn) {
             defaultColorBtn.classList.add('ring-2', 'ring-offset-2', 'ring-slate-400');
         }
@@ -161,32 +158,9 @@ const DrawingTool = (function() {
         }
     }
 
-    /**
-     * 描画モード切替
-     */
-    function toggleDrawingMode() {
-        isDrawingMode = !isDrawingMode;
-        canvas.style.pointerEvents = isDrawingMode ? 'auto' : 'none';
-
-        if (drawingToggle) {
-            if (isDrawingMode) {
-                drawingToggle.classList.remove('bg-slate-400');
-                drawingToggle.classList.add('bg-emerald-500');
-            } else {
-                drawingToggle.classList.remove('bg-emerald-500');
-                drawingToggle.classList.add('bg-slate-400');
-            }
-        }
-
-        if (isDrawingMode) {
-            document.body.style.cursor = currentTool === 'eraser' ? 'cell' : 'crosshair';
-        } else {
-            document.body.style.cursor = '';
-        }
-    }
 
     /**
-     * ツールバー折りたたみ
+     * ツールバー折りたたみ（描画モード切替も統合）
      */
     function toggleToolbar() {
         toolbarCollapsed = !toolbarCollapsed;
@@ -214,6 +188,18 @@ const DrawingTool = (function() {
                     toolbarToggle.title = 'ツールバーを閉じる';
                 }
             }
+        }
+
+        // ツールバーの開閉と連動して描画モードを切り替え
+        // 開く（toolbarCollapsed = false）→ 描画モードON
+        // 閉じる（toolbarCollapsed = true）→ 描画モードOFF
+        isDrawingMode = !toolbarCollapsed;
+        canvas.style.pointerEvents = isDrawingMode ? 'auto' : 'none';
+
+        if (isDrawingMode) {
+            document.body.style.cursor = currentTool === 'eraser' ? 'cell' : 'crosshair';
+        } else {
+            document.body.style.cursor = '';
         }
     }
 
@@ -400,7 +386,7 @@ const DrawingTool = (function() {
 
         switch(e.key.toLowerCase()) {
             case 'd':
-                toggleDrawingMode();
+                toggleToolbar();
                 break;
             case 'p':
                 if (isDrawingMode) selectPenTool();
@@ -423,7 +409,6 @@ const DrawingTool = (function() {
     // 公開API
     return {
         init: init,
-        toggleDrawingMode: toggleDrawingMode,
         selectPenTool: selectPenTool,
         selectEraserTool: selectEraserTool,
         undo: undo,

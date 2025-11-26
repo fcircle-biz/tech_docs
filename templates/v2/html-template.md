@@ -567,14 +567,6 @@ print(f"合計: {result}")</code></pre>
                     title="全消去 (C)">
                 <i class="fas fa-trash-alt"></i>
             </button>
-
-            <!-- 描画モードON/OFF -->
-            <button id="drawing-toggle"
-                    class="w-10 h-10 rounded-xl bg-slate-400 text-white
-                           hover:bg-slate-500 flex items-center justify-center transition-colors mt-2"
-                    title="描画モード ON/OFF (D)">
-                <i class="fas fa-pencil-alt"></i>
-            </button>
         </div>
     </div>
 
@@ -857,11 +849,13 @@ Tailwind CSSの標準ブレークポイントを使用：
 
 | キー | 機能 |
 |------|------|
-| `D` | 描画モード ON/OFF |
+| `D` | ツールバー開閉（描画モードON/OFF） |
 | `P` | ペンツール選択 |
 | `E` | 消しゴムツール選択 |
 | `C` | 全消去 |
 | `Ctrl+Z` | 元に戻す |
+
+**注**: ツールバーを開くと描画モードON、閉じるとOFFになります
 
 ### ツールバー機能
 
@@ -873,14 +867,13 @@ Tailwind CSSの標準ブレークポイントを使用：
 | 📏 線の太さ | 細(2px)・普通(4px)・太い(8px) |
 | ↩️ 元に戻す | 最大50ステップまで戻せる |
 | 🗑️ 全消去 | すべての描画を削除 |
-| ✏️ 描画モード | ON/OFFの切り替え |
 
 ### 使い方
-1. `D`キーまたは緑の鉛筆ボタンで描画モードをON
+1. `D`キーまたはツールバーボタンをクリックしてツールバーを開くと、自動的に描画モードがONになります
 2. ペン/消しゴムを選択
 3. 色・太さを選択
 4. マウスまたはタッチで描画
-5. 再度`D`キーで描画モードをOFFにして通常操作に戻る
+5. 再度`D`キーまたはツールバーボタンをクリックしてツールバーを閉じると、描画モードがOFFになり通常操作に戻ります
 
 ### 注意事項
 - 描画はブラウザのリロードで消えます（永続保存なし）
