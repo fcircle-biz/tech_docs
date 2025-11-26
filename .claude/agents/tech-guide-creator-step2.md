@@ -27,12 +27,14 @@ color: purple
 
 1. **README分析** - 指定されたREADME.mdから該当章の情報を抽出
 2. **共通ファイル確認** - 技術フォルダ内に以下のファイルが存在しない場合、@templates/v2/html/ からコピー
+   - `sidebar-content.js` - サイドバー動的生成（全章分の定義を含む）
    - `styles.css` - 共通カスタムスタイル
    - `main.js` - 共通機能（サイドバー、描画ツールバー等）
    - `drawing-tool.js` - 描画ツール機能
 3. **テンプレート適用** - @templates/v2/html/learning-material-template.html をベースに使用
-4. **1章分のHTML生成** - 指定された章番号のHTMLファイルを1つだけ生成
-5. **完了報告** - 生成したファイルパスを報告して終了
+4. **sidebar-content.js編集** - README.mdの全章情報から`chapters`配列を生成（初回のみ）
+5. **1章分のHTML生成** - 指定された章番号のHTMLファイルを1つだけ生成
+6. **完了報告** - 生成したファイルパスを報告して終了
 
 ## HTML生成ルール
 
@@ -52,16 +54,25 @@ color: purple
 - **技術名・タイトル**: プレースホルダーを実際の値に置換
 - **カラーテーマ**: `tailwind.config` 内の `primary` カラー
 - **アイコン**: 適切なFont Awesomeアイコン
-- **章リスト**: サイドバーのナビゲーション（全章分のリンク）
 - **コンテンツ**: 該当章の学習目標、説明文、コード例、クイズ
+
+**重要**: v2.4.0以降、サイドバーの章リストはHTMLテンプレート内ではなく、`sidebar-content.js`ファイルで管理されます。
 
 ### 共通ファイル管理
 
 **重要：依存を避けるため、各技術フォルダ内に直接ファイルをコピーしてください。**
 
-#### 配置するファイル（3つ）
+#### 配置するファイル（4つ）
 
-1. **styles.css** - 共通カスタムスタイル
+1. **sidebar-content.js** - サイドバー動的生成（v2.4.0～）
+   - 全章分の章タイトルとファイル名を定義
+   - 現在の章を自動判定
+   - 進捗率を自動計算
+   - サイドバーHTMLを動的に生成・挿入
+   - **初回のみ**: README.mdの全章情報から`chapters`配列を生成
+   - **2回目以降**: 既存のファイルを使用（章情報は既に設定済み）
+
+2. **styles.css** - 共通カスタムスタイル
    - スクロールバーのカスタマイズ
    - コードブロックのライン番号スタイル
    - サイドバーのトランジション・リサイズ機能
@@ -69,7 +80,7 @@ color: purple
    - ヘッダーのリッチデザイン（グラデーション・アニメーション）
    - レスポンシブ対応のメディアクエリ
 
-2. **main.js** - 共通機能
+3. **main.js** - 共通機能
    - PC環境判定（1024px以上）
    - サイドバー開閉制御
    - 描画ツールバー生成（PC環境のみ）
@@ -78,7 +89,7 @@ color: purple
    - コードコピー機能
    - Highlight.js / Mermaid.js 初期化
 
-3. **drawing-tool.js** - 描画ツール機能
+4. **drawing-tool.js** - 描画ツール機能
    - ペン/消しゴムツール
    - 色・線幅選択
    - 元に戻す/全消去
@@ -87,13 +98,18 @@ color: purple
 #### 配置ルール
 
 - **初回生成時**: 技術フォルダに存在しない場合、@templates/v2/html/ からコピー
+  - `sidebar-content.js`は初回のみREADME.mdから全章情報を抽出して`chapters`配列を生成
 - **2回目以降**: 既存のファイルを使用（上書きしない）
+  - `sidebar-content.js`は既に章情報が設定されているため、そのまま使用
 - **パス参照**: HTMLファイルと同じディレクトリに配置するため、相対パスは不要
   ```html
   <link rel="stylesheet" href="styles.css">
+  <script src="sidebar-content.js"></script>
   <script src="main.js"></script>
   <script src="drawing-tool.js"></script>
   ```
+
+  **重要**: スクリプトの読み込み順序に注意してください。`sidebar-content.js`は`main.js`より前に読み込む必要があります。
 
 #### 技術固有のカスタマイズ
 
@@ -119,6 +135,7 @@ color: purple
 ```bash
 # 例: Javaガイドを作成する場合
 docs/guide/programming-languages/java-ecosystem/java/
+├── sidebar-content.js      # サイドバー生成（全12章分の定義）
 ├── styles.css              # 共通カスタムスタイル
 ├── main.js                 # 共通機能
 ├── drawing-tool.js         # 描画ツール
@@ -128,6 +145,7 @@ docs/guide/programming-languages/java-ecosystem/java/
 
 # 例: Pythonチュートリアルを作成する場合
 docs/tutorial/programming-languages/python-ecosystem/django/
+├── sidebar-content.js      # サイドバー生成（チュートリアル用）
 ├── styles.css
 ├── main.js
 ├── drawing-tool.js
@@ -141,12 +159,46 @@ HTMLファイル内での参照：
 <!-- カスタムスタイル -->
 <link rel="stylesheet" href="styles.css">
 
+<!-- サイドバー生成 -->
+<script src="sidebar-content.js"></script>
+
 <!-- 共通JavaScript -->
 <script src="main.js"></script>
 
 <!-- 描画ツール -->
 <script src="drawing-tool.js"></script>
 ```
+
+**注意**: スクリプトの読み込み順序は必ず`sidebar-content.js` → `main.js` → `drawing-tool.js`の順にしてください。
+
+## sidebar-content.js の生成（初回のみ）
+
+**初回の章生成時のみ**、README.mdから全章情報を抽出して`sidebar-content.js`を生成します。
+
+### 生成手順
+
+1. README.mdから全章の情報を取得
+   - 章番号
+   - 章タイトル
+   - ファイル名（命名規則に従って生成）
+
+2. `chapters`配列を生成
+   ```javascript
+   const chapters = [
+       { number: 1, title: '第1章: タイトル', file: 'tech-learning-material-01.html' },
+       { number: 2, title: '第2章: タイトル', file: 'tech-learning-material-02.html' },
+       // ... 全章分
+   ];
+   ```
+
+3. @templates/v2/html/sidebar-content.js をコピーし、`chapters`配列を置き換え
+
+4. 技術フォルダに保存
+
+### 2回目以降
+
+既に`sidebar-content.js`が存在する場合は、そのまま使用します（上書きしない）。
+全HTMLファイルで同じ`sidebar-content.js`を参照することで、サイドバーの一貫性が保たれます。
 
 ## 初心者向け重点事項
 - 理論・背景説明優先（コードより概念説明を重視）

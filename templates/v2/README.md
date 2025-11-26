@@ -19,6 +19,8 @@ templates/v2/
 ├── html/                                    # コピー用HTMLテンプレートとJavaScript
 │   ├── learning-material-template.html      # 学習教材用テンプレート
 │   ├── tutorial-template.html               # チュートリアル用テンプレート
+│   ├── sidebar-content.js                   # サイドバー生成（学習教材用）
+│   ├── sidebar-content-tutorial.js          # サイドバー生成（チュートリアル用）
 │   ├── styles.css                           # 共通カスタムスタイル（外部CSS）
 │   ├── main.js                              # 共通機能（サイドバー、描画ツールバー生成等）
 │   └── drawing-tool.js                      # 描画ツール機能
@@ -54,8 +56,10 @@ templates/v2/
 - **技術名・タイトル**: `[技術名]`、`[章タイトル]` 等
 - **カラーテーマ**: `tailwind.config` 内の `primary` カラー
 - **アイコン**: `fab fa-python` → 適切なFont Awesomeアイコン
-- **章リスト/ステップリスト**: サイドバーのナビゲーション
+- **章リスト/ステップリスト**: `sidebar-content.js` の `chapters` または `steps` 配列
 - **コンテンツ**: 学習目標、説明文、コード例等
+
+**注意**: v2.4.0以降、サイドバーの章リスト/ステップリストはHTMLテンプレート内ではなく、`sidebar-content.js`ファイルで管理されます。
 
 ### 3. カラーテーマを変更
 
@@ -72,9 +76,112 @@ templates/v2/
 | React | Cyan (`#06b6d4`) | `fab fa-react` |
 | .NET/C# | Violet (`#8b5cf6`) | `fab fa-microsoft` |
 
-### 4. 共通ファイルの配置
+### 4. サイドバーの設定（JavaScript外出し）
 
-テンプレートは共通ファイル（`styles.css`、`main.js`、`drawing-tool.js`）を使用します。
+**v2.4.0から、サイドバーはJavaScriptファイルで動的に生成されます。**
+
+これにより、以下のメリットがあります：
+- **コード量削減**: 各HTMLファイルから約150行削減
+- **保守性向上**: 章の追加・変更が1ファイルの編集で完了
+- **自動機能**: 現在の章を自動判定、進捗率を自動計算
+
+#### 学習教材の場合
+
+1. **sidebar-content.jsをコピー**
+   ```bash
+   cp templates/v2/html/sidebar-content.js docs/guide/[分類]/[技術名]/
+   ```
+
+2. **章の定義を編集**
+
+   `sidebar-content.js`を開き、`chapters`配列を実際の章構成に合わせて編集：
+   ```javascript
+   const chapters = [
+       { number: 1, title: '第1章: 環境構築', file: 'java-learning-material-01.html' },
+       { number: 2, title: '第2章: 基本文法', file: 'java-learning-material-02.html' },
+       // ... 実際の章数に合わせて追加
+   ];
+   ```
+
+3. **HTMLファイルで読み込み**
+
+   テンプレートには既に以下の記述が含まれています：
+   ```html
+   <!-- サイドバー生成 -->
+   <script src="sidebar-content.js"></script>
+   ```
+
+4. **サイドバーHTMLの削除について**
+
+   テンプレートからは既にサイドバーHTMLが削除されています。
+   以下のコメントのみが残っています：
+   ```html
+   <div class="flex min-h-screen pt-20">
+       <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
+   ```
+
+#### チュートリアルの場合
+
+1. **sidebar-content-tutorial.jsをコピー＆リネーム**
+   ```bash
+   cp templates/v2/html/sidebar-content-tutorial.js docs/tutorial/[分類]/[技術名]/sidebar-content.js
+   ```
+
+2. **プロジェクト情報とステップ定義を編集**
+
+   `sidebar-content.js`を開き、以下を編集：
+   ```javascript
+   const projectInfo = {
+       title: 'ユーザー管理システム',
+       description: 'Djangoで実装するCRUD機能付きWebアプリケーション'
+   };
+
+   const steps = [
+       { number: 1, title: 'ステップ1', subtitle: '環境構築', file: 'django-tutorial-01.html' },
+       { number: 2, title: 'ステップ2', subtitle: 'プロジェクト作成', file: 'django-tutorial-02.html' },
+       // ... 実際のステップ数に合わせて追加
+   ];
+   ```
+
+#### カスタマイズ例
+
+**章タイトルの変更:**
+```javascript
+const chapters = [
+    { number: 1, title: '第1章: 環境構築と準備', file: 'learning-material-01.html' },
+    { number: 2, title: '第2章: 基本文法の理解', file: 'learning-material-02.html' },
+];
+```
+
+**ファイル名パターンの変更:**
+```javascript
+const chapters = [
+    { number: 1, title: '第1章: イントロ', file: 'chapter-01.html' },
+    { number: 2, title: '第2章: 基礎', file: 'chapter-02.html' },
+];
+```
+
+#### 注意事項
+
+1. **ファイル名の一致**: `chapters`配列の`file`プロパティは実際のHTMLファイル名と完全に一致させる必要があります
+
+2. **スクリプト読み込み順序**: `sidebar-content.js`は`main.js`より前に読み込んでください
+   ```html
+   <script src="sidebar-content.js"></script>
+   <script src="main.js"></script>
+   ```
+
+3. **メインレイアウトdivのクラス**: サイドバーを挿入するために、メインレイアウトdivに`.flex.min-h-screen.pt-20`（学習教材）または`.pt-16`（チュートリアル）クラスが必要です
+
+#### 実装例
+
+実際の実装例：
+- **学習教材**: `docs/guide/programming-languages/java-ecosystem/java/`
+- **チュートリアル**: （今後追加予定）
+
+### 5. 共通ファイルの配置
+
+テンプレートは共通ファイル（`sidebar-content.js`、`styles.css`、`main.js`、`drawing-tool.js`）を使用します。
 
 **重要：依存を避けるため、各技術フォルダ内に直接ファイルをコピーしてください。**
 
@@ -82,16 +189,20 @@ templates/v2/
 
 1. **共通ファイルをコピー**
    ```bash
-   # Javaガイドを作成する場合の例
+   # 学習教材（Java）を作成する場合の例
+   cp templates/v2/html/sidebar-content.js docs/guide/programming-languages/java-ecosystem/java/
    cp templates/v2/html/styles.css docs/guide/programming-languages/java-ecosystem/java/
    cp templates/v2/html/main.js docs/guide/programming-languages/java-ecosystem/java/
    cp templates/v2/html/drawing-tool.js docs/guide/programming-languages/java-ecosystem/java/
 
-   # Pythonチュートリアルを作成する場合の例
+   # チュートリアル（Django）を作成する場合の例
+   cp templates/v2/html/sidebar-content-tutorial.js docs/tutorial/programming-languages/python-ecosystem/django/sidebar-content.js
    cp templates/v2/html/styles.css docs/tutorial/programming-languages/python-ecosystem/django/
    cp templates/v2/html/main.js docs/tutorial/programming-languages/python-ecosystem/django/
    cp templates/v2/html/drawing-tool.js docs/tutorial/programming-languages/python-ecosystem/django/
    ```
+
+   **注意**: チュートリアルの場合は`sidebar-content-tutorial.js`を`sidebar-content.js`にリネームしてコピーします。
 
 2. **HTMLファイルでのパス設定**
 
@@ -99,6 +210,9 @@ templates/v2/
    ```html
    <!-- カスタムスタイル -->
    <link rel="stylesheet" href="styles.css">
+
+   <!-- サイドバー生成 -->
+   <script src="sidebar-content.js"></script>
 
    <!-- 共通JavaScript -->
    <script src="main.js"></script>
@@ -109,9 +223,9 @@ templates/v2/
 
    配置場所によって相対パスを調整してください：
    - **ルート階層** (`docs/guide/.../java/*.html`)
-     - `styles.css`、`main.js`、`drawing-tool.js` のまま
+     - `sidebar-content.js`、`styles.css`、`main.js`、`drawing-tool.js` のまま
    - **サブディレクトリ** (`docs/guide/.../java/v1/*.html`)
-     - `../styles.css`、`../main.js`、`../drawing-tool.js` に変更
+     - `../sidebar-content.js`、`../styles.css`、`../main.js`、`../drawing-tool.js` に変更
 
 #### styles.cssについて
 
@@ -271,6 +385,16 @@ templates/v2/
 **A:** 各技術フォルダの `styles.css` を個別に編集することで、技術ごとに異なる色調整が可能です。例えば、ヘッダーのグラデーション色やサイドバーのハイライト色を変更できます。
 
 ## バージョン履歴
+
+### v2.4.0 (2025-01-27)
+- **サイドバーJavaScript外出し対応**: サイドバーHTMLをJavaScriptで動的生成
+- `templates/v2/html/sidebar-content.js` を追加（学習教材用）
+- `templates/v2/html/sidebar-content-tutorial.js` を追加（チュートリアル用）
+- HTMLテンプレートからサイドバーHTML（約70-95行）を削除
+- 各HTMLファイルのコード量を約150行削減
+- 章/ステップの追加・変更が1ファイルの編集で完了
+- 現在の章を自動判定、進捗率を自動計算する機能を追加
+- メンテナンス性が大幅に向上
 
 ### v2.3.0 (2025-01-27)
 - **CSS外部化対応**: インラインCSSを外部ファイル化
