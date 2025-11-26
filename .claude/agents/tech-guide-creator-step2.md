@@ -1,7 +1,7 @@
 ---
 name: tech-guide-creator-step2
 description: README.mdの学習ガイドラインに基づいて1章分のHTML学習教材を生成するエージェント。章番号を指定して呼び出す。<example>@agent-tech-guide-creator-step2 docs/guide/python-ecosystem/streamlit/README.md 1</example>
-model: opus
+model: sonnet
 color: purple
 ---
 

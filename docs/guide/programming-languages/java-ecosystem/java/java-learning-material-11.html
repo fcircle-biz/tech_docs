@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.1">
+    <title>Java学習教材 第11章 - コレクションフレームワーク</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Java - Orange
+                        primary: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            200: '#fed7aa',
+                            300: '#fdba74',
+                            400: '#fb923c',
+                            500: '#ED8B00',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                            800: '#9a3412',
+                            900: '#7c2d12',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <style>
+        /* スクロールバーカスタマイズ */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* コードブロックのラインナンバー */
+        .hljs-ln-numbers {
+            user-select: none;
+            text-align: right;
+            color: #6b7280;
+            padding-right: 12px;
+            border-right: 1px solid #374151;
+        }
+
+        /* サイドバートランジション */
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, width 0.15s ease-out;
+        }
+
+        /* サイドバーリサイズ機能 */
+        .sidebar-resizable {
+            min-width: 240px;
+            max-width: 480px;
+        }
+        .sidebar-resize-handle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 6px;
+            height: 100%;
+            cursor: ew-resize;
+            background: transparent;
+            transition: background 0.2s;
+            z-index: 10;
+        }
+        .sidebar-resize-handle:hover,
+        .sidebar-resize-handle.resizing {
+            background: linear-gradient(to right, transparent, rgba(237, 139, 0, 0.3));
+        }
+
+        /* スムーズスクロール */
+        html { scroll-behavior: smooth; }
+
+        /* コードコピーボタン */
+        .code-block-wrapper { position: relative; }
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .code-block-wrapper:hover .copy-btn { opacity: 1; }
+
+        /* ヘッダー情報リッチデザイン */
+        .header-rich {
+            background: linear-gradient(135deg, #c2410c 0%, #ED8B00 50%, #fb923c 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .header-rich::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px);
+            animation: bgSlide 10s linear infinite;
+        }
+        @keyframes bgSlide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(50px); }
+        }
+
+        .header-rich-shadow {
+            box-shadow:
+                0 4px 6px -1px rgba(237, 139, 0, 0.2),
+                0 10px 25px -5px rgba(237, 139, 0, 0.3),
+                0 0 50px rgba(237, 139, 0, 0.15);
+        }
+
+        .icon-rotate-hover {
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .icon-rotate-hover:hover {
+            transform: rotate(360deg) scale(1.2);
+        }
+    </style>
+</head>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fab fa-java text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
+
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">Java学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                中級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>プログラミング言語</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 60分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右側: モバイルメニューボタン -->
+                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバー -->
+        <aside id="sidebar" class="fixed md:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
+                                   bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
+                                   transform -translate-x-full md:translate-x-0 sidebar-transition sidebar-resizable"
+               style="--sidebar-width: 320px;">
+            <!-- リサイズハンドル -->
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle hidden md:block"></div>
+            <div class="p-4">
+                <!-- 進捗インジケーター -->
+                <div class="mb-6 p-4 bg-primary-50 rounded-xl">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-primary-700">学習進捗</span>
+                        <span class="text-sm text-primary-600">11/12章</span>
+                    </div>
+                    <div class="w-full bg-primary-100 rounded-full h-2">
+                        <div class="bg-primary-500 h-2 rounded-full transition-all duration-300" style="width: 91.67%"></div>
+                    </div>
+                </div>
+
+                <!-- 章リスト -->
+                <nav>
+                    <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-2">
+                        学習章
+                    </h2>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="java-learning-material-01.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第1章: 環境構築と最初の一歩</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-02.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第2章: 変数とデータ型</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-03.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第3章: 演算子と式</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-04.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第4章: 条件分岐</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-05.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第5章: 繰り返し処理</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-06.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第6章: 配列</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-07.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第7章: メソッド</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-08.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第8章: クラスとオブジェクト</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-09.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第9章: 継承とポリモーフィズム</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-10.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第10章: 例外処理とJava API</span>
+                            </a>
+                        </li>
+                        <!-- アクティブな章 -->
+                        <li>
+                            <a href="java-learning-material-11.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      bg-primary-100 text-primary-700 font-medium">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-primary-500 text-white text-xs rounded-full">11</span>
+                                <span class="truncate">第11章: コレクションフレームワーク</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-12.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">12</span>
+                                <span class="truncate">第12章: ラムダ式とStream API</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- サイドバーオーバーレイ（モバイル用） -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="../../../../index.html" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="README.html" class="hover:text-primary-600 transition-colors">Java</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第11章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-700">
+                            第11章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">コレクションフレームワーク - データ構造を使いこなす</h1>
+                    <p class="text-slate-600">Javaが提供する豊富なデータ構造「コレクションフレームワーク」を学び、配列よりも柔軟で強力なデータ管理方法を習得します。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl p-5 mb-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>コレクションフレームワークの全体像を理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>List、Set、Mapの違いと使い分けができる</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>各コレクションの主要なメソッドを使いこなせる</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>イテレータを使った反復処理ができる</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 11.1 コレクションフレームワークとは -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800 border-l-4 border-primary-500 pl-4 mb-4">
+                        11.1 コレクションフレームワークとは
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        コレクションフレームワークは、複数のデータをまとめて扱うためのクラスやインターフェースのセットです。配列と似ていますが、サイズが自動的に変化したり、高度なデータ操作機能を持つなど、より柔軟で便利です。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">配列との違い</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full border border-slate-300 mb-4">
+                            <thead class="bg-slate-100">
+                                <tr>
+                                    <th class="border border-slate-300 px-4 py-2 text-left">特徴</th>
+                                    <th class="border border-slate-300 px-4 py-2 text-left">配列</th>
+                                    <th class="border border-slate-300 px-4 py-2 text-left">コレクション</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-slate-700">
+                                <tr>
+                                    <td class="border border-slate-300 px-4 py-2">サイズ</td>
+                                    <td class="border border-slate-300 px-4 py-2">固定（作成時に決定）</td>
+                                    <td class="border border-slate-300 px-4 py-2">可変（自動的に拡張）</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-300 px-4 py-2">型</td>
+                                    <td class="border border-slate-300 px-4 py-2">プリミティブ型も格納可</td>
+                                    <td class="border border-slate-300 px-4 py-2">オブジェクトのみ（参照型）</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-300 px-4 py-2">機能</td>
+                                    <td class="border border-slate-300 px-4 py-2">基本的なアクセスのみ</td>
+                                    <td class="border border-slate-300 px-4 py-2">検索、ソート、削除など豊富</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">主要なインターフェース</h3>
+                    <div class="mermaid bg-white p-4 rounded-lg my-6">
+graph TD
+    A[Collection インターフェース] --> B[List]
+    A --> C[Set]
+    D[Map インターフェース]
+
+    B --> E[ArrayList<br/>動的配列]
+    B --> F[LinkedList<br/>連結リスト]
+
+    C --> G[HashSet<br/>重複なし]
+    C --> H[TreeSet<br/>ソート済み]
+
+    D --> I[HashMap<br/>キーと値のペア]
+    D --> J[TreeMap<br/>ソート済み]
+
+    style A fill:#fed7aa
+    style D fill:#fed7aa
+    style B fill:#dbeafe
+    style C fill:#dbeafe
+    style E fill:#d1fae5
+    style F fill:#d1fae5
+    style G fill:#d1fae5
+    style H fill:#d1fae5
+    style I fill:#d1fae5
+    style J fill:#d1fae5
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">ジェネリクスの基礎</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        コレクションは<strong>ジェネリクス</strong>を使って、格納するデータの型を指定します。これにより、型の安全性が保証され、実行時エラーを防ぐことができます。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">GenericsExample.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.ArrayList;
+
+public class GenericsExample {
+    public static void main(String[] args) {
+        // 型パラメータ <String> で String型のみ格納可能
+        ArrayList&lt;String&gt; names = new ArrayList&lt;&gt;();
+        names.add("太郎");  // OK
+        names.add("花子");  // OK
+        // names.add(123);  // コンパイルエラー！
+
+        // 型安全に取り出せる（キャスト不要）
+        String first = names.get(0);
+        System.out.println(first);  // 太郎
+
+        // Integer型のリスト
+        ArrayList&lt;Integer&gt; numbers = new ArrayList&lt;&gt;();
+        numbers.add(10);
+        numbers.add(20);
+
+        // 型が違うので混在できない
+        // names = numbers;  // コンパイルエラー！
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold text-blue-900 mb-2">ジェネリクスの記法</h4>
+                                <p class="text-blue-800 text-sm">
+                                    <code>&lt;E&gt;</code> は要素（Element）の型を表す型パラメータです。実際に使う際は <code>&lt;String&gt;</code> や <code>&lt;Integer&gt;</code> のように具体的な型を指定します。Java 7以降は右辺の <code>&lt;&gt;</code> を省略できます（ダイヤモンド演算子）。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 11.2 Listインターフェース -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800 border-l-4 border-primary-500 pl-4 mb-4">
+                        11.2 Listインターフェース
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>List</strong>は順序を保持し、重複を許可するコレクションです。配列と似ていますが、サイズが自動的に変化するため、要素の追加・削除が柔軟に行えます。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">ArrayList - 動的配列</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        ArrayListは内部で配列を使用した動的配列の実装です。インデックスによる高速なアクセスが可能で、最もよく使われるコレクションの一つです。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">ArrayListExample.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.ArrayList;
+
+public class ArrayListExample {
+    public static void main(String[] args) {
+        // ArrayListの作成
+        ArrayList&lt;String&gt; fruits = new ArrayList&lt;&gt;();
+
+        // 要素の追加
+        fruits.add("りんご");      // [りんご]
+        fruits.add("バナナ");      // [りんご, バナナ]
+        fruits.add("みかん");      // [りんご, バナナ, みかん]
+        fruits.add(1, "ぶどう");   // インデックス1に挿入 [りんご, ぶどう, バナナ, みかん]
+
+        // サイズの取得
+        System.out.println("要素数: " + fruits.size());  // 4
+
+        // 要素の取得
+        String first = fruits.get(0);
+        System.out.println("最初の要素: " + first);  // りんご
+
+        // 要素の存在確認
+        boolean hasApple = fruits.contains("りんご");
+        System.out.println("りんごはある？ " + hasApple);  // true
+
+        // インデックスの取得
+        int index = fruits.indexOf("バナナ");
+        System.out.println("バナナのインデックス: " + index);  // 2
+
+        // 要素の更新
+        fruits.set(2, "いちご");  // バナナをいちごに変更
+
+        // 要素の削除
+        fruits.remove(0);           // インデックス0を削除
+        fruits.remove("みかん");    // 値で削除
+
+        // 全要素の表示
+        System.out.println("リスト: " + fruits);  // [ぶどう, いちご]
+
+        // リストが空か確認
+        System.out.println("空？ " + fruits.isEmpty());  // false
+
+        // 全要素を削除
+        fruits.clear();
+        System.out.println("削除後のサイズ: " + fruits.size());  // 0
+    }
+}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">LinkedList - 連結リスト</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        LinkedListは各要素が次の要素への参照を持つ連結リスト構造です。先頭や途中への挿入・削除が高速ですが、インデックスによるアクセスは遅くなります。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">LinkedListExample.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.LinkedList;
+
+public class LinkedListExample {
+    public static void main(String[] args) {
+        LinkedList&lt;String&gt; queue = new LinkedList&lt;&gt;();
+
+        // 末尾に追加
+        queue.add("A");
+        queue.add("B");
+        queue.add("C");
+
+        // 先頭に追加（LinkedListならではの機能）
+        queue.addFirst("先頭");
+
+        // 末尾に追加
+        queue.addLast("末尾");
+
+        System.out.println(queue);  // [先頭, A, B, C, 末尾]
+
+        // 先頭要素を取得して削除（キューとして使用）
+        String first = queue.removeFirst();
+        System.out.println("削除: " + first);  // 先頭
+
+        // 末尾要素を取得して削除（スタックとして使用）
+        String last = queue.removeLast();
+        System.out.println("削除: " + last);   // 末尾
+
+        System.out.println("残り: " + queue);   // [A, B, C]
+    }
+}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">ArrayListとLinkedListの使い分け</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full border border-slate-300 mb-4">
+                            <thead class="bg-slate-100">
+                                <tr>
+                                    <th class="border border-slate-300 px-4 py-2 text-left">操作</th>
+                                    <th class="border border-slate-300 px-4 py-2 text-left">ArrayList</th>
+                                    <th class="border border-slate-300 px-4 py-2 text-left">LinkedList</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-slate-700">
+                                <tr>
+                                    <td class="border border-slate-300 px-4 py-2">インデックスアクセス（get）</td>
+                                    <td class="border border-slate-300 px-4 py-2">⚡ 高速（O(1)）</td>
+                                    <td class="border border-slate-300 px-4 py-2">🐢 低速（O(n)）</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-300 px-4 py-2">末尾への追加（add）</td>
+                                    <td class="border border-slate-300 px-4 py-2">⚡ 高速</td>
+                                    <td class="border border-slate-300 px-4 py-2">⚡ 高速</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-300 px-4 py-2">先頭への挿入・削除</td>
+                                    <td class="border border-slate-300 px-4 py-2">🐢 低速（全体をシフト）</td>
+                                    <td class="border border-slate-300 px-4 py-2">⚡ 高速（参照変更のみ）</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-300 px-4 py-2">推奨用途</td>
+                                    <td class="border border-slate-300 px-4 py-2">頻繁な読み取り</td>
+                                    <td class="border border-slate-300 px-4 py-2">頻繁な挿入・削除</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">拡張for文でのリスト反復</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">ListIteration.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.ArrayList;
+import java.util.List;
+
+public class ListIteration {
+    public static void main(String[] args) {
+        List&lt;String&gt; cities = new ArrayList&lt;&gt;();
+        cities.add("東京");
+        cities.add("大阪");
+        cities.add("福岡");
+
+        // 方法1: 拡張for文（for-each）
+        System.out.println("--- 拡張for文 ---");
+        for (String city : cities) {
+            System.out.println(city);
+        }
+
+        // 方法2: インデックスを使った通常のfor文
+        System.out.println("--- インデックスfor文 ---");
+        for (int i = 0; i &lt; cities.size(); i++) {
+            System.out.println(i + ": " + cities.get(i));
+        }
+    }
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- 11.3 Setインターフェース -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800 border-l-4 border-primary-500 pl-4 mb-4">
+                        11.3 Setインターフェース
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>Set</strong>は重複を許さないコレクションです。同じ要素を複数回追加しても、1つしか保持されません。順序は保証されません（実装による）。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">HashSet - ハッシュベースの集合</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">HashSetExample.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.HashSet;
+import java.util.Set;
+
+public class HashSetExample {
+    public static void main(String[] args) {
+        Set&lt;String&gt; tags = new HashSet&lt;&gt;();
+
+        // 要素の追加
+        tags.add("Java");
+        tags.add("Python");
+        tags.add("JavaScript");
+        tags.add("Java");  // 重複！追加されない
+
+        System.out.println(tags);  // [Java, JavaScript, Python] （順序不定）
+        System.out.println("サイズ: " + tags.size());  // 3（重複は無視）
+
+        // 存在確認
+        boolean hasJava = tags.contains("Java");
+        System.out.println("Javaはある？ " + hasJava);  // true
+
+        // 削除
+        tags.remove("Python");
+        System.out.println(tags);  // [Java, JavaScript]
+
+        // 反復処理
+        for (String tag : tags) {
+            System.out.println("- " + tag);
+        }
+    }
+}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">TreeSet - ソート済み集合</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        TreeSetは要素を自動的にソートして保持します。数値や文字列など、自然な順序を持つデータに適しています。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">TreeSetExample.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.TreeSet;
+
+public class TreeSetExample {
+    public static void main(String[] args) {
+        TreeSet&lt;Integer&gt; numbers = new TreeSet&lt;&gt;();
+
+        // ランダムな順序で追加
+        numbers.add(50);
+        numbers.add(10);
+        numbers.add(30);
+        numbers.add(20);
+        numbers.add(10);  // 重複は無視される
+
+        // 自動的にソートされる
+        System.out.println(numbers);  // [10, 20, 30, 50]
+
+        // 最小値・最大値の取得
+        System.out.println("最小: " + numbers.first());  // 10
+        System.out.println("最大: " + numbers.last());   // 50
+
+        // 指定値より小さい最大の要素
+        System.out.println("25より小さい最大値: " + numbers.lower(25));  // 20
+
+        // 指定値より大きい最小の要素
+        System.out.println("25より大きい最小値: " + numbers.higher(25));  // 30
+    }
+}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">集合演算</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">SetOperations.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.HashSet;
+import java.util.Set;
+
+public class SetOperations {
+    public static void main(String[] args) {
+        Set&lt;String&gt; setA = new HashSet&lt;&gt;();
+        setA.add("Java");
+        setA.add("Python");
+        setA.add("C++");
+
+        Set&lt;String&gt; setB = new HashSet&lt;&gt;();
+        setB.add("Python");
+        setB.add("JavaScript");
+        setB.add("Ruby");
+
+        // 和集合（union）- setAまたはsetBに存在する要素
+        Set&lt;String&gt; union = new HashSet&lt;&gt;(setA);
+        union.addAll(setB);
+        System.out.println("和集合: " + union);  // [Java, Python, C++, JavaScript, Ruby]
+
+        // 積集合（intersection）- setAとsetB両方に存在する要素
+        Set&lt;String&gt; intersection = new HashSet&lt;&gt;(setA);
+        intersection.retainAll(setB);
+        System.out.println("積集合: " + intersection);  // [Python]
+
+        // 差集合（difference）- setAにあってsetBにない要素
+        Set&lt;String&gt; difference = new HashSet&lt;&gt;(setA);
+        difference.removeAll(setB);
+        System.out.println("差集合: " + difference);  // [Java, C++]
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="bg-rose-50 border-l-4 border-rose-500 p-4 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-rose-500 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold text-rose-900 mb-2">つまずきやすいポイント: 重複判定の仕組み</h4>
+                                <p class="text-rose-800 text-sm mb-2">
+                                    HashSetは要素の重複を <code>equals()</code> と <code>hashCode()</code> メソッドで判定します。独自クラスをSetに格納する場合、この2つのメソッドを適切にオーバーライドする必要があります。
+                                </p>
+                                <pre class="bg-white rounded p-2 text-xs"><code class="language-java">// 正しく重複判定されるようにオーバーライド
+@Override
+public boolean equals(Object obj) { ... }
+
+@Override
+public int hashCode() { ... }</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 11.4 Mapインターフェース -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800 border-l-4 border-primary-500 pl-4 mb-4">
+                        11.4 Mapインターフェース
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>Map</strong>はキーと値のペアを格納するコレクションです。キーは重複できず、各キーに1つの値が対応します。辞書や連想配列とも呼ばれます。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">HashMap - 高速なキー・バリュー検索</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">HashMapExample.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.HashMap;
+import java.util.Map;
+
+public class HashMapExample {
+    public static void main(String[] args) {
+        // キー: String, 値: Integer のマップ
+        Map&lt;String, Integer&gt; scores = new HashMap&lt;&gt;();
+
+        // キーと値のペアを追加
+        scores.put("太郎", 85);
+        scores.put("花子", 92);
+        scores.put("次郎", 78);
+        scores.put("太郎", 90);  // 同じキーで再度put → 値が上書きされる
+
+        System.out.println(scores);  // {太郎=90, 花子=92, 次郎=78}
+
+        // 値の取得
+        int taroScore = scores.get("太郎");
+        System.out.println("太郎の点数: " + taroScore);  // 90
+
+        // キーの存在確認
+        boolean hasJiro = scores.containsKey("次郎");
+        System.out.println("次郎はいる？ " + hasJiro);  // true
+
+        // 値の存在確認
+        boolean has100 = scores.containsValue(100);
+        System.out.println("100点はいる？ " + has100);  // false
+
+        // キーが存在しない場合のデフォルト値
+        int unknown = scores.getOrDefault("未登録", 0);
+        System.out.println("未登録の点数: " + unknown);  // 0
+
+        // キーの削除
+        scores.remove("次郎");
+        System.out.println("削除後: " + scores);
+
+        // サイズ
+        System.out.println("人数: " + scores.size());  // 2
+    }
+}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">Mapの反復処理</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">MapIteration.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.HashMap;
+import java.util.Map;
+
+public class MapIteration {
+    public static void main(String[] args) {
+        Map&lt;String, String&gt; capitals = new HashMap&lt;&gt;();
+        capitals.put("日本", "東京");
+        capitals.put("アメリカ", "ワシントンD.C.");
+        capitals.put("フランス", "パリ");
+
+        // 方法1: entrySetを使った反復（最も効率的）
+        System.out.println("--- entrySet ---");
+        for (Map.Entry&lt;String, String&gt; entry : capitals.entrySet()) {
+            System.out.println(entry.getKey() + " の首都は " + entry.getValue());
+        }
+
+        // 方法2: keySetでキーだけ取得
+        System.out.println("\n--- keySet ---");
+        for (String country : capitals.keySet()) {
+            String capital = capitals.get(country);
+            System.out.println(country + ": " + capital);
+        }
+
+        // 方法3: valuesで値だけ取得
+        System.out.println("\n--- values ---");
+        for (String capital : capitals.values()) {
+            System.out.println("首都: " + capital);
+        }
+    }
+}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">TreeMap - ソート済みマップ</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        TreeMapはキーを自動的にソートして保持します。キーの順序が重要な場合に使用します。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">TreeMapExample.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.TreeMap;
+
+public class TreeMapExample {
+    public static void main(String[] args) {
+        TreeMap&lt;Integer, String&gt; ranking = new TreeMap&lt;&gt;();
+
+        // ランダムな順序で追加
+        ranking.put(3, "銅メダル");
+        ranking.put(1, "金メダル");
+        ranking.put(2, "銀メダル");
+
+        // キーの順序でソートされる
+        System.out.println(ranking);  // {1=金メダル, 2=銀メダル, 3=銅メダル}
+
+        // 最初と最後のエントリ
+        System.out.println("1位: " + ranking.firstEntry());  // 1=金メダル
+        System.out.println("最下位: " + ranking.lastEntry());  // 3=銅メダル
+    }
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- 11.5 コレクションの操作 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800 border-l-4 border-primary-500 pl-4 mb-4">
+                        11.5 コレクションの操作
+                    </h2>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">Collectionsユーティリティクラス</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Collectionsクラスは、コレクションを操作するための便利な静的メソッドを提供します。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">CollectionsUtility.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class CollectionsUtility {
+    public static void main(String[] args) {
+        List&lt;Integer&gt; numbers = new ArrayList&lt;&gt;();
+        numbers.add(50);
+        numbers.add(10);
+        numbers.add(30);
+        numbers.add(20);
+
+        System.out.println("元のリスト: " + numbers);
+
+        // ソート（昇順）
+        Collections.sort(numbers);
+        System.out.println("ソート後: " + numbers);  // [10, 20, 30, 50]
+
+        // 逆順
+        Collections.reverse(numbers);
+        System.out.println("逆順: " + numbers);  // [50, 30, 20, 10]
+
+        // シャッフル（ランダムに並び替え）
+        Collections.shuffle(numbers);
+        System.out.println("シャッフル: " + numbers);
+
+        // 最大値・最小値
+        int max = Collections.max(numbers);
+        int min = Collections.min(numbers);
+        System.out.println("最大: " + max + ", 最小: " + min);
+
+        // 二分探索（ソート済みリストから高速検索）
+        Collections.sort(numbers);
+        int index = Collections.binarySearch(numbers, 30);
+        System.out.println("30のインデックス: " + index);
+
+        // 全要素を指定値で埋める
+        Collections.fill(numbers, 0);
+        System.out.println("fill後: " + numbers);  // [0, 0, 0, 0]
+    }
+}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">不変コレクション</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Java 9以降、<code>List.of()</code>、<code>Set.of()</code>、<code>Map.of()</code> で変更不可能なコレクションを簡単に作成できます。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">ImmutableCollections.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.util.List;
+import java.util.Set;
+import java.util.Map;
+
+public class ImmutableCollections {
+    public static void main(String[] args) {
+        // 不変リスト
+        List&lt;String&gt; weekdays = List.of("月", "火", "水", "木", "金");
+        System.out.println(weekdays);
+
+        // weekdays.add("土");  // UnsupportedOperationException!
+
+        // 不変セット
+        Set&lt;Integer&gt; primes = Set.of(2, 3, 5, 7, 11);
+        System.out.println(primes);
+
+        // 不変マップ
+        Map&lt;String, Integer&gt; ages = Map.of(
+            "太郎", 25,
+            "花子", 30,
+            "次郎", 22
+        );
+        System.out.println(ages);
+
+        // ages.put("四郎", 28);  // UnsupportedOperationException!
+    }
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- 実習課題 -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 my-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3">
+                                実習 11-1: 単語の出現回数カウンター
+                            </h3>
+                            <p class="text-purple-900 mb-4">HashMapを使って、文章内の単語の出現回数をカウントするプログラムを作成しましょう。</p>
+
+                            <h4 class="font-medium text-purple-800 mb-2">要件</h4>
+                            <ol class="space-y-3 mb-4">
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
+                                    <span>文字列を空白で分割して単語に分ける</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
+                                    <span>各単語の出現回数をHashMapでカウント</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">3</span>
+                                    <span>結果を「単語: 回数」の形式で表示</span>
+                                </li>
+                            </ol>
+
+                            <h4 class="font-medium text-purple-800 mb-2">実装例</h4>
+                            <pre class="!bg-slate-800 !rounded-lg"><code class="language-java">import java.util.HashMap;
+import java.util.Map;
+
+public class WordCounter {
+    public static void main(String[] args) {
+        String text = "Java is fun Java is powerful Java is everywhere";
+
+        // 空白で分割
+        String[] words = text.split(" ");
+
+        // 出現回数をカウント
+        Map&lt;String, Integer&gt; wordCount = new HashMap&lt;&gt;();
+        for (String word : words) {
+            // 既存の値を取得（なければ0）して1増やす
+            wordCount.put(word, wordCount.getOrDefault(word, 0) + 1);
+        }
+
+        // 結果表示
+        for (Map.Entry&lt;String, Integer&gt; entry : wordCount.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+    }
+}</code></pre>
+
+                            <h4 class="font-medium text-purple-800 mt-4 mb-2">期待される結果</h4>
+                            <div class="bg-white/50 rounded-lg p-3 text-purple-900">
+                                <code>Java: 3<br>is: 3<br>fun: 1<br>powerful: 1<br>everywhere: 1</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 my-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3">
+                                実習 11-2: 学生情報管理システム
+                            </h3>
+                            <p class="text-purple-900 mb-4">学籍番号をキーとして学生情報を管理するプログラムを作成しましょう。</p>
+
+                            <h4 class="font-medium text-purple-800 mb-2">要件</h4>
+                            <ol class="space-y-3 mb-4">
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
+                                    <span>Studentクラスを作成（名前、点数）</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
+                                    <span>HashMap&lt;String, Student&gt;で学生を管理</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">3</span>
+                                    <span>学籍番号で学生を検索して情報を表示</span>
+                                </li>
+                            </ol>
+
+                            <h4 class="font-medium text-purple-800 mb-2">実装のヒント</h4>
+                            <pre class="!bg-slate-800 !rounded-lg text-sm"><code class="language-java">class Student {
+    private String name;
+    private int score;
+
+    // コンストラクタとgetter/setterを実装
+}
+
+// 使用例
+Map&lt;String, Student&gt; students = new HashMap&lt;&gt;();
+students.put("S001", new Student("太郎", 85));
+students.put("S002", new Student("花子", 92));
+
+// 学籍番号で検索
+Student s = students.get("S001");
+System.out.println(s.getName() + ": " + s.getScore() + "点");</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-5 my-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q1. ArrayListとLinkedListの主な違いは何ですか？どのような場合にそれぞれを選択すべきですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <strong>主な違い:</strong><br>
+                                            - ArrayList: 内部で配列を使用。インデックスアクセスが高速（O(1)）だが、途中への挿入・削除が遅い。<br>
+                                            - LinkedList: 連結リスト構造。先頭や途中への挿入・削除が高速だが、インデックスアクセスが遅い（O(n)）。<br><br>
+                                            <strong>使い分け:</strong><br>
+                                            - 頻繁に読み取りを行う場合 → ArrayList<br>
+                                            - 頻繁に挿入・削除を行う場合 → LinkedList
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q2. HashSetに同じ値を2回add()した場合、何が起こりますか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            Setは重複を許さないため、2回目のadd()は無視され、要素は1つだけ保持されます。add()メソッドはfalseを返し、セットが変更されなかったことを示します。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q3. HashMapで同じキーに対してput()を2回実行すると何が起こりますか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            同じキーで2回目のput()を実行すると、最初の値が新しい値で上書きされます。Mapのキーは一意である必要があるため、1つのキーに複数の値を持つことはできません。put()メソッドは古い値を返します。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q4. ジェネリクス（型パラメータ）を使う利点は何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <strong>利点:</strong><br>
+                                            1. <strong>型安全性:</strong> コンパイル時に型チェックが行われ、間違った型の要素を追加できない。<br>
+                                            2. <strong>キャスト不要:</strong> 要素を取り出す際にキャストする必要がない。<br>
+                                            3. <strong>可読性向上:</strong> コレクションが何を格納しているかが明確になる。<br>
+                                            例: <code>ArrayList&lt;String&gt;</code> は文字列のみを格納することが保証される。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q5. List.of()で作成したリストの特徴は何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <code>List.of()</code>で作成したリストは<strong>不変（immutable）</strong>です。つまり、作成後に要素の追加、削除、変更ができません。add()やremove()を呼ぶと<code>UnsupportedOperationException</code>が発生します。読み取り専用のデータや定数リストに適しています。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <a href="java-learning-material-10.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600 transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">第10章: 例外処理とJava API</span>
+                        </div>
+                    </a>
+                    <a href="java-learning-material-12.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">第12章: ラムダ式とStream API</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
+    </div>
+
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- 描画用Canvasオーバーレイ -->
+    <canvas id="drawing-canvas" class="fixed inset-0 z-[100] pointer-events-none"></canvas>
+
+    <!-- 描画ツールバー（右端） -->
+    <div id="drawing-toolbar" class="fixed right-4 top-1/2 -translate-y-1/2 z-[110]
+                                     bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl
+                                     border border-slate-200 p-2 flex flex-col gap-1
+                                     transition-all duration-300">
+        <!-- ツールバー折りたたみボタン -->
+        <button id="toolbar-toggle"
+                class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                       flex items-center justify-center transition-colors mb-2"
+                title="ツールバーを開く">
+            <i class="fas fa-chevron-left text-slate-600"></i>
+        </button>
+
+        <div id="toolbar-content" class="hidden flex-col gap-1">
+            <!-- ペンツール -->
+            <button id="pen-tool"
+                    class="tool-btn w-10 h-10 rounded-xl bg-primary-100 text-primary-600
+                           hover:bg-primary-200 flex items-center justify-center transition-colors"
+                    title="ペン (P)">
+                <i class="fas fa-pen"></i>
+            </button>
+
+            <!-- 消しゴムツール -->
+            <button id="eraser-tool"
+                    class="tool-btn w-10 h-10 rounded-xl bg-slate-100 text-slate-600
+                           hover:bg-slate-200 flex items-center justify-center transition-colors"
+                    title="消しゴム (E)">
+                <i class="fas fa-eraser"></i>
+            </button>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 色選択 -->
+            <div id="color-picker" class="flex flex-col gap-1">
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-red-400 bg-red-500
+                               hover:scale-110 transition-transform" data-color="#ef4444" title="赤"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-blue-400 bg-blue-500
+                               hover:scale-110 transition-transform" data-color="#3b82f6" title="青"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-slate-600 bg-slate-800
+                               hover:scale-110 transition-transform active-color" data-color="#1e293b" title="黒"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-emerald-400 bg-emerald-500
+                               hover:scale-110 transition-transform" data-color="#10b981" title="緑"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-amber-400 bg-amber-500
+                               hover:scale-110 transition-transform" data-color="#f59e0b" title="黄"></button>
+            </div>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 線の太さ -->
+            <div id="stroke-width" class="flex flex-col gap-1">
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors" data-width="2" title="細い">
+                    <div class="w-4 h-0.5 bg-slate-600 rounded-full"></div>
+                </button>
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors active-stroke" data-width="4" title="普通">
+                    <div class="w-4 h-1 bg-slate-600 rounded-full"></div>
+                </button>
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors" data-width="8" title="太い">
+                    <div class="w-4 h-2 bg-slate-600 rounded-full"></div>
+                </button>
+            </div>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 元に戻す -->
+            <button id="undo-btn"
+                    class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600
+                           hover:bg-slate-200 flex items-center justify-center transition-colors
+                           disabled:opacity-40 disabled:cursor-not-allowed"
+                    title="元に戻す (Ctrl+Z)" disabled>
+                <i class="fas fa-undo"></i>
+            </button>
+
+            <!-- 全消去 -->
+            <button id="clear-btn"
+                    class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600
+                           hover:bg-rose-200 flex items-center justify-center transition-colors"
+                    title="全消去 (C)">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Highlight.js 初期化
+        hljs.highlightAll();
+
+        // Mermaid.js 初期化
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose'
+        });
+
+        // モバイルメニュー制御
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const menuBtn = document.getElementById('mobile-menu-btn');
+
+        menuBtn?.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        });
+
+        overlay?.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        });
+
+        // スクロールトップボタン表示制御
+        const scrollTopBtn = document.getElementById('scroll-top-btn');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.remove('opacity-0', 'invisible', 'translate-y-4');
+            } else {
+                scrollTopBtn.classList.add('opacity-0', 'invisible', 'translate-y-4');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // コードコピー機能
+        function copyCode(btn) {
+            const code = btn.closest('.code-block-wrapper').querySelector('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const icon = btn.querySelector('i');
+                icon.classList.remove('fa-copy');
+                icon.classList.add('fa-check');
+                setTimeout(() => {
+                    icon.classList.remove('fa-check');
+                    icon.classList.add('fa-copy');
+                }, 2000);
+            });
+        }
+
+        // サイドバーリサイズ機能
+        const resizeHandle = document.getElementById('sidebar-resize-handle');
+        let isResizing = false;
+        let startX, startWidth;
+
+        resizeHandle?.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            startX = e.clientX;
+            startWidth = sidebar.offsetWidth;
+            resizeHandle.classList.add('resizing');
+            document.body.style.cursor = 'ew-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            const diff = e.clientX - startX;
+            const newWidth = Math.min(Math.max(startWidth + diff, 240), 480);
+            sidebar.style.width = newWidth + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                resizeHandle.classList.remove('resizing');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+                // サイドバー幅をローカルストレージに保存
+                localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
+            }
+        });
+
+        // ページ読み込み時にサイドバー幅を復元
+        const savedWidth = localStorage.getItem('sidebarWidth');
+        if (savedWidth && window.innerWidth >= 768) {
+            sidebar.style.width = savedWidth + 'px';
+        }
+
+        // 描画ツールバー折りたたみ機能
+        const toolbarToggle = document.getElementById('toolbar-toggle');
+        const toolbarContent = document.getElementById('toolbar-content');
+        let isToolbarOpen = false;
+
+        toolbarToggle?.addEventListener('click', () => {
+            isToolbarOpen = !isToolbarOpen;
+            const icon = toolbarToggle.querySelector('i');
+
+            if (isToolbarOpen) {
+                toolbarContent.classList.remove('hidden');
+                toolbarContent.classList.add('flex');
+                icon.classList.remove('fa-chevron-left');
+                icon.classList.add('fa-chevron-right');
+                toolbarToggle.title = 'ツールバーを閉じる';
+            } else {
+                toolbarContent.classList.add('hidden');
+                toolbarContent.classList.remove('flex');
+                icon.classList.remove('fa-chevron-right');
+                icon.classList.add('fa-chevron-left');
+                toolbarToggle.title = 'ツールバーを開く';
+            }
+        });
+    </script>
+
+    <!-- 描画ツール -->
+    <script src="../../../../common/drawing-tool.js"></script>
+</body>
+</html>

@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.1">
+    <title>Java学習教材 第7章 - メソッド - 処理をまとめて再利用</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            200: '#fed7aa',
+                            300: '#fdba74',
+                            400: '#fb923c',
+                            500: '#ED8B00',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                            800: '#9a3412',
+                            900: '#7c2d12',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <style>
+        /* スクロールバーカスタマイズ */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* コードブロックのラインナンバー */
+        .hljs-ln-numbers {
+            user-select: none;
+            text-align: right;
+            color: #6b7280;
+            padding-right: 12px;
+            border-right: 1px solid #374151;
+        }
+
+        /* サイドバートランジション */
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, width 0.15s ease-out;
+        }
+
+        /* サイドバーリサイズ機能 */
+        .sidebar-resizable {
+            min-width: 240px;
+            max-width: 480px;
+        }
+        .sidebar-resize-handle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 6px;
+            height: 100%;
+            cursor: ew-resize;
+            background: transparent;
+            transition: background 0.2s;
+            z-index: 10;
+        }
+        .sidebar-resize-handle:hover,
+        .sidebar-resize-handle.resizing {
+            background: linear-gradient(to right, transparent, rgba(237, 139, 0, 0.3));
+        }
+
+        /* スムーズスクロール */
+        html { scroll-behavior: smooth; }
+
+        /* コードコピーボタン */
+        .code-block-wrapper { position: relative; }
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .code-block-wrapper:hover .copy-btn { opacity: 1; }
+
+        /* ヘッダー情報リッチデザイン */
+        .header-rich {
+            background: linear-gradient(135deg,
+                #c2410c 0%,
+                #f97316 50%,
+                #fb923c 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .header-rich::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px);
+            animation: bgSlide 10s linear infinite;
+        }
+        @keyframes bgSlide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(50px); }
+        }
+
+        .header-rich-shadow {
+            box-shadow:
+                0 4px 6px -1px rgba(237, 139, 0, 0.2),
+                0 10px 25px -5px rgba(237, 139, 0, 0.3),
+                0 0 50px rgba(237, 139, 0, 0.15);
+        }
+
+        .icon-rotate-hover {
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .icon-rotate-hover:hover {
+            transform: rotate(360deg) scale(1.2);
+        }
+    </style>
+</head>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fab fa-java text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
+
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">Java学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>プログラミング言語</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 45分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右側: モバイルメニューボタン -->
+                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバー -->
+        <aside id="sidebar" class="fixed md:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
+                                   bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
+                                   transform -translate-x-full md:translate-x-0 sidebar-transition sidebar-resizable"
+               style="--sidebar-width: 320px;">
+            <!-- リサイズハンドル -->
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle hidden md:block"></div>
+            <div class="p-4">
+                <!-- 進捗インジケーター -->
+                <div class="mb-6 p-4 bg-primary-50 rounded-xl">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-primary-700">学習進捗</span>
+                        <span class="text-sm text-primary-600">7/12章</span>
+                    </div>
+                    <div class="w-full bg-primary-100 rounded-full h-2">
+                        <div class="bg-primary-500 h-2 rounded-full transition-all duration-300" style="width: 58.33%"></div>
+                    </div>
+                </div>
+
+                <!-- 章リスト -->
+                <nav>
+                    <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-2">
+                        学習章
+                    </h2>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="java-learning-material-01.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第1章: 環境構築と最初の一歩</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-02.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第2章: 変数とデータ型</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-03.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第3章: 演算子と式</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-04.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第4章: 条件分岐</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-05.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第5章: 繰り返し処理</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-06.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第6章: 配列</span>
+                            </a>
+                        </li>
+                        <!-- アクティブな章 -->
+                        <li>
+                            <a href="java-learning-material-07.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      bg-primary-100 text-primary-700 font-medium">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-primary-500 text-white text-xs rounded-full">7</span>
+                                <span class="truncate">第7章: メソッド</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-08.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">8</span>
+                                <span class="truncate">第8章: クラスとオブジェクト</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-09.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">9</span>
+                                <span class="truncate">第9章: 継承とポリモーフィズム</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-10.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">10</span>
+                                <span class="truncate">第10章: 例外処理とJava API</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-11.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">11</span>
+                                <span class="truncate">第11章: コレクションフレームワーク</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-12.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">12</span>
+                                <span class="truncate">第12章: ラムダ式とStream API</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- サイドバーオーバーレイ（モバイル用） -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/" class="hover:text-primary-600 transition-colors">Java</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第7章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第7章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">メソッド - 処理をまとめて再利用</h1>
+                    <p class="text-slate-600">一連の処理を「メソッド」としてまとめ、再利用可能なコードを書く方法を学びます。メソッドを使うことで、プログラムの可読性、保守性、再利用性が大幅に向上します。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>メソッドの概念と利点を理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>メソッドの定義と呼び出しができる</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>引数と戻り値の仕組みを理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>メソッドのオーバーロードを理解する</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション1: メソッドとは何か -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        7.1 メソッドとは何か
+                    </h2>
+
+                    <div class="bg-white rounded-xl border border-slate-200 p-6 mb-6">
+                        <p class="text-slate-700 leading-relaxed mb-4">
+                            <strong>メソッド（method）</strong>は、特定の処理をひとまとめにした「処理の塊」です。プログラミングにおいて「関数」と呼ばれることもあります。<br>
+                            メソッドを使うことで、同じコードを何度も書く必要がなくなり、プログラムがシンプルで読みやすくなります。
+                        </p>
+
+                        <h3 class="text-lg font-semibold text-slate-800 mb-3">メソッドを使う3つの利点</h3>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="bg-primary-50 rounded-lg p-4">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <i class="fas fa-recycle text-primary-600"></i>
+                                    <h4 class="font-semibold text-primary-700">再利用性</h4>
+                                </div>
+                                <p class="text-sm text-slate-700">一度作成したメソッドを何度でも呼び出して使える</p>
+                            </div>
+                            <div class="bg-primary-50 rounded-lg p-4">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <i class="fas fa-eye text-primary-600"></i>
+                                    <h4 class="font-semibold text-primary-700">可読性</h4>
+                                </div>
+                                <p class="text-sm text-slate-700">処理に名前を付けることで、何をしているか分かりやすくなる</p>
+                            </div>
+                            <div class="bg-primary-50 rounded-lg p-4">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <i class="fas fa-wrench text-primary-600"></i>
+                                    <h4 class="font-semibold text-primary-700">保守性</h4>
+                                </div>
+                                <p class="text-sm text-slate-700">修正が必要な場合、メソッド内を変更するだけで済む</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <div>
+                                <p class="text-sm text-blue-900">
+                                    <strong>mainメソッドの役割</strong><br>
+                                    これまで使ってきた <code class="bg-blue-100 px-1 rounded">public static void main(String[] args)</code> も実はメソッドです。
+                                    mainメソッドは「プログラムの入り口」として特別な役割を持ち、プログラム実行時に最初に呼び出されます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mb-3">メソッドの基本構造</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">メソッドの構文</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// メソッドの基本構造
+修飾子 戻り値の型 メソッド名(引数の型 引数名, ...) {
+    // 処理内容
+    return 戻り値;  // 戻り値がある場合
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション2: メソッドの定義 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        7.2 メソッドの定義
+                    </h2>
+
+                    <div class="bg-white rounded-xl border border-slate-200 p-6 mb-6">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-3">最もシンプルなメソッド（引数なし、戻り値なし）</h3>
+                        <p class="text-slate-700 leading-relaxed mb-4">
+                            まずは、引数も戻り値もない最もシンプルなメソッドから見ていきましょう。
+                        </p>
+
+                        <div class="code-block-wrapper my-6">
+                            <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                <span class="text-slate-400 text-sm">SimpleMethod.java</span>
+                                <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                        onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <pre class="!mt-0 !rounded-t-none"><code class="language-java">public class SimpleMethod {
+    public static void main(String[] args) {
+        // メソッドの呼び出し
+        greet();
+        greet();  // 何度でも呼び出せる
+    }
+
+    // メソッドの定義
+    public static void greet() {
+        System.out.println("こんにちは！");
+        System.out.println("Java学習へようこそ！");
+    }
+}</code></pre>
+                        </div>
+
+                        <div class="bg-slate-100 rounded-lg p-4 mb-4">
+                            <p class="text-sm font-semibold text-slate-700 mb-2">実行結果:</p>
+                            <pre class="text-sm text-slate-800 font-mono">こんにちは！
+Java学習へようこそ！
+こんにちは！
+Java学習へようこそ！</pre>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-slate-200 p-6 mb-6">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-3">メソッドの構成要素</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3">
+                                <span class="bg-primary-100 text-primary-700 px-3 py-1 rounded-lg text-sm font-semibold">修飾子</span>
+                                <div>
+                                    <p class="text-slate-700 text-sm"><code class="bg-slate-100 px-1 rounded">public static</code></p>
+                                    <p class="text-slate-600 text-sm">この段階では「おまじない」として覚えてOK。mainメソッドから呼び出すメソッドには<code class="bg-slate-100 px-1 rounded">static</code>を付けます。</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="bg-primary-100 text-primary-700 px-3 py-1 rounded-lg text-sm font-semibold">戻り値の型</span>
+                                <div>
+                                    <p class="text-slate-700 text-sm"><code class="bg-slate-100 px-1 rounded">void</code></p>
+                                    <p class="text-slate-600 text-sm">戻り値がない場合は<code class="bg-slate-100 px-1 rounded">void</code>を指定します。</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="bg-primary-100 text-primary-700 px-3 py-1 rounded-lg text-sm font-semibold">メソッド名</span>
+                                <div>
+                                    <p class="text-slate-700 text-sm"><code class="bg-slate-100 px-1 rounded">greet</code></p>
+                                    <p class="text-slate-600 text-sm">処理内容を表す名前を付けます。<strong>先頭は小文字、複数の単語は2語目から大文字</strong>（キャメルケース）が慣例です。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-rose-50 border-l-4 border-rose-400 p-4 mb-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-rose-600 mt-1"></i>
+                            <div>
+                                <p class="text-sm font-semibold text-rose-800 mb-2">メソッド名の命名規則</p>
+                                <ul class="text-sm text-rose-900 space-y-1 list-disc list-inside">
+                                    <li>動詞で始めるのが一般的（例: <code class="bg-rose-100 px-1 rounded">calculate</code>, <code class="bg-rose-100 px-1 rounded">print</code>, <code class="bg-rose-100 px-1 rounded">get</code>）</li>
+                                    <li>処理内容が分かる名前を付ける</li>
+                                    <li>予約語（if、for、whileなど）は使えない</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション3: 引数（パラメータ） -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        7.3 引数（パラメータ）
+                    </h2>
+
+                    <div class="bg-white rounded-xl border border-slate-200 p-6 mb-6">
+                        <p class="text-slate-700 leading-relaxed mb-4">
+                            <strong>引数（ひきすう、argument / parameter）</strong>は、メソッドに渡す「入力データ」です。<br>
+                            引数を使うことで、同じメソッドでも異なるデータを処理できるようになります。
+                        </p>
+
+                        <h3 class="text-lg font-semibold text-slate-800 mb-3">引数を持つメソッドの例</h3>
+                        <div class="code-block-wrapper my-6">
+                            <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                <span class="text-slate-400 text-sm">MethodWithParameter.java</span>
+                                <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                        onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <pre class="!mt-0 !rounded-t-none"><code class="language-java">public class MethodWithParameter {
+    public static void main(String[] args) {
+        // 引数を指定してメソッドを呼び出す
+        greetPerson("太郎");
+        greetPerson("花子");
+        greetPerson("次郎");
+    }
+
+    // 引数を受け取るメソッド
+    public static void greetPerson(String name) {
+        System.out.println("こんにちは、" + name + "さん！");
+    }
+}</code></pre>
+                        </div>
+
+                        <div class="bg-slate-100 rounded-lg p-4 mb-4">
+                            <p class="text-sm font-semibold text-slate-700 mb-2">実行結果:</p>
+                            <pre class="text-sm text-slate-800 font-mono">こんにちは、太郎さん！
+こんにちは、花子さん！
+こんにちは、次郎さん！</pre>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-slate-200 p-6 mb-6">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-3">仮引数と実引数</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-100">
+                                        <th class="border border-slate-300 px-4 py-2 text-left">用語</th>
+                                        <th class="border border-slate-300 px-4 py-2 text-left">説明</th>
+                                        <th class="border border-slate-300 px-4 py-2 text-left">例</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-sm">
+                                    <tr>
+                                        <td class="border border-slate-300 px-4 py-2"><strong>仮引数</strong><br>（パラメータ）</td>
+                                        <td class="border border-slate-300 px-4 py-2">メソッド定義時に宣言する変数</td>
+                                        <td class="border border-slate-300 px-4 py-2"><code class="bg-slate-100 px-1 rounded">String name</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-slate-300 px-4 py-2"><strong>実引数</strong><br>（引数）</td>
+                                        <td class="border border-slate-300 px-4 py-2">メソッド呼び出し時に渡す実際の値</td>
+                                        <td class="border border-slate-300 px-4 py-2"><code class="bg-slate-100 px-1 rounded">"太郎"</code></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-slate-200 p-6 mb-6">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-3">複数の引数を持つメソッド</h3>
+                        <p class="text-slate-700 leading-relaxed mb-4">
+                            メソッドは複数の引数を受け取ることができます。引数はカンマ<code class="bg-slate-100 px-1 rounded">,</code>で区切ります。
+                        </p>
+
+                        <div class="code-block-wrapper my-6">
+                            <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                <span class="text-slate-400 text-sm">MultipleParameters.java</span>
+                                <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                        onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <pre class="!mt-0 !rounded-t-none"><code class="language-java">public class MultipleParameters {
+    public static void main(String[] args) {
+        // 複数の引数を渡す
+        printProfile("山田太郎", 25, "東京都");
+        printProfile("佐藤花子", 30, "大阪府");
+    }
+
+    // 複数の引数を受け取るメソッド
+    public static void printProfile(String name, int age, String address) {
+        System.out.println("===== プロフィール =====");
+        System.out.println("名前: " + name);
+        System.out.println("年齢: " + age + "歳");
+        System.out.println("住所: " + address);
+        System.out.println();
+    }
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-amber-600 mt-1"></i>
+                            <div>
+                                <p class="text-sm font-semibold text-amber-800 mb-2">値渡しと参照渡し</p>
+                                <p class="text-sm text-amber-900">
+                                    Javaでは、プリミティブ型（int, doubleなど）は<strong>値渡し</strong>、参照型（String, 配列など）は<strong>参照渡し</strong>になります。
+                                    プリミティブ型の場合、メソッド内で引数の値を変更しても呼び出し元には影響しません。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション4: 戻り値（リターン値） -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        7.4 戻り値（リターン値）
+                    </h2>
+
+                    <div class="bg-white rounded-xl border border-slate-200 p-6 mb-6">
+                        <p class="text-slate-700 leading-relaxed mb-4">
+                            <strong>戻り値（もどりち、return value）</strong>は、メソッドが処理結果として呼び出し元に返す値です。<br>
+                            戻り値を使うことで、メソッドで計算した結果を受け取って利用できます。
+                        </p>
+
+                        <h3 class="text-lg font-semibold text-slate-800 mb-3">戻り値を持つメソッドの例</h3>
+                        <div class="code-block-wrapper my-6">
+                            <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                <span class="text-slate-400 text-sm">MethodWithReturn.java</span>
+                                <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                        onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <pre class="!mt-0 !rounded-t-none"><code class="language-java">public class MethodWithReturn {
+    public static void main(String[] args) {
+        // メソッドの戻り値を変数で受け取る
+        int result1 = add(10, 20);
+        System.out.println("10 + 20 = " + result1);
+
+        // 直接表示することもできる
+        System.out.println("5 + 15 = " + add(5, 15));
+
+        // 戻り値を使った計算
+        int result2 = add(3, 7) * 2;
+        System.out.println("(3 + 7) * 2 = " + result2);
+    }
+
+    // int型の戻り値を持つメソッド
+    public static int add(int a, int b) {
+        int sum = a + b;
+        return sum;  // 計算結果を返す
+    }
+}</code></pre>
+                        </div>
+
+                        <div class="bg-slate-100 rounded-lg p-4 mb-4">
+                            <p class="text-sm font-semibold text-slate-700 mb-2">実行結果:</p>
+                            <pre class="text-sm text-slate-800 font-mono">10 + 20 = 30
+5 + 15 = 20
+(3 + 7) * 2 = 20</pre>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-slate-200 p-6 mb-6">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-3">return文の使い方</h3>
+                        <div class="space-y-4">
+                            <div class="bg-slate-50 rounded-lg p-4">
+                                <p class="text-sm font-semibold text-slate-700 mb-2">ポイント1: 戻り値の型と一致させる</p>
+                                <p class="text-sm text-slate-600">メソッドの戻り値の型と、return文で返す値の型は一致している必要があります。</p>
+                                <div class="code-block-wrapper my-3">
+                                    <pre class="!mt-0"><code class="language-java">// OK: int型を返すメソッドでint型を返す
+public static int getNumber() {
+    return 42;
+}
+
+// NG: int型を返すメソッドでString型を返す（コンパイルエラー）
+public static int getNumber() {
+    return "42";  // エラー！
+}</code></pre>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 rounded-lg p-4">
+                                <p class="text-sm font-semibold text-slate-700 mb-2">ポイント2: return文の後ろは実行されない</p>
+                                <p class="text-sm text-slate-600">return文が実行されると、メソッドの処理はそこで終了します。</p>
+                                <div class="code-block-wrapper my-3">
+                                    <pre class="!mt-0"><code class="language-java">public static int sample() {
+    return 100;
+    System.out.println("実行されない");  // 到達不能コード（エラー）
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-slate-200 p-6 mb-6">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-3">様々な戻り値の型</h3>
+                        <div class="code-block-wrapper my-6">
+                            <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                <span class="text-slate-400 text-sm">VariousReturnTypes.java</span>
+                                <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                        onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <pre class="!mt-0 !rounded-t-none"><code class="language-java">public class VariousReturnTypes {
+    public static void main(String[] args) {
+        double avg = calculateAverage(80, 90, 70);
+        System.out.println("平均点: " + avg);
+
+        String greeting = getGreeting("太郎");
+        System.out.println(greeting);
+
+        boolean result = isAdult(20);
+        System.out.println("成人ですか？ " + result);
+    }
+
+    // double型を返すメソッド
+    public static double calculateAverage(int a, int b, int c) {
+        return (a + b + c) / 3.0;
+    }
+
+    // String型を返すメソッド
+    public static String getGreeting(String name) {
+        return "こんにちは、" + name + "さん！";
+    }
+
+    // boolean型を返すメソッド
+    public static boolean isAdult(int age) {
+        return age >= 20;
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション5: メソッドのオーバーロード -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        7.5 メソッドのオーバーロード
+                    </h2>
+
+                    <div class="bg-white rounded-xl border border-slate-200 p-6 mb-6">
+                        <p class="text-slate-700 leading-relaxed mb-4">
+                            <strong>オーバーロード（overload、多重定義）</strong>とは、同じ名前で引数の型や個数が異なる複数のメソッドを定義することです。<br>
+                            これにより、状況に応じて適切なメソッドが自動的に選択されます。
+                        </p>
+
+                        <h3 class="text-lg font-semibold text-slate-800 mb-3">オーバーロードの例</h3>
+                        <div class="code-block-wrapper my-6">
+                            <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                <span class="text-slate-400 text-sm">MethodOverload.java</span>
+                                <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                        onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <pre class="!mt-0 !rounded-t-none"><code class="language-java">public class MethodOverload {
+    public static void main(String[] args) {
+        // 引数の個数や型に応じて適切なメソッドが呼ばれる
+        System.out.println(add(10, 20));           // int版が呼ばれる
+        System.out.println(add(3.5, 2.8));         // double版が呼ばれる
+        System.out.println(add(1, 2, 3));          // 3つの引数版が呼ばれる
+    }
+
+    // 2つのint型を足すメソッド
+    public static int add(int a, int b) {
+        System.out.println("int版のaddが呼ばれました");
+        return a + b;
+    }
+
+    // 2つのdouble型を足すメソッド
+    public static double add(double a, double b) {
+        System.out.println("double版のaddが呼ばれました");
+        return a + b;
+    }
+
+    // 3つのint型を足すメソッド
+    public static int add(int a, int b, int c) {
+        System.out.println("3つの引数版のaddが呼ばれました");
+        return a + b + c;
+    }
+}</code></pre>
+                        </div>
+
+                        <div class="bg-slate-100 rounded-lg p-4 mb-4">
+                            <p class="text-sm font-semibold text-slate-700 mb-2">実行結果:</p>
+                            <pre class="text-sm text-slate-800 font-mono">int版のaddが呼ばれました
+30
+double版のaddが呼ばれました
+6.3
+3つの引数版のaddが呼ばれました
+6</pre>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-slate-200 p-6 mb-6">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-3">オーバーロードの判定条件</h3>
+                        <p class="text-slate-700 leading-relaxed mb-4">
+                            Javaは以下の条件でメソッドを区別します：
+                        </p>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-emerald-50 rounded-lg p-4 border-l-4 border-emerald-500">
+                                <p class="text-sm font-semibold text-emerald-800 mb-2"><i class="fas fa-check text-emerald-600"></i> 区別される（オーバーロード可能）</p>
+                                <ul class="text-sm text-emerald-900 space-y-1 list-disc list-inside">
+                                    <li>引数の<strong>個数</strong>が異なる</li>
+                                    <li>引数の<strong>型</strong>が異なる</li>
+                                    <li>引数の<strong>順序</strong>が異なる</li>
+                                </ul>
+                            </div>
+                            <div class="bg-rose-50 rounded-lg p-4 border-l-4 border-rose-500">
+                                <p class="text-sm font-semibold text-rose-800 mb-2"><i class="fas fa-times text-rose-600"></i> 区別されない（エラー）</p>
+                                <ul class="text-sm text-rose-900 space-y-1 list-disc list-inside">
+                                    <li>戻り値の型だけが異なる</li>
+                                    <li>引数名だけが異なる</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <div>
+                                <p class="text-sm text-blue-900">
+                                    <strong>実際のオーバーロード例</strong><br>
+                                    <code class="bg-blue-100 px-1 rounded">System.out.println()</code>メソッドもオーバーロードされています。
+                                    int、double、String、booleanなど、様々な型の値を渡せるのはオーバーロードのおかげです。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- つまずきやすいポイント -->
+                <div class="bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-200
+                            rounded-xl p-5 my-8">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-rose-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-exclamation-triangle text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-rose-800 mb-4">つまずきやすいポイント</h3>
+
+                            <div class="space-y-4">
+                                <div class="bg-white/70 rounded-lg p-4">
+                                    <p class="font-semibold text-rose-800 mb-2">
+                                        <i class="fas fa-ban text-rose-600"></i> 引数の順序と型の一致
+                                    </p>
+                                    <p class="text-sm text-rose-900 mb-3">
+                                        メソッド呼び出し時、引数の順序と型は定義と完全に一致している必要があります。
+                                    </p>
+                                    <div class="code-block-wrapper">
+                                        <pre class="!mt-0"><code class="language-java">// メソッド定義
+public static void printInfo(String name, int age) { ... }
+
+// OK
+printInfo("太郎", 20);
+
+// NG: 順序が逆（コンパイルエラー）
+printInfo(20, "太郎");</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="bg-white/70 rounded-lg p-4">
+                                    <p class="font-semibold text-rose-800 mb-2">
+                                        <i class="fas fa-ban text-rose-600"></i> 戻り値の受け取り忘れ
+                                    </p>
+                                    <p class="text-sm text-rose-900 mb-3">
+                                        戻り値を持つメソッドを呼び出す際、戻り値を変数で受け取るか、直接使用する必要があります。
+                                    </p>
+                                    <div class="code-block-wrapper">
+                                        <pre class="!mt-0"><code class="language-java">// メソッド定義
+public static int calculate(int a, int b) {
+    return a + b;
+}
+
+// OK: 戻り値を変数で受け取る
+int result = calculate(10, 20);
+
+// OK: 戻り値を直接使用
+System.out.println(calculate(10, 20));
+
+// 無意味だが、エラーではない（戻り値を捨てている）
+calculate(10, 20);</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="bg-white/70 rounded-lg p-4">
+                                    <p class="font-semibold text-rose-800 mb-2">
+                                        <i class="fas fa-ban text-rose-600"></i> スコープの混乱
+                                    </p>
+                                    <p class="text-sm text-rose-900 mb-3">
+                                        メソッド内で宣言された変数（ローカル変数）は、そのメソッド内でのみ有効です。
+                                    </p>
+                                    <div class="code-block-wrapper">
+                                        <pre class="!mt-0"><code class="language-java">public static void methodA() {
+    int x = 10;  // methodA内でのみ有効
+}
+
+public static void methodB() {
+    System.out.println(x);  // エラー！xは未定義
+}</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 実習カード -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                            rounded-xl p-5 my-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3">
+                                実習 7-1: 2つの数値の最大値を返すメソッド
+                            </h3>
+                            <p class="text-purple-900 mb-4">2つの整数を受け取り、大きい方の値を返すメソッド<code class="bg-purple-100 px-1 rounded">max</code>を作成しましょう。</p>
+
+                            <h4 class="font-medium text-purple-800 mb-2">手順</h4>
+                            <ol class="space-y-3 mb-4">
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">1</span>
+                                    <span>int型の引数を2つ受け取るメソッド<code class="bg-purple-100 px-1 rounded">max</code>を定義します</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">2</span>
+                                    <span>if文を使って2つの値を比較し、大きい方をreturnします</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">3</span>
+                                    <span>mainメソッドから様々な値で呼び出して動作を確認します</span>
+                                </li>
+                            </ol>
+
+                            <h4 class="font-medium text-purple-800 mb-2">実装例</h4>
+                            <div class="code-block-wrapper">
+                                <pre class="!bg-slate-800 !rounded-lg"><code class="language-java">public class Exercise7_1 {
+    public static void main(String[] args) {
+        System.out.println("10と20の最大値: " + max(10, 20));
+        System.out.println("50と30の最大値: " + max(50, 30));
+        System.out.println("15と15の最大値: " + max(15, 15));
+    }
+
+    // 2つの数値の最大値を返すメソッド
+    public static int max(int a, int b) {
+        if (a > b) {
+            return a;
+        } else {
+            return b;
+        }
+        // または三項演算子で: return (a > b) ? a : b;
+    }
+}</code></pre>
+                            </div>
+
+                            <h4 class="font-medium text-purple-800 mt-4 mb-2">期待される結果</h4>
+                            <div class="bg-white/50 rounded-lg p-3 text-purple-900">
+                                <pre class="text-sm">10と20の最大値: 20
+50と30の最大値: 50
+15と15の最大値: 15</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 実習2 -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                            rounded-xl p-5 my-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3">
+                                実習 7-2: 配列の合計と平均を計算するメソッド
+                            </h3>
+                            <p class="text-purple-900 mb-4">配列を受け取り、その合計値を返すメソッドと、平均値を返すメソッドを作成しましょう。</p>
+
+                            <h4 class="font-medium text-purple-800 mb-2">実装例</h4>
+                            <div class="code-block-wrapper">
+                                <pre class="!bg-slate-800 !rounded-lg"><code class="language-java">public class Exercise7_2 {
+    public static void main(String[] args) {
+        int[] scores = {85, 90, 78, 92, 88};
+
+        int total = sum(scores);
+        double avg = average(scores);
+
+        System.out.println("点数: " + java.util.Arrays.toString(scores));
+        System.out.println("合計: " + total);
+        System.out.println("平均: " + avg);
+    }
+
+    // 配列の合計を計算するメソッド
+    public static int sum(int[] array) {
+        int total = 0;
+        for (int value : array) {
+            total += value;
+        }
+        return total;
+    }
+
+    // 配列の平均を計算するメソッド
+    public static double average(int[] array) {
+        return (double) sum(array) / array.length;
+        // sumメソッドを再利用している
+    }
+}</code></pre>
+                            </div>
+
+                            <h4 class="font-medium text-purple-800 mt-4 mb-2">期待される結果</h4>
+                            <div class="bg-white/50 rounded-lg p-3 text-purple-900">
+                                <pre class="text-sm">点数: [85, 90, 78, 92, 88]
+合計: 433
+平均: 86.6</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q1. メソッドを使う3つの主な利点を説明してください。</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <div class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <p class="mb-2"><strong>1. 再利用性</strong>: 一度作成したメソッドを何度でも呼び出して使えるため、同じコードを繰り返し書く必要がありません。</p>
+                                            <p class="mb-2"><strong>2. 可読性</strong>: 処理に名前を付けることで、プログラムが何をしているか分かりやすくなります。</p>
+                                            <p><strong>3. 保守性</strong>: 修正が必要な場合、メソッド内を変更するだけで、呼び出し側を変更する必要がありません。</p>
+                                        </div>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q2. 次のコードの問題点を指摘してください。</p>
+                                    <div class="code-block-wrapper my-2">
+                                        <pre class="!mt-0"><code class="language-java">public static String getMessage() {
+    return 100;
+}</code></pre>
+                                    </div>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            メソッドの戻り値の型が<code class="bg-blue-100 px-1 rounded">String</code>なのに、return文で<code class="bg-blue-100 px-1 rounded">int</code>型の値（100）を返そうとしています。
+                                            戻り値の型と実際に返す値の型は一致している必要があります。正しくは<code class="bg-blue-100 px-1 rounded">return "100";</code>のようにString型で返すか、
+                                            メソッドの戻り値の型を<code class="bg-blue-100 px-1 rounded">int</code>に変更する必要があります。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q3. メソッドのオーバーロードとは何ですか？また、どのような条件で区別されますか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <div class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <p class="mb-2">オーバーロードとは、同じ名前で引数の型や個数が異なる複数のメソッドを定義することです（多重定義）。</p>
+                                            <p class="mb-2"><strong>区別される条件:</strong></p>
+                                            <ul class="list-disc list-inside space-y-1 ml-4">
+                                                <li>引数の個数が異なる</li>
+                                                <li>引数の型が異なる</li>
+                                                <li>引数の順序が異なる</li>
+                                            </ul>
+                                            <p class="mt-2">注意: 戻り値の型だけが異なる場合や、引数名だけが異なる場合は区別されません（エラーになります）。</p>
+                                        </div>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q4. 次のメソッド呼び出しで、どのメソッドが実行されるか説明してください。</p>
+                                    <div class="code-block-wrapper my-2">
+                                        <pre class="!mt-0"><code class="language-java">public static void print(int x) {
+    System.out.println("int: " + x);
+}
+public static void print(double x) {
+    System.out.println("double: " + x);
+}
+public static void print(String x) {
+    System.out.println("String: " + x);
+}
+
+// 呼び出し
+print(10);
+print(5.5);
+print("Hello");</code></pre>
+                                    </div>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <div class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <ul class="space-y-2">
+                                                <li><code class="bg-blue-100 px-1 rounded">print(10)</code> → int型のメソッドが呼ばれ、「int: 10」と表示されます</li>
+                                                <li><code class="bg-blue-100 px-1 rounded">print(5.5)</code> → double型のメソッドが呼ばれ、「double: 5.5」と表示されます</li>
+                                                <li><code class="bg-blue-100 px-1 rounded">print("Hello")</code> → String型のメソッドが呼ばれ、「String: Hello」と表示されます</li>
+                                            </ul>
+                                            <p class="mt-2">Javaは引数の型を見て、最も適合するメソッドを自動的に選択します。</p>
+                                        </div>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <a href="java-learning-material-06.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
+                                  transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">配列</span>
+                        </div>
+                    </a>
+                    <a href="java-learning-material-08.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">クラスとオブジェクト</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
+    </div>
+
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- 描画用Canvasオーバーレイ -->
+    <canvas id="drawing-canvas" class="fixed inset-0 z-[100] pointer-events-none"></canvas>
+
+    <!-- 描画ツールバー（右端） -->
+    <div id="drawing-toolbar" class="fixed right-4 top-1/2 -translate-y-1/2 z-[110]
+                                     bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl
+                                     border border-slate-200 p-2 flex flex-col gap-1
+                                     transition-all duration-300">
+        <!-- ツールバー折りたたみボタン -->
+        <button id="toolbar-toggle"
+                class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                       flex items-center justify-center transition-colors mb-2"
+                title="ツールバーを開く">
+            <i class="fas fa-chevron-left text-slate-600"></i>
+        </button>
+
+        <div id="toolbar-content" class="hidden flex-col gap-1">
+            <!-- ペンツール -->
+            <button id="pen-tool"
+                    class="tool-btn w-10 h-10 rounded-xl bg-primary-100 text-primary-600
+                           hover:bg-primary-200 flex items-center justify-center transition-colors"
+                    title="ペン (P)">
+                <i class="fas fa-pen"></i>
+            </button>
+
+            <!-- 消しゴムツール -->
+            <button id="eraser-tool"
+                    class="tool-btn w-10 h-10 rounded-xl bg-slate-100 text-slate-600
+                           hover:bg-slate-200 flex items-center justify-center transition-colors"
+                    title="消しゴム (E)">
+                <i class="fas fa-eraser"></i>
+            </button>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 色選択 -->
+            <div id="color-picker" class="flex flex-col gap-1">
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-red-400 bg-red-500
+                               hover:scale-110 transition-transform" data-color="#ef4444" title="赤"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-blue-400 bg-blue-500
+                               hover:scale-110 transition-transform" data-color="#3b82f6" title="青"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-slate-600 bg-slate-800
+                               hover:scale-110 transition-transform active-color" data-color="#1e293b" title="黒"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-emerald-400 bg-emerald-500
+                               hover:scale-110 transition-transform" data-color="#10b981" title="緑"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-amber-400 bg-amber-500
+                               hover:scale-110 transition-transform" data-color="#f59e0b" title="黄"></button>
+            </div>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 線の太さ -->
+            <div id="stroke-width" class="flex flex-col gap-1">
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors" data-width="2" title="細い">
+                    <div class="w-4 h-0.5 bg-slate-600 rounded-full"></div>
+                </button>
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors active-stroke" data-width="4" title="普通">
+                    <div class="w-4 h-1 bg-slate-600 rounded-full"></div>
+                </button>
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors" data-width="8" title="太い">
+                    <div class="w-4 h-2 bg-slate-600 rounded-full"></div>
+                </button>
+            </div>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 元に戻す -->
+            <button id="undo-btn"
+                    class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600
+                           hover:bg-slate-200 flex items-center justify-center transition-colors
+                           disabled:opacity-40 disabled:cursor-not-allowed"
+                    title="元に戻す (Ctrl+Z)" disabled>
+                <i class="fas fa-undo"></i>
+            </button>
+
+            <!-- 全消去 -->
+            <button id="clear-btn"
+                    class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600
+                           hover:bg-rose-200 flex items-center justify-center transition-colors"
+                    title="全消去 (C)">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Highlight.js 初期化
+        hljs.highlightAll();
+
+        // Mermaid.js 初期化
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose'
+        });
+
+        // モバイルメニュー制御
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const menuBtn = document.getElementById('mobile-menu-btn');
+
+        menuBtn?.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        });
+
+        overlay?.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        });
+
+        // スクロールトップボタン表示制御
+        const scrollTopBtn = document.getElementById('scroll-top-btn');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.remove('opacity-0', 'invisible', 'translate-y-4');
+            } else {
+                scrollTopBtn.classList.add('opacity-0', 'invisible', 'translate-y-4');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // コードコピー機能
+        function copyCode(btn) {
+            const code = btn.closest('.code-block-wrapper').querySelector('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const icon = btn.querySelector('i');
+                icon.classList.remove('fa-copy');
+                icon.classList.add('fa-check');
+                setTimeout(() => {
+                    icon.classList.remove('fa-check');
+                    icon.classList.add('fa-copy');
+                }, 2000);
+            });
+        }
+
+        // サイドバーリサイズ機能
+        const resizeHandle = document.getElementById('sidebar-resize-handle');
+        let isResizing = false;
+        let startX, startWidth;
+
+        resizeHandle?.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            startX = e.clientX;
+            startWidth = sidebar.offsetWidth;
+            resizeHandle.classList.add('resizing');
+            document.body.style.cursor = 'ew-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            const diff = e.clientX - startX;
+            const newWidth = Math.min(Math.max(startWidth + diff, 240), 480);
+            sidebar.style.width = newWidth + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                resizeHandle.classList.remove('resizing');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+                // サイドバー幅をローカルストレージに保存
+                localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
+            }
+        });
+
+        // ページ読み込み時にサイドバー幅を復元
+        const savedWidth = localStorage.getItem('sidebarWidth');
+        if (savedWidth && window.innerWidth >= 768) {
+            sidebar.style.width = savedWidth + 'px';
+        }
+
+        // 描画ツールバー折りたたみ機能
+        const toolbarToggle = document.getElementById('toolbar-toggle');
+        const toolbarContent = document.getElementById('toolbar-content');
+        let isToolbarOpen = false;
+
+        toolbarToggle?.addEventListener('click', () => {
+            isToolbarOpen = !isToolbarOpen;
+            const icon = toolbarToggle.querySelector('i');
+
+            if (isToolbarOpen) {
+                toolbarContent.classList.remove('hidden');
+                toolbarContent.classList.add('flex');
+                icon.classList.remove('fa-chevron-left');
+                icon.classList.add('fa-chevron-right');
+                toolbarToggle.title = 'ツールバーを閉じる';
+            } else {
+                toolbarContent.classList.add('hidden');
+                toolbarContent.classList.remove('flex');
+                icon.classList.remove('fa-chevron-right');
+                icon.classList.add('fa-chevron-left');
+                toolbarToggle.title = 'ツールバーを開く';
+            }
+        });
+    </script>
+
+    <!-- 描画ツール -->
+    <script src="../../../../common/drawing-tool.js"></script>
+</body>
+</html>
