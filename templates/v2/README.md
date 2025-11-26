@@ -9,16 +9,18 @@
 - サイドバー開閉機能（PC: トグルボタン、モバイル: ハンバーガーメニュー）
 - デバイス別最適化UI（タブレット・スマートフォンは初期状態でサイドバー閉）
 - 講義用描画ツール（PC環境のみ）
-- 共通JavaScript機能（`docs/common/main.js`）
+- 共通JavaScript機能（各技術フォルダ内で直接管理）
 
 ## ディレクトリ構成
 
 ```
 templates/v2/
 ├── README.md                                # このファイル
-├── html/                                    # コピー用HTMLテンプレート
+├── html/                                    # コピー用HTMLテンプレートとJavaScript
 │   ├── learning-material-template.html      # 学習教材用テンプレート
-│   └── tutorial-template.html               # チュートリアル用テンプレート
+│   ├── tutorial-template.html               # チュートリアル用テンプレート
+│   ├── main.js                              # 共通機能（サイドバー、描画ツールバー生成等）
+│   └── drawing-tool.js                      # 描画ツール機能
 ├── reference/                               # 参照用ドキュメント
 │   ├── color-themes.md                      # 技術別カラーテーマ一覧
 │   ├── css-styles.md                        # CSSスタイルガイド
@@ -69,18 +71,43 @@ templates/v2/
 | React | Cyan (`#06b6d4`) | `fab fa-react` |
 | .NET/C# | Violet (`#8b5cf6`) | `fab fa-microsoft` |
 
-### 4. 共通JavaScript（main.js）のパス設定
+### 4. 共通JavaScriptの配置
 
-テンプレートは `docs/common/main.js` を使用します。配置場所に応じてパスを調整してください：
+テンプレートは共通JavaScriptファイル（`main.js` と `drawing-tool.js`）を使用します。
 
-```html
-<!-- 配置場所に応じてパスを変更 -->
-<!-- docs/guide/programming-languages/java-ecosystem/java/ の場合 -->
-<script src="../../../../common/main.js"></script>
+**重要：依存を避けるため、各技術フォルダ内に直接JSファイルをコピーしてください。**
 
-<!-- docs/tutorial/programming-languages/python-ecosystem/django/ の場合 -->
-<script src="../../../../common/main.js"></script>
-```
+#### 手順
+
+1. **JSファイルをコピー**
+   ```bash
+   # Javaガイドを作成する場合の例
+   cp templates/v2/html/main.js docs/guide/programming-languages/java-ecosystem/java/
+   cp templates/v2/html/drawing-tool.js docs/guide/programming-languages/java-ecosystem/java/
+
+   # Pythonチュートリアルを作成する場合の例
+   cp templates/v2/html/main.js docs/tutorial/programming-languages/python-ecosystem/django/
+   cp templates/v2/html/drawing-tool.js docs/tutorial/programming-languages/python-ecosystem/django/
+   ```
+
+2. **HTMLファイルでのパス設定**
+
+   テンプレート内のスクリプト参照は以下のようになっています：
+   ```html
+   <!-- 共通JavaScript -->
+   <script src="main.js"></script>
+
+   <!-- 描画ツール -->
+   <script src="drawing-tool.js"></script>
+   ```
+
+   配置場所によって相対パスを調整してください：
+   - **ルート階層** (`docs/guide/.../java/*.html`)
+     - `main.js` のまま
+   - **サブディレクトリ** (`docs/guide/.../java/v1/*.html`)
+     - `../main.js` に変更
+
+#### main.jsの機能
 
 `main.js` には以下の共通機能が含まれています：
 - PC環境判定（1024px以上をPC環境と判定）
@@ -90,6 +117,14 @@ templates/v2/
 - モバイルメニュー制御
 - コードコピー機能
 - Highlight.js / Mermaid.js 初期化
+
+#### drawing-tool.jsの機能
+
+`drawing-tool.js` には以下の描画ツール機能が含まれています：
+- ペン/消しゴムツール
+- 色・線幅選択
+- 元に戻す/全消去
+- キーボードショートカット (D, P, E, C, Ctrl+Z)
 
 ## テンプレートの種類
 
@@ -192,27 +227,36 @@ templates/v2/
 
 ### Q: サイドバーが表示されない・動作しない
 **A:** 以下を確認してください：
-1. `docs/common/main.js` のパスが正しく設定されているか
-2. ブラウザの開発者ツールでJavaScriptエラーが出ていないか
-3. `id="sidebar"` と `id="sidebar-toggle-btn"` が正しく設定されているか
+1. `main.js` のパスが正しく設定されているか（配置場所に応じて相対パスを調整）
+2. `main.js` と `drawing-tool.js` が正しくコピーされているか
+3. ブラウザの開発者ツールでJavaScriptエラーが出ていないか
+4. `id="sidebar"` と `id="sidebar-toggle-btn"` が正しく設定されているか
 
 ### Q: 描画ツールバーが表示されない
 **A:** 描画ツールバーはPC環境（1024px以上）でのみ表示されます。タブレット・スマートフォンでは意図的に非表示になっています。
 
 ### Q: サイドバーの初期状態を変更したい
-**A:** `docs/common/main.js` の183-201行目で初期状態を制御しています。カスタマイズする場合はこの部分を編集してください。
+**A:** 各技術フォルダ内の `main.js` の183-201行目で初期状態を制御しています。カスタマイズする場合はこの部分を編集してください。
 
 ### Q: 技術アイコンが表示されない
 **A:** Font Awesome CDNが正しく読み込まれているか確認してください。また、使用するアイコンクラス（例: `fab fa-python`）が正しいか確認してください。
 
 ## バージョン履歴
 
+### v2.2.0 (2025-11-27)
+- 共通JavaScriptファイルの管理方法を変更
+- `templates/v2/html/` フォルダにコピー用の共通JavaScriptを配置
+- 各技術フォルダ内に直接JSファイルをコピーする方式に変更（依存を避けるため）
+- commonフォルダを廃止し、HTMLテンプレートと同じhtmlフォルダに配置
+- テンプレートのスクリプト参照パスを更新
+- README.md の手順を更新
+
 ### v2.1.0 (2025-01-27)
 - サイドバー開閉機能を追加
 - タブレット・スマートフォンでサイドバーの初期状態を閉じた状態に変更
 - PC環境用サイドバートグルボタンを追加
 - 描画ツールバーをPC環境限定に変更
-- 共通JavaScript機能を `docs/common/main.js` に統合
+- 共通JavaScript機能を統合
 
 ### v2.0.0
 - 初版リリース
