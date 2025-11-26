@@ -76,6 +76,7 @@
 
 ### 開発手法・プロセス
 
+- **[Git/GitHub学習ガイド](docs/guide/development-processes/git-github/README.md)** - Git/GitHubの基礎から実践的なバージョン管理まで12章完成カリキュラム。GUIツール（GitHub Desktop）とコマンドライン両方をカバーし、ブランチ操作、マージ、プルリクエスト、トラブルシューティングまで初心者向けに段階的に学習
 - **[アジャイル開発学習ガイド](docs/guide/development-processes/agile-development/README.md)** - アジャイル開発の基礎から実践的なScrum、Kanbanまで10章完成カリキュラム
 - **[DevOps学習ガイド](docs/guide/development-processes/devops/README.md)** - DevOpsの基礎からCI/CD、Infrastructure as Codeまで10章完成カリキュラム
 - **[ウォーターフォール開発学習ガイド](docs/guide/development-processes/waterfall-development/README.md)** - ウォーターフォール開発の基礎から実践的なプロジェクト管理まで10章完成カリキュラム。要件定義、基本設計、詳細設計、実装、テスト、リリース・運用、品質管理、アジャイルとの比較まで体系的に学習
