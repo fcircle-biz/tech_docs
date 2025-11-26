@@ -38,11 +38,11 @@
 - **[COBOL学習ガイド](docs/guide/programming-languages/cobol-ecosystem/cobol/README.md)** - COBOL基礎から実践的なビジネスロジックまで10章完成カリキュラム
 
 #### Java
-- **[Java学習ガイド](docs/guide/programming-languages/java-ecosystem/java/README.md)** - Java言語基礎から高度技術まで8ステップ
-- **[JDBC学習ガイド](docs/guide/programming-languages/java-ecosystem/jdbc/README.md)** - JDBC基礎からパフォーマンスチューニングまで10ステップ
-- **[JSP/Servlet学習ガイド](docs/guide/programming-languages/java-ecosystem/jsp/README.md)** - JSP/Servlet基礎からMVCアーキテクチャまで10ステップ
-- **[JUnit学習ガイド](docs/guide/programming-languages/java-ecosystem/junit/README.md)** - JUnit 5を使用した単体テストの基礎から応用まで7ステップ
-- **[Spring Framework学習ガイド](docs/guide/programming-languages/java-ecosystem/spring/README.md)** - Spring基礎からSecurity機能まで11ステップ
+- **[Java学習ガイド](docs/guide/programming-languages/java-ecosystem/java/README.md)** - Java言語基礎から高度技術まで12章完成カリキュラム
+- **[JDBC学習ガイド](docs/guide/programming-languages/java-ecosystem/jdbc/README.md)** - JDBC基礎からパフォーマンスチューニングまで10章完成カリキュラム
+- **[JSP/Servlet学習ガイド](docs/guide/programming-languages/java-ecosystem/jsp/README.md)** - JSP/Servlet基礎からMVCアーキテクチャまで10章完成カリキュラム
+- **[JUnit学習ガイド](docs/guide/programming-languages/java-ecosystem/junit/README.md)** - JUnit 5を使用した単体テストの基礎から応用まで7章完成カリキュラム
+- **[Spring Framework学習ガイド](docs/guide/programming-languages/java-ecosystem/spring/README.md)** - Spring基礎からSecurity機能まで11章完成カリキュラム
 - **[Struts 1.x学習ガイド](docs/guide/programming-languages/java-ecosystem/struts1/README.md)** - Apache Struts 1.x基礎からデプロイメントまで10章完成カリキュラム
 
 #### JavaScript
@@ -95,10 +95,10 @@
 ### データ・AI
 
 #### データベース
-- **[SQL学習ガイド](docs/guide/data-ai-category/database/sql/README.md)** - SQL基本概念からPostgreSQL高度機能まで10ステップ
-- **[Oracle学習ガイド](docs/guide/data-ai-category/database/oracle/README.md)** - Oracle Database入門から基本的な運用まで8ステップ
-- **[PL/SQL学習ガイド](docs/guide/data-ai-category/database/plsql/README.md)** - Oracle PL/SQLの基礎から応用まで10ステップ
-- **[DB2学習ガイド](docs/guide/data-ai-category/database/db2/README.md)** - IBM DB2データベース入門からDocker環境での運用管理まで8ステップ
+- **[SQL学習ガイド](docs/guide/data-ai-category/database/sql/README.md)** - SQL基本概念からPostgreSQL高度機能まで10章完成カリキュラム
+- **[Oracle学習ガイド](docs/guide/data-ai-category/database/oracle/README.md)** - Oracle Database入門から基本的な運用まで8章完成カリキュラム
+- **[PL/SQL学習ガイド](docs/guide/data-ai-category/database/plsql/README.md)** - Oracle PL/SQLの基礎から応用まで10章完成カリキュラム
+- **[DB2学習ガイド](docs/guide/data-ai-category/database/db2/README.md)** - IBM DB2データベース入門からDocker環境での運用管理まで8章完成カリキュラム
 
 #### データ分析・AI
 - **[機械学習学習ガイド](docs/guide/data-ai-category/data-ai/machine-learning/README.md)** - 機械学習の基礎から実践的なモデル構築まで10章完成カリキュラム
@@ -109,7 +109,7 @@
 ### 業務SaaS
 
 - **[Excel基本操作学習ガイド](docs/guide/business-saas/excel-basic/README.md)** - Excel基本操作から関数、VBA入門まで8章完成カリキュラム
-- **[VBA学習ガイド](docs/guide/business-saas/vba/README.md)** - VBA基礎からExcel自動化まで10ステップ
+- **[VBA学習ガイド](docs/guide/business-saas/vba/README.md)** - VBA基礎からExcel自動化まで10章完成カリキュラム
 - **[SAP学習ガイド](docs/guide/business-saas/sap/README.md)** - SAP ERP基礎から実践的な業務プロセスまで10章完成カリキュラム。SAP S/4HANA、ABAP、Fiori、SAP HANA等のモダンなSAP技術を体系的に習得
 
 ### 資格試験
@@ -141,8 +141,8 @@
 
 ### JavaScript
 
-- **[Next.js実践チュートリアル](docs/tutorial/javascript-ecosystem/nextjs/README.md)** - Next.jsフレームワークを使用したモダンなReactアプリケーション開発の実践的なチュートリアル
-- **[React実践チュートリアル](docs/tutorial/javascript-ecosystem/react/README.md)** - Reactライブラリを使用したモダンなWebアプリケーション開発の実践的なチュートリアル
+- **[Next.js実践チュートリアル](docs/tutorial/javascript-ecosystem/nextjs/README.md)** - Next.jsフレームワークを使用したモダンなReactアプリケーション開発の実践的なチュートリアル（10章構成）
+- **[React実践チュートリアル](docs/tutorial/javascript-ecosystem/react/README.md)** - Reactライブラリを使用したモダンなWebアプリケーション開発の実践的なチュートリアル（12章構成）
 
 ### PHP
 
