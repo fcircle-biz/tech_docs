@@ -6,8 +6,16 @@
 (function() {
     'use strict';
 
-    // 描画ツールバーとCanvasのHTML生成
+    // PC環境判定（最初に実行）
+    const isPC = window.innerWidth >= 1024;
+
+    // 描画ツールバーとCanvasのHTML生成（PC環境のみ）
     function createDrawingToolbar() {
+        // 非PC環境では生成しない
+        if (!isPC) {
+            return;
+        }
+
         const toolbarHTML = `
     <!-- 描画用Canvasオーバーレイ -->
     <canvas id="drawing-canvas" class="fixed inset-0 z-[100] pointer-events-none"></canvas>
@@ -103,17 +111,40 @@
 
         // body要素の最後に挿入
         document.body.insertAdjacentHTML('beforeend', toolbarHTML);
+
+        // 描画ツールバー折りたたみ機能を初期化
+        setTimeout(() => {
+            const toolbarToggle = document.getElementById('toolbar-toggle');
+            const toolbarContent = document.getElementById('toolbar-content');
+            let isToolbarOpen = false;
+
+            toolbarToggle?.addEventListener('click', () => {
+                isToolbarOpen = !isToolbarOpen;
+                const icon = toolbarToggle.querySelector('i');
+
+                if (isToolbarOpen) {
+                    toolbarContent.classList.remove('hidden');
+                    toolbarContent.classList.add('flex');
+                    icon.classList.remove('fa-chevron-left');
+                    icon.classList.add('fa-chevron-right');
+                    toolbarToggle.title = 'ツールバーを閉じる';
+                } else {
+                    toolbarContent.classList.add('hidden');
+                    toolbarContent.classList.remove('flex');
+                    icon.classList.remove('fa-chevron-right');
+                    icon.classList.add('fa-chevron-left');
+                    toolbarToggle.title = 'ツールバーを開く';
+                }
+            });
+        }, 0);
     }
 
-    // ページ読み込み時に描画ツールバーを生成
+    // ページ読み込み時に描画ツールバーを生成（PC環境のみ）
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', createDrawingToolbar);
     } else {
         createDrawingToolbar();
     }
-
-    // PC環境判定とUI調整
-    const isPC = window.innerWidth >= 1024;
 
     // PC環境以外はスケーリングを100%に設定
     if (!isPC) {
@@ -128,17 +159,6 @@
             viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.1');
         }
     }
-
-    // 描画ツールバーの表示制御（PC環境のみ表示）
-    // DOMContentLoaded後に実行されるように遅延
-    setTimeout(() => {
-        const drawingToolbar = document.getElementById('drawing-toolbar');
-        if (drawingToolbar) {
-            if (!isPC) {
-                drawingToolbar.style.display = 'none';
-            }
-        }
-    }, 0);
 
     // Highlight.js 初期化
     if (typeof hljs !== 'undefined') {
@@ -241,32 +261,5 @@
     if (savedWidth && window.innerWidth >= 768) {
         sidebar.style.width = savedWidth + 'px';
     }
-
-    // 描画ツールバー折りたたみ機能
-    // DOMContentLoaded後に実行されるように遅延
-    setTimeout(() => {
-        const toolbarToggle = document.getElementById('toolbar-toggle');
-        const toolbarContent = document.getElementById('toolbar-content');
-        let isToolbarOpen = false;
-
-        toolbarToggle?.addEventListener('click', () => {
-            isToolbarOpen = !isToolbarOpen;
-            const icon = toolbarToggle.querySelector('i');
-
-            if (isToolbarOpen) {
-                toolbarContent.classList.remove('hidden');
-                toolbarContent.classList.add('flex');
-                icon.classList.remove('fa-chevron-left');
-                icon.classList.add('fa-chevron-right');
-                toolbarToggle.title = 'ツールバーを閉じる';
-            } else {
-                toolbarContent.classList.add('hidden');
-                toolbarContent.classList.remove('flex');
-                icon.classList.remove('fa-chevron-right');
-                icon.classList.add('fa-chevron-left');
-                toolbarToggle.title = 'ツールバーを開く';
-            }
-        });
-    }, 0);
 
 })();
