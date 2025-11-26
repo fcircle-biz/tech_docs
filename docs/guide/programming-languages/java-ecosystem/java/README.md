@@ -526,6 +526,152 @@ Javaの核心である「オブジェクト指向プログラミング」の基�
 
 ---
 
+### [11. コレクションフレームワーク - データ構造を使いこなす](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-11.html)
+Javaが提供する豊富なデータ構造「コレクションフレームワーク」を学び、配列よりも柔軟で強力なデータ管理方法を習得します。
+
+**学習目標:**
+- コレクションフレームワークの全体像を理解する
+- List、Set、Mapの違いと使い分けができる
+- 各コレクションの主要なメソッドを使いこなせる
+- イテレータを使った反復処理ができる
+
+**学習内容:**
+1. **コレクションフレームワークとは**
+   - コレクションフレームワークの概要と利点
+   - 配列との違いと使い分け
+   - 主要なインターフェース（Collection、List、Set、Map）
+   - ジェネリクスの基礎（型パラメータ `<E>` の意味）
+
+2. **Listインターフェース**
+   - ArrayList: 動的配列の実装
+     - 要素の追加（`add`）、取得（`get`）、削除（`remove`）
+     - サイズの取得（`size`）、存在確認（`contains`）
+   - LinkedList: 連結リストの実装
+   - ArrayListとLinkedListの性能特性と使い分け
+   - Listの便利なメソッド（`indexOf`、`subList`、`sort`）
+
+3. **Setインターフェース**
+   - Setの特徴（重複を許さない、順序を保証しない）
+   - HashSet: ハッシュベースの高速な集合
+   - TreeSet: ソートされた順序を維持する集合
+   - LinkedHashSet: 挿入順序を維持する集合
+   - 集合演算（和集合、積集合、差集合）
+
+4. **Mapインターフェース**
+   - Mapの概念（キーと値のペア）
+   - HashMap: 高速なキー・バリュー検索
+     - 値の追加（`put`）、取得（`get`）、削除（`remove`）
+     - キーの存在確認（`containsKey`）、値の存在確認（`containsValue`）
+   - TreeMap: ソートされたキー順序を維持
+   - LinkedHashMap: 挿入順序を維持
+   - Mapの反復処理（`keySet`、`values`、`entrySet`）
+
+5. **コレクションの操作**
+   - イテレータ（Iterator）パターン
+   - 拡張for文でのコレクション反復
+   - Collectionsユーティリティクラス
+     - ソート（`sort`）、シャッフル（`shuffle`）
+     - 最大値・最小値（`max`、`min`）
+     - 逆順（`reverse`）、同期化（`synchronizedList`）
+   - 不変コレクション（`List.of`、`Set.of`、`Map.of`）
+
+**つまずきやすいポイント:**
+- ジェネリクスの型指定忘れ → コンパイラ警告の重要性
+- HashSetでの重複判定 → `equals()`と`hashCode()`のオーバーライド
+- ConcurrentModificationException → イテレータ使用時のコレクション変更
+
+**演習課題:**
+- 単語の出現回数をカウントするプログラム（HashMap使用）
+- 重複を除去したリストを作成する（Setへの変換）
+- 学生情報を管理するプログラム（学籍番号をキーとしたMap）
+- ToDoリスト管理アプリケーション（ArrayList使用）
+
+---
+
+### [12. ラムダ式とStream API - モダンJavaプログラミング](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-12.html)
+Java 8で導入された「ラムダ式」と「Stream API」を学び、より簡潔で宣言的なコードを書けるようになります。
+
+**学習目標:**
+- ラムダ式の構文と使い方を理解する
+- 関数型インターフェースの概念を理解する
+- Stream APIを使ったデータ処理ができる
+- メソッド参照を活用できる
+
+**学習内容:**
+1. **ラムダ式とは**
+   - ラムダ式の概念（無名関数）
+   - 従来の匿名クラスとの比較
+   - ラムダ式の構文: `(引数) -> { 処理 }`
+   - ラムダ式の省略記法
+     - 引数が1つの場合の括弧省略
+     - 処理が1文の場合の波括弧とreturn省略
+     - 型推論による引数の型省略
+
+2. **関数型インターフェース**
+   - 関数型インターフェースとは（抽象メソッドが1つのインターフェース）
+   - `@FunctionalInterface`アノテーション
+   - 主要な標準関数型インターフェース
+     - `Predicate<T>`: 条件判定（T → boolean）
+     - `Function<T, R>`: 変換（T → R）
+     - `Consumer<T>`: 消費（T → void）
+     - `Supplier<T>`: 供給（() → T）
+     - `BiFunction<T, U, R>`: 2引数変換
+
+3. **メソッド参照**
+   - メソッド参照の概念（既存メソッドをラムダ式として使用）
+   - 静的メソッド参照: `クラス名::メソッド名`
+   - インスタンスメソッド参照: `オブジェクト::メソッド名`
+   - コンストラクタ参照: `クラス名::new`
+   - ラムダ式とメソッド参照の使い分け
+
+4. **Stream APIの基礎**
+   - Streamとは（データ処理のパイプライン）
+   - Streamの生成方法
+     - コレクションから: `collection.stream()`
+     - 配列から: `Arrays.stream(array)`
+     - 値から: `Stream.of(values)`
+   - 中間操作と終端操作の違い
+   - Streamの遅延評価
+
+5. **Stream APIの中間操作**
+   - `filter`: 条件に合う要素を抽出
+   - `map`: 要素を変換
+   - `flatMap`: ネストした構造をフラット化
+   - `sorted`: ソート
+   - `distinct`: 重複除去
+   - `limit`/`skip`: 要素数の制限
+   - `peek`: デバッグ用の覗き見
+
+6. **Stream APIの終端操作**
+   - `forEach`: 各要素に処理を適用
+   - `collect`: 結果をコレクションに収集
+     - `Collectors.toList()`, `toSet()`, `toMap()`
+     - `Collectors.joining()`, `groupingBy()`
+   - `reduce`: 集約処理
+   - `count`, `sum`, `average`, `max`, `min`: 集計
+   - `anyMatch`, `allMatch`, `noneMatch`: 条件判定
+   - `findFirst`, `findAny`: 要素の検索
+
+7. **Optional クラス**
+   - Optionalの概念（nullを安全に扱う）
+   - Optionalの生成: `of`, `ofNullable`, `empty`
+   - 値の取得: `get`, `orElse`, `orElseGet`, `orElseThrow`
+   - 値の処理: `ifPresent`, `map`, `filter`
+
+**つまずきやすいポイント:**
+- Streamの再利用不可 → 一度使ったStreamは再利用できない
+- 中間操作だけでは実行されない → 終端操作が必要（遅延評価）
+- 並列Streamの注意点 → 状態を持つ操作での問題
+
+**演習課題:**
+- リストから条件に合う要素を抽出して新しいリストを作成
+- 文字列リストを大文字に変換して結合
+- 数値リストの統計情報（合計、平均、最大、最小）を計算
+- 商品リストを価格でソートしてトップ5を表示
+- グループ化を使った集計処理（例: 部門別の従業員数）
+
+---
+
 ## 学習の進め方
 1. **環境構築から始める**: 第1章でJava開発環境を正しくセットアップし、Hello Worldが動くことを確認してから次に進みましょう
 2. **順序立てて学習**: 各章は前章の知識を前提としているため、必ず順番に進めてください
@@ -538,7 +684,9 @@ Javaの核心である「オブジェクト指向プログラミング」の基�
   - プログラミングの基本構文をマスター
 - **オブジェクト指向コース** (7-10章): 4-6週間
   - Javaらしいオブジェクト指向プログラミングを習得
-- **合計学習期間**: 8-12週間（週5-8時間の学習を想定）
+- **モダンJavaコース** (11-12章): 2-3週間
+  - コレクションとラムダ式・Stream APIを習得
+- **合計学習期間**: 10-15週間（週5-8時間の学習を想定）
 
 ## 関連リソース
 - [Java初心者向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/java-cheatsheet.html)
@@ -553,6 +701,8 @@ Javaの核心である「オブジェクト指向プログラミング」の基�
 - 継承とポリモーフィズムの基本を理解している
 - 例外処理を含む堅牢なプログラムを作成できる
 - Java標準APIを活用した実践的なプログラムが書ける
+- List、Set、Mapなどのコレクションを適切に使い分けられる
+- ラムダ式とStream APIを使ったモダンなJavaプログラミングができる
 
 ## 次のステップ
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
