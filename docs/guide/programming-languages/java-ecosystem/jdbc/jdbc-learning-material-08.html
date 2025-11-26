@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.1">
+    <title>JDBC学習教材 第8章 - DAOパターン入門</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            200: '#fed7aa',
+                            300: '#fdba74',
+                            400: '#fb923c',
+                            500: '#f97316',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                            800: '#9a3412',
+                            900: '#7c2d12',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <style>
+        /* スクロールバーカスタマイズ */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* コードブロックのラインナンバー */
+        .hljs-ln-numbers {
+            user-select: none;
+            text-align: right;
+            color: #6b7280;
+            padding-right: 12px;
+            border-right: 1px solid #374151;
+        }
+
+        /* サイドバートランジション */
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, width 0.15s ease-out;
+        }
+
+        /* サイドバーリサイズ機能 */
+        .sidebar-resizable {
+            min-width: 240px;
+            max-width: 480px;
+        }
+        .sidebar-resize-handle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 6px;
+            height: 100%;
+            cursor: ew-resize;
+            background: transparent;
+            transition: background 0.2s;
+            z-index: 10;
+        }
+        .sidebar-resize-handle:hover,
+        .sidebar-resize-handle.resizing {
+            background: linear-gradient(to right, transparent, rgba(249, 115, 22, 0.3));
+        }
+
+        /* スムーズスクロール */
+        html { scroll-behavior: smooth; }
+
+        /* コードコピーボタン */
+        .code-block-wrapper { position: relative; }
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .code-block-wrapper:hover .copy-btn { opacity: 1; }
+
+        /* ヘッダー情報リッチデザイン */
+        .header-rich {
+            background: linear-gradient(135deg,
+                #c2410c 0%,
+                #f97316 50%,
+                #fb923c 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .header-rich::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px);
+            animation: bgSlide 10s linear infinite;
+        }
+        @keyframes bgSlide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(50px); }
+        }
+
+        .header-rich-shadow {
+            box-shadow:
+                0 4px 6px -1px rgba(249, 115, 22, 0.2),
+                0 10px 25px -5px rgba(249, 115, 22, 0.3),
+                0 0 50px rgba(249, 115, 22, 0.15);
+        }
+
+        .icon-rotate-hover {
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .icon-rotate-hover:hover {
+            transform: rotate(360deg) scale(1.2);
+        }
+    </style>
+</head>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fab fa-java text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
+
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">JDBC学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>プログラミング言語</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 30分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右側: モバイルメニューボタン -->
+                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバー -->
+        <aside id="sidebar" class="fixed md:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
+                                   bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
+                                   transform -translate-x-full md:translate-x-0 sidebar-transition sidebar-resizable"
+               style="--sidebar-width: 320px;">
+            <!-- リサイズハンドル -->
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle hidden md:block"></div>
+            <div class="p-4">
+                <!-- 進捗インジケーター -->
+                <div class="mb-6 p-4 bg-primary-50 rounded-xl">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-primary-700">学習進捗</span>
+                        <span class="text-sm text-primary-600">8/10章</span>
+                    </div>
+                    <div class="w-full bg-primary-100 rounded-full h-2">
+                        <div class="bg-primary-500 h-2 rounded-full transition-all duration-300" style="width: 80%"></div>
+                    </div>
+                </div>
+
+                <!-- 章リスト -->
+                <nav>
+                    <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-2">
+                        学習章
+                    </h2>
+                    <ul class="space-y-1">
+                        <!-- 第1章 -->
+                        <li>
+                            <a href="jdbc-learning-material-01.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">JDBCの概要と環境構築</span>
+                            </a>
+                        </li>
+
+                        <!-- 第2章 -->
+                        <li>
+                            <a href="jdbc-learning-material-02.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">データベース接続の基本</span>
+                            </a>
+                        </li>
+
+                        <!-- 第3章 -->
+                        <li>
+                            <a href="jdbc-learning-material-03.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">データの取得（SELECT文）</span>
+                            </a>
+                        </li>
+
+                        <!-- 第4章 -->
+                        <li>
+                            <a href="jdbc-learning-material-04.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">データの登録・更新・削除</span>
+                            </a>
+                        </li>
+
+                        <!-- 第5章 -->
+                        <li>
+                            <a href="jdbc-learning-material-05.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">PreparedStatementの活用</span>
+                            </a>
+                        </li>
+
+                        <!-- 第6章 -->
+                        <li>
+                            <a href="jdbc-learning-material-06.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">例外処理とリソース管理</span>
+                            </a>
+                        </li>
+
+                        <!-- 第7章 -->
+                        <li>
+                            <a href="jdbc-learning-material-07.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">トランザクション管理</span>
+                            </a>
+                        </li>
+
+                        <!-- 第8章（現在の章） -->
+                        <li>
+                            <a href="#"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      bg-primary-100 text-primary-700 font-medium">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-primary-500 text-white text-xs rounded-full">8</span>
+                                <span class="truncate">DAOパターン入門</span>
+                            </a>
+                        </li>
+
+                        <!-- 第9章 -->
+                        <li>
+                            <a href="jdbc-learning-material-09.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">9</span>
+                                <span class="truncate">実践演習 - 商品管理システム</span>
+                            </a>
+                        </li>
+
+                        <!-- 第10章 -->
+                        <li>
+                            <a href="jdbc-learning-material-10.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">10</span>
+                                <span class="truncate">よくある問題と解決策</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- サイドバーオーバーレイ（モバイル用） -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="../" class="hover:text-primary-600 transition-colors">JDBC</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第8章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第8章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">DAOパターン入門</h1>
+                    <p class="text-slate-600">データアクセス処理を分離するDAOパターンの基本を学び、保守性と再利用性の高いコード設計の考え方を習得します。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>DAOパターンの目的と利点を理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>データアクセス処理とビジネスロジックの分離方法を学ぶ</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>基本的なDAOクラスの設計と実装ができるようになる</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>保守性と再利用性の高いコード設計の考え方を理解する</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション1: DAOパターンとは -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        8.1 DAOパターンとは
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>DAO（Data Access Object）パターン</strong>は、データベースへのアクセス処理を専用のクラスに分離するデザインパターンです。これまで学んだJDBCのコードをビジネスロジックから分離することで、保守性と再利用性を高めることができます。
+                    </p>
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 my-4">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-500 text-lg mt-0.5"></i>
+                            <div>
+                                <h3 class="font-semibold text-blue-800 mb-2">DAOパターンの主な利点</h3>
+                                <ul class="text-blue-900 text-sm space-y-1">
+                                    <li><strong>関心の分離</strong>: データアクセス処理とビジネスロジックを明確に分離できる</li>
+                                    <li><strong>保守性の向上</strong>: データベース操作の変更が他のコードに影響しにくい</li>
+                                    <li><strong>再利用性</strong>: 同じデータアクセス処理を複数の場所で利用できる</li>
+                                    <li><strong>テスト容易性</strong>: DAOをモック化することで単体テストが容易になる</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">DAOパターンの構成要素</h3>
+                    <div class="my-6">
+                        <div class="bg-white rounded-lg border border-slate-200 p-4">
+                            <pre class="mermaid">
+classDiagram
+    class User {
+        -int id
+        -String name
+        -String email
+        +getId()
+        +getName()
+        +getEmail()
+    }
+    class UserDAO {
+        <<interface>>
+        +findById(int id) User
+        +findAll() List~User~
+        +insert(User user) void
+        +update(User user) void
+        +delete(int id) void
+    }
+    class UserDAOImpl {
+        -Connection connection
+        +findById(int id) User
+        +findAll() List~User~
+        +insert(User user) void
+        +update(User user) void
+        +delete(int id) void
+    }
+    class Service {
+        -UserDAO userDAO
+        +getUserInfo(int id) User
+    }
+
+    UserDAO <|.. UserDAOImpl : implements
+    UserDAOImpl ..> User : uses
+    Service --> UserDAO : uses
+</pre>
+                        </div>
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed">
+                        DAOパターンでは、<strong>エンティティクラス</strong>（データを表現するクラス）、<strong>DAOインターフェース</strong>（操作を定義）、<strong>DAO実装クラス</strong>（実際のデータベース操作）の3つが基本的な構成要素となります。
+                    </p>
+                </section>
+
+                <!-- セクション2: エンティティクラスの作成 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        8.2 エンティティクラスの作成
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        まず、データベースのテーブル構造に対応する<strong>エンティティクラス</strong>を作成します。エンティティクラスは、データベースの1行のデータを表現するJavaオブジェクトです。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">Userテーブルの定義</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">create_user_table.sql</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-sql">-- ユーザーテーブルの作成
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">Userエンティティクラス</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">User.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">package com.example.model;
+
+import java.time.LocalDateTime;
+
+/**
+ * ユーザーエンティティクラス
+ * データベースのusersテーブルに対応
+ */
+public class User {
+    private int id;              // ユーザーID
+    private String name;         // ユーザー名
+    private String email;        // メールアドレス
+    private LocalDateTime createdAt;  // 作成日時
+
+    // デフォルトコンストラクタ
+    public User() {
+    }
+
+    // 全フィールドを設定するコンストラクタ
+    public User(int id, String name, String email, LocalDateTime createdAt) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.createdAt = createdAt;
+    }
+
+    // 新規ユーザー作成用コンストラクタ（IDなし）
+    public User(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    // Getter/Setterメソッド
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("User[id=%d, name=%s, email=%s, createdAt=%s]",
+                           id, name, email, createdAt);
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5 my-4">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-lightbulb text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-emerald-800 mb-2">エンティティクラスの設計ポイント</h3>
+                                <ul class="text-emerald-900 space-y-1 text-sm">
+                                    <li>• テーブルの各カラムに対応するフィールドを定義する</li>
+                                    <li>• すべてのフィールドはprivateにし、Getter/Setterでアクセスする</li>
+                                    <li>• デフォルトコンストラクタを用意する（フレームワークで必要な場合がある）</li>
+                                    <li>• toString()メソッドをオーバーライドしてデバッグを容易にする</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション3: DAOインターフェースの定義 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        8.3 DAOインターフェースの定義
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        次に、データアクセス操作を定義する<strong>DAOインターフェース</strong>を作成します。インターフェースを使用することで、実装の詳細を隠蔽し、異なる実装（例：テスト用のモック）に簡単に切り替えられます。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">UserDAO.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">package com.example.dao;
+
+import com.example.model.User;
+import java.util.List;
+
+/**
+ * ユーザーデータアクセスインターフェース
+ * データベースのusersテーブルへの操作を定義
+ */
+public interface UserDAO {
+
+    /**
+     * 指定されたIDのユーザーを取得
+     * @param id ユーザーID
+     * @return ユーザーオブジェクト（存在しない場合はnull）
+     */
+    User findById(int id);
+
+    /**
+     * すべてのユーザーを取得
+     * @return ユーザーリスト
+     */
+    List<User> findAll();
+
+    /**
+     * メールアドレスでユーザーを検索
+     * @param email メールアドレス
+     * @return ユーザーオブジェクト（存在しない場合はnull）
+     */
+    User findByEmail(String email);
+
+    /**
+     * 新しいユーザーを登録
+     * @param user 登録するユーザーオブジェクト
+     * @return 登録されたユーザーのID
+     */
+    int insert(User user);
+
+    /**
+     * ユーザー情報を更新
+     * @param user 更新するユーザーオブジェクト
+     * @return 更新された行数
+     */
+    int update(User user);
+
+    /**
+     * 指定されたIDのユーザーを削除
+     * @param id 削除するユーザーID
+     * @return 削除された行数
+     */
+    int delete(int id);
+}</code></pre>
+                    </div>
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 my-4">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-500 text-lg mt-0.5"></i>
+                            <div>
+                                <h3 class="font-semibold text-blue-800 mb-2">CRUD操作の命名規則</h3>
+                                <p class="text-blue-900 text-sm">
+                                    DAOインターフェースのメソッド名は、一般的に以下の規則に従います：
+                                </p>
+                                <ul class="text-blue-900 text-sm space-y-1 mt-2">
+                                    <li>• <strong>find〜</strong>: データの取得（Read）</li>
+                                    <li>• <strong>insert</strong>: データの登録（Create）</li>
+                                    <li>• <strong>update</strong>: データの更新（Update）</li>
+                                    <li>• <strong>delete</strong>: データの削除（Delete）</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション4: DAO実装クラスの作成 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        8.4 DAO実装クラスの作成
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        DAOインターフェースを実装する<strong>実装クラス</strong>を作成します。ここに実際のJDBCコードを記述します。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">UserDAOImpl.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">package com.example.dao;
+
+import com.example.model.User;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * UserDAOインターフェースの実装クラス
+ */
+public class UserDAOImpl implements UserDAO {
+
+    private Connection connection;
+
+    // コンストラクタでデータベース接続を受け取る
+    public UserDAOImpl(Connection connection) {
+        this.connection = connection;
+    }
+
+    @Override
+    public User findById(int id) {
+        String sql = "SELECT * FROM users WHERE id = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToUser(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public List<User> findAll() {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM users ORDER BY id";
+
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                users.add(mapResultSetToUser(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        String sql = "SELECT * FROM users WHERE email = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, email);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToUser(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public int insert(User user) {
+        String sql = "INSERT INTO users (name, email) VALUES (?, ?)";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(
+                sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            pstmt.setString(1, user.getName());
+            pstmt.setString(2, user.getEmail());
+
+            int affectedRows = pstmt.executeUpdate();
+
+            // 自動生成されたIDを取得
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        return generatedKeys.getInt(1);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    @Override
+    public int update(User user) {
+        String sql = "UPDATE users SET name = ?, email = ? WHERE id = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, user.getName());
+            pstmt.setString(2, user.getEmail());
+            pstmt.setInt(3, user.getId());
+
+            return pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    @Override
+    public int delete(int id) {
+        String sql = "DELETE FROM users WHERE id = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            return pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
+     * ResultSetからUserオブジェクトへのマッピング
+     * @param rs ResultSet
+     * @return Userオブジェクト
+     */
+    private User mapResultSetToUser(ResultSet rs) throws SQLException {
+        User user = new User();
+        user.setId(rs.getInt("id"));
+        user.setName(rs.getString("name"));
+        user.setEmail(rs.getString("email"));
+        user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        return user;
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5 my-4">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-lightbulb text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-emerald-800 mb-2">実装のポイント</h3>
+                                <ul class="text-emerald-900 space-y-2 text-sm">
+                                    <li>• <strong>mapResultSetToUser()</strong>: ResultSetをUserオブジェクトに変換する共通メソッドを作成することでコードの重複を避ける</li>
+                                    <li>• <strong>例外処理</strong>: SQLException を適切にハンドリングし、エラー情報をログに記録する</li>
+                                    <li>• <strong>リソース管理</strong>: try-with-resources構文でPreparedStatementとResultSetを自動的にクローズする</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション5: DAOの使用例 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        8.5 DAOの使用例
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        作成したDAOを実際に使用するサンプルコードを見ていきましょう。DAOを使用することで、ビジネスロジックからJDBCの詳細を隠蔽できます。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">UserService.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">package com.example.service;
+
+import com.example.dao.UserDAO;
+import com.example.dao.UserDAOImpl;
+import com.example.model.User;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.List;
+
+/**
+ * ユーザー管理サービスクラス
+ * ビジネスロジックを実装
+ */
+public class UserService {
+
+    private static final String DB_URL = "jdbc:postgresql://localhost:5432/mydb";
+    private static final String DB_USER = "myuser";
+    private static final String DB_PASSWORD = "mypassword";
+
+    public static void main(String[] args) {
+        // データベース接続とDAOの初期化
+        try (Connection conn = DriverManager.getConnection(
+                DB_URL, DB_USER, DB_PASSWORD)) {
+
+            UserDAO userDAO = new UserDAOImpl(conn);
+
+            // 1. 新しいユーザーを登録
+            System.out.println("=== ユーザー登録 ===");
+            User newUser = new User("山田太郎", "yamada@example.com");
+            int userId = userDAO.insert(newUser);
+            System.out.println("登録されたユーザーID: " + userId);
+
+            // 2. IDでユーザーを取得
+            System.out.println("\n=== ユーザー取得 ===");
+            User user = userDAO.findById(userId);
+            System.out.println(user);
+
+            // 3. すべてのユーザーを取得
+            System.out.println("\n=== 全ユーザー一覧 ===");
+            List<User> users = userDAO.findAll();
+            for (User u : users) {
+                System.out.println(u);
+            }
+
+            // 4. ユーザー情報を更新
+            System.out.println("\n=== ユーザー更新 ===");
+            user.setName("山田花子");
+            user.setEmail("hanako@example.com");
+            int updated = userDAO.update(user);
+            System.out.println("更新された行数: " + updated);
+
+            // 5. メールアドレスで検索
+            System.out.println("\n=== メールアドレスで検索 ===");
+            User foundUser = userDAO.findByEmail("hanako@example.com");
+            System.out.println(foundUser);
+
+            // 6. ユーザーを削除
+            System.out.println("\n=== ユーザー削除 ===");
+            int deleted = userDAO.delete(userId);
+            System.out.println("削除された行数: " + deleted);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">実行結果例</h3>
+                    <div class="bg-slate-100 border border-slate-200 rounded-xl p-4 my-4">
+                        <pre class="text-slate-800 text-sm whitespace-pre-wrap">=== ユーザー登録 ===
+登録されたユーザーID: 1
+
+=== ユーザー取得 ===
+User[id=1, name=山田太郎, email=yamada@example.com, createdAt=2025-11-26T10:30:00]
+
+=== 全ユーザー一覧 ===
+User[id=1, name=山田太郎, email=yamada@example.com, createdAt=2025-11-26T10:30:00]
+
+=== ユーザー更新 ===
+更新された行数: 1
+
+=== メールアドレスで検索 ===
+User[id=1, name=山田花子, email=hanako@example.com, createdAt=2025-11-26T10:30:00]
+
+=== ユーザー削除 ===
+削除された行数: 1</pre>
+                    </div>
+                </section>
+
+                <!-- セクション6: DAOパターンの応用 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        8.6 DAOパターンの応用
+                    </h2>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">接続管理の改善</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        実際のアプリケーションでは、接続管理を専用のクラスで行うことが一般的です。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">DatabaseConnection.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">package com.example.util;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+/**
+ * データベース接続管理クラス
+ */
+public class DatabaseConnection {
+
+    private static final String DB_URL = "jdbc:postgresql://localhost:5432/mydb";
+    private static final String DB_USER = "myuser";
+    private static final String DB_PASSWORD = "mypassword";
+
+    /**
+     * データベース接続を取得
+     * @return データベース接続
+     */
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+    }
+}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">DAOファクトリーパターン</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        DAOインスタンスの生成を一元管理するファクトリークラスを作成すると、より柔軟な設計になります。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">DAOFactory.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">package com.example.factory;
+
+import com.example.dao.UserDAO;
+import com.example.dao.UserDAOImpl;
+import com.example.util.DatabaseConnection;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+/**
+ * DAOファクトリークラス
+ * DAOインスタンスの生成を一元管理
+ */
+public class DAOFactory {
+
+    /**
+     * UserDAOのインスタンスを取得
+     * @return UserDAOインスタンス
+     */
+    public static UserDAO getUserDAO() throws SQLException {
+        Connection connection = DatabaseConnection.getConnection();
+        return new UserDAOImpl(connection);
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 my-4">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-500 text-lg mt-0.5"></i>
+                            <div>
+                                <h3 class="font-semibold text-blue-800 mb-2">発展的な設計パターン</h3>
+                                <p class="text-blue-900 text-sm">
+                                    実際のプロジェクトでは、以下のような発展的なパターンも使用されます：
+                                </p>
+                                <ul class="text-blue-900 text-sm space-y-1 mt-2">
+                                    <li>• <strong>コネクションプーリング</strong>: 接続を再利用してパフォーマンスを向上</li>
+                                    <li>• <strong>トランザクション管理</strong>: 複数のDAO操作を一つのトランザクションで管理</li>
+                                    <li>• <strong>例外のカスタマイズ</strong>: DAOException独自の例外クラスを定義</li>
+                                    <li>• <strong>ジェネリクスの活用</strong>: 共通のDAO基底クラスを作成</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 実習カード -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                            rounded-xl p-5 my-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3">
+                                実習 8-1: 商品管理DAOの作成
+                            </h3>
+                            <p class="text-purple-900 mb-4">
+                                これまで学んだDAOパターンを使用して、商品（Product）を管理するDAOを作成しましょう。
+                            </p>
+
+                            <h4 class="font-medium text-purple-800 mb-2">要件</h4>
+                            <ol class="space-y-3 mb-4">
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">1</span>
+                                    <span>Productテーブルを作成（id, name, price, stock, created_at）</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">2</span>
+                                    <span>Productエンティティクラスを作成</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">3</span>
+                                    <span>ProductDAOインターフェースを定義（CRUD操作 + 価格範囲検索メソッド）</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">4</span>
+                                    <span>ProductDAOImplクラスを実装</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">5</span>
+                                    <span>テストプログラムで動作確認を行う</span>
+                                </li>
+                            </ol>
+
+                            <h4 class="font-medium text-purple-800 mb-2">ヒント</h4>
+                            <div class="bg-white/50 rounded-lg p-3 text-purple-900 text-sm">
+                                <p>価格範囲検索メソッドの例：</p>
+                                <code>List&lt;Product&gt; findByPriceRange(int minPrice, int maxPrice)</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q1. DAOパターンを使用する主な利点を3つ挙げてください。</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            1. <strong>関心の分離</strong>: データアクセス処理とビジネスロジックを明確に分離できる<br>
+                                            2. <strong>保守性の向上</strong>: データベース操作の変更が他のコードに影響しにくくなる<br>
+                                            3. <strong>再利用性</strong>: 同じデータアクセス処理を複数の場所で利用できる<br>
+                                            その他、テスト容易性の向上なども利点として挙げられます。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q2. DAOパターンにおけるエンティティクラスの役割は何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            エンティティクラスは、データベースのテーブル構造に対応し、1行のデータをJavaオブジェクトとして表現します。各カラムに対応するフィールドを持ち、Getter/Setterメソッドでアクセスできるようにします。データの運搬役（DTO: Data Transfer Object）として機能します。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q3. なぜDAOをインターフェースと実装クラスに分けるのが推奨されるのですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            インターフェースと実装を分離することで、実装の詳細を隠蔽できます。これにより、テスト時にモックオブジェクトに置き換えたり、異なるデータベースに対応した実装に切り替えることが容易になります。また、依存性の注入（DI）などの設計パターンとの相性も良くなります。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q4. mapResultSetToUser()のような共通メソッドを作成する利点は何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            ResultSetをエンティティオブジェクトに変換する処理をメソッドとして共通化することで、コードの重複を避け、保守性が向上します。カラム名の変更やデータ型の変更があった場合も、1箇所を修正するだけで対応できます。また、コードの可読性も向上します。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- まとめ -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6">
+                        <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800 mb-4">
+                            <i class="fas fa-check-circle text-emerald-500"></i>
+                            この章のまとめ
+                        </h2>
+                        <ul class="space-y-2 text-slate-700">
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-emerald-500 mt-1"></i>
+                                <span>DAOパターンは、データアクセス処理を専用のクラスに分離するデザインパターン</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-emerald-500 mt-1"></i>
+                                <span>エンティティクラス、DAOインターフェース、DAO実装クラスの3つが基本構成要素</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-emerald-500 mt-1"></i>
+                                <span>データアクセス処理とビジネスロジックを分離することで保守性が向上</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-emerald-500 mt-1"></i>
+                                <span>インターフェースを使用することで、テスト容易性や柔軟性が向上</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-emerald-500 mt-1"></i>
+                                <span>実際のプロジェクトでは、接続管理やファクトリーパターンなどと組み合わせて使用</span>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <a href="jdbc-learning-material-07.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
+                                  transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">トランザクション管理</span>
+                        </div>
+                    </a>
+                    <a href="jdbc-learning-material-09.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">実践演習 - 商品管理システム</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
+    </div>
+
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- 描画用Canvasオーバーレイ -->
+    <canvas id="drawing-canvas" class="fixed inset-0 z-[100] pointer-events-none"></canvas>
+
+    <!-- 描画ツールバー（右端） -->
+    <div id="drawing-toolbar" class="fixed right-4 top-1/2 -translate-y-1/2 z-[110]
+                                     bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl
+                                     border border-slate-200 p-2 flex flex-col gap-1
+                                     transition-all duration-300">
+        <!-- ツールバー折りたたみボタン -->
+        <button id="toolbar-toggle"
+                class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                       flex items-center justify-center transition-colors mb-2"
+                title="ツールバーを開く">
+            <i class="fas fa-chevron-left text-slate-600"></i>
+        </button>
+
+        <div id="toolbar-content" class="hidden flex-col gap-1">
+            <!-- ペンツール -->
+            <button id="pen-tool"
+                    class="tool-btn w-10 h-10 rounded-xl bg-primary-100 text-primary-600
+                           hover:bg-primary-200 flex items-center justify-center transition-colors"
+                    title="ペン (P)">
+                <i class="fas fa-pen"></i>
+            </button>
+
+            <!-- 消しゴムツール -->
+            <button id="eraser-tool"
+                    class="tool-btn w-10 h-10 rounded-xl bg-slate-100 text-slate-600
+                           hover:bg-slate-200 flex items-center justify-center transition-colors"
+                    title="消しゴム (E)">
+                <i class="fas fa-eraser"></i>
+            </button>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 色選択 -->
+            <div id="color-picker" class="flex flex-col gap-1">
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-red-400 bg-red-500
+                               hover:scale-110 transition-transform" data-color="#ef4444" title="赤"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-blue-400 bg-blue-500
+                               hover:scale-110 transition-transform" data-color="#3b82f6" title="青"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-slate-600 bg-slate-800
+                               hover:scale-110 transition-transform active-color" data-color="#1e293b" title="黒"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-emerald-400 bg-emerald-500
+                               hover:scale-110 transition-transform" data-color="#10b981" title="緑"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-amber-400 bg-amber-500
+                               hover:scale-110 transition-transform" data-color="#f59e0b" title="黄"></button>
+            </div>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 線の太さ -->
+            <div id="stroke-width" class="flex flex-col gap-1">
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors" data-width="2" title="細い">
+                    <div class="w-4 h-0.5 bg-slate-600 rounded-full"></div>
+                </button>
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors active-stroke" data-width="4" title="普通">
+                    <div class="w-4 h-1 bg-slate-600 rounded-full"></div>
+                </button>
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors" data-width="8" title="太い">
+                    <div class="w-4 h-2 bg-slate-600 rounded-full"></div>
+                </button>
+            </div>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 元に戻す -->
+            <button id="undo-btn"
+                    class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600
+                           hover:bg-slate-200 flex items-center justify-center transition-colors
+                           disabled:opacity-40 disabled:cursor-not-allowed"
+                    title="元に戻す (Ctrl+Z)" disabled>
+                <i class="fas fa-undo"></i>
+            </button>
+
+            <!-- 全消去 -->
+            <button id="clear-btn"
+                    class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600
+                           hover:bg-rose-200 flex items-center justify-center transition-colors"
+                    title="全消去 (C)">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Highlight.js 初期化
+        hljs.highlightAll();
+
+        // Mermaid.js 初期化
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose'
+        });
+
+        // モバイルメニュー制御
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const menuBtn = document.getElementById('mobile-menu-btn');
+
+        menuBtn?.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        });
+
+        overlay?.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        });
+
+        // スクロールトップボタン表示制御
+        const scrollTopBtn = document.getElementById('scroll-top-btn');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.remove('opacity-0', 'invisible', 'translate-y-4');
+            } else {
+                scrollTopBtn.classList.add('opacity-0', 'invisible', 'translate-y-4');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // コードコピー機能
+        function copyCode(btn) {
+            const code = btn.closest('.code-block-wrapper').querySelector('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const icon = btn.querySelector('i');
+                icon.classList.remove('fa-copy');
+                icon.classList.add('fa-check');
+                setTimeout(() => {
+                    icon.classList.remove('fa-check');
+                    icon.classList.add('fa-copy');
+                }, 2000);
+            });
+        }
+
+        // サイドバーリサイズ機能
+        const resizeHandle = document.getElementById('sidebar-resize-handle');
+        let isResizing = false;
+        let startX, startWidth;
+
+        resizeHandle?.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            startX = e.clientX;
+            startWidth = sidebar.offsetWidth;
+            resizeHandle.classList.add('resizing');
+            document.body.style.cursor = 'ew-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            const diff = e.clientX - startX;
+            const newWidth = Math.min(Math.max(startWidth + diff, 240), 480);
+            sidebar.style.width = newWidth + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                resizeHandle.classList.remove('resizing');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+                // サイドバー幅をローカルストレージに保存
+                localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
+            }
+        });
+
+        // ページ読み込み時にサイドバー幅を復元
+        const savedWidth = localStorage.getItem('sidebarWidth');
+        if (savedWidth && window.innerWidth >= 768) {
+            sidebar.style.width = savedWidth + 'px';
+        }
+
+        // 描画ツールバー折りたたみ機能
+        const toolbarToggle = document.getElementById('toolbar-toggle');
+        const toolbarContent = document.getElementById('toolbar-content');
+        let isToolbarOpen = false;
+
+        toolbarToggle?.addEventListener('click', () => {
+            isToolbarOpen = !isToolbarOpen;
+            const icon = toolbarToggle.querySelector('i');
+
+            if (isToolbarOpen) {
+                toolbarContent.classList.remove('hidden');
+                toolbarContent.classList.add('flex');
+                icon.classList.remove('fa-chevron-left');
+                icon.classList.add('fa-chevron-right');
+                toolbarToggle.title = 'ツールバーを閉じる';
+            } else {
+                toolbarContent.classList.add('hidden');
+                toolbarContent.classList.remove('flex');
+                icon.classList.remove('fa-chevron-right');
+                icon.classList.add('fa-chevron-left');
+                toolbarToggle.title = 'ツールバーを開く';
+            }
+        });
+    </script>
+
+    <!-- 描画ツール -->
+    <script src="../../../../common/drawing-tool.js"></script>
+</body>
+</html>

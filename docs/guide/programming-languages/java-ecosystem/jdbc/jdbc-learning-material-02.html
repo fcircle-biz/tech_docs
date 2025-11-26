@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.1">
+    <title>JDBC学習教材 第2章 - データベース接続の基本</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            200: '#fed7aa',
+                            300: '#fdba74',
+                            400: '#fb923c',
+                            500: '#f97316',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                            800: '#9a3412',
+                            900: '#7c2d12',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <style>
+        /* スクロールバーカスタマイズ */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* コードブロックのラインナンバー */
+        .hljs-ln-numbers {
+            user-select: none;
+            text-align: right;
+            color: #6b7280;
+            padding-right: 12px;
+            border-right: 1px solid #374151;
+        }
+
+        /* サイドバートランジション */
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, width 0.15s ease-out;
+        }
+
+        /* サイドバーリサイズ機能 */
+        .sidebar-resizable {
+            min-width: 240px;
+            max-width: 480px;
+        }
+        .sidebar-resize-handle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 6px;
+            height: 100%;
+            cursor: ew-resize;
+            background: transparent;
+            transition: background 0.2s;
+            z-index: 10;
+        }
+        .sidebar-resize-handle:hover,
+        .sidebar-resize-handle.resizing {
+            background: linear-gradient(to right, transparent, rgba(249, 115, 22, 0.3));
+        }
+
+        /* スムーズスクロール */
+        html { scroll-behavior: smooth; }
+
+        /* コードコピーボタン */
+        .code-block-wrapper { position: relative; }
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .code-block-wrapper:hover .copy-btn { opacity: 1; }
+
+        /* ヘッダー情報リッチデザイン */
+        .header-rich {
+            background: linear-gradient(135deg,
+                #c2410c 0%,
+                #f97316 50%,
+                #fb923c 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .header-rich::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px);
+            animation: bgSlide 10s linear infinite;
+        }
+        @keyframes bgSlide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(50px); }
+        }
+
+        .header-rich-shadow {
+            box-shadow:
+                0 4px 6px -1px rgba(249, 115, 22, 0.2),
+                0 10px 25px -5px rgba(249, 115, 22, 0.3),
+                0 0 50px rgba(249, 115, 22, 0.15);
+        }
+
+        .icon-rotate-hover {
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .icon-rotate-hover:hover {
+            transform: rotate(360deg) scale(1.2);
+        }
+    </style>
+</head>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fab fa-java text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
+
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">JDBC学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>データベース接続</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 40分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右側: モバイルメニューボタン -->
+                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバー -->
+        <aside id="sidebar" class="fixed md:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
+                                   bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
+                                   transform -translate-x-full md:translate-x-0 sidebar-transition sidebar-resizable"
+               style="--sidebar-width: 320px;">
+            <!-- リサイズハンドル -->
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle hidden md:block"></div>
+            <div class="p-4">
+                <!-- 進捗インジケーター -->
+                <div class="mb-6 p-4 bg-primary-50 rounded-xl">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-primary-700">学習進捗</span>
+                        <span class="text-sm text-primary-600">2/10章</span>
+                    </div>
+                    <div class="w-full bg-primary-100 rounded-full h-2">
+                        <div class="bg-primary-500 h-2 rounded-full transition-all duration-300" style="width: 20%"></div>
+                    </div>
+                </div>
+
+                <!-- 章リスト -->
+                <nav>
+                    <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-2">
+                        学習章
+                    </h2>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="jdbc-learning-material-01.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">JDBCの概要と環境構築</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="jdbc-learning-material-02.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      bg-primary-100 text-primary-700 font-medium">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-primary-500 text-white text-xs rounded-full">2</span>
+                                <span class="truncate">データベース接続の基本</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="jdbc-learning-material-03.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">3</span>
+                                <span class="truncate">データの取得（SELECT文）</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="jdbc-learning-material-04.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">4</span>
+                                <span class="truncate">データの登録・更新・削除</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="jdbc-learning-material-05.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">5</span>
+                                <span class="truncate">PreparedStatementの活用</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="jdbc-learning-material-06.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">6</span>
+                                <span class="truncate">例外処理とリソース管理</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="jdbc-learning-material-07.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">7</span>
+                                <span class="truncate">トランザクション管理</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="jdbc-learning-material-08.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">8</span>
+                                <span class="truncate">DAOパターン入門</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="jdbc-learning-material-09.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">9</span>
+                                <span class="truncate">実践演習 - 商品管理システム</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="jdbc-learning-material-10.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">10</span>
+                                <span class="truncate">よくある問題と解決策</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- サイドバーオーバーレイ（モバイル用） -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="../../../../../" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="../" class="hover:text-primary-600 transition-colors">Java</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="./" class="hover:text-primary-600 transition-colors">JDBC</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第2章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第2章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">データベース接続の基本</h1>
+                    <p class="text-slate-600">DriverManagerを使用したデータベース接続の基礎を学び、Connection、Statement、ResultSetの3つの主要オブジェクトの役割と使い方を習得します。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>JDBC URLの構造と接続文字列の作成方法</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>DriverManagerを使用した基本的な接続の確立</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>Connection、Statement、ResultSetの役割と関係</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>データベースリソースの適切なクローズ処理</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション2.1 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        2.1 JDBC接続の仕組み
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        JDBCを使用してデータベースに接続するには、いくつかの重要なコンポーネントが必要です。まず、データベースとの接続を確立するための「橋渡し役」として<strong>JDBCドライバ</strong>が機能します。このドライバは、Javaプログラムとデータベース固有の通信プロトコルを変換する役割を担います。
+                    </p>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4 rounded">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold text-blue-800 mb-2">JDBCドライバとは</h4>
+                                <p class="text-blue-900 text-sm">
+                                    JDBCドライバは、各データベースベンダーが提供する.jar形式のライブラリです。PostgreSQLにはpostgresql-*.jar、MySQLにはmysql-connector-java-*.jarといった具合に、使用するデータベースに応じた専用のドライバが必要になります。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mermaid図: JDBC接続の流れ -->
+                    <div class="my-6 bg-white p-4 rounded-lg border border-slate-200">
+                        <pre class="mermaid">
+graph LR
+    A[Javaプログラム] -->|1. JDBCドライバロード| B[DriverManager]
+    B -->|2. 接続要求<br/>JDBC URL使用| C[データベースサーバー]
+    C -->|3. 接続確立| D[Connection<br/>オブジェクト]
+    D -->|4. SQL実行用| E[Statement/<br/>PreparedStatement]
+    E -->|5. 結果取得| F[ResultSet]
+
+    style A fill:#e0f2fe
+    style B fill:#dbeafe
+    style C fill:#fef3c7
+    style D fill:#d1fae5
+    style E fill:#fce7f3
+    style F fill:#e9d5ff
+                        </pre>
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed">
+                        接続の流れは上図の通りです。まずJDBCドライバを読み込み、DriverManagerに接続を要求します。接続が成功するとConnectionオブジェクトが返され、このオブジェクトを通じてデータベース操作を行います。
+                    </p>
+                </section>
+
+                <!-- セクション2.2 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        2.2 JDBC URLの構造
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        データベースに接続するためには、<strong>JDBC URL（接続文字列）</strong>が必要です。これはデータベースの場所と接続方法を指定する特殊な文字列で、決められた形式に従って記述します。
+                    </p>
+
+                    <div class="bg-slate-800 rounded-lg p-4 mb-4">
+                        <pre class="text-slate-100 text-sm"><code>jdbc:[サブプロトコル]://[ホスト名]:[ポート番号]/[データベース名]?[パラメータ]</code></pre>
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">各構成要素の意味は以下の通りです：</p>
+
+                    <table class="min-w-full border border-slate-200 rounded-lg overflow-hidden mb-4">
+                        <thead class="bg-slate-100">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-sm font-semibold text-slate-700">要素</th>
+                                <th class="px-4 py-2 text-left text-sm font-semibold text-slate-700">説明</th>
+                                <th class="px-4 py-2 text-left text-sm font-semibold text-slate-700">例</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-4 py-2 text-sm font-mono text-slate-600">jdbc</td>
+                                <td class="px-4 py-2 text-sm text-slate-600">JDBC接続を示す固定のプレフィックス</td>
+                                <td class="px-4 py-2 text-sm font-mono text-slate-600">jdbc</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-4 py-2 text-sm font-mono text-slate-600">サブプロトコル</td>
+                                <td class="px-4 py-2 text-sm text-slate-600">データベースの種類を示す識別子</td>
+                                <td class="px-4 py-2 text-sm font-mono text-slate-600">postgresql, mysql, oracle</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-4 py-2 text-sm font-mono text-slate-600">ホスト名</td>
+                                <td class="px-4 py-2 text-sm text-slate-600">データベースサーバーのアドレス</td>
+                                <td class="px-4 py-2 text-sm font-mono text-slate-600">localhost, 192.168.1.10</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-4 py-2 text-sm font-mono text-slate-600">ポート番号</td>
+                                <td class="px-4 py-2 text-sm text-slate-600">データベースサーバーの待ち受けポート</td>
+                                <td class="px-4 py-2 text-sm font-mono text-slate-600">5432 (PostgreSQL), 3306 (MySQL)</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-4 py-2 text-sm font-mono text-slate-600">データベース名</td>
+                                <td class="px-4 py-2 text-sm text-slate-600">接続先のデータベース名</td>
+                                <td class="px-4 py-2 text-sm font-mono text-slate-600">mydb, testdb</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-4 py-2 text-sm font-mono text-slate-600">パラメータ</td>
+                                <td class="px-4 py-2 text-sm text-slate-600">接続オプション（任意）</td>
+                                <td class="px-4 py-2 text-sm font-mono text-slate-600">useSSL=false, serverTimezone=JST</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mb-3 mt-6">主要データベースのJDBC URL例</h3>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">各DBのJDBC URL</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// PostgreSQL
+String url = "jdbc:postgresql://localhost:5432/mydb";
+
+// MySQL
+String url = "jdbc:mysql://localhost:3306/mydb?serverTimezone=JST";
+
+// Oracle
+String url = "jdbc:oracle:thin:@localhost:1521:orcl";
+
+// SQL Server
+String url = "jdbc:sqlserver://localhost:1433;databaseName=mydb";</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション2.3 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        2.3 基本的な接続方法
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        実際にデータベースに接続するコードを見てみましょう。最も基本的な方法は<code>DriverManager.getConnection()</code>メソッドを使用する方法です。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">DatabaseConnection.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class DatabaseConnection {
+    public static void main(String[] args) {
+        // データベース接続情報
+        String url = "jdbc:postgresql://localhost:5432/testdb";
+        String user = "dbuser";
+        String password = "password123";
+
+        // Connection変数を宣言（try外で宣言してfinallyで使えるようにする）
+        Connection conn = null;
+
+        try {
+            // データベースに接続
+            conn = DriverManager.getConnection(url, user, password);
+            System.out.println("データベース接続成功！");
+
+            // ここでデータベース操作を行う
+
+        } catch (SQLException e) {
+            System.err.println("接続エラー: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            // 接続を閉じる（リソース解放）
+            if (conn != null) {
+                try {
+                    conn.close();
+                    System.out.println("接続を閉じました。");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="bg-amber-50 border-l-4 border-amber-500 p-4 mb-4 rounded">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-amber-500 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold text-amber-800 mb-2">重要：リソースのクローズ</h4>
+                                <p class="text-amber-900 text-sm">
+                                    データベース接続は貴重なリソースです。使用後は必ず<code>close()</code>メソッドで閉じる必要があります。finallyブロックで閉じることで、例外が発生した場合でも確実にクローズ処理が実行されます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション2.4 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        2.4 JDBCの主要オブジェクト
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        JDBCでデータベース操作を行う際、3つの主要なインターフェースが中心的な役割を果たします。それぞれの役割と関係を理解することが重要です。
+                    </p>
+
+                    <!-- Mermaid図: 主要オブジェクトの関係 -->
+                    <div class="my-6 bg-white p-4 rounded-lg border border-slate-200">
+                        <pre class="mermaid">
+classDiagram
+    class Connection {
+        +createStatement() Statement
+        +prepareStatement(sql) PreparedStatement
+        +close()
+        +commit()
+        +rollback()
+    }
+    class Statement {
+        +executeQuery(sql) ResultSet
+        +executeUpdate(sql) int
+        +close()
+    }
+    class ResultSet {
+        +next() boolean
+        +getString(column) String
+        +getInt(column) int
+        +close()
+    }
+
+    Connection --> Statement : 作成
+    Statement --> ResultSet : 生成
+                        </pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mb-3 mt-6">1. Connection（接続オブジェクト）</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        データベースとの接続そのものを表すオブジェクトです。このオブジェクトを通じてSQL文を実行するためのStatementを作成したり、トランザクション制御を行ったりします。
+                    </p>
+
+                    <div class="bg-slate-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold text-slate-800 mb-2 text-sm">主なメソッド</h4>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start gap-2">
+                                <code class="text-primary-600">createStatement()</code>
+                                <span class="text-slate-600">: SQL文を実行するStatementオブジェクトを作成</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <code class="text-primary-600">prepareStatement(sql)</code>
+                                <span class="text-slate-600">: パラメータ化されたPreparedStatementを作成</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <code class="text-primary-600">close()</code>
+                                <span class="text-slate-600">: データベース接続を閉じる</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mb-3 mt-6">2. Statement（SQL実行オブジェクト）</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        SQL文をデータベースに送信し、実行するためのオブジェクトです。SELECT文の実行には<code>executeQuery()</code>、INSERT/UPDATE/DELETE文の実行には<code>executeUpdate()</code>を使用します。
+                    </p>
+
+                    <div class="bg-slate-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold text-slate-800 mb-2 text-sm">主なメソッド</h4>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start gap-2">
+                                <code class="text-primary-600">executeQuery(sql)</code>
+                                <span class="text-slate-600">: SELECT文を実行し、ResultSetを返す</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <code class="text-primary-600">executeUpdate(sql)</code>
+                                <span class="text-slate-600">: INSERT/UPDATE/DELETE文を実行し、影響を受けた行数を返す</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <code class="text-primary-600">close()</code>
+                                <span class="text-slate-600">: Statementを閉じる</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mb-3 mt-6">3. ResultSet（結果セットオブジェクト）</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        SELECT文の実行結果を保持するオブジェクトです。表形式のデータを1行ずつ処理できる「カーソル」の役割を果たします。<code>next()</code>メソッドで次の行に移動し、各種getXxxメソッドでデータを取得します。
+                    </p>
+
+                    <div class="bg-slate-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold text-slate-800 mb-2 text-sm">主なメソッド</h4>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-start gap-2">
+                                <code class="text-primary-600">next()</code>
+                                <span class="text-slate-600">: 次の行に移動（データがあればtrue、なければfalse）</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <code class="text-primary-600">getString(列名/列番号)</code>
+                                <span class="text-slate-600">: 文字列データを取得</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <code class="text-primary-600">getInt(列名/列番号)</code>
+                                <span class="text-slate-600">: 整数データを取得</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <code class="text-primary-600">close()</code>
+                                <span class="text-slate-600">: ResultSetを閉じる</span>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- セクション2.5 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        2.5 完全な接続とクエリ実行の例
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        ここまで学んだ知識を統合して、実際にデータベースに接続してデータを取得する完全なプログラムを作成してみましょう。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">SimpleQuery.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.sql.*;
+
+public class SimpleQuery {
+    public static void main(String[] args) {
+        // 接続情報
+        String url = "jdbc:postgresql://localhost:5432/testdb";
+        String user = "dbuser";
+        String password = "password123";
+
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            // 1. データベースに接続
+            conn = DriverManager.getConnection(url, user, password);
+            System.out.println("接続成功");
+
+            // 2. Statementオブジェクトを作成
+            stmt = conn.createStatement();
+
+            // 3. SQL文を実行
+            String sql = "SELECT id, name, age FROM users";
+            rs = stmt.executeQuery(sql);
+
+            // 4. 結果を処理
+            System.out.println("--- ユーザー一覧 ---");
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                int age = rs.getInt("age");
+
+                System.out.printf("ID: %d, 名前: %s, 年齢: %d%n",
+                                  id, name, age);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("エラー: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            // 5. リソースをクローズ（作成の逆順で閉じる）
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+                System.out.println("リソースを解放しました");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-4 rounded">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold text-green-800 mb-2">コードのポイント</h4>
+                                <ul class="text-green-900 text-sm space-y-1">
+                                    <li>• リソースは作成の<strong>逆順</strong>で閉じる（ResultSet → Statement → Connection）</li>
+                                    <li>• <code>rs.next()</code>は最初にカーソルを1行目に移動させる役割も持つ</li>
+                                    <li>• カラム名または列番号（1から始まる）でデータを取得できる</li>
+                                    <li>• 例外処理とリソース解放を忘れずに実装する</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 実習カード -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                            rounded-xl p-5 my-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3">
+                                実習 2-1: データベース接続を確認する
+                            </h3>
+                            <p class="text-purple-900 mb-4">
+                                データベースに接続し、接続が成功したかどうかを確認するプログラムを作成します。接続メタデータも表示してデータベース情報を取得してみましょう。
+                            </p>
+
+                            <h4 class="font-medium text-purple-800 mb-2">手順</h4>
+                            <ol class="space-y-3 mb-4">
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">1</span>
+                                    <span>Eclipseで新しいJavaプロジェクトを作成し、JDBCドライバをビルドパスに追加します</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">2</span>
+                                    <span>使用するデータベース（PostgreSQL、MySQLなど）のJDBC URLを環境に合わせて設定します</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">3</span>
+                                    <span>以下のコードを参考に、接続確認プログラムを作成します</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">4</span>
+                                    <span>プログラムを実行し、接続が成功することを確認します</span>
+                                </li>
+                            </ol>
+
+                            <h4 class="font-medium text-purple-800 mb-2">実装コード</h4>
+                            <pre class="!bg-slate-800 !rounded-lg"><code class="language-java">import java.sql.*;
+
+public class ConnectionTest {
+    public static void main(String[] args) {
+        String url = "jdbc:postgresql://localhost:5432/testdb";
+        String user = "dbuser";
+        String password = "password123";
+
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+            System.out.println("接続成功！");
+
+            // データベースメタデータを取得
+            DatabaseMetaData meta = conn.getMetaData();
+            System.out.println("データベース製品名: " + meta.getDatabaseProductName());
+            System.out.println("データベースバージョン: " + meta.getDatabaseProductVersion());
+            System.out.println("ドライバ名: " + meta.getDriverName());
+            System.out.println("JDBC URL: " + meta.getURL());
+
+        } catch (SQLException e) {
+            System.err.println("接続失敗: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+
+                            <h4 class="font-medium text-purple-800 mt-4 mb-2">期待される実行結果</h4>
+                            <div class="bg-white/50 rounded-lg p-3 text-purple-900 font-mono text-sm">
+                                接続成功！<br>
+                                データベース製品名: PostgreSQL<br>
+                                データベースバージョン: 14.5<br>
+                                ドライバ名: PostgreSQL JDBC Driver<br>
+                                JDBC URL: jdbc:postgresql://localhost:5432/testdb
+                            </div>
+
+                            <div class="mt-4 bg-purple-100 rounded-lg p-3">
+                                <p class="text-purple-900 text-sm">
+                                    <strong>補足：</strong>この実習ではtry-with-resources構文を使用しています。この構文では自動的にリソースがクローズされるため、明示的なclose()呼び出しやfinallyブロックが不要になります。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q1. JDBC URLの構造について、正しいものはどれですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <strong>正解：</strong><code>jdbc:[サブプロトコル]://[ホスト名]:[ポート]/[DB名]</code><br>
+                                            <br>
+                                            JDBC URLは必ず「jdbc:」で始まり、その後にデータベースの種類を示すサブプロトコル（postgresql、mysqlなど）、ホスト名、ポート番号、データベース名が続きます。この形式を正確に記述しないと接続できません。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q2. Connection、Statement、ResultSetの正しいクローズ順序はどれですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <strong>正解：</strong>ResultSet → Statement → Connection<br>
+                                            <br>
+                                            リソースは<strong>作成した順序の逆</strong>でクローズします。これは依存関係のあるリソースを安全に解放するための原則です。ResultSetはStatementに依存し、StatementはConnectionに依存しているため、この順序でクローズする必要があります。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q3. <code>executeQuery()</code>メソッドと<code>executeUpdate()</code>メソッドの違いは何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <strong>executeQuery()</strong>：SELECT文など、結果セットを返すクエリに使用します。戻り値はResultSetオブジェクトです。<br>
+                                            <br>
+                                            <strong>executeUpdate()</strong>：INSERT、UPDATE、DELETE文など、データを変更するクエリに使用します。戻り値は影響を受けた行数（int型）です。<br>
+                                            <br>
+                                            用途に応じて適切なメソッドを選択することが重要です。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q4. なぜデータベース接続は必ずクローズする必要があるのですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            データベース接続は限られた貴重なリソースです。接続を閉じないと以下の問題が発生します：<br>
+                                            <br>
+                                            1. <strong>メモリリーク</strong>：使用されていない接続がメモリを占有し続ける<br>
+                                            2. <strong>接続数の枯渇</strong>：データベースサーバーが受け入れられる最大接続数に達し、新しい接続ができなくなる<br>
+                                            3. <strong>パフォーマンス低下</strong>：不要な接続が維持されることでシステム全体のパフォーマンスが低下する<br>
+                                            <br>
+                                            finallyブロックやtry-with-resources構文を使用して、必ず接続をクローズするようにしましょう。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <a href="jdbc-learning-material-01.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
+                                  transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">JDBCの概要と環境構築</span>
+                        </div>
+                    </a>
+                    <a href="jdbc-learning-material-03.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">データの取得（SELECT文）</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
+    </div>
+
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- 描画用Canvasオーバーレイ -->
+    <canvas id="drawing-canvas" class="fixed inset-0 z-[100] pointer-events-none"></canvas>
+
+    <!-- 描画ツールバー（右端） -->
+    <div id="drawing-toolbar" class="fixed right-4 top-1/2 -translate-y-1/2 z-[110]
+                                     bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl
+                                     border border-slate-200 p-2 flex flex-col gap-1
+                                     transition-all duration-300">
+        <!-- ツールバー折りたたみボタン -->
+        <button id="toolbar-toggle"
+                class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                       flex items-center justify-center transition-colors mb-2"
+                title="ツールバーを開く">
+            <i class="fas fa-chevron-left text-slate-600"></i>
+        </button>
+
+        <div id="toolbar-content" class="hidden flex-col gap-1">
+            <!-- ペンツール -->
+            <button id="pen-tool"
+                    class="tool-btn w-10 h-10 rounded-xl bg-primary-100 text-primary-600
+                           hover:bg-primary-200 flex items-center justify-center transition-colors"
+                    title="ペン (P)">
+                <i class="fas fa-pen"></i>
+            </button>
+
+            <!-- 消しゴムツール -->
+            <button id="eraser-tool"
+                    class="tool-btn w-10 h-10 rounded-xl bg-slate-100 text-slate-600
+                           hover:bg-slate-200 flex items-center justify-center transition-colors"
+                    title="消しゴム (E)">
+                <i class="fas fa-eraser"></i>
+            </button>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 色選択 -->
+            <div id="color-picker" class="flex flex-col gap-1">
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-red-400 bg-red-500
+                               hover:scale-110 transition-transform" data-color="#ef4444" title="赤"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-blue-400 bg-blue-500
+                               hover:scale-110 transition-transform" data-color="#3b82f6" title="青"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-slate-600 bg-slate-800
+                               hover:scale-110 transition-transform active-color" data-color="#1e293b" title="黒"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-emerald-400 bg-emerald-500
+                               hover:scale-110 transition-transform" data-color="#10b981" title="緑"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-amber-400 bg-amber-500
+                               hover:scale-110 transition-transform" data-color="#f59e0b" title="黄"></button>
+            </div>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 線の太さ -->
+            <div id="stroke-width" class="flex flex-col gap-1">
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors" data-width="2" title="細い">
+                    <div class="w-4 h-0.5 bg-slate-600 rounded-full"></div>
+                </button>
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors active-stroke" data-width="4" title="普通">
+                    <div class="w-4 h-1 bg-slate-600 rounded-full"></div>
+                </button>
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors" data-width="8" title="太い">
+                    <div class="w-4 h-2 bg-slate-600 rounded-full"></div>
+                </button>
+            </div>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 元に戻す -->
+            <button id="undo-btn"
+                    class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600
+                           hover:bg-slate-200 flex items-center justify-center transition-colors
+                           disabled:opacity-40 disabled:cursor-not-allowed"
+                    title="元に戻す (Ctrl+Z)" disabled>
+                <i class="fas fa-undo"></i>
+            </button>
+
+            <!-- 全消去 -->
+            <button id="clear-btn"
+                    class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600
+                           hover:bg-rose-200 flex items-center justify-center transition-colors"
+                    title="全消去 (C)">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Highlight.js 初期化
+        hljs.highlightAll();
+
+        // Mermaid.js 初期化
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose'
+        });
+
+        // モバイルメニュー制御
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const menuBtn = document.getElementById('mobile-menu-btn');
+
+        menuBtn?.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        });
+
+        overlay?.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        });
+
+        // スクロールトップボタン表示制御
+        const scrollTopBtn = document.getElementById('scroll-top-btn');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.remove('opacity-0', 'invisible', 'translate-y-4');
+            } else {
+                scrollTopBtn.classList.add('opacity-0', 'invisible', 'translate-y-4');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // コードコピー機能
+        function copyCode(btn) {
+            const code = btn.closest('.code-block-wrapper').querySelector('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const icon = btn.querySelector('i');
+                icon.classList.remove('fa-copy');
+                icon.classList.add('fa-check');
+                setTimeout(() => {
+                    icon.classList.remove('fa-check');
+                    icon.classList.add('fa-copy');
+                }, 2000);
+            });
+        }
+
+        // サイドバーリサイズ機能
+        const resizeHandle = document.getElementById('sidebar-resize-handle');
+        let isResizing = false;
+        let startX, startWidth;
+
+        resizeHandle?.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            startX = e.clientX;
+            startWidth = sidebar.offsetWidth;
+            resizeHandle.classList.add('resizing');
+            document.body.style.cursor = 'ew-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            const diff = e.clientX - startX;
+            const newWidth = Math.min(Math.max(startWidth + diff, 240), 480);
+            sidebar.style.width = newWidth + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                resizeHandle.classList.remove('resizing');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+                // サイドバー幅をローカルストレージに保存
+                localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
+            }
+        });
+
+        // ページ読み込み時にサイドバー幅を復元
+        const savedWidth = localStorage.getItem('sidebarWidth');
+        if (savedWidth && window.innerWidth >= 768) {
+            sidebar.style.width = savedWidth + 'px';
+        }
+
+        // 描画ツールバー折りたたみ機能
+        const toolbarToggle = document.getElementById('toolbar-toggle');
+        const toolbarContent = document.getElementById('toolbar-content');
+        let isToolbarOpen = false;
+
+        toolbarToggle?.addEventListener('click', () => {
+            isToolbarOpen = !isToolbarOpen;
+            const icon = toolbarToggle.querySelector('i');
+
+            if (isToolbarOpen) {
+                toolbarContent.classList.remove('hidden');
+                toolbarContent.classList.add('flex');
+                icon.classList.remove('fa-chevron-left');
+                icon.classList.add('fa-chevron-right');
+                toolbarToggle.title = 'ツールバーを閉じる';
+            } else {
+                toolbarContent.classList.add('hidden');
+                toolbarContent.classList.remove('flex');
+                icon.classList.remove('fa-chevron-right');
+                icon.classList.add('fa-chevron-left');
+                toolbarToggle.title = 'ツールバーを開く';
+            }
+        });
+    </script>
+
+    <!-- 描画ツール -->
+    <script src="../../../../common/drawing-tool.js"></script>
+</body>
+</html>

@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.1">
+    <title>Java学習教材 第8章 - クラスとオブジェクト</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            200: '#fed7aa',
+                            300: '#fdba74',
+                            400: '#fb923c',
+                            500: '#ED8B00',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                            800: '#9a3412',
+                            900: '#7c2d12',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <style>
+        /* スクロールバーカスタマイズ */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* コードブロックのラインナンバー */
+        .hljs-ln-numbers {
+            user-select: none;
+            text-align: right;
+            color: #6b7280;
+            padding-right: 12px;
+            border-right: 1px solid #374151;
+        }
+
+        /* サイドバートランジション */
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, width 0.15s ease-out;
+        }
+
+        /* サイドバーリサイズ機能 */
+        .sidebar-resizable {
+            min-width: 240px;
+            max-width: 480px;
+        }
+        .sidebar-resize-handle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 6px;
+            height: 100%;
+            cursor: ew-resize;
+            background: transparent;
+            transition: background 0.2s;
+            z-index: 10;
+        }
+        .sidebar-resize-handle:hover,
+        .sidebar-resize-handle.resizing {
+            background: linear-gradient(to right, transparent, rgba(237, 139, 0, 0.3));
+        }
+
+        /* スムーズスクロール */
+        html { scroll-behavior: smooth; }
+
+        /* コードコピーボタン */
+        .code-block-wrapper { position: relative; }
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .code-block-wrapper:hover .copy-btn { opacity: 1; }
+
+        /* ヘッダー情報リッチデザイン */
+        .header-rich {
+            background: linear-gradient(135deg, #c2410c 0%, #ED8B00 50%, #fb923c 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .header-rich::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px);
+            animation: bgSlide 10s linear infinite;
+        }
+        @keyframes bgSlide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(50px); }
+        }
+
+        .header-rich-shadow {
+            box-shadow:
+                0 4px 6px -1px rgba(237, 139, 0, 0.2),
+                0 10px 25px -5px rgba(237, 139, 0, 0.3),
+                0 0 50px rgba(237, 139, 0, 0.15);
+        }
+
+        .icon-rotate-hover {
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .icon-rotate-hover:hover {
+            transform: rotate(360deg) scale(1.2);
+        }
+    </style>
+</head>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fab fa-java text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
+
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">Java学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>プログラミング言語</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 60分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右側: モバイルメニューボタン -->
+                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバー -->
+        <aside id="sidebar" class="fixed md:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
+                                   bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
+                                   transform -translate-x-full md:translate-x-0 sidebar-transition sidebar-resizable"
+               style="--sidebar-width: 320px;">
+            <!-- リサイズハンドル -->
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle hidden md:block"></div>
+            <div class="p-4">
+                <!-- 進捗インジケーター -->
+                <div class="mb-6 p-4 bg-primary-50 rounded-xl">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-primary-700">学習進捗</span>
+                        <span class="text-sm text-primary-600">8/12章</span>
+                    </div>
+                    <div class="w-full bg-primary-100 rounded-full h-2">
+                        <div class="bg-primary-500 h-2 rounded-full transition-all duration-300" style="width: 66.67%"></div>
+                    </div>
+                </div>
+
+                <!-- 章リスト -->
+                <nav>
+                    <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-2">
+                        学習章
+                    </h2>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="java-learning-material-01.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第1章: 環境構築と最初の一歩</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-02.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第2章: 変数とデータ型</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-03.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第3章: 演算子と式</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-04.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第4章: 条件分岐</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-05.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第5章: 繰り返し処理</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-06.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第6章: 配列</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-07.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第7章: メソッド</span>
+                            </a>
+                        </li>
+                        <!-- アクティブな章 -->
+                        <li>
+                            <a href="java-learning-material-08.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      bg-primary-100 text-primary-700 font-medium">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-primary-500 text-white text-xs rounded-full">8</span>
+                                <span class="truncate">第8章: クラスとオブジェクト</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-09.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">9</span>
+                                <span class="truncate">第9章: 継承とポリモーフィズム</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-10.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">10</span>
+                                <span class="truncate">第10章: 例外処理とJava API</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-11.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">11</span>
+                                <span class="truncate">第11章: コレクションフレームワーク</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-12.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">12</span>
+                                <span class="truncate">第12章: ラムダ式とStream API</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- サイドバーオーバーレイ（モバイル用） -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="../README.html" class="hover:text-primary-600 transition-colors">Java</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第8章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-700">
+                            第8章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">クラスとオブジェクト - オブジェクト指向の基礎</h1>
+                    <p class="text-slate-600">Javaの核心である「オブジェクト指向プログラミング」の基本概念を学び、クラスとオブジェクトを作成できるようになります。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl p-5 mb-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>オブジェクト指向プログラミングの基本概念を理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>クラスの定義ができる</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>オブジェクト（インスタンス）を生成して使用できる</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>フィールドとメソッドの関係を理解する</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション1: オブジェクト指向とは -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800 border-l-4 border-primary-500 pl-4 mb-4">
+                        8.1 オブジェクト指向とは
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong class="text-primary-600">オブジェクト指向プログラミング（OOP: Object-Oriented Programming）</strong>は、プログラムを「オブジェクト」という単位で構成する考え方です。現実世界のものごとをモデル化し、それをプログラムで表現するアプローチです。
+                    </p>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-4 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-blue-800 mb-2">現実世界のモデル化</p>
+                                <p class="text-blue-900 text-sm">
+                                    例えば「犬」を考えてみましょう。犬には「名前」「年齢」「犬種」などの<strong>属性</strong>があり、「吠える」「走る」「食べる」などの<strong>動作</strong>ができます。オブジェクト指向では、これらをプログラムで表現します。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">クラスとオブジェクトの関係</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-600 mb-4">
+                        <li><strong class="text-primary-600">クラス</strong>：オブジェクトの「設計図」や「ひな型」。犬という種類全体を定義するもの。</li>
+                        <li><strong class="text-primary-600">オブジェクト（インスタンス）</strong>：クラスから作られた「実体」。具体的な一匹の犬（例：ポチ、タロウ）。</li>
+                    </ul>
+
+                    <div class="my-6">
+                        <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                            <pre class="mermaid">
+classDiagram
+    class 犬クラス {
+        -String 名前
+        -int 年齢
+        -String 犬種
+        +吠える()
+        +走る()
+    }
+
+    犬クラス <|-- ポチ : インスタンス化
+    犬クラス <|-- タロウ : インスタンス化
+
+    class ポチ {
+        名前 = "ポチ"
+        年齢 = 3
+        犬種 = "柴犬"
+    }
+
+    class タロウ {
+        名前 = "タロウ"
+        年齢 = 5
+        犬種 = "ゴールデンレトリバー"
+    }
+                            </pre>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">オブジェクト指向の3大要素（概要）</h3>
+                    <div class="grid md:grid-cols-3 gap-4 my-4">
+                        <div class="bg-white border border-slate-200 rounded-lg p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i class="fas fa-lock text-primary-500"></i>
+                                <h4 class="font-semibold text-slate-800">カプセル化</h4>
+                            </div>
+                            <p class="text-sm text-slate-600">データとメソッドをひとまとめにし、外部から直接アクセスできないようにする</p>
+                        </div>
+                        <div class="bg-white border border-slate-200 rounded-lg p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i class="fas fa-sitemap text-primary-500"></i>
+                                <h4 class="font-semibold text-slate-800">継承</h4>
+                            </div>
+                            <p class="text-sm text-slate-600">既存のクラスの機能を引き継いで新しいクラスを作る（第9章で学習）</p>
+                        </div>
+                        <div class="bg-white border border-slate-200 rounded-lg p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i class="fas fa-shapes text-primary-500"></i>
+                                <h4 class="font-semibold text-slate-800">ポリモーフィズム</h4>
+                            </div>
+                            <p class="text-sm text-slate-600">同じメソッド名で異なる動作を実現する（第9章で学習）</p>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">手続き型との違い</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        これまで学んできた「手続き型プログラミング」では、処理の手順を順番に記述していました。オブジェクト指向では、「データ」と「そのデータを操作する処理」を一体化させることで、より現実世界に近い自然な形でプログラムを設計できます。
+                    </p>
+                </section>
+
+                <!-- セクション2: クラスの定義 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800 border-l-4 border-primary-500 pl-4 mb-4">
+                        8.2 クラスの定義
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        クラスは、<strong>フィールド（属性）</strong>と<strong>メソッド（振る舞い）</strong>で構成されます。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">クラスの基本構文</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">Dog.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// クラスの定義
+public class Dog {
+    // フィールド（属性、メンバ変数）
+    String name;    // 犬の名前
+    int age;        // 犬の年齢
+    String breed;   // 犬種
+
+    // メソッド（振る舞い）
+    void bark() {
+        System.out.println(name + "「ワンワン！」");
+    }
+
+    void run() {
+        System.out.println(name + "が走っています。");
+    }
+
+    void showInfo() {
+        System.out.println("名前: " + name);
+        System.out.println("年齢: " + age + "歳");
+        System.out.println("犬種: " + breed);
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="bg-amber-50 border-l-4 border-amber-500 p-4 my-4 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-amber-500 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-amber-800 mb-2">命名規則の重要性</p>
+                                <ul class="text-amber-900 text-sm space-y-1">
+                                    <li>• クラス名は<strong>大文字で始める</strong>（PascalCase）: Dog, BankAccount, StudentInfo</li>
+                                    <li>• ファイル名はクラス名と同じにする：Dog.java</li>
+                                    <li>• フィールド名・メソッド名は<strong>小文字で始める</strong>（camelCase）: name, showInfo</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">フィールドとメソッドの違い</h3>
+                    <div class="overflow-x-auto my-4">
+                        <table class="min-w-full bg-white border border-slate-200 rounded-lg">
+                            <thead class="bg-slate-100">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-slate-700 font-semibold border-b">項目</th>
+                                    <th class="px-4 py-2 text-left text-slate-700 font-semibold border-b">フィールド</th>
+                                    <th class="px-4 py-2 text-left text-slate-700 font-semibold border-b">メソッド</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="px-4 py-2 border-b text-slate-600 font-medium">役割</td>
+                                    <td class="px-4 py-2 border-b text-slate-600">データを保持する（属性）</td>
+                                    <td class="px-4 py-2 border-b text-slate-600">処理を実行する（動作）</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 border-b text-slate-600 font-medium">例</td>
+                                    <td class="px-4 py-2 border-b text-slate-600">name, age, breed</td>
+                                    <td class="px-4 py-2 border-b text-slate-600">bark(), run(), showInfo()</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 text-slate-600 font-medium">アクセス方法</td>
+                                    <td class="px-4 py-2 text-slate-600">変数として読み書き</td>
+                                    <td class="px-4 py-2 text-slate-600">()を付けて呼び出す</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">1ファイル1クラスの原則</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Javaでは、通常<strong>1つのファイルに1つのpublicクラス</strong>を定義します。ファイル名はクラス名と一致させる必要があります（Dog.java には Dog クラスを記述）。
+                    </p>
+                </section>
+
+                <!-- セクション3: オブジェクトの生成と使用 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800 border-l-4 border-primary-500 pl-4 mb-4">
+                        8.3 オブジェクトの生成と使用
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        クラスはあくまで「設計図」です。実際に使うためには、<strong>new演算子</strong>を使ってオブジェクト（インスタンス）を作成する必要があります。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">new演算子によるインスタンス化</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">Main.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">public class Main {
+    public static void main(String[] args) {
+        // オブジェクトの生成（インスタンス化）
+        Dog pochi = new Dog();
+
+        // フィールドに値を設定
+        pochi.name = "ポチ";
+        pochi.age = 3;
+        pochi.breed = "柴犬";
+
+        // メソッドの呼び出し
+        pochi.showInfo();
+        pochi.bark();
+        pochi.run();
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="bg-slate-100 rounded-lg p-4 my-4">
+                        <p class="font-semibold text-slate-700 mb-2">実行結果:</p>
+                        <pre class="text-sm text-slate-800 bg-white p-3 rounded border border-slate-300"><code>名前: ポチ
+年齢: 3歳
+犬種: 柴犬
+ポチ「ワンワン！」
+ポチが走っています。</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">参照変数の概念</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <code class="bg-slate-100 px-2 py-1 rounded text-sm">Dog pochi = new Dog();</code> という文では：
+                    </p>
+                    <ul class="list-disc list-inside space-y-2 text-slate-600 mb-4">
+                        <li><code class="bg-slate-100 px-2 py-1 rounded text-sm">Dog pochi</code>：Dog型の参照変数 pochi を宣言</li>
+                        <li><code class="bg-slate-100 px-2 py-1 rounded text-sm">new Dog()</code>：メモリ上に新しいDogオブジェクトを作成</li>
+                        <li><code class="bg-slate-100 px-2 py-1 rounded text-sm">pochi = ...</code>：作成したオブジェクトへの参照を pochi に代入</li>
+                    </ul>
+
+                    <div class="bg-slate-50 rounded-lg p-4 border border-slate-200 my-6">
+                        <pre class="mermaid">
+graph LR
+    A["参照変数 pochi"] -->|参照| B["メモリ上の\nDogオブジェクト\n(name, age, breed)"]
+                        </pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">ドット演算子によるアクセス</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        オブジェクトのフィールドやメソッドにアクセスするには、<strong>ドット演算子（.）</strong>を使います。
+                    </p>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">例: ドット演算子の使用</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// フィールドへのアクセス
+pochi.name = "ポチ";          // 値の設定
+String dogName = pochi.name;  // 値の取得
+
+// メソッドの呼び出し
+pochi.bark();   // メソッド実行</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">複数のオブジェクトを作成する</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        同じクラスから複数のオブジェクトを作成できます。それぞれ独立したデータを持ちます。
+                    </p>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">複数オブジェクトの作成</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// 1匹目の犬
+Dog pochi = new Dog();
+pochi.name = "ポチ";
+pochi.age = 3;
+pochi.breed = "柴犬";
+
+// 2匹目の犬
+Dog taro = new Dog();
+taro.name = "タロウ";
+taro.age = 5;
+taro.breed = "ゴールデンレトリバー";
+
+// それぞれ独立したデータを持つ
+pochi.bark();  // ポチ「ワンワン！」
+taro.bark();   // タロウ「ワンワン！」</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション4: コンストラクタ -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800 border-l-4 border-primary-500 pl-4 mb-4">
+                        8.4 コンストラクタ
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong class="text-primary-600">コンストラクタ</strong>は、オブジェクト生成時に<strong>自動的に実行される特別なメソッド</strong>です。主にフィールドの初期化に使われます。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">コンストラクタの特徴</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-600 mb-4">
+                        <li>メソッド名がクラス名と同じ</li>
+                        <li>戻り値の型を書かない（voidも書かない）</li>
+                        <li>new演算子でオブジェクトを生成するときに自動実行される</li>
+                        <li>オブジェクトの初期化を担当する</li>
+                    </ul>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">デフォルトコンストラクタ</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        コンストラクタを明示的に定義しない場合、Javaコンパイラが自動的に<strong>引数なしのコンストラクタ</strong>を用意してくれます。これをデフォルトコンストラクタと呼びます。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">引数付きコンストラクタ</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">Dog.java（コンストラクタ追加版）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">public class Dog {
+    String name;
+    int age;
+    String breed;
+
+    // コンストラクタ（引数付き）
+    public Dog(String name, int age, String breed) {
+        // フィールドの初期化
+        this.name = name;
+        this.age = age;
+        this.breed = breed;
+    }
+
+    void bark() {
+        System.out.println(name + "「ワンワン！」");
+    }
+
+    void showInfo() {
+        System.out.println("名前: " + name);
+        System.out.println("年齢: " + age + "歳");
+        System.out.println("犬種: " + breed);
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">Main.java（コンストラクタを使用）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">public class Main {
+    public static void main(String[] args) {
+        // コンストラクタで初期化しながらオブジェクト生成
+        Dog pochi = new Dog("ポチ", 3, "柴犬");
+        Dog taro = new Dog("タロウ", 5, "ゴールデンレトリバー");
+
+        // すでに初期化されているのでそのまま使える
+        pochi.showInfo();
+        taro.bark();
+    }
+}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">thisキーワード</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <code class="bg-slate-100 px-2 py-1 rounded text-sm">this</code>キーワードは、<strong>「このオブジェクト自身」</strong>を指します。引数名とフィールド名が同じ場合に区別するために使います。
+                    </p>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-4 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-blue-800 mb-2">thisの使い分け</p>
+                                <div class="text-blue-900 text-sm">
+                                    <code class="bg-white px-2 py-1 rounded">this.name</code> → フィールド（オブジェクトのデータ）<br>
+                                    <code class="bg-white px-2 py-1 rounded">name</code> → ローカル変数または引数
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">コンストラクタのオーバーロード</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        メソッドと同様に、コンストラクタも複数定義できます。
+                    </p>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">コンストラクタのオーバーロード</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">public class Dog {
+    String name;
+    int age;
+    String breed;
+
+    // 引数なしコンストラクタ
+    public Dog() {
+        this.name = "名前未設定";
+        this.age = 0;
+        this.breed = "雑種";
+    }
+
+    // 引数1つのコンストラクタ
+    public Dog(String name) {
+        this.name = name;
+        this.age = 0;
+        this.breed = "雑種";
+    }
+
+    // 引数3つのコンストラクタ
+    public Dog(String name, int age, String breed) {
+        this.name = name;
+        this.age = age;
+        this.breed = breed;
+    }
+
+    // メソッド省略...
+}</code></pre>
+                    </div>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">様々なコンストラクタの使用例</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">Dog dog1 = new Dog();                          // 引数なし
+Dog dog2 = new Dog("ポチ");                    // 引数1つ
+Dog dog3 = new Dog("タロウ", 5, "柴犬");       // 引数3つ</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション5: アクセス修飾子とカプセル化 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800 border-l-4 border-primary-500 pl-4 mb-4">
+                        8.5 アクセス修飾子とカプセル化
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong class="text-primary-600">アクセス修飾子</strong>は、クラスのメンバー（フィールドやメソッド）への<strong>アクセス範囲を制御</strong>するキーワードです。これにより、データを適切に保護する「カプセル化」を実現できます。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">4つのアクセス修飾子</h3>
+                    <div class="overflow-x-auto my-4">
+                        <table class="min-w-full bg-white border border-slate-200 rounded-lg">
+                            <thead class="bg-slate-100">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-slate-700 font-semibold border-b">修飾子</th>
+                                    <th class="px-4 py-2 text-left text-slate-700 font-semibold border-b">同じクラス内</th>
+                                    <th class="px-4 py-2 text-left text-slate-700 font-semibold border-b">同じパッケージ内</th>
+                                    <th class="px-4 py-2 text-left text-slate-700 font-semibold border-b">サブクラス</th>
+                                    <th class="px-4 py-2 text-left text-slate-700 font-semibold border-b">すべて</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm">
+                                <tr>
+                                    <td class="px-4 py-2 border-b text-slate-700 font-medium">public</td>
+                                    <td class="px-4 py-2 border-b text-center">○</td>
+                                    <td class="px-4 py-2 border-b text-center">○</td>
+                                    <td class="px-4 py-2 border-b text-center">○</td>
+                                    <td class="px-4 py-2 border-b text-center">○</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 border-b text-slate-700 font-medium">protected</td>
+                                    <td class="px-4 py-2 border-b text-center">○</td>
+                                    <td class="px-4 py-2 border-b text-center">○</td>
+                                    <td class="px-4 py-2 border-b text-center">○</td>
+                                    <td class="px-4 py-2 border-b text-center">×</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 border-b text-slate-700 font-medium">なし（デフォルト）</td>
+                                    <td class="px-4 py-2 border-b text-center">○</td>
+                                    <td class="px-4 py-2 border-b text-center">○</td>
+                                    <td class="px-4 py-2 border-b text-center">×</td>
+                                    <td class="px-4 py-2 border-b text-center">×</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 text-slate-700 font-medium">private</td>
+                                    <td class="px-4 py-2 text-center">○</td>
+                                    <td class="px-4 py-2 text-center">×</td>
+                                    <td class="px-4 py-2 text-center">×</td>
+                                    <td class="px-4 py-2 text-center">×</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">カプセル化の重要性</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong class="text-primary-600">カプセル化</strong>とは、フィールドを<code class="bg-slate-100 px-2 py-1 rounded text-sm">private</code>にして外部から直接アクセスできないようにし、<code class="bg-slate-100 px-2 py-1 rounded text-sm">public</code>なメソッドを通じて安全にアクセスする仕組みです。
+                    </p>
+
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-4 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-times-circle text-red-500 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-red-800 mb-2">カプセル化しない場合の問題</p>
+                                <div class="text-red-900 text-sm">
+                                    <code class="bg-white px-2 py-1 rounded">dog.age = -5;</code><br>
+                                    フィールドが直接変更できると、不正な値（マイナスの年齢など）を設定される危険があります。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">getter/setterメソッド</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        フィールドをprivateにした場合、値の取得・設定には専用のメソッドを用意します。
+                    </p>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">BankAccount.java（カプセル化の例）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">public class BankAccount {
+    // フィールドはprivateで隠蔽
+    private String accountNumber;  // 口座番号
+    private String owner;          // 口座名義
+    private int balance;           // 残高
+
+    // コンストラクタ
+    public BankAccount(String accountNumber, String owner) {
+        this.accountNumber = accountNumber;
+        this.owner = owner;
+        this.balance = 0;  // 初期残高は0
+    }
+
+    // getter: 残高を取得
+    public int getBalance() {
+        return balance;
+    }
+
+    // getter: 口座名義を取得
+    public String getOwner() {
+        return owner;
+    }
+
+    // 入金メソッド（値の検証付き）
+    public void deposit(int amount) {
+        if (amount > 0) {
+            balance += amount;
+            System.out.println(amount + "円を入金しました。");
+        } else {
+            System.out.println("入金額は正の数である必要があります。");
+        }
+    }
+
+    // 出金メソッド（値の検証付き）
+    public void withdraw(int amount) {
+        if (amount > 0 && amount <= balance) {
+            balance -= amount;
+            System.out.println(amount + "円を出金しました。");
+        } else if (amount > balance) {
+            System.out.println("残高不足です。");
+        } else {
+            System.out.println("出金額は正の数である必要があります。");
+        }
+    }
+
+    // 残高照会メソッド
+    public void showBalance() {
+        System.out.println("口座名義: " + owner);
+        System.out.println("現在の残高: " + balance + "円");
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">Main.java（使用例）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">public class Main {
+    public static void main(String[] args) {
+        BankAccount account = new BankAccount("123-456", "山田太郎");
+
+        account.deposit(10000);   // 10000円を入金
+        account.withdraw(3000);   // 3000円を出金
+        account.showBalance();    // 残高照会
+
+        // 不正な操作を試みる
+        account.withdraw(-500);    // エラー: 出金額は正の数である必要があります
+        account.withdraw(20000);   // エラー: 残高不足です
+
+        // 直接フィールドにアクセスしようとするとコンパイルエラー
+        // account.balance = 1000000;  // コンパイルエラー！
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-4 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-emerald-500 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-emerald-800 mb-2">カプセル化の利点</p>
+                                <ul class="text-emerald-900 text-sm space-y-1">
+                                    <li>• <strong>データの保護</strong>: 不正な値を防ぐ</li>
+                                    <li>• <strong>安全なアクセス</strong>: メソッドで値を検証できる</li>
+                                    <li>• <strong>保守性の向上</strong>: 内部実装を変更しても外部に影響しない</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 実習カード -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 my-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3">
+                                実習 8-1: 学生クラスの作成
+                            </h3>
+                            <p class="text-purple-900 mb-4">学生の情報を管理するStudentクラスを作成し、カプセル化を実践します。</p>
+
+                            <h4 class="font-medium text-purple-800 mb-2">要件</h4>
+                            <ol class="space-y-2 mb-4">
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
+                                    <span>Studentクラスを作成し、privateフィールド（name, studentId, score）を定義</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
+                                    <span>コンストラクタで名前と学籍番号を初期化（点数は初期値0）</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">3</span>
+                                    <span>getter/setterメソッドを作成（点数のsetterは0～100の範囲チェック）</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">4</span>
+                                    <span>成績を判定するgetGrade()メソッド（A/B/C/D/F）を作成</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">5</span>
+                                    <span>学生情報を表示するshowInfo()メソッドを作成</span>
+                                </li>
+                            </ol>
+
+                            <h4 class="font-medium text-purple-800 mb-2">実装例の骨格</h4>
+                            <pre class="!bg-slate-800 !rounded-lg"><code class="language-java">public class Student {
+    private String name;
+    private String studentId;
+    private int score;
+
+    public Student(String name, String studentId) {
+        // 初期化処理
+    }
+
+    public void setScore(int score) {
+        // 0～100の範囲チェック付き
+    }
+
+    public String getGrade() {
+        // A: 90-100, B: 80-89, C: 70-79, D: 60-69, F: 0-59
+    }
+
+    // その他のメソッド...
+}</code></pre>
+
+                            <h4 class="font-medium text-purple-800 mt-4 mb-2">期待される動作例</h4>
+                            <div class="bg-white/50 rounded-lg p-3 text-purple-900">
+                                <pre><code>学生情報
+名前: 山田太郎
+学籍番号: S001
+点数: 85点
+成績: B</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- つまずきやすいポイント -->
+                <div class="bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-200 rounded-xl p-5 my-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-rose-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-exclamation-triangle text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-rose-800 mb-3">つまずきやすいポイント</h3>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <h4 class="font-medium text-rose-800 mb-2">
+                                        <i class="fas fa-bug text-rose-600 mr-2"></i>
+                                        クラスとオブジェクトの混同
+                                    </h4>
+                                    <p class="text-rose-900 text-sm mb-2">
+                                        「クラス」は設計図、「オブジェクト」は実体です。クラスだけではプログラムは動きません。必ずnew演算子でオブジェクトを作成する必要があります。
+                                    </p>
+                                    <div class="bg-white/70 rounded p-2 text-sm">
+                                        <p class="text-rose-800 font-mono">Dog.bark(); // NG: クラス名では呼べない</p>
+                                        <p class="text-emerald-700 font-mono">Dog pochi = new Dog(); pochi.bark(); // OK</p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 class="font-medium text-rose-800 mb-2">
+                                        <i class="fas fa-bug text-rose-600 mr-2"></i>
+                                        参照とnullの理解
+                                    </h4>
+                                    <p class="text-rose-900 text-sm mb-2">
+                                        参照変数がnull（何も参照していない状態）のままメソッドを呼ぶと<strong>NullPointerException</strong>が発生します。
+                                    </p>
+                                    <div class="bg-white/70 rounded p-2 text-sm">
+                                        <p class="text-rose-800 font-mono">Dog dog = null; dog.bark(); // エラー！</p>
+                                        <p class="text-emerald-700 font-mono">Dog dog = new Dog(); dog.bark(); // OK</p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 class="font-medium text-rose-800 mb-2">
+                                        <i class="fas fa-bug text-rose-600 mr-2"></i>
+                                        thisキーワードの役割
+                                    </h4>
+                                    <p class="text-rose-900 text-sm mb-2">
+                                        引数名とフィールド名が同じとき、<code>this</code>を付けないとローカル変数（引数）を指してしまいます。
+                                    </p>
+                                    <div class="bg-white/70 rounded p-2 text-sm">
+                                        <p class="text-rose-800 font-mono">name = name; // NG: 自分自身に代入している</p>
+                                        <p class="text-emerald-700 font-mono">this.name = name; // OK: フィールドに代入</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-5 my-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q1. クラスとオブジェクトの関係を正しく説明しているのはどれですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <strong>回答:</strong> クラスは「設計図」、オブジェクトは「その設計図から作られた実体（インスタンス）」です。1つのクラスから複数のオブジェクトを作成でき、それぞれ独立したデータを持ちます。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q2. 次のコードで何が出力されますか？</p>
+                                    <pre class="bg-white/70 rounded p-2 text-sm mb-2"><code class="language-java">Dog dog1 = new Dog();
+dog1.name = "ポチ";
+Dog dog2 = dog1;
+dog2.name = "タロウ";
+System.out.println(dog1.name);</code></pre>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <strong>回答:</strong> 「タロウ」が出力されます。<code>Dog dog2 = dog1;</code>は、dog2とdog1が同じオブジェクトを参照することを意味します。そのため、dog2で名前を変更すると、dog1から見ても変更されています（参照の共有）。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q3. privateフィールドにアクセスするための正しい方法は？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <strong>回答:</strong> getter/setterメソッドを使います。privateフィールドは外部から直接アクセスできないため、publicなメソッドを通じて値を取得・設定します。これにより、値の検証や制御ができ、データを安全に扱えます。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q4. コンストラクタの特徴として正しくないものはどれですか？<br>
+                                    a) クラス名と同じ名前<br>
+                                    b) 戻り値の型がvoid<br>
+                                    c) オブジェクト生成時に自動実行される<br>
+                                    d) オーバーロードできる</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <strong>回答:</strong> b) が誤りです。コンストラクタには戻り値の型を書きません（voidも書かない）。コンストラクタは名前がクラス名と同じで、オブジェクト生成時に自動実行され、オーバーロードも可能です。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <a href="java-learning-material-07.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600 transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">第7章: メソッド</span>
+                        </div>
+                    </a>
+                    <a href="java-learning-material-09.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">第9章: 継承とポリモーフィズム</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
+    </div>
+
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- 描画用Canvasオーバーレイ -->
+    <canvas id="drawing-canvas" class="fixed inset-0 z-[100] pointer-events-none"></canvas>
+
+    <!-- 描画ツールバー（右端） -->
+    <div id="drawing-toolbar" class="fixed right-4 top-1/2 -translate-y-1/2 z-[110]
+                                     bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl
+                                     border border-slate-200 p-2 flex flex-col gap-1
+                                     transition-all duration-300">
+        <!-- ツールバー折りたたみボタン -->
+        <button id="toolbar-toggle"
+                class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                       flex items-center justify-center transition-colors mb-2"
+                title="ツールバーを開く">
+            <i class="fas fa-chevron-left text-slate-600"></i>
+        </button>
+
+        <div id="toolbar-content" class="hidden flex-col gap-1">
+            <!-- ペンツール -->
+            <button id="pen-tool"
+                    class="tool-btn w-10 h-10 rounded-xl bg-primary-100 text-primary-600
+                           hover:bg-primary-200 flex items-center justify-center transition-colors"
+                    title="ペン (P)">
+                <i class="fas fa-pen"></i>
+            </button>
+
+            <!-- 消しゴムツール -->
+            <button id="eraser-tool"
+                    class="tool-btn w-10 h-10 rounded-xl bg-slate-100 text-slate-600
+                           hover:bg-slate-200 flex items-center justify-center transition-colors"
+                    title="消しゴム (E)">
+                <i class="fas fa-eraser"></i>
+            </button>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 色選択 -->
+            <div id="color-picker" class="flex flex-col gap-1">
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-red-400 bg-red-500
+                               hover:scale-110 transition-transform" data-color="#ef4444" title="赤"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-blue-400 bg-blue-500
+                               hover:scale-110 transition-transform" data-color="#3b82f6" title="青"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-slate-600 bg-slate-800
+                               hover:scale-110 transition-transform active-color" data-color="#1e293b" title="黒"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-emerald-400 bg-emerald-500
+                               hover:scale-110 transition-transform" data-color="#10b981" title="緑"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-amber-400 bg-amber-500
+                               hover:scale-110 transition-transform" data-color="#f59e0b" title="黄"></button>
+            </div>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 線の太さ -->
+            <div id="stroke-width" class="flex flex-col gap-1">
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors" data-width="2" title="細い">
+                    <div class="w-4 h-0.5 bg-slate-600 rounded-full"></div>
+                </button>
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors active-stroke" data-width="4" title="普通">
+                    <div class="w-4 h-1 bg-slate-600 rounded-full"></div>
+                </button>
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors" data-width="8" title="太い">
+                    <div class="w-4 h-2 bg-slate-600 rounded-full"></div>
+                </button>
+            </div>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 元に戻す -->
+            <button id="undo-btn"
+                    class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600
+                           hover:bg-slate-200 flex items-center justify-center transition-colors
+                           disabled:opacity-40 disabled:cursor-not-allowed"
+                    title="元に戻す (Ctrl+Z)" disabled>
+                <i class="fas fa-undo"></i>
+            </button>
+
+            <!-- 全消去 -->
+            <button id="clear-btn"
+                    class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600
+                           hover:bg-rose-200 flex items-center justify-center transition-colors"
+                    title="全消去 (C)">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Highlight.js 初期化
+        hljs.highlightAll();
+
+        // Mermaid.js 初期化
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose'
+        });
+
+        // モバイルメニュー制御
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const menuBtn = document.getElementById('mobile-menu-btn');
+
+        menuBtn?.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        });
+
+        overlay?.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        });
+
+        // スクロールトップボタン表示制御
+        const scrollTopBtn = document.getElementById('scroll-top-btn');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.remove('opacity-0', 'invisible', 'translate-y-4');
+            } else {
+                scrollTopBtn.classList.add('opacity-0', 'invisible', 'translate-y-4');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // コードコピー機能
+        function copyCode(btn) {
+            const code = btn.closest('.code-block-wrapper').querySelector('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const icon = btn.querySelector('i');
+                icon.classList.remove('fa-copy');
+                icon.classList.add('fa-check');
+                setTimeout(() => {
+                    icon.classList.remove('fa-check');
+                    icon.classList.add('fa-copy');
+                }, 2000);
+            });
+        }
+
+        // サイドバーリサイズ機能
+        const resizeHandle = document.getElementById('sidebar-resize-handle');
+        let isResizing = false;
+        let startX, startWidth;
+
+        resizeHandle?.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            startX = e.clientX;
+            startWidth = sidebar.offsetWidth;
+            resizeHandle.classList.add('resizing');
+            document.body.style.cursor = 'ew-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            const diff = e.clientX - startX;
+            const newWidth = Math.min(Math.max(startWidth + diff, 240), 480);
+            sidebar.style.width = newWidth + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                resizeHandle.classList.remove('resizing');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+                // サイドバー幅をローカルストレージに保存
+                localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
+            }
+        });
+
+        // ページ読み込み時にサイドバー幅を復元
+        const savedWidth = localStorage.getItem('sidebarWidth');
+        if (savedWidth && window.innerWidth >= 768) {
+            sidebar.style.width = savedWidth + 'px';
+        }
+
+        // 描画ツールバー折りたたみ機能
+        const toolbarToggle = document.getElementById('toolbar-toggle');
+        const toolbarContent = document.getElementById('toolbar-content');
+        let isToolbarOpen = false;
+
+        toolbarToggle?.addEventListener('click', () => {
+            isToolbarOpen = !isToolbarOpen;
+            const icon = toolbarToggle.querySelector('i');
+
+            if (isToolbarOpen) {
+                toolbarContent.classList.remove('hidden');
+                toolbarContent.classList.add('flex');
+                icon.classList.remove('fa-chevron-left');
+                icon.classList.add('fa-chevron-right');
+                toolbarToggle.title = 'ツールバーを閉じる';
+            } else {
+                toolbarContent.classList.add('hidden');
+                toolbarContent.classList.remove('flex');
+                icon.classList.remove('fa-chevron-right');
+                icon.classList.add('fa-chevron-left');
+                toolbarToggle.title = 'ツールバーを開く';
+            }
+        });
+    </script>
+
+    <!-- 描画ツール -->
+    <script src="../../../../common/drawing-tool.js"></script>
+</body>
+</html>

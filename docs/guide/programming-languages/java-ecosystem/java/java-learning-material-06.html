@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.1">
+    <title>Java学習教材 第6章 - 配列 - 複数のデータをまとめて管理</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Java固有色（オレンジ）
+                        primary: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            200: '#fed7aa',
+                            300: '#fdba74',
+                            400: '#fb923c',
+                            500: '#ED8B00',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                            800: '#9a3412',
+                            900: '#7c2d12',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <style>
+        /* スクロールバーカスタマイズ */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* コードブロックのラインナンバー */
+        .hljs-ln-numbers {
+            user-select: none;
+            text-align: right;
+            color: #6b7280;
+            padding-right: 12px;
+            border-right: 1px solid #374151;
+        }
+
+        /* サイドバートランジション */
+        .sidebar-transition {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, width 0.15s ease-out;
+        }
+
+        /* サイドバーリサイズ機能 */
+        .sidebar-resizable {
+            min-width: 240px;
+            max-width: 480px;
+        }
+        .sidebar-resize-handle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 6px;
+            height: 100%;
+            cursor: ew-resize;
+            background: transparent;
+            transition: background 0.2s;
+            z-index: 10;
+        }
+        .sidebar-resize-handle:hover,
+        .sidebar-resize-handle.resizing {
+            background: linear-gradient(to right, transparent, rgba(237, 139, 0, 0.3));
+        }
+
+        /* スムーズスクロール */
+        html { scroll-behavior: smooth; }
+
+        /* コードコピーボタン */
+        .code-block-wrapper { position: relative; }
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .code-block-wrapper:hover .copy-btn { opacity: 1; }
+
+        /* ヘッダー情報リッチデザイン */
+        .header-rich {
+            background: linear-gradient(135deg,
+                #c2410c 0%,
+                #ED8B00 50%,
+                #fb923c 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .header-rich::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px);
+            animation: bgSlide 10s linear infinite;
+        }
+        @keyframes bgSlide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(50px); }
+        }
+
+        .header-rich-shadow {
+            box-shadow:
+                0 4px 6px -1px rgba(237, 139, 0, 0.2),
+                0 10px 25px -5px rgba(237, 139, 0, 0.3),
+                0 0 50px rgba(237, 139, 0, 0.15);
+        }
+
+        .icon-rotate-hover {
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .icon-rotate-hover:hover {
+            transform: rotate(360deg) scale(1.2);
+        }
+    </style>
+</head>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fab fa-java text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
+
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">Java学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>プログラミング言語</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 45分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右側: モバイルメニューボタン -->
+                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバー -->
+        <aside id="sidebar" class="fixed md:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
+                                   bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
+                                   transform -translate-x-full md:translate-x-0 sidebar-transition sidebar-resizable"
+               style="--sidebar-width: 320px;">
+            <!-- リサイズハンドル -->
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle hidden md:block"></div>
+            <div class="p-4">
+                <!-- 進捗インジケーター -->
+                <div class="mb-6 p-4 bg-primary-50 rounded-xl">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-primary-700">学習進捗</span>
+                        <span class="text-sm text-primary-600">6/12章</span>
+                    </div>
+                    <div class="w-full bg-primary-100 rounded-full h-2">
+                        <div class="bg-primary-500 h-2 rounded-full transition-all duration-300" style="width: 50.0%"></div>
+                    </div>
+                </div>
+
+                <!-- 章リスト -->
+                <nav>
+                    <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-2">
+                        学習章
+                    </h2>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="java-learning-material-01.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第1章: 環境構築と最初の一歩</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-02.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第2章: 変数とデータ型</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-03.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第3章: 演算子と式</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-04.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第4章: 条件分岐</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-05.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-emerald-500 text-white text-xs rounded-full">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </span>
+                                <span class="truncate">第5章: 繰り返し処理</span>
+                            </a>
+                        </li>
+                        <!-- アクティブな章 -->
+                        <li>
+                            <a href="java-learning-material-06.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      bg-primary-100 text-primary-700 font-medium">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-primary-500 text-white text-xs rounded-full">6</span>
+                                <span class="truncate">第6章: 配列</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-07.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">7</span>
+                                <span class="truncate">第7章: メソッド</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-08.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">8</span>
+                                <span class="truncate">第8章: クラスとオブジェクト</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-09.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">9</span>
+                                <span class="truncate">第9章: 継承とポリモーフィズム</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-10.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">10</span>
+                                <span class="truncate">第10章: 例外処理とJava API</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-11.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">11</span>
+                                <span class="truncate">第11章: コレクションフレームワーク</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="java-learning-material-12.html"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
+                                      text-slate-600 hover:bg-slate-100 transition-colors">
+                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                                             bg-slate-200 text-slate-600 text-xs rounded-full">12</span>
+                                <span class="truncate">第12章: ラムダ式とStream API</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- サイドバーオーバーレイ（モバイル用） -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/README.html" class="hover:text-primary-600 transition-colors">Java</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第6章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第6章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">配列 - 複数のデータをまとめて管理</h1>
+                    <p class="text-slate-600">同じ種類のデータを複数まとめて扱う「配列」の概念と使い方を学びます。配列を使うことで、大量のデータを効率的に管理できるようになります。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>配列の概念と必要性を理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>配列の宣言、生成、初期化ができる</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>配列の要素にアクセスし操作できる</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>拡張for文（for-each）を使える</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>多次元配列の基本を理解する</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション1: 配列とは何か -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.1 配列とは何か
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        これまで学んできた変数は、1つの値しか保存できませんでした。しかし、実際のプログラミングでは、たくさんのデータをまとめて扱いたい場面が多くあります。例えば、クラスの生徒全員の点数を管理したり、1週間分の気温データを処理したりする場合です。
+                    </p>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong class="text-primary-600">配列（Array）</strong>とは、<strong>同じ型のデータを複数まとめて格納できる入れ物</strong>です。配列を使うと、大量のデータを効率的に管理できます。
+                    </p>
+
+                    <!-- 概念図 -->
+                    <div class="my-6 bg-white rounded-xl border border-slate-200 p-5">
+                        <h3 class="text-lg font-semibold text-slate-700 mb-4">配列の概念図</h3>
+                        <div class="flex flex-col gap-4">
+                            <div>
+                                <p class="text-sm text-slate-600 mb-2">通常の変数（1つの値しか保存できない）:</p>
+                                <div class="flex gap-2">
+                                    <div class="border-2 border-slate-300 rounded px-4 py-2 bg-slate-50">
+                                        <div class="text-xs text-slate-500 mb-1">score</div>
+                                        <div class="font-mono text-primary-600">85</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-sm text-slate-600 mb-2">配列（複数の値を保存できる）:</p>
+                                <div class="flex gap-1">
+                                    <div class="border-2 border-primary-300 rounded px-3 py-2 bg-primary-50">
+                                        <div class="text-xs text-slate-500 mb-1">scores[0]</div>
+                                        <div class="font-mono text-primary-600">85</div>
+                                    </div>
+                                    <div class="border-2 border-primary-300 rounded px-3 py-2 bg-primary-50">
+                                        <div class="text-xs text-slate-500 mb-1">scores[1]</div>
+                                        <div class="font-mono text-primary-600">92</div>
+                                    </div>
+                                    <div class="border-2 border-primary-300 rounded px-3 py-2 bg-primary-50">
+                                        <div class="text-xs text-slate-500 mb-1">scores[2]</div>
+                                        <div class="font-mono text-primary-600">78</div>
+                                    </div>
+                                    <div class="border-2 border-primary-300 rounded px-3 py-2 bg-primary-50">
+                                        <div class="text-xs text-slate-500 mb-1">scores[3]</div>
+                                        <div class="font-mono text-primary-600">88</div>
+                                    </div>
+                                    <div class="border-2 border-primary-300 rounded px-3 py-2 bg-primary-50">
+                                        <div class="text-xs text-slate-500 mb-1">scores[4]</div>
+                                        <div class="font-mono text-primary-600">95</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mt-6 mb-3">配列の重要な特徴</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-600 ml-4">
+                        <li><strong>同じ型のデータの集まり</strong>：1つの配列には同じデータ型の値しか格納できません（全てint型、全てString型など）</li>
+                        <li><strong>固定サイズ</strong>：配列を作成するとき、その大きさ（要素数）を決める必要があり、後から変更できません</li>
+                        <li><strong>インデックス（添え字）でアクセス</strong>：各要素には0から始まる番号（インデックス）が振られ、この番号でアクセスします</li>
+                        <li><strong>length プロパティ</strong>：配列の要素数は <code class="text-primary-600">配列名.length</code> で取得できます</li>
+                    </ul>
+
+                    <!-- つまずきポイント -->
+                    <div class="bg-rose-50 border-l-4 border-rose-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-rose-500 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold text-rose-800 mb-2">つまずきやすいポイント：インデックスは0から始まる</h4>
+                                <p class="text-rose-900 text-sm">
+                                    配列のインデックス（添え字）は0から始まります。つまり、5つの要素を持つ配列の場合、インデックスは0, 1, 2, 3, 4となります。最後の要素は <code>配列.length - 1</code> でアクセスします。これを忘れて <code>配列[5]</code> にアクセスすると、ArrayIndexOutOfBoundsException（配列の範囲外エラー）が発生します。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション2: 配列の作成と初期化 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.2 配列の作成と初期化
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        配列を使うには、まず「宣言」して「生成」する必要があります。配列の作成方法はいくつかあります。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mt-6 mb-3">方法1：宣言と生成を分ける</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">ArrayDeclaration.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// 配列の宣言（まだ実体はない）
+int[] scores;  // int型の配列を宣言（推奨）
+// または int scores[]; でもOK（C言語スタイル）
+
+// 配列の生成（メモリを確保）
+scores = new int[5];  // 5つの要素を持つint型配列を生成
+
+// これで scores[0], scores[1], ..., scores[4] が使えるようになる
+// 初期値は自動的に0になる（int型の場合）
+System.out.println(scores[0]);  // 出力: 0</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mt-6 mb-3">方法2：宣言と生成を同時に行う</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">ArrayCreation.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// 宣言と生成を1行で
+int[] scores = new int[5];
+
+// 様々なデータ型の配列
+double[] temperatures = new double[7];  // 7つの要素（初期値: 0.0）
+String[] names = new String[3];  // 3つの要素（初期値: null）
+boolean[] flags = new boolean[10];  // 10の要素（初期値: false）</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mt-6 mb-3">方法3：初期化子を使う（値を直接指定）</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">ArrayInitializer.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// 初期値を指定して配列を作成
+int[] scores = {85, 92, 78, 88, 95};  // 5つの要素を持つ配列
+// 要素数は自動的に5になる
+
+// 文字列の配列
+String[] fruits = {"りんご", "バナナ", "オレンジ"};
+
+// この書き方もOK（new を使った初期化子）
+int[] numbers = new int[] {10, 20, 30, 40, 50};
+
+System.out.println(scores.length);  // 出力: 5
+System.out.println(fruits.length);  // 出力: 3</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mt-6 mb-3">配列のデフォルト値</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <code>new</code> で配列を生成すると、各要素は自動的にデフォルト値（初期値）で初期化されます。
+                    </p>
+                    <div class="bg-slate-50 rounded-lg p-4 my-4">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-slate-200">
+                                    <th class="text-left py-2 text-slate-700">データ型</th>
+                                    <th class="text-left py-2 text-slate-700">デフォルト値</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-slate-600">
+                                <tr class="border-b border-slate-100">
+                                    <td class="py-2">整数型（byte, short, int, long）</td>
+                                    <td class="py-2 font-mono text-primary-600">0</td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="py-2">浮動小数点型（float, double）</td>
+                                    <td class="py-2 font-mono text-primary-600">0.0</td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="py-2">文字型（char）</td>
+                                    <td class="py-2 font-mono text-primary-600">'\u0000'（ヌル文字）</td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="py-2">論理型（boolean）</td>
+                                    <td class="py-2 font-mono text-primary-600">false</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2">参照型（String, オブジェクトなど）</td>
+                                    <td class="py-2 font-mono text-primary-600">null</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- セクション3: 配列の操作 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.3 配列の操作
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        配列を作成したら、要素にアクセスして値を読み書きできます。インデックス（添え字）を使って特定の要素を指定します。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mt-6 mb-3">要素へのアクセスと代入</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">ArrayAccess.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">public class ArrayAccess {
+    public static void main(String[] args) {
+        // 配列の作成
+        int[] scores = new int[5];
+
+        // 要素に値を代入
+        scores[0] = 85;  // 最初の要素
+        scores[1] = 92;
+        scores[2] = 78;
+        scores[3] = 88;
+        scores[4] = 95;  // 最後の要素
+
+        // 要素の読み取り
+        System.out.println("1番目の点数: " + scores[0]);  // 出力: 85
+        System.out.println("3番目の点数: " + scores[2]);  // 出力: 78
+
+        // 要素の更新
+        scores[2] = 80;  // 3番目の要素を78から80に変更
+        System.out.println("更新後の3番目: " + scores[2]);  // 出力: 80
+
+        // 配列の長さを取得
+        System.out.println("配列の要素数: " + scores.length);  // 出力: 5
+    }
+}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mt-6 mb-3">配列のエラーを理解する</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">ArrayError.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">public class ArrayError {
+    public static void main(String[] args) {
+        int[] numbers = new int[5];  // 要素数5の配列（インデックスは0〜4）
+
+        // OK: 有効な範囲内のアクセス
+        numbers[0] = 10;
+        numbers[4] = 50;  // 最後の要素（インデックス4）
+
+        // NG: 範囲外アクセス（エラー発生）
+        // numbers[5] = 60;  // ArrayIndexOutOfBoundsException!
+        // numbers[-1] = 5;  // ArrayIndexOutOfBoundsException!
+
+        // 安全なアクセス方法：length を使う
+        int lastIndex = numbers.length - 1;  // 4
+        numbers[lastIndex] = 100;  // OK
+
+        System.out.println("最後の要素: " + numbers[lastIndex]);
+    }
+}</code></pre>
+                    </div>
+
+                    <!-- つまずきポイント -->
+                    <div class="bg-rose-50 border-l-4 border-rose-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-rose-500 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold text-rose-800 mb-2">つまずきやすいポイント：配列の範囲外アクセス</h4>
+                                <p class="text-rose-900 text-sm mb-2">
+                                    配列の範囲外にアクセスすると <code>ArrayIndexOutOfBoundsException</code> という実行時エラーが発生します。要素数5の配列の場合：
+                                </p>
+                                <ul class="list-disc list-inside text-rose-900 text-sm ml-4 space-y-1">
+                                    <li>有効なインデックス：0, 1, 2, 3, 4</li>
+                                    <li>無効なインデックス：5以上、または負の数</li>
+                                    <li>最後の要素は常に <code>配列.length - 1</code> でアクセス</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション4: 配列とループの組み合わせ -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.4 配列とループの組み合わせ
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        配列の真価は、ループと組み合わせて使うときに発揮されます。配列の全要素を処理するには、for文が非常に便利です。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mt-6 mb-3">通常のfor文で配列を処理</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">ArrayLoop.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">public class ArrayLoop {
+    public static void main(String[] args) {
+        int[] scores = {85, 92, 78, 88, 95};
+
+        // 全要素を表示
+        System.out.println("=== 全ての点数 ===");
+        for (int i = 0; i < scores.length; i++) {
+            System.out.println((i + 1) + "番目: " + scores[i] + "点");
+        }
+
+        // 合計を計算
+        int sum = 0;
+        for (int i = 0; i < scores.length; i++) {
+            sum += scores[i];
+        }
+        System.out.println("\n合計点: " + sum + "点");
+
+        // 平均を計算
+        double average = (double) sum / scores.length;
+        System.out.println("平均点: " + average + "点");
+    }
+}
+
+// 出力:
+// === 全ての点数 ===
+// 1番目: 85点
+// 2番目: 92点
+// 3番目: 78点
+// 4番目: 88点
+// 5番目: 95点
+//
+// 合計点: 438点
+// 平均点: 87.6点</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mt-6 mb-3">拡張for文（for-each文）</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong class="text-primary-600">拡張for文</strong>（for-eachループ）は、配列の全要素を順番に処理するための簡潔な書き方です。インデックスを使わずに直接要素にアクセスできます。
+                    </p>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">EnhancedForLoop.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">public class EnhancedForLoop {
+    public static void main(String[] args) {
+        String[] fruits = {"りんご", "バナナ", "オレンジ", "ぶどう"};
+
+        // 拡張for文の構文: for (要素の型 変数名 : 配列名)
+        System.out.println("=== 果物リスト ===");
+        for (String fruit : fruits) {
+            System.out.println(fruit);
+        }
+
+        // 数値配列での使用例
+        int[] numbers = {10, 20, 30, 40, 50};
+        int total = 0;
+
+        for (int num : numbers) {
+            total += num;
+        }
+        System.out.println("\n合計: " + total);  // 出力: 150
+    }
+}
+
+// 出力:
+// === 果物リスト ===
+// りんご
+// バナナ
+// オレンジ
+// ぶどう
+//
+// 合計: 150</code></pre>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold text-blue-800 mb-2">通常のfor文と拡張for文の使い分け</h4>
+                                <ul class="text-blue-900 text-sm space-y-1 ml-4 list-disc list-inside">
+                                    <li><strong>拡張for文を使う場合</strong>：全要素を順番に読み取るだけの場合（簡潔で読みやすい）</li>
+                                    <li><strong>通常のfor文を使う場合</strong>：インデックスが必要な場合、要素を書き換える場合、途中からアクセスする場合</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mt-6 mb-3">配列の検索と最大値・最小値</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">ArraySearch.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">public class ArraySearch {
+    public static void main(String[] args) {
+        int[] scores = {85, 92, 78, 88, 95, 82};
+
+        // 最大値を探す
+        int max = scores[0];  // 最初の要素を初期値とする
+        for (int i = 1; i < scores.length; i++) {
+            if (scores[i] > max) {
+                max = scores[i];
+            }
+        }
+        System.out.println("最高点: " + max + "点");  // 出力: 95点
+
+        // 最小値を探す
+        int min = scores[0];
+        for (int score : scores) {
+            if (score < min) {
+                min = score;
+            }
+        }
+        System.out.println("最低点: " + min + "点");  // 出力: 78点
+
+        // 特定の値を検索
+        int target = 88;
+        boolean found = false;
+        int foundIndex = -1;
+
+        for (int i = 0; i < scores.length; i++) {
+            if (scores[i] == target) {
+                found = true;
+                foundIndex = i;
+                break;  // 見つかったらループを抜ける
+            }
+        }
+
+        if (found) {
+            System.out.println(target + "点は" + foundIndex + "番目にあります");
+        } else {
+            System.out.println(target + "点は見つかりませんでした");
+        }
+    }
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション5: 多次元配列 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.5 多次元配列
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        これまで学んだ配列は1次元配列（一列に並んだデータ）でした。しかし、<strong class="text-primary-600">多次元配列</strong>を使うと、表形式のデータ（2次元配列）や、さらに複雑な構造（3次元以上）を扱えます。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mt-6 mb-3">2次元配列の概念</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        2次元配列は「配列の配列」です。行と列を持つ表のようなデータを表現できます。
+                    </p>
+
+                    <!-- 概念図 -->
+                    <div class="my-6 bg-white rounded-xl border border-slate-200 p-5">
+                        <h4 class="text-base font-semibold text-slate-700 mb-4">2次元配列のイメージ</h4>
+                        <div class="overflow-x-auto">
+                            <table class="text-sm border-collapse">
+                                <thead>
+                                    <tr>
+                                        <th class="border border-slate-300 px-3 py-2 bg-slate-100"></th>
+                                        <th class="border border-slate-300 px-3 py-2 bg-slate-100 text-slate-600">列0</th>
+                                        <th class="border border-slate-300 px-3 py-2 bg-slate-100 text-slate-600">列1</th>
+                                        <th class="border border-slate-300 px-3 py-2 bg-slate-100 text-slate-600">列2</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="border border-slate-300 px-3 py-2 bg-slate-100 text-slate-600 font-medium">行0</td>
+                                        <td class="border border-slate-300 px-3 py-2 text-center font-mono text-primary-600">10</td>
+                                        <td class="border border-slate-300 px-3 py-2 text-center font-mono text-primary-600">20</td>
+                                        <td class="border border-slate-300 px-3 py-2 text-center font-mono text-primary-600">30</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-slate-300 px-3 py-2 bg-slate-100 text-slate-600 font-medium">行1</td>
+                                        <td class="border border-slate-300 px-3 py-2 text-center font-mono text-primary-600">40</td>
+                                        <td class="border border-slate-300 px-3 py-2 text-center font-mono text-primary-600">50</td>
+                                        <td class="border border-slate-300 px-3 py-2 text-center font-mono text-primary-600">60</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border border-slate-300 px-3 py-2 bg-slate-100 text-slate-600 font-medium">行2</td>
+                                        <td class="border border-slate-300 px-3 py-2 text-center font-mono text-primary-600">70</td>
+                                        <td class="border border-slate-300 px-3 py-2 text-center font-mono text-primary-600">80</td>
+                                        <td class="border border-slate-300 px-3 py-2 text-center font-mono text-primary-600">90</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p class="text-xs text-slate-500 mt-2">アクセス例：<code>array[1][2]</code> → 60（行1、列2の要素）</p>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mt-6 mb-3">2次元配列の作成と使用</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">TwoDimensionalArray.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">public class TwoDimensionalArray {
+    public static void main(String[] args) {
+        // 2次元配列の宣言と生成（3行4列）
+        int[][] matrix = new int[3][4];
+
+        // 要素への代入
+        matrix[0][0] = 10;
+        matrix[0][1] = 20;
+        matrix[1][2] = 50;
+
+        // 初期化子を使った作成
+        int[][] scores = {
+            {85, 92, 78},  // 1人目の3科目の点数
+            {88, 95, 82},  // 2人目の3科目の点数
+            {90, 87, 93}   // 3人目の3科目の点数
+        };
+
+        // 要素へのアクセス
+        System.out.println("1人目の2科目目: " + scores[0][1]);  // 92
+        System.out.println("3人目の1科目目: " + scores[2][0]);  // 90
+
+        // 全要素を表示（2重ループ）
+        System.out.println("\n=== 全員の点数 ===");
+        for (int i = 0; i < scores.length; i++) {  // 行（人）
+            System.out.print((i + 1) + "人目: ");
+            for (int j = 0; j < scores[i].length; j++) {  // 列（科目）
+                System.out.print(scores[i][j] + "点 ");
+            }
+            System.out.println();
+        }
+
+        // 拡張for文での処理
+        System.out.println("\n=== 各人の合計点 ===");
+        int personNum = 1;
+        for (int[] personScores : scores) {
+            int sum = 0;
+            for (int score : personScores) {
+                sum += score;
+            }
+            System.out.println(personNum + "人目の合計: " + sum + "点");
+            personNum++;
+        }
+    }
+}
+
+// 出力:
+// 1人目の2科目目: 92
+// 3人目の1科目目: 90
+//
+// === 全員の点数 ===
+// 1人目: 85点 92点 78点
+// 2人目: 88点 95点 82点
+// 3人目: 90点 87点 93点
+//
+// === 各人の合計点 ===
+// 1人目の合計: 255点
+// 2人目の合計: 265点
+// 3人目の合計: 270点</code></pre>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold text-blue-800 mb-2">2次元配列のサイズ取得</h4>
+                                <ul class="text-blue-900 text-sm space-y-1 ml-4 list-disc list-inside">
+                                    <li><code>配列.length</code> → 行数（外側の配列の要素数）</li>
+                                    <li><code>配列[行番号].length</code> → その行の列数</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 実習カード -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                            rounded-xl p-5 my-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3">
+                                実習 6-1: テストの点数を配列で管理
+                            </h3>
+                            <p class="text-purple-900 mb-4">5人の生徒のテスト点数を配列に格納し、合計点、平均点、最高点、最低点を計算するプログラムを作成しましょう。</p>
+
+                            <h4 class="font-medium text-purple-800 mb-2">手順</h4>
+                            <ol class="space-y-3 mb-4">
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">1</span>
+                                    <span>5つの要素を持つint型配列を作成し、点数を格納する</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">2</span>
+                                    <span>for文を使って全ての点数を表示する</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">3</span>
+                                    <span>合計点と平均点を計算して表示する</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">4</span>
+                                    <span>最高点と最低点を探して表示する</span>
+                                </li>
+                            </ol>
+
+                            <h4 class="font-medium text-purple-800 mb-2">実装例</h4>
+                            <pre class="!bg-slate-800 !rounded-lg"><code class="language-java">public class ScoreAnalysis {
+    public static void main(String[] args) {
+        // 点数データ
+        int[] scores = {85, 92, 78, 88, 95};
+
+        // 全ての点数を表示
+        System.out.println("=== 点数一覧 ===");
+        for (int i = 0; i < scores.length; i++) {
+            System.out.println((i + 1) + "人目: " + scores[i] + "点");
+        }
+
+        // 合計と平均を計算
+        int sum = 0;
+        for (int score : scores) {
+            sum += score;
+        }
+        double average = (double) sum / scores.length;
+
+        // 最高点と最低点を探す
+        int max = scores[0];
+        int min = scores[0];
+        for (int score : scores) {
+            if (score > max) max = score;
+            if (score < min) min = score;
+        }
+
+        // 結果を表示
+        System.out.println("\n=== 統計結果 ===");
+        System.out.println("合計点: " + sum + "点");
+        System.out.println("平均点: " + average + "点");
+        System.out.println("最高点: " + max + "点");
+        System.out.println("最低点: " + min + "点");
+    }
+}</code></pre>
+
+                            <h4 class="font-medium text-purple-800 mt-4 mb-2">期待される結果</h4>
+                            <div class="bg-white/50 rounded-lg p-3 text-purple-900 font-mono text-sm">
+=== 点数一覧 ===<br>
+1人目: 85点<br>
+2人目: 92点<br>
+3人目: 78点<br>
+4人目: 88点<br>
+5人目: 95点<br>
+<br>
+=== 統計結果 ===<br>
+合計点: 438点<br>
+平均点: 87.6点<br>
+最高点: 95点<br>
+最低点: 78点
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q1. 要素数10の配列を作成した場合、有効なインデックスの範囲は何から何までですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <strong>0から9まで</strong>です。配列のインデックスは0から始まるため、要素数が10の場合、有効なインデックスは0, 1, 2, ..., 9となります。最後の要素は <code>配列.length - 1</code>（つまり 10 - 1 = 9）でアクセスします。10以上や負の数でアクセスすると ArrayIndexOutOfBoundsException が発生します。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q2. 次のコードで、配列 <code>numbers</code> の全要素の合計を計算するには、空欄に何を入れるべきですか？<br>
+                                    <code class="text-sm">int[] numbers = {10, 20, 30, 40, 50};<br>int sum = 0;<br>for (int i = 0; i < ______; i++) { sum += numbers[i]; }</code></p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <strong>numbers.length</strong> です。配列の要素数は <code>配列名.length</code> で取得できます。この場合、<code>numbers.length</code> は5なので、ループは i が 0, 1, 2, 3, 4 のときに実行され、全ての要素にアクセスできます。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q3. 拡張for文（for-each）の利点と制約を説明してください。どのような場面で使うべきですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <strong>利点</strong>：シンプルで読みやすく、インデックスを意識する必要がないため、範囲外エラーのリスクが減ります。<br>
+                                            <strong>制約</strong>：インデックス番号が取得できず、要素の書き換えができない（プリミティブ型の場合）。また、配列の途中から処理を開始したり、逆順で処理することはできません。<br>
+                                            <strong>使うべき場面</strong>：配列の全要素を順番に読み取るだけの場合に最適です。例：合計計算、全要素の表示など。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q4. <code>new int[5]</code> で配列を作成した場合、各要素の初期値は何ですか？また、<code>new String[3]</code> の場合はどうなりますか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <code>new int[5]</code> の場合、各要素の初期値は <strong>0</strong> です（整数型のデフォルト値）。<br>
+                                            <code>new String[3]</code> の場合、各要素の初期値は <strong>null</strong> です（参照型のデフォルト値）。<br>
+                                            プリミティブ型は数値の0や false で初期化され、参照型は null で初期化されます。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2">Q5. 2次元配列 <code>int[][] data = new int[3][4];</code> において、<code>data.length</code> と <code>data[0].length</code> の値はそれぞれいくつですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
+                                            <code>data.length</code> の値は <strong>3</strong> です（行数、外側の配列の要素数）。<br>
+                                            <code>data[0].length</code> の値は <strong>4</strong> です（0行目の列数）。<br>
+                                            2次元配列は「配列の配列」なので、外側の長さが行数、内側の長さが列数を表します。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <a href="java-learning-material-05.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
+                                  transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">繰り返し処理</span>
+                        </div>
+                    </a>
+                    <a href="java-learning-material-07.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">メソッド</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
+    </div>
+
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- 描画用Canvasオーバーレイ -->
+    <canvas id="drawing-canvas" class="fixed inset-0 z-[100] pointer-events-none"></canvas>
+
+    <!-- 描画ツールバー（右端） -->
+    <div id="drawing-toolbar" class="fixed right-4 top-1/2 -translate-y-1/2 z-[110]
+                                     bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl
+                                     border border-slate-200 p-2 flex flex-col gap-1
+                                     transition-all duration-300">
+        <!-- ツールバー折りたたみボタン -->
+        <button id="toolbar-toggle"
+                class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                       flex items-center justify-center transition-colors mb-2"
+                title="ツールバーを開く">
+            <i class="fas fa-chevron-left text-slate-600"></i>
+        </button>
+
+        <div id="toolbar-content" class="hidden flex-col gap-1">
+            <!-- ペンツール -->
+            <button id="pen-tool"
+                    class="tool-btn w-10 h-10 rounded-xl bg-primary-100 text-primary-600
+                           hover:bg-primary-200 flex items-center justify-center transition-colors"
+                    title="ペン (P)">
+                <i class="fas fa-pen"></i>
+            </button>
+
+            <!-- 消しゴムツール -->
+            <button id="eraser-tool"
+                    class="tool-btn w-10 h-10 rounded-xl bg-slate-100 text-slate-600
+                           hover:bg-slate-200 flex items-center justify-center transition-colors"
+                    title="消しゴム (E)">
+                <i class="fas fa-eraser"></i>
+            </button>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 色選択 -->
+            <div id="color-picker" class="flex flex-col gap-1">
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-red-400 bg-red-500
+                               hover:scale-110 transition-transform" data-color="#ef4444" title="赤"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-blue-400 bg-blue-500
+                               hover:scale-110 transition-transform" data-color="#3b82f6" title="青"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-slate-600 bg-slate-800
+                               hover:scale-110 transition-transform active-color" data-color="#1e293b" title="黒"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-emerald-400 bg-emerald-500
+                               hover:scale-110 transition-transform" data-color="#10b981" title="緑"></button>
+                <button class="color-btn w-10 h-10 rounded-xl border-2 border-amber-400 bg-amber-500
+                               hover:scale-110 transition-transform" data-color="#f59e0b" title="黄"></button>
+            </div>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 線の太さ -->
+            <div id="stroke-width" class="flex flex-col gap-1">
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors" data-width="2" title="細い">
+                    <div class="w-4 h-0.5 bg-slate-600 rounded-full"></div>
+                </button>
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors active-stroke" data-width="4" title="普通">
+                    <div class="w-4 h-1 bg-slate-600 rounded-full"></div>
+                </button>
+                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
+                               flex items-center justify-center transition-colors" data-width="8" title="太い">
+                    <div class="w-4 h-2 bg-slate-600 rounded-full"></div>
+                </button>
+            </div>
+
+            <!-- 区切り線 -->
+            <div class="h-px bg-slate-200 my-1"></div>
+
+            <!-- 元に戻す -->
+            <button id="undo-btn"
+                    class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600
+                           hover:bg-slate-200 flex items-center justify-center transition-colors
+                           disabled:opacity-40 disabled:cursor-not-allowed"
+                    title="元に戻す (Ctrl+Z)" disabled>
+                <i class="fas fa-undo"></i>
+            </button>
+
+            <!-- 全消去 -->
+            <button id="clear-btn"
+                    class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600
+                           hover:bg-rose-200 flex items-center justify-center transition-colors"
+                    title="全消去 (C)">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Highlight.js 初期化
+        hljs.highlightAll();
+
+        // Mermaid.js 初期化
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose'
+        });
+
+        // モバイルメニュー制御
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const menuBtn = document.getElementById('mobile-menu-btn');
+
+        menuBtn?.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        });
+
+        overlay?.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        });
+
+        // スクロールトップボタン表示制御
+        const scrollTopBtn = document.getElementById('scroll-top-btn');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.remove('opacity-0', 'invisible', 'translate-y-4');
+            } else {
+                scrollTopBtn.classList.add('opacity-0', 'invisible', 'translate-y-4');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // コードコピー機能
+        function copyCode(btn) {
+            const code = btn.closest('.code-block-wrapper').querySelector('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const icon = btn.querySelector('i');
+                icon.classList.remove('fa-copy');
+                icon.classList.add('fa-check');
+                setTimeout(() => {
+                    icon.classList.remove('fa-check');
+                    icon.classList.add('fa-copy');
+                }, 2000);
+            });
+        }
+
+        // サイドバーリサイズ機能
+        const resizeHandle = document.getElementById('sidebar-resize-handle');
+        let isResizing = false;
+        let startX, startWidth;
+
+        resizeHandle?.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            startX = e.clientX;
+            startWidth = sidebar.offsetWidth;
+            resizeHandle.classList.add('resizing');
+            document.body.style.cursor = 'ew-resize';
+            document.body.style.userSelect = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            const diff = e.clientX - startX;
+            const newWidth = Math.min(Math.max(startWidth + diff, 240), 480);
+            sidebar.style.width = newWidth + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizing) {
+                isResizing = false;
+                resizeHandle.classList.remove('resizing');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+                // サイドバー幅をローカルストレージに保存
+                localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
+            }
+        });
+
+        // ページ読み込み時にサイドバー幅を復元
+        const savedWidth = localStorage.getItem('sidebarWidth');
+        if (savedWidth && window.innerWidth >= 768) {
+            sidebar.style.width = savedWidth + 'px';
+        }
+
+        // 描画ツールバー折りたたみ機能
+        const toolbarToggle = document.getElementById('toolbar-toggle');
+        const toolbarContent = document.getElementById('toolbar-content');
+        let isToolbarOpen = false;
+
+        toolbarToggle?.addEventListener('click', () => {
+            isToolbarOpen = !isToolbarOpen;
+            const icon = toolbarToggle.querySelector('i');
+
+            if (isToolbarOpen) {
+                toolbarContent.classList.remove('hidden');
+                toolbarContent.classList.add('flex');
+                icon.classList.remove('fa-chevron-left');
+                icon.classList.add('fa-chevron-right');
+                toolbarToggle.title = 'ツールバーを閉じる';
+            } else {
+                toolbarContent.classList.add('hidden');
+                toolbarContent.classList.remove('flex');
+                icon.classList.remove('fa-chevron-right');
+                icon.classList.add('fa-chevron-left');
+                toolbarToggle.title = 'ツールバーを開く';
+            }
+        });
+    </script>
+
+    <!-- 描画ツール -->
+    <script src="../../../../common/drawing-tool.js"></script>
+</body>
+</html>
