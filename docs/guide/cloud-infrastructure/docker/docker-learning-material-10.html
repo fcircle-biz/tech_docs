@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>Docker学習教材 第10章 - トラブルシューティングと次のステップ</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Docker: Sky Blue
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-cyan-400/30 to-blue-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fab fa-docker text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
+
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">Docker学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>クラウド・インフラ</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 30分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右側: モバイルメニューボタン -->
+                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="../" class="hover:text-primary-600 transition-colors">クラウド・インフラ</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="./" class="hover:text-primary-600 transition-colors">Docker</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第10章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第10章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">トラブルシューティングと次のステップ</h1>
+                    <p class="text-slate-600">Docker使用中によくあるエラーとその解決方法をまとめます。「コンテナが起動しない」「ポートが使用中」「ディスク容量不足」などの典型的な問題への対処法を学びます。また、この先の学習パス（Kubernetes、クラウドへのデプロイなど）も紹介します。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>よくあるDockerエラーの原因を理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>典型的なトラブルの解決方法を習得する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>デバッグの基本的なアプローチを学ぶ</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>次の学習ステップ（Kubernetes、クラウドなど）を知る</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション1: トラブルシューティングの基本姿勢 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        10.1 トラブルシューティングの基本姿勢
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Dockerを使っていると、必ずエラーに遭遇します。しかし、<strong>エラーは成長のチャンス</strong>です。エラーメッセージを読み、原因を探り、解決することで、Dockerへの理解が深まります。
+                    </p>
+
+                    <!-- 基本姿勢カード -->
+                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-6 my-6">
+                        <h3 class="text-lg font-semibold text-blue-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-compass text-blue-500"></i>
+                            トラブルシューティングの3つの基本
+                        </h3>
+                        <div class="space-y-3 text-blue-900">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">1</div>
+                                <div>
+                                    <strong>エラーメッセージを最後まで読む</strong>
+                                    <p class="text-sm mt-1">赤い文字に驚かず、落ち着いてメッセージを読みましょう。多くの場合、何が原因かヒントが書かれています。</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">2</div>
+                                <div>
+                                    <strong>ログを確認する</strong>
+                                    <p class="text-sm mt-1"><code class="text-xs bg-white/80 px-1 rounded">docker logs コンテナ名</code>でコンテナの出力を確認します。エラーの詳細が記録されています。</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">3</div>
+                                <div>
+                                    <strong>一つずつ確認する</strong>
+                                    <p class="text-sm mt-1">複数の原因が考えられる場合、一つずつ切り分けて確認します。推測だけで進めず、実際に確認しましょう。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- デバッグフロー図 -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                            <i class="fas fa-diagram-project text-primary-500"></i>
+                            トラブル解決の基本フロー
+                        </h3>
+                        <div class="mermaid">
+flowchart TD
+    A([エラー発生]) --> B{エラーメッセージは<br/>出ている?}
+    B -- はい --> C[メッセージを読む]
+    B -- いいえ --> D[docker logsで<br/>ログ確認]
+    C --> E[原因を推測]
+    D --> E
+    E --> F{原因は<br/>特定できた?}
+    F -- はい --> G[対処法を実行]
+    F -- いいえ --> H[docker inspectで<br/>詳細確認]
+    H --> I[公式ドキュメントや<br/>検索で調査]
+    I --> G
+    G --> J{解決した?}
+    J -- はい --> K([完了])
+    J -- いいえ --> L[別の原因を<br/>検討]
+    L --> E
+
+    style A fill:#fee2e2,stroke:#dc2626
+    style K fill:#d1fae5,stroke:#10b981
+    style E fill:#fef3c7,stroke:#f59e0b
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション2: よくあるエラーと解決方法 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        10.2 よくあるエラーと解決方法
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Docker使用中によく遭遇するエラーとその対処法を紹介します。これらを知っておくことで、トラブルが起きても慌てずに対処できます。
+                    </p>
+
+                    <!-- エラー1: コンテナが起動しない -->
+                    <div class="bg-white border-l-4 border-red-500 p-5 rounded-r-xl shadow-sm mb-4">
+                        <h3 class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                            <i class="fas fa-exclamation-triangle text-red-500"></i>
+                            エラー1: コンテナが起動しない
+                        </h3>
+                        <div class="mt-3">
+                            <p class="text-sm text-slate-700 mb-2"><strong>症状:</strong></p>
+                            <pre class="bg-slate-900 text-slate-100 p-3 rounded-lg text-xs overflow-x-auto"><code># docker psで確認しても何も表示されない
+$ docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+</code></pre>
+                            <p class="text-sm text-slate-700 mb-2 mt-3"><strong>原因と対処法:</strong></p>
+                            <ul class="text-sm text-slate-600 space-y-2 ml-5">
+                                <li><strong>原因1: コンテナがすぐに終了している</strong> - <code class="text-xs bg-slate-100 px-1 rounded">docker ps -a</code>で終了したコンテナも表示し、<code class="text-xs bg-slate-100 px-1 rounded">docker logs コンテナ名</code>でエラーを確認します。</li>
+                                <li><strong>原因2: イメージの指定ミス</strong> - イメージ名のスペルミスやタグの間違いがないか確認します。</li>
+                                <li><strong>原因3: コマンドが正しくない</strong> - Dockerfileの<code class="text-xs bg-slate-100 px-1 rounded">CMD</code>やrunコマンドで指定したコマンドが間違っていないか確認します。</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- エラー2: ポートが使用中 -->
+                    <div class="bg-white border-l-4 border-orange-500 p-5 rounded-r-xl shadow-sm mb-4">
+                        <h3 class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                            <i class="fas fa-network-wired text-orange-500"></i>
+                            エラー2: ポートが使用中 (port already in use)
+                        </h3>
+                        <div class="mt-3">
+                            <p class="text-sm text-slate-700 mb-2"><strong>症状:</strong></p>
+                            <pre class="bg-slate-900 text-slate-100 p-3 rounded-lg text-xs overflow-x-auto"><code>Error: Bind for 0.0.0.0:8080 failed: port is already allocated
+</code></pre>
+                            <p class="text-sm text-slate-700 mb-2 mt-3"><strong>原因と対処法:</strong></p>
+                            <pre class="bg-slate-900 text-slate-100 p-3 rounded-lg text-xs overflow-x-auto"><code># 使用中のポートを確認
+$ docker ps
+
+# 該当ポートを使用中のコンテナを停止
+$ docker stop コンテナ名
+
+# または、別のポートを使用
+$ docker run -p 8081:80 nginx  # 8080の代わりに8081を使用
+</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- エラー3: ディスク容量不足 -->
+                    <div class="bg-white border-l-4 border-yellow-500 p-5 rounded-r-xl shadow-sm mb-4">
+                        <h3 class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                            <i class="fas fa-hard-drive text-yellow-500"></i>
+                            エラー3: ディスク容量不足
+                        </h3>
+                        <div class="mt-3">
+                            <p class="text-sm text-slate-700 mb-2"><strong>症状:</strong></p>
+                            <pre class="bg-slate-900 text-slate-100 p-3 rounded-lg text-xs overflow-x-auto"><code>Error: no space left on device
+</code></pre>
+                            <p class="text-sm text-slate-700 mb-2 mt-3"><strong>原因と対処法:</strong></p>
+                            <pre class="bg-slate-900 text-slate-100 p-3 rounded-lg text-xs overflow-x-auto"><code># ディスク使用量を確認
+$ docker system df
+
+# 不要なイメージ、コンテナ、ボリュームを削除
+$ docker system prune -a
+
+# ボリュームも含めて全削除（注意: データが消えます）
+$ docker system prune -a --volumes
+</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- エラー4: パーミッションエラー -->
+                    <div class="bg-white border-l-4 border-purple-500 p-5 rounded-r-xl shadow-sm mb-4">
+                        <h3 class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                            <i class="fas fa-lock text-purple-500"></i>
+                            エラー4: パーミッションエラー (permission denied)
+                        </h3>
+                        <div class="mt-3">
+                            <p class="text-sm text-slate-700 mb-2"><strong>症状:</strong></p>
+                            <pre class="bg-slate-900 text-slate-100 p-3 rounded-lg text-xs overflow-x-auto"><code>Got permission denied while trying to connect to the Docker daemon socket
+</code></pre>
+                            <p class="text-sm text-slate-700 mb-2 mt-3"><strong>原因と対処法:</strong></p>
+                            <p class="text-sm text-slate-600 mb-2">Rancher Desktopが起動していない、またはユーザーに権限がない可能性があります。</p>
+                            <ul class="text-sm text-slate-600 space-y-2 ml-5">
+                                <li><strong>対処1:</strong> Rancher Desktopが起動しているか確認します。</li>
+                                <li><strong>対処2:</strong> Rancher Desktopを再起動します。</li>
+                                <li><strong>対処3:</strong> ターミナルを再起動して、環境変数を再読み込みします。</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- エラー5: ネットワーク接続エラー -->
+                    <div class="bg-white border-l-4 border-blue-500 p-5 rounded-r-xl shadow-sm mb-4">
+                        <h3 class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                            <i class="fas fa-wifi text-blue-500"></i>
+                            エラー5: ネットワーク接続エラー
+                        </h3>
+                        <div class="mt-3">
+                            <p class="text-sm text-slate-700 mb-2"><strong>症状:</strong></p>
+                            <pre class="bg-slate-900 text-slate-100 p-3 rounded-lg text-xs overflow-x-auto"><code># コンテナからインターネットに接続できない
+Could not resolve host: example.com
+</code></pre>
+                            <p class="text-sm text-slate-700 mb-2 mt-3"><strong>原因と対処法:</strong></p>
+                            <pre class="bg-slate-900 text-slate-100 p-3 rounded-lg text-xs overflow-x-auto"><code># コンテナのネットワーク設定を確認
+$ docker network ls
+
+# コンテナのネットワーク接続を確認
+$ docker exec コンテナ名 ping -c 3 google.com
+
+# ネットワークを再作成
+$ docker network create my-network
+$ docker run --network my-network イメージ名
+</code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション3: デバッグに便利なコマンド -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        10.3 デバッグに便利なコマンド
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        トラブル発生時に状況を把握するための便利なコマンドを紹介します。これらのコマンドを使いこなすことで、問題の原因を素早く特定できます。
+                    </p>
+
+                    <!-- コマンド一覧 -->
+                    <div class="grid md:grid-cols-2 gap-4 my-6">
+                        <!-- docker logs -->
+                        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-file-lines text-white"></i>
+                                </div>
+                                <h3 class="font-semibold text-emerald-800">docker logs</h3>
+                            </div>
+                            <p class="text-sm text-emerald-900 mb-3">
+                                コンテナの標準出力とエラー出力を表示します。アプリケーションのログやエラーメッセージを確認できます。
+                            </p>
+                            <pre class="bg-white/80 p-2 rounded text-xs overflow-x-auto"><code># 最新のログを表示
+docker logs コンテナ名
+
+# リアルタイムでログを追跡
+docker logs -f コンテナ名
+</code></pre>
+                        </div>
+
+                        <!-- docker exec -->
+                        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-terminal text-white"></i>
+                                </div>
+                                <h3 class="font-semibold text-blue-800">docker exec</h3>
+                            </div>
+                            <p class="text-sm text-blue-900 mb-3">
+                                実行中のコンテナ内でコマンドを実行します。コンテナの中に入って状況を直接確認できます。
+                            </p>
+                            <pre class="bg-white/80 p-2 rounded text-xs overflow-x-auto"><code># コンテナ内でbashを起動
+docker exec -it コンテナ名 bash
+
+# ファイルの内容を確認
+docker exec コンテナ名 cat /etc/hosts
+</code></pre>
+                        </div>
+
+                        <!-- docker inspect -->
+                        <div class="bg-gradient-to-br from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-magnifying-glass text-white"></i>
+                                </div>
+                                <h3 class="font-semibold text-purple-800">docker inspect</h3>
+                            </div>
+                            <p class="text-sm text-purple-900 mb-3">
+                                コンテナやイメージの詳細情報をJSON形式で表示します。設定やネットワーク情報を詳しく確認できます。
+                            </p>
+                            <pre class="bg-white/80 p-2 rounded text-xs overflow-x-auto"><code># コンテナの詳細情報を表示
+docker inspect コンテナ名
+
+# IPアドレスだけを表示
+docker inspect -f '{{.NetworkSettings.IPAddress}}' コンテナ名
+</code></pre>
+                        </div>
+
+                        <!-- docker stats -->
+                        <div class="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-chart-line text-white"></i>
+                                </div>
+                                <h3 class="font-semibold text-orange-800">docker stats</h3>
+                            </div>
+                            <p class="text-sm text-orange-900 mb-3">
+                                コンテナのリソース使用状況（CPU、メモリ、ネットワーク）をリアルタイムで表示します。
+                            </p>
+                            <pre class="bg-white/80 p-2 rounded text-xs overflow-x-auto"><code># 全コンテナの統計情報を表示
+docker stats
+
+# 特定コンテナのみ表示
+docker stats コンテナ名
+</code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション4: リソースのクリーンアップ -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        10.4 リソースのクリーンアップ
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Dockerを使い続けると、不要なイメージ、コンテナ、ボリュームが溜まってディスク容量を圧迫します。定期的にクリーンアップしましょう。
+                    </p>
+
+                    <!-- docker system pruneカード -->
+                    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-6 my-6">
+                        <h3 class="text-lg font-semibold text-indigo-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-broom text-indigo-500"></i>
+                            docker system pruneコマンド
+                        </h3>
+                        <p class="text-sm text-indigo-900 mb-3">
+                            <strong>docker system prune</strong>は、使用していないDockerリソースを一括で削除する強力なコマンドです。
+                        </p>
+                        <pre class="bg-white/80 p-3 rounded text-xs overflow-x-auto"><code># 停止中のコンテナ、未使用のネットワーク、ダングリングイメージを削除
+$ docker system prune
+
+# 未使用のイメージも全て削除（より徹底的に）
+$ docker system prune -a
+
+# ボリュームも含めて全削除（注意: データが消えます）
+$ docker system prune -a --volumes
+
+# 確認なしで実行（自動化スクリプトで使用）
+$ docker system prune -f
+</code></pre>
+                        <div class="bg-red-100 border border-red-300 rounded-lg p-3 mt-4">
+                            <p class="text-sm text-red-800">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                <strong>注意:</strong> <code class="text-xs bg-white px-1 rounded">--volumes</code>オプションを使うと、ボリューム内のデータも削除されます。重要なデータは事前にバックアップしてください。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 個別削除コマンド -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="text-lg font-semibold text-slate-700 mb-4">個別に削除する方法</h3>
+                        <pre class="bg-slate-900 text-slate-100 p-3 rounded-lg text-xs overflow-x-auto"><code># 停止中のコンテナを全て削除
+$ docker container prune
+
+# 未使用のイメージを削除
+$ docker image prune
+
+# 未使用のボリュームを削除
+$ docker volume prune
+
+# 未使用のネットワークを削除
+$ docker network prune
+</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション5: 次の学習ステップ -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        10.5 次の学習ステップ
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        この学習ガイドでDockerの基礎を習得したあなたは、さらに高度な技術へステップアップする準備ができています。次に学ぶべき技術を紹介します。
+                    </p>
+
+                    <!-- Kubernetes -->
+                    <div class="bg-white border-l-4 border-primary-500 p-5 rounded-r-xl shadow-sm mb-4">
+                        <h3 class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                            <i class="fas fa-dharmachakra text-primary-500"></i>
+                            Kubernetesへのステップアップ
+                        </h3>
+                        <p class="text-sm text-slate-600 mb-3">
+                            <strong class="text-primary-700">Kubernetes（K8s）</strong>は、複数のコンテナを大規模に管理・運用するためのオーケストレーションツールです。Dockerで1つのコンテナを動かせるようになったら、次は数百、数千のコンテナを管理する方法を学びましょう。
+                        </p>
+                        <div class="text-xs text-slate-600">
+                            <strong>学べること:</strong> コンテナの自動スケーリング、負荷分散、自動復旧、ローリングアップデートなど
+                        </div>
+                    </div>
+
+                    <!-- クラウドデプロイ -->
+                    <div class="bg-white border-l-4 border-primary-500 p-5 rounded-r-xl shadow-sm mb-4">
+                        <h3 class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                            <i class="fas fa-cloud text-primary-500"></i>
+                            クラウドへのデプロイ
+                        </h3>
+                        <p class="text-sm text-slate-600 mb-3">
+                            ローカルで動かしたコンテナを、実際のWebサービスとして世界に公開しましょう。主要なクラウドサービスはすべてDockerコンテナに対応しています。
+                        </p>
+                        <ul class="text-xs text-slate-600 space-y-1 ml-5">
+                            <li><strong>AWS ECS/Fargate:</strong> Amazonのコンテナサービス。サーバーレスでコンテナを実行できます。</li>
+                            <li><strong>Google Cloud Run:</strong> Googleのサーバーレスコンテナプラットフォーム。自動スケールが特徴。</li>
+                            <li><strong>Azure Container Instances:</strong> Microsoftのコンテナサービス。Windows Serverコンテナにも対応。</li>
+                        </ul>
+                    </div>
+
+                    <!-- CI/CD -->
+                    <div class="bg-white border-l-4 border-primary-500 p-5 rounded-r-xl shadow-sm mb-4">
+                        <h3 class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                            <i class="fas fa-rotate text-primary-500"></i>
+                            CI/CDパイプラインとの連携
+                        </h3>
+                        <p class="text-sm text-slate-600 mb-3">
+                            コードをGitにプッシュしたら自動でDockerイメージをビルドし、テストして、デプロイする仕組みを作りましょう。開発効率が劇的に向上します。
+                        </p>
+                        <ul class="text-xs text-slate-600 space-y-1 ml-5">
+                            <li><strong>GitHub Actions:</strong> GitHubに統合されたCI/CDツール。Dockerイメージの自動ビルドが簡単。</li>
+                            <li><strong>GitLab CI/CD:</strong> GitLabの組み込みCI/CD。Dockerとの親和性が高い。</li>
+                            <li><strong>Jenkins:</strong> オープンソースの定番CI/CDツール。高度なカスタマイズが可能。</li>
+                        </ul>
+                    </div>
+
+                    <!-- 学習ロードマップ図 -->
+                    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-6 my-6">
+                        <h3 class="text-lg font-semibold text-indigo-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-map text-indigo-500"></i>
+                            コンテナ技術の学習ロードマップ
+                        </h3>
+                        <div class="mermaid">
+flowchart TD
+    A[Docker基礎<br/>このガイドで習得] --> B{次に学びたいことは?}
+    B --> C[Kubernetes<br/>大規模運用]
+    B --> D[クラウドデプロイ<br/>AWS/GCP/Azure]
+    B --> E[CI/CD<br/>自動化]
+
+    C --> F[本番環境での<br/>コンテナ運用]
+    D --> F
+    E --> F
+
+    F --> G[マイクロサービス<br/>アーキテクチャ]
+    G --> H[クラウドネイティブ<br/>エンジニア]
+
+    style A fill:#e0f2fe,stroke:#0ea5e9,stroke-width:3px
+    style B fill:#fef3c7,stroke:#f59e0b
+    style F fill:#dbeafe,stroke:#3b82f6
+    style H fill:#d1fae5,stroke:#10b981,stroke-width:3px
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション6: 学習全体のまとめ -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        10.6 学習全体のまとめ（第1章〜第10章の振り返り）
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        第1章から第10章まで、お疲れ様でした！あなたはDockerの基礎から実践的な活用方法まで、一通りを学習しました。ここで全体を振り返ってみましょう。
+                    </p>
+
+                    <!-- 学習内容の振り返り -->
+                    <div class="space-y-3 my-6">
+                        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <span class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">1</span>
+                                <div>
+                                    <strong class="text-blue-800">Dockerとは何か</strong>
+                                    <p class="text-sm text-blue-700 mt-1">コンテナの概念、従来の方法との違いを理解しました。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <span class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">2</span>
+                                <div>
+                                    <strong class="text-blue-800">Rancher Desktopのインストール</strong>
+                                    <p class="text-sm text-blue-700 mt-1">Docker環境を自分のPCに構築しました。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <span class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">3</span>
+                                <div>
+                                    <strong class="text-blue-800">はじめてのDockerコマンド</strong>
+                                    <p class="text-sm text-blue-700 mt-1">docker run、ps、stop、rmなどの基本コマンドを実行しました。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <span class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">4</span>
+                                <div>
+                                    <strong class="text-blue-800">Dockerイメージを理解する</strong>
+                                    <p class="text-sm text-blue-700 mt-1">イメージとコンテナの関係、Docker Hubの使い方を学びました。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <span class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">5</span>
+                                <div>
+                                    <strong class="text-blue-800">Webサーバーを動かす</strong>
+                                    <p class="text-sm text-blue-700 mt-1">Nginxでポートの概念を理解し、実際にWebページを表示しました。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <span class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">6</span>
+                                <div>
+                                    <strong class="text-blue-800">Dockerfileを書く</strong>
+                                    <p class="text-sm text-blue-700 mt-1">オリジナルのDockerイメージを作成しました。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <span class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">7</span>
+                                <div>
+                                    <strong class="text-blue-800">データを保存する</strong>
+                                    <p class="text-sm text-blue-700 mt-1">ボリュームを使ってデータを永続化する方法を習得しました。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <span class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">8</span>
+                                <div>
+                                    <strong class="text-blue-800">Docker Composeで複数コンテナを管理</strong>
+                                    <p class="text-sm text-blue-700 mt-1">複数のコンテナを一括で起動・管理する方法を学びました。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <span class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">9</span>
+                                <div>
+                                    <strong class="text-blue-800">実践プロジェクト</strong>
+                                    <p class="text-sm text-blue-700 mt-1">実際のWebアプリをコンテナ化し、総合的なスキルを磨きました。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-300 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <span class="flex-shrink-0 w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center font-bold text-sm">10</span>
+                                <div>
+                                    <strong class="text-emerald-800">トラブルシューティングと次のステップ</strong>
+                                    <p class="text-sm text-emerald-700 mt-1">エラー対処法を学び、さらなる成長への道筋を知りました。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- あなたが身につけたスキル -->
+                    <div class="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-6 my-6">
+                        <h3 class="text-lg font-semibold text-purple-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-certificate text-purple-500"></i>
+                            あなたが身につけたスキル
+                        </h3>
+                        <div class="grid md:grid-cols-2 gap-3">
+                            <div class="flex items-center gap-2 text-sm text-purple-900">
+                                <i class="fas fa-check-circle text-purple-500"></i>
+                                <span>Dockerの基本概念の理解</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-purple-900">
+                                <i class="fas fa-check-circle text-purple-500"></i>
+                                <span>Docker環境の構築と設定</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-purple-900">
+                                <i class="fas fa-check-circle text-purple-500"></i>
+                                <span>基本的なDockerコマンドの実行</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-purple-900">
+                                <i class="fas fa-check-circle text-purple-500"></i>
+                                <span>イメージの取得と管理</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-purple-900">
+                                <i class="fas fa-check-circle text-purple-500"></i>
+                                <span>Dockerfileの作成</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-purple-900">
+                                <i class="fas fa-check-circle text-purple-500"></i>
+                                <span>ボリュームによるデータ永続化</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-purple-900">
+                                <i class="fas fa-check-circle text-purple-500"></i>
+                                <span>Docker Composeの活用</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-purple-900">
+                                <i class="fas fa-check-circle text-purple-500"></i>
+                                <span>トラブルシューティング能力</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 最後のメッセージ -->
+                <div class="bg-gradient-to-r from-primary-50 to-blue-50 border border-primary-200 rounded-xl p-6 my-6">
+                    <h3 class="text-lg font-semibold text-primary-800 mb-3 flex items-center gap-2">
+                        <i class="fas fa-heart text-primary-500"></i>
+                        学習を完了したあなたへ
+                    </h3>
+                    <p class="text-sm text-primary-900 leading-relaxed">
+                        この学習ガイドを最後まで読み、実践してくださり、ありがとうございました。あなたは今、Dockerの基礎をしっかりと身につけ、モダンな開発環境を構築できる力を持っています。これからも継続的に学び、新しい技術にチャレンジし続けてください。<strong>コンテナの世界は広大です。この学習はあなたの新しい旅の始まりに過ぎません。</strong>
+                    </p>
+                    <p class="text-sm text-primary-900 leading-relaxed mt-3">
+                        Docker、そしてこの先のKubernetesやクラウド技術を学び続けることで、あなたのキャリアは大きく広がるでしょう。<strong>頑張ってください！</strong>
+                    </p>
+                </div>
+
+                <!-- まとめカード -->
+                <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-6 my-6">
+                    <h3 class="text-lg font-semibold text-emerald-800 mb-3 flex items-center gap-2">
+                        <i class="fas fa-check-circle text-emerald-500"></i>
+                        第10章のまとめ
+                    </h3>
+                    <ul class="space-y-2 text-emerald-900">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
+                            <span>エラーメッセージを読み、ログを確認することがトラブル解決の第一歩</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
+                            <span>よくあるエラー（起動しない、ポート競合、容量不足など）への対処法を知った</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
+                            <span>docker logs、exec、inspectなどのデバッグコマンドを習得した</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
+                            <span>docker system pruneで不要なリソースを削除できる</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
+                            <span>次のステップ（Kubernetes、クラウド、CI/CD）を知り、学習の道筋が見えた</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <!-- 前へ -->
+                    <a href="docker-learning-material-09.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
+                                  transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">第9章: 実践プロジェクト</span>
+                        </div>
+                    </a>
+                    <!-- 次へ（目次に戻る） -->
+                    <a href="README.md"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">学習完了</span>
+                            <span class="font-medium">目次に戻る</span>
+                        </div>
+                        <i class="fas fa-home transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
+    </div>
+
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- サイドバー生成 -->
+    <script src="sidebar-content.js"></script>
+
+    <!-- 共通JavaScript -->
+    <script src="main.js"></script>
+
+    <!-- 描画ツール -->
+    <script src="drawing-tool.js"></script>
+</body>
+</html>

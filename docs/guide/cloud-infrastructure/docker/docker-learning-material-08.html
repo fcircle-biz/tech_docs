@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>Docker学習教材 第8章 - Docker Composeで複数のコンテナを管理しよう</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Docker: Sky Blue
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-cyan-400/30 to-blue-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fab fa-docker text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
+
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">Docker学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>クラウド・インフラ</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 30分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右側: モバイルメニューボタン -->
+                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="../" class="hover:text-primary-600 transition-colors">クラウド・インフラ</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="./" class="hover:text-primary-600 transition-colors">Docker</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第8章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第8章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Docker Composeで複数のコンテナを管理しよう</h1>
+                    <p class="text-slate-600">複数のコンテナを連携させる必要性を理解し、Docker Composeの基本を学びます。docker-compose.ymlファイルの書き方を丁寧に解説し、Webアプリケーション + データベースという実践的な構成を一つのコマンドで起動する方法を習得します。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>複数のコンテナを連携させる必要性を理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>docker-compose.ymlファイルの基本構造を習得する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>docker compose up/downコマンドを使いこなす</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>WebアプリケーションとDBを連携させる構成を作る</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション1: なぜ複数のコンテナが必要なのか -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        8.1 なぜ複数のコンテナが必要なのか
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        実際のWebアプリケーションは、一つのコンテナだけでは完結しません。たとえば、以下のような構成が一般的です。
+                    </p>
+
+                    <!-- 例えカード -->
+                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-6 my-6">
+                        <h3 class="text-lg font-semibold text-blue-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-sitemap text-blue-500"></i>
+                            典型的なWebアプリケーション構成
+                        </h3>
+                        <div class="space-y-3 text-blue-900">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">1</div>
+                                <div>
+                                    <strong>Webサーバー（例: Nginx）</strong>
+                                    <p class="text-sm mt-1">ユーザーからのアクセスを受け付ける玄関口</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">2</div>
+                                <div>
+                                    <strong>アプリケーションサーバー（例: WordPress, Django）</strong>
+                                    <p class="text-sm mt-1">ビジネスロジックを処理する頭脳</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">3</div>
+                                <div>
+                                    <strong>データベース（例: MySQL, PostgreSQL）</strong>
+                                    <p class="text-sm mt-1">データを保存・管理する倉庫</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 図解: Web + DB構成 -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                            <i class="fas fa-diagram-project text-primary-500"></i>
+                            複数コンテナ構成の例
+                        </h3>
+                        <div class="mermaid">
+flowchart LR
+    User[ユーザー] -->|HTTP| Web[Webコンテナ<br/>Nginx/WordPress]
+    Web -->|データ要求| DB[(DBコンテナ<br/>MySQL)]
+
+    style User fill:#dbeafe,stroke:#3b82f6
+    style Web fill:#e0f2fe,stroke:#0ea5e9
+    style DB fill:#fef3c7,stroke:#f59e0b
+                        </div>
+                        <p class="text-sm text-slate-600 mt-4">
+                            各コンテナは独立していますが、ネットワーク経由でデータをやり取りします
+                        </p>
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        これまで学んだ<code class="px-1.5 py-0.5 bg-slate-200 rounded text-sm">docker run</code>コマンドでも複数のコンテナを起動できますが、以下のような課題があります。
+                    </p>
+
+                    <!-- 従来の問題点 -->
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                            <div>
+                                <p class="text-red-900 font-medium">docker runだけでは管理が大変</p>
+                                <ul class="text-red-800 text-sm mt-2 space-y-1 list-disc list-inside">
+                                    <li>コンテナごとにコマンドを実行する必要がある</li>
+                                    <li>起動順序やネットワーク設定を手動で管理</li>
+                                    <li>一括停止・削除が面倒</li>
+                                    <li>設定を他の人と共有しづらい</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション2: Docker Composeとは -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        8.2 Docker Composeとは - オーケストラの指揮者
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong class="text-primary-700">Docker Compose（ドッカー・コンポーズ）</strong>は、複数のコンテナをまとめて管理するためのツールです。
+                    </p>
+
+                    <!-- 例えカード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-6 my-6">
+                        <h3 class="text-lg font-semibold text-purple-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-music text-purple-500"></i>
+                            オーケストラの指揮者の例え
+                        </h3>
+                        <p class="text-purple-900 mb-3">
+                            Docker Composeは、オーケストラの<strong>指揮者</strong>のようなものです。
+                        </p>
+                        <div class="space-y-2 text-purple-900 text-sm">
+                            <div class="flex items-start gap-2">
+                                <i class="fas fa-violin text-purple-500 mt-1"></i>
+                                <span><strong>演奏者（各コンテナ）</strong>: それぞれが異なる役割を持つ</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <i class="fas fa-user-tie text-purple-500 mt-1"></i>
+                                <span><strong>指揮者（Docker Compose）</strong>: 全員を統率し、タイミングよく演奏開始・停止させる</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <i class="fas fa-file-alt text-purple-500 mt-1"></i>
+                                <span><strong>楽譜（docker-compose.yml）</strong>: 誰がいつどう演奏するかが書かれている</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Docker Composeを使うと、複数のコンテナの設定を<strong>1つのファイル</strong>にまとめ、<strong>1つのコマンド</strong>で起動・停止できます。
+                    </p>
+
+                    <!-- メリットカード -->
+                    <div class="grid md:grid-cols-2 gap-4 my-6">
+                        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-rocket text-white"></i>
+                                </div>
+                                <h3 class="font-semibold text-emerald-800">簡単起動</h3>
+                            </div>
+                            <p class="text-sm text-emerald-900">
+                                複数のコンテナを<code class="px-1 py-0.5 bg-emerald-200 rounded text-xs">docker compose up</code>一発で起動できます。
+                            </p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-network-wired text-white"></i>
+                                </div>
+                                <h3 class="font-semibold text-blue-800">自動ネットワーク</h3>
+                            </div>
+                            <p class="text-sm text-blue-900">
+                                コンテナ間のネットワークを自動で構築し、名前で通信できます。
+                            </p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-file-code text-white"></i>
+                                </div>
+                                <h3 class="font-semibold text-orange-800">設定の共有</h3>
+                            </div>
+                            <p class="text-sm text-orange-900">
+                                YAMLファイルをGitで共有すれば、チーム全員が同じ環境を再現できます。
+                            </p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-list-check text-white"></i>
+                                </div>
+                                <h3 class="font-semibold text-purple-800">起動順序制御</h3>
+                            </div>
+                            <p class="text-sm text-purple-900">
+                                依存関係を設定して、DBが起動してからアプリを起動するなどの制御が可能。
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション3: docker-compose.ymlの基本構造 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        8.3 docker-compose.ymlの基本構造
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Docker Composeの設定は、<code class="px-1.5 py-0.5 bg-slate-200 rounded text-sm">docker-compose.yml</code>というYAML形式のファイルに記述します。基本的な構造を見てみましょう。
+                    </p>
+
+                    <!-- コードブロック -->
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">docker-compose.yml（基本構造）</span>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-yaml">version: '3.8'  # Docker Composeのバージョン
+
+services:  # コンテナの定義を記述
+  web:  # サービス名（任意の名前）
+    image: nginx:latest  # 使用するイメージ
+    ports:
+      - "8080:80"  # ポートマッピング（ホスト:コンテナ）
+    volumes:
+      - ./html:/usr/share/nginx/html  # ボリュームマウント
+
+  db:  # 2つ目のサービス
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: example  # 環境変数</code></pre>
+                    </div>
+
+                    <!-- 主要な設定項目 -->
+                    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden my-6">
+                        <div class="bg-slate-100 px-6 py-3 border-b border-slate-200">
+                            <h3 class="font-semibold text-slate-800 flex items-center gap-2">
+                                <i class="fas fa-list"></i>
+                                主要な設定項目
+                            </h3>
+                        </div>
+                        <table class="w-full text-sm">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left font-semibold text-slate-700">項目</th>
+                                    <th class="px-6 py-3 text-left font-semibold text-slate-700">説明</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200">
+                                <tr>
+                                    <td class="px-6 py-4 font-mono text-primary-600">services</td>
+                                    <td class="px-6 py-4 text-slate-600">起動するコンテナのリスト。各サービスが1つのコンテナに対応</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 font-mono text-primary-600">image</td>
+                                    <td class="px-6 py-4 text-slate-600">使用するDockerイメージを指定（Docker Hubから取得）</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 font-mono text-primary-600">ports</td>
+                                    <td class="px-6 py-4 text-slate-600">ポートマッピング。「ホスト:コンテナ」の形式で指定</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 font-mono text-primary-600">volumes</td>
+                                    <td class="px-6 py-4 text-slate-600">ボリュームマウント。データを永続化する場所を指定</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 font-mono text-primary-600">environment</td>
+                                    <td class="px-6 py-4 text-slate-600">環境変数を設定。パスワードやDBホスト名などを指定</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 font-mono text-primary-600">networks</td>
+                                    <td class="px-6 py-4 text-slate-600">コンテナ間のネットワークを定義（省略時は自動作成）</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- ヒント -->
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div>
+                                <p class="text-blue-900 font-medium">YAMLの注意点</p>
+                                <p class="text-blue-800 text-sm mt-1">
+                                    YAMLファイルは<strong>インデント（字下げ）</strong>が重要です。スペース2つまたは4つで統一し、タブは使わないでください。インデントがずれると正しく動きません。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション4: はじめてのdocker-compose.yml -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        8.4 はじめてのdocker-compose.yml - WordPress + MySQL
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        実際にWordPress（ブログシステム）とMySQLデータベースを組み合わせた構成を作ってみましょう。
+                    </p>
+
+                    <!-- ファイル作成手順 -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 my-6">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3">実習 8-1: WordPress環境の構築</h3>
+                                <h4 class="font-medium text-purple-800 mb-2">手順</h4>
+                                <ol class="space-y-3 mb-4">
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
+                                        <span>作業用フォルダを作成し、移動します</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
+                                        <span>docker-compose.ymlファイルを作成します</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">3</span>
+                                        <span>Docker Composeで起動します</span>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ステップ1: フォルダ作成 -->
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">ターミナル（作業フォルダ作成）</span>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># 作業フォルダを作成
+mkdir wordpress-demo
+cd wordpress-demo</code></pre>
+                    </div>
+
+                    <!-- ステップ2: docker-compose.yml作成 -->
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">docker-compose.yml</span>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-yaml">version: '3.8'
+
+services:
+  # データベース（MySQL）
+  db:
+    image: mysql:8.0
+    volumes:
+      - db_data:/var/lib/mysql  # DBデータを永続化
+    environment:
+      MYSQL_ROOT_PASSWORD: somewordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+
+  # WordPress本体
+  wordpress:
+    image: wordpress:latest
+    ports:
+      - "8000:80"  # ポート8000でアクセス可能
+    environment:
+      WORDPRESS_DB_HOST: db:3306  # dbサービスに接続
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    depends_on:
+      - db  # dbが起動してから起動
+
+volumes:
+  db_data:  # 名前付きボリュームの定義</code></pre>
+                    </div>
+
+                    <!-- 設定の解説 -->
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-star text-emerald-600 mt-1"></i>
+                            <div>
+                                <p class="text-emerald-900 font-medium">設定のポイント</p>
+                                <ul class="text-emerald-800 text-sm mt-2 space-y-1 list-disc list-inside">
+                                    <li><strong>depends_on</strong>: WordPressをDBより後に起動</li>
+                                    <li><strong>WORDPRESS_DB_HOST: db</strong>: サービス名でDB接続</li>
+                                    <li><strong>volumes</strong>: DBデータを削除しても残るように永続化</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション5: docker compose up/downで起動・停止 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        8.5 docker compose up/downで起動・停止
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        docker-compose.ymlファイルがあるフォルダで、以下のコマンドを実行します。
+                    </p>
+
+                    <!-- 起動コマンド -->
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">起動コマンド</span>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># すべてのサービスを起動（バックグラウンドで実行）
+docker compose up -d
+
+# 出力例:
+# [+] Running 3/3
+#  ✔ Network wordpress-demo_default  Created
+#  ✔ Container wordpress-demo-db-1   Started
+#  ✔ Container wordpress-demo-wordpress-1  Started</code></pre>
+                    </div>
+
+                    <!-- 動作確認 -->
+                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5 my-6">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-play text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-emerald-800 mb-3">動作確認</h3>
+                                <p class="text-emerald-900 mb-4">
+                                    ブラウザで<code class="px-1.5 py-0.5 bg-emerald-200 rounded text-sm">http://localhost:8000</code>にアクセスすると、WordPressの初期設定画面が表示されます。
+                                </p>
+                                <h4 class="font-medium text-emerald-800 mb-2 flex items-center gap-2">
+                                    <i class="fas fa-check-circle"></i>期待される結果
+                                </h4>
+                                <div class="bg-white/60 rounded-lg p-4 border border-emerald-200">
+                                    <p class="text-emerald-900 text-sm">「WordPressへようこそ」という画面が表示され、言語選択やサイト設定ができる状態になっています。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 停止コマンド -->
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">停止・削除コマンド</span>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># すべてのサービスを停止・削除
+docker compose down
+
+# ボリュームも含めて完全に削除する場合
+docker compose down -v</code></pre>
+                    </div>
+
+                    <!-- 注意 -->
+                    <div class="bg-orange-50 border-l-4 border-orange-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-circle text-orange-600 mt-1"></i>
+                            <div>
+                                <p class="text-orange-900 font-medium">注意</p>
+                                <p class="text-orange-800 text-sm mt-1">
+                                    <code class="px-1 py-0.5 bg-orange-200 rounded text-xs">docker compose down -v</code>を実行すると、DBのデータも削除されます。データを残したい場合は<code class="px-1 py-0.5 bg-orange-200 rounded text-xs">-v</code>オプションを付けないでください。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション6: よく使うDocker Composeコマンド -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        8.6 よく使うDocker Composeコマンド
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Docker Composeには、起動・停止以外にも便利なコマンドがあります。
+                    </p>
+
+                    <!-- コマンド一覧 -->
+                    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden my-6">
+                        <table class="w-full text-sm">
+                            <thead class="bg-slate-100">
+                                <tr>
+                                    <th class="px-6 py-3 text-left font-semibold text-slate-700">コマンド</th>
+                                    <th class="px-6 py-3 text-left font-semibold text-slate-700">説明</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200">
+                                <tr>
+                                    <td class="px-6 py-4 font-mono text-primary-600">docker compose up -d</td>
+                                    <td class="px-6 py-4 text-slate-600">すべてのサービスをバックグラウンドで起動</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 font-mono text-primary-600">docker compose down</td>
+                                    <td class="px-6 py-4 text-slate-600">すべてのサービスを停止・削除</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 font-mono text-primary-600">docker compose ps</td>
+                                    <td class="px-6 py-4 text-slate-600">起動中のサービス一覧を表示</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 font-mono text-primary-600">docker compose logs</td>
+                                    <td class="px-6 py-4 text-slate-600">すべてのサービスのログを表示</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 font-mono text-primary-600">docker compose logs -f</td>
+                                    <td class="px-6 py-4 text-slate-600">ログをリアルタイム表示（Ctrl+Cで終了）</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 font-mono text-primary-600">docker compose exec [サービス名] bash</td>
+                                    <td class="px-6 py-4 text-slate-600">コンテナ内でコマンド実行（例: bashシェル起動）</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 font-mono text-primary-600">docker compose restart</td>
+                                    <td class="px-6 py-4 text-slate-600">すべてのサービスを再起動</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 font-mono text-primary-600">docker compose stop</td>
+                                    <td class="px-6 py-4 text-slate-600">サービスを停止（コンテナは削除しない）</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- ログ確認の例 -->
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">ログ確認の例</span>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># 特定のサービスのログだけ見る
+docker compose logs wordpress
+
+# 最新100行だけ表示
+docker compose logs --tail=100
+
+# WordPressコンテナ内でbashを起動
+docker compose exec wordpress bash</code></pre>
+                    </div>
+                </section>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q1. Docker Composeを使う最大のメリットは何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            複数のコンテナを1つのファイル（docker-compose.yml）で管理し、1つのコマンド（docker compose up）で一括起動・停止できることです。これにより、複雑な環境でも簡単に再現でき、チームでの共有も容易になります。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q2. docker-compose.ymlで「depends_on」を設定する理由は何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            サービスの起動順序を制御するためです。たとえば、WordPressはデータベースが必要なので、DBコンテナが起動してからWordPressコンテナを起動させることで、エラーを防ぎます。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q3. docker compose downとdocker compose down -vの違いは何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            <code>docker compose down</code>はコンテナとネットワークを削除しますが、ボリューム（データ）は残します。<code>docker compose down -v</code>はボリュームも含めて完全に削除します。データを保持したい場合は-vオプションを付けないようにします。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- まとめカード -->
+                <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-6 my-6">
+                    <h3 class="text-lg font-semibold text-emerald-800 mb-3 flex items-center gap-2">
+                        <i class="fas fa-check-circle text-emerald-500"></i>
+                        第8章のまとめ
+                    </h3>
+                    <ul class="space-y-2 text-emerald-900">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
+                            <span>実際のWebアプリは複数のコンテナ（Web、アプリ、DB）を組み合わせて構成する</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
+                            <span>Docker Composeは複数コンテナをまとめて管理するオーケストラの指揮者</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
+                            <span>docker-compose.ymlにservices、image、ports、volumesなどを記述する</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
+                            <span>docker compose up/downで一括起動・停止ができる</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
+                            <span>logs、ps、execなどのコマンドで運用・デバッグができる</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <!-- 前へ -->
+                    <a href="docker-learning-material-07.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
+                                  transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">第7章: データを保存しよう</span>
+                        </div>
+                    </a>
+                    <!-- 次へ -->
+                    <a href="docker-learning-material-09.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">第9章: 実践プロジェクト</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
+    </div>
+
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- サイドバー生成 -->
+    <script src="sidebar-content.js"></script>
+
+    <!-- 共通JavaScript -->
+    <script src="main.js"></script>
+
+    <!-- 描画ツール -->
+    <script src="drawing-tool.js"></script>
+</body>
+</html>
