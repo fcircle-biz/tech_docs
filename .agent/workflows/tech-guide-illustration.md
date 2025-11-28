@@ -28,6 +28,7 @@ This workflow automates the process of adding visual aids to the HTML learning m
         - **Construct Prompt**: Create a detailed prompt for the `generate_image` tool.
             - **Style**: Clean, modern, flat design, technical but friendly. Matches the color theme of the guide.
             - **Subject**: Clearly depict the concept. Avoid text if possible (or keep it very simple). If text is necessary, **it MUST be in Japanese**.
+            - **Format**: Landscape orientation (wide).
         - **Generate**: Call `generate_image`.
         - **Save**: Save the image to the `img` directory with a descriptive name (e.g., `mvc-diagram.png`, `api-flow.png`).
 

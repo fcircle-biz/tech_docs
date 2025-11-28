@@ -2,1023 +2,682 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Docker学習教材 第5章 - Docker Composeによる複数コンテナ管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>Docker学習教材 第5章 - Webサーバーを動かしてみよう</title>
 
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Docker: Sky Blue
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
 
     <!-- Google Fonts - Noto Sans JP -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Highlight.js CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
 
     <!-- Mermaid.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
 
-    <style>
-        /* ベースレイアウト */
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            padding-top: 56px;
-            line-height: 1.8;
-        }
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        /* ナビゲーション - Docker Blue */
-        .navbar {
-            background-color: #2496ED;
-        }
-
-        /* サイドバー */
-        .sidebar {
-            position: sticky;
-            top: 70px;
-            height: calc(100vh - 70px);
-            overflow-y: auto;
-            background-color: #f8f9fa;
-            padding: 1rem;
-        }
-
-        /* タイトル */
-        .chapter-title {
-            color: #2496ED;
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-            border-bottom: 3px solid #2496ED;
-            padding-bottom: 0.5rem;
-            font-weight: bold;
-        }
-
-        .section-title {
-            color: #1D63ED;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-
-        /* コンテンツボックス */
-        .quiz-container {
-            background-color: #e7f3ff;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #2496ED;
-        }
-
-        .exercise-container {
-            background-color: #f3e5f5;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #9c27b0;
-        }
-
-        .highlight {
-            background-color: #fff9e6;
-            border-radius: 8px;
-            padding: 1.2rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #ffc107;
-        }
-
-        .warning {
-            background-color: #ffebee;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #f44336;
-        }
-
-        /* コードハイライト */
-        .code-block {
-            background-color: #1e1e1e;
-            color: white;
-            border-radius: 5px;
-            padding: 1rem;
-            margin: 1rem 0;
-            overflow-x: auto;
-        }
-
-        pre code.hljs {
-            background-color: #1e1e1e;
-            padding: 1rem;
-            border-radius: 5px;
-        }
-
-        /* ナビゲーション */
-        .nav-link.active {
-            background-color: #2496ED !important;
-            color: white !important;
-            border-radius: 5px;
-        }
-
-        .nav-link {
-            color: #333;
-            transition: all 0.3s;
-        }
-
-        .nav-link:hover {
-            background-color: #e7f3ff;
-            border-radius: 5px;
-        }
-
-        /* Mermaid図表 */
-        .mermaid {
-            text-align: center;
-            margin: 2rem 0;
-        }
-
-        /* ナビゲーションボタン */
-        .chapter-nav {
-            margin: 2rem 0;
-        }
-
-        /* 折りたたみコンテンツ */
-        .collapse-trigger {
-            cursor: pointer;
-            color: #2496ED;
-            user-select: none;
-        }
-
-        .collapse-trigger:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <!-- カスタムスタイル -->
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <!-- ナビゲーションバー -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <i class="fab fa-docker"></i>
-                <strong>Docker学習教材</strong>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
-    </nav>
-
-    <div class="container-fluid">
-        <div class="row">
-            <!-- サイドバー -->
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        <span>学習章</span>
-                    </h6>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="docker-learning-material-01.html">
-                                第1章: Dockerとは何か
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="docker-learning-material-02.html">
-                                第2章: 環境構築と基本操作
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="docker-learning-material-03.html">
-                                第3章: イメージの理解と管理
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="docker-learning-material-04.html">
-                                第4章: Dockerfileによるイメージ作成
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="docker-learning-material-05.html">
-                                第5章: Docker Compose
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="docker-learning-material-06.html">
-                                第6章: ボリュームとデータ永続化
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="docker-learning-material-07.html">
-                                第7章: ネットワークとコンテナ間通信
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="docker-learning-material-08.html">
-                                第8章: マルチコンテナアプリケーション
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="docker-learning-material-09.html">
-                                第9章: ベストプラクティスとセキュリティ
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="docker-learning-material-10.html">
-                                第10章: 本番環境へのデプロイ
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-
-            <!-- メインコンテンツ -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">第5章: Docker Composeによる複数コンテナ管理</h1>
-                </div>
-
-                <!-- 学習目標 -->
-                <div class="highlight">
-                    <h4>学習目標</h4>
-                    <ul>
-                        <li>Docker Composeの役割と利点を理解する</li>
-                        <li>docker-compose.ymlファイルの基本構造を習得する</li>
-                        <li>複数のコンテナを連携させたアプリケーションを構築できる</li>
-                        <li>Docker Composeの基本コマンドを使いこなせる</li>
-                        <li>環境変数を使った設定管理ができる</li>
-                    </ul>
-                </div>
-
-                <!-- はじめに -->
-                <section id="intro">
-                    <h2 class="section-title">はじめに</h2>
-                    <p>
-                        これまでは単一のコンテナを扱ってきましたが、実際のアプリケーションでは複数のコンテナを組み合わせて使用することが一般的です。例えば、Webアプリケーション、データベース、キャッシュサーバーなど、それぞれを別々のコンテナとして動かします。
-                    </p>
-                    <p>
-                        複数のコンテナを<code>docker run</code>コマンドで個別に起動すると、管理が煩雑になります。そこで登場するのが<strong>Docker Compose</strong>です。
-                    </p>
-                    <p>
-                        Docker Composeを使えば、複数のコンテナの定義、依存関係、ネットワーク設定などを<strong>1つのYAMLファイル</strong>で管理し、<strong>1つのコマンド</strong>で一括起動・停止できます。
-                    </p>
-                </section>
-
-                <!-- Docker Composeとは -->
-                <section id="what-is-compose">
-                    <h2 class="section-title">Docker Composeとは</h2>
-
-                    <h3>Docker Composeの役割</h3>
-                    <p>
-                        <strong>Docker Compose</strong>は、複数のDockerコンテナを定義・実行するためのツールです。YAML形式の設定ファイル（<code>docker-compose.yml</code>）に、すべてのサービス、ネットワーク、ボリュームを記述します。
-                    </p>
-
-                    <div class="mermaid">
-                        graph TD
-                            A[docker-compose.yml] --> B[Docker Compose CLI]
-                            B --> C[Webコンテナ]
-                            B --> D[DBコンテナ]
-                            B --> E[Redisコンテナ]
-                            C -.->|通信| D
-                            C -.->|通信| E
-                            style A fill:#fff9e6
-                            style B fill:#2496ED,color:#fff
-                            style C fill:#e7f3ff
-                            style D fill:#e7f3ff
-                            style E fill:#e7f3ff
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-cyan-400/30 to-blue-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fab fa-docker text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
                     </div>
 
-                    <h3>Docker Composeのメリット</h3>
-                    <ul>
-                        <li><strong>簡潔な定義</strong>：複数コンテナの設定を1つのファイルで管理</li>
-                        <li><strong>一括操作</strong>：1つのコマンドで全コンテナを起動・停止</li>
-                        <li><strong>再現性</strong>：環境を簡単に複製・共有できる</li>
-                        <li><strong>依存関係管理</strong>：コンテナの起動順序を制御</li>
-                        <li><strong>開発効率向上</strong>：開発環境のセットアップが劇的に簡単に</li>
-                    </ul>
-
-                    <h3>Docker Composeの使用シーン</h3>
-                    <ul>
-                        <li><strong>開発環境</strong>：Webアプリ + DB + キャッシュなどの複合環境</li>
-                        <li><strong>テスト環境</strong>：統合テスト用の一時的な環境構築</li>
-                        <li><strong>CI/CD</strong>：自動テストパイプラインでの環境セットアップ</li>
-                        <li><strong>デモ環境</strong>：顧客へのデモンストレーション用環境</li>
-                    </ul>
-
-                    <div class="warning">
-                        <strong>注意：</strong>Docker Composeは主に開発環境向けです。本番環境の大規模運用には、Kubernetes等のオーケストレーションツールが推奨されます。
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">Docker学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>クラウド・インフラ</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 30分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
                     </div>
-                </section>
+                </div>
 
-                <!-- インストールと確認 -->
-                <section id="installation">
-                    <h2 class="section-title">インストールと確認</h2>
+                <!-- 右側: モバイルメニューボタン -->
+                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
 
-                    <h3>Docker Composeのインストール</h3>
-                    <p>
-                        <strong>Docker Desktop</strong>（Windows/Mac）をインストールしている場合、Docker Composeは既に含まれています。Linuxでは別途インストールが必要です。
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="../" class="hover:text-primary-600 transition-colors">クラウド・インフラ</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="./" class="hover:text-primary-600 transition-colors">Docker</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第5章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第5章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Webサーバーを動かしてみよう - Nginxで学ぶポート設定</h1>
+                    <p class="text-slate-600">実際にNginx（エンジンエックス）というWebサーバーをコンテナで起動し、ブラウザからアクセスしてみます。「ポート」の概念を建物の部屋番号の例えで理解し、コンテナのポートとホストマシンのポートの関係を図解で学びます。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>Nginxとは何か、Webサーバーの役割を理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>ポートの概念を日常の例えで理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>コンテナのポートマッピング（-pオプション）を習得する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>自分のHTMLファイルをNginxで表示する</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション1: Webサーバーとは -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.1 Webサーバーとは何か - Nginxの紹介
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong class="text-primary-700">Webサーバー</strong>とは、ブラウザからのリクエスト（要求）を受け取って、HTMLファイルや画像などを返してくれるソフトウェアです。
+                    </p>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong class="text-primary-700">Nginx（エンジンエックス）</strong>は、世界中で広く使われているWebサーバーソフトウェアの一つです。高速で軽量なことが特徴で、多くの人気Webサイトで採用されています。
                     </p>
 
-                    <h4>インストール確認</h4>
-                    <pre class="code-block"><code class="language-bash"># バージョン確認
-docker compose version
+                    <!-- 図解: Webサーバーの役割 -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                            <i class="fas fa-diagram-project text-primary-500"></i>
+                            Webサーバーの役割
+                        </h3>
+                        <div class="mermaid">
+sequenceDiagram
+    participant B as ブラウザ
+    participant W as Webサーバー<br/>(Nginx)
+    participant F as HTMLファイル
 
-# 出力例：
-# Docker Compose version v2.23.0</code></pre>
-
-                    <div class="highlight">
-                        <strong>Compose V2について：</strong>
-                        <p>
-                            最新のDocker Composeは「V2」と呼ばれ、<code>docker compose</code>（スペース区切り）として使用します。旧バージョンの<code>docker-compose</code>（ハイフン）も互換性のため使用できますが、V2への移行が推奨されています。
+    B->>W: ページを見せて!
+    W->>F: ファイルを読み込む
+    F-->>W: HTMLファイル
+    W-->>B: ページを表示
+                        </div>
+                        <p class="text-sm text-slate-600 mt-4">
+                            ブラウザからのリクエストに応じて、WebサーバーがHTMLファイルを返します
                         </p>
                     </div>
                 </section>
 
-                <!-- YAML基礎 -->
-                <section id="yaml-basics">
-                    <h2 class="section-title">YAML基礎知識</h2>
-
-                    <h3>YAMLとは</h3>
-                    <p>
-                        <strong>YAML</strong>（YAML Ain't Markup Language）は、人間が読みやすいデータシリアライゼーション形式です。Docker Composeの設定ファイルはYAML形式で記述します。
+                <!-- セクション2: ポートを理解しよう -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.2 「ポート」を理解しよう - 建物の部屋番号の例え
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        コンピュータの世界で「ポート」とは、<strong>建物の部屋番号</strong>のようなものです。
                     </p>
 
-                    <h3>YAML基本文法</h3>
-                    <pre class="code-block"><code class="language-yaml"># コメントは # で始まる
-
-# キー: 値のペア
-key: value
-name: "Docker Compose"
-
-# 数値（引用符不要）
-port: 8080
-
-# 真偽値
-enabled: true
-
-# リスト（配列）
-ports:
-  - 8080
-  - 8443
-
-# オブジェクト（ネスト）
-database:
-  host: localhost
-  port: 5432
-  credentials:
-    user: admin
-    password: secret
-
-# インライン形式
-ports: [8080, 8443]
-database: {host: localhost, port: 5432}</code></pre>
-
-                    <div class="warning">
-                        <strong>重要：</strong>YAMLは<strong>インデント</strong>が文法的に意味を持ちます。スペース2つまたは4つでインデントし、タブは使用しないでください。
+                    <!-- 例えカード -->
+                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-6 my-6">
+                        <h3 class="text-lg font-semibold text-blue-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-building text-blue-500"></i>
+                            建物の部屋番号の例
+                        </h3>
+                        <div class="space-y-3 text-blue-900">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">1</div>
+                                <div>
+                                    <strong>建物 = コンピュータ本体</strong>
+                                    <p class="text-sm mt-1">あなたのパソコンは、一つの大きなマンションだと考えてください</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">2</div>
+                                <div>
+                                    <strong>部屋番号 = ポート番号</strong>
+                                    <p class="text-sm mt-1">各サービスは、それぞれ異なる部屋番号を持っています</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">3</div>
+                                <div>
+                                    <strong>訪問者 = 外部からのアクセス</strong>
+                                    <p class="text-sm mt-1">Webブラウザなどは、特定の部屋番号を訪ねてきます</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <h3>YAMLの注意点</h3>
-                    <ul>
-                        <li>インデントはスペースのみ（タブ禁止）</li>
-                        <li>同じレベルのキーは同じインデント幅</li>
-                        <li>文字列の引用符は通常省略可能（特殊文字がある場合は使用）</li>
-                        <li>リストは<code>-</code>で始める</li>
-                    </ul>
-                </section>
-
-                <!-- docker-compose.yml -->
-                <section id="compose-file">
-                    <h2 class="section-title">docker-compose.ymlファイル</h2>
-
-                    <h3>基本構造</h3>
-                    <p>
-                        <code>docker-compose.yml</code>は、以下の主要セクションで構成されます：
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        たとえば、Webサーバーは通常<strong class="text-primary-700">80番ポート</strong>（HTTP）や<strong class="text-primary-700">443番ポート</strong>（HTTPS）を使います。これは「Web用の部屋は80号室ですよ」と決まっているようなものです。
                     </p>
 
-                    <pre class="code-block"><code class="language-yaml">version: '3.8'  # Composeファイルのバージョン
+                    <!-- 図解: ポートの概念 -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                            <i class="fas fa-network-wired text-primary-500"></i>
+                            ポートの仕組み
+                        </h3>
+                        <div class="mermaid">
+flowchart LR
+    subgraph computer[あなたのPC<br/>IPアドレス: 192.168.1.10]
+        port80[80番ポート<br/>Webサーバー]
+        port22[22番ポート<br/>SSH]
+        port3306[3306番ポート<br/>MySQL]
+    end
 
-services:       # コンテナの定義
-  web:          # サービス名
-    # サービスの設定
-  db:
-    # サービスの設定
+    browser[ブラウザ] -->|80番にアクセス| port80
 
-volumes:        # 名前付きボリュームの定義（オプション）
-  # ボリューム定義
-
-networks:       # カスタムネットワークの定義（オプション）
-  # ネットワーク定義</code></pre>
-
-                    <h3>最小限のdocker-compose.yml</h3>
-                    <pre class="code-block"><code class="language-yaml">version: '3.8'
-
-services:
-  web:
-    image: nginx:alpine
-    ports:
-      - "8080:80"</code></pre>
-
-                    <h3>主要な設定項目</h3>
-
-                    <h4>image - イメージの指定</h4>
-                    <pre class="code-block"><code class="language-yaml">services:
-  web:
-    image: nginx:1.25-alpine  # Docker Hubのイメージ
-  db:
-    image: postgres:15        # バージョン指定</code></pre>
-
-                    <h4>build - Dockerfileからビルド</h4>
-                    <pre class="code-block"><code class="language-yaml">services:
-  web:
-    build: .              # カレントディレクトリのDockerfile
-  api:
-    build:
-      context: ./api    # ビルドコンテキスト
-      dockerfile: Dockerfile.dev  # Dockerfileを指定</code></pre>
-
-                    <h4>ports - ポートマッピング</h4>
-                    <pre class="code-block"><code class="language-yaml">services:
-  web:
-    ports:
-      - "8080:80"       # ホスト:コンテナ
-      - "8443:443"
-      - "3000-3005:3000-3005"  # 範囲指定</code></pre>
-
-                    <h4>environment - 環境変数</h4>
-                    <pre class="code-block"><code class="language-yaml">services:
-  db:
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: mydb
-    # または
-    environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=secret</code></pre>
-
-                    <h4>volumes - ボリュームマウント</h4>
-                    <pre class="code-block"><code class="language-yaml">services:
-  web:
-    volumes:
-      - ./src:/app/src          # バインドマウント
-      - node_modules:/app/node_modules  # 名前付きボリューム
-
-volumes:
-  node_modules:  # 名前付きボリュームの宣言</code></pre>
-
-                    <h4>depends_on - 依存関係</h4>
-                    <pre class="code-block"><code class="language-yaml">services:
-  web:
-    depends_on:
-      - db    # dbサービスの後に起動
-  db:
-    image: postgres:15</code></pre>
-
-                    <div class="warning">
-                        <strong>注意：</strong><code>depends_on</code>は起動順序を制御しますが、DBの準備完了までは待ちません。アプリケーション側でリトライ処理が必要です。
+    style computer fill:#e0f2fe,stroke:#0ea5e9,stroke-width:2px
+    style port80 fill:#d1fae5,stroke:#10b981
+    style browser fill:#fef3c7,stroke:#f59e0b
+                        </div>
+                        <p class="text-sm text-slate-600 mt-4">
+                            一つのコンピュータ上で、複数のサービスが異なるポート番号で動作します
+                        </p>
                     </div>
-
-                    <h4>networks - ネットワーク接続</h4>
-                    <pre class="code-block"><code class="language-yaml">services:
-  web:
-    networks:
-      - frontend
-      - backend
-  db:
-    networks:
-      - backend
-
-networks:
-  frontend:
-  backend:</code></pre>
-
-                    <h4>restart - 再起動ポリシー</h4>
-                    <pre class="code-block"><code class="language-yaml">services:
-  web:
-    restart: always        # 常に再起動
-  db:
-    restart: on-failure    # 失敗時のみ再起動
-  cache:
-    restart: unless-stopped  # 手動停止以外は再起動</code></pre>
                 </section>
 
-                <!-- 基本コマンド -->
-                <section id="basic-commands">
-                    <h2 class="section-title">Docker Compose基本コマンド</h2>
-
-                    <h3>docker compose up - 起動</h3>
-                    <p>すべてのサービスを起動します。最も頻繁に使用するコマンドです。</p>
-
-                    <pre class="code-block"><code class="language-bash"># すべてのサービスを起動（フォアグラウンド）
-docker compose up
-
-# バックグラウンドで起動（デタッチドモード）
-docker compose up -d
-
-# ビルドしてから起動
-docker compose up --build
-
-# 特定のサービスのみ起動
-docker compose up web</code></pre>
-
-                    <h3>docker compose down - 停止と削除</h3>
-                    <p>すべてのコンテナを停止し、ネットワークを削除します。</p>
-
-                    <pre class="code-block"><code class="language-bash"># コンテナとネットワークを削除
-docker compose down
-
-# ボリュームも削除
-docker compose down -v
-
-# イメージも削除
-docker compose down --rmi all</code></pre>
-
-                    <h3>docker compose ps - 状態確認</h3>
-                    <pre class="code-block"><code class="language-bash"># 起動中のサービス一覧
-docker compose ps
-
-# すべてのサービス（停止中も含む）
-docker compose ps -a</code></pre>
-
-                    <h3>docker compose logs - ログ確認</h3>
-                    <pre class="code-block"><code class="language-bash"># すべてのサービスのログ
-docker compose logs
-
-# 特定のサービスのログ
-docker compose logs web
-
-# ログをフォロー（リアルタイム表示）
-docker compose logs -f
-
-# 最新100行のみ表示
-docker compose logs --tail=100</code></pre>
-
-                    <h3>docker compose exec - コマンド実行</h3>
-                    <pre class="code-block"><code class="language-bash"># 実行中のコンテナでコマンド実行
-docker compose exec web sh
-
-# データベースに接続
-docker compose exec db psql -U admin -d mydb
-
-# ファイルの確認
-docker compose exec web ls -la /app</code></pre>
-
-                    <h3>docker compose stop/start - 停止/再開</h3>
-                    <pre class="code-block"><code class="language-bash"># すべてのサービスを停止（コンテナは削除しない）
-docker compose stop
-
-# 停止したサービスを再開
-docker compose start
-
-# 特定のサービスのみ操作
-docker compose stop web
-docker compose start web</code></pre>
-
-                    <h3>docker compose restart - 再起動</h3>
-                    <pre class="code-block"><code class="language-bash"># すべてのサービスを再起動
-docker compose restart
-
-# 特定のサービスを再起動
-docker compose restart web</code></pre>
-                </section>
-
-                <!-- 複数コンテナ構成 -->
-                <section id="multi-container">
-                    <h2 class="section-title">複数コンテナ構成の例</h2>
-
-                    <h3>シンプルなWeb + DB構成</h3>
-                    <p>最も基本的な複数コンテナ構成を見てみましょう。</p>
-
-                    <pre class="code-block"><code class="language-yaml">version: '3.8'
-
-services:
-  # Webアプリケーション
-  web:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      - DATABASE_URL=postgres://admin:secret@db:5432/mydb
-    depends_on:
-      - db
-    volumes:
-      - ./src:/app/src
-
-  # PostgreSQLデータベース
-  db:
-    image: postgres:15-alpine
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: mydb
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-
-volumes:
-  postgres_data:</code></pre>
-
-                    <div class="mermaid">
-                        graph LR
-                            A[ブラウザ] -->|localhost:3000| B[Webコンテナ]
-                            B -->|db:5432| C[DBコンテナ]
-                            C -->|データ保存| D[postgres_data ボリューム]
-                            style B fill:#e7f3ff
-                            style C fill:#e7f3ff
-                            style D fill:#fff9e6
-                    </div>
-
-                    <h3>3層アーキテクチャ構成</h3>
-                    <p>フロントエンド、バックエンド、データベースを分離した構成です。</p>
-
-                    <pre class="code-block"><code class="language-yaml">version: '3.8'
-
-services:
-  # フロントエンド（React）
-  frontend:
-    build: ./frontend
-    ports:
-      - "3000:3000"
-    environment:
-      - REACT_APP_API_URL=http://localhost:8000
-    volumes:
-      - ./frontend/src:/app/src
-
-  # バックエンド（Node.js API）
-  backend:
-    build: ./backend
-    ports:
-      - "8000:8000"
-    environment:
-      - DATABASE_URL=postgres://user:pass@db:5432/mydb
-    depends_on:
-      - db
-    volumes:
-      - ./backend/src:/app/src
-
-  # データベース
-  db:
-    image: postgres:15-alpine
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: mydb
-    volumes:
-      - db_data:/var/lib/postgresql/data
-
-volumes:
-  db_data:</code></pre>
-
-                    <h3>Redis追加構成</h3>
-                    <p>キャッシュサーバーとしてRedisを追加した例です。</p>
-
-                    <pre class="code-block"><code class="language-yaml">version: '3.8'
-
-services:
-  web:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      - DATABASE_URL=postgres://admin:secret@db:5432/mydb
-      - REDIS_URL=redis://cache:6379
-    depends_on:
-      - db
-      - cache
-
-  db:
-    image: postgres:15-alpine
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: mydb
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-  cache:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-
-volumes:
-  postgres_data:</code></pre>
-                </section>
-
-                <!-- 環境変数管理 -->
-                <section id="environment">
-                    <h2 class="section-title">環境変数の管理</h2>
-
-                    <h3>.envファイルの使用</h3>
-                    <p>
-                        機密情報や環境固有の設定は、<code>.env</code>ファイルで管理すると便利です。Docker Composeは自動的に<code>.env</code>ファイルを読み込みます。
+                <!-- セクション3: Nginxコンテナを起動する -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.3 Nginxコンテナを起動する
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        それでは実際に、NginxのWebサーバーをDockerコンテナで起動してみましょう。
                     </p>
 
-                    <h4>.envファイルの例</h4>
-                    <pre class="code-block"><code class="language-bash"># .env
-POSTGRES_USER=admin
-POSTGRES_PASSWORD=secret_password
-POSTGRES_DB=production_db
-APP_PORT=3000</code></pre>
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 mb-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 5-1: Nginxコンテナの起動</h3>
+                                <p class="text-purple-900 mb-4 break-words">ターミナルで以下のコマンドを実行してください</p>
 
-                    <h4>docker-compose.ymlでの使用</h4>
-                    <pre class="code-block"><code class="language-yaml">version: '3.8'
+                                <div class="bg-slate-800 rounded-lg p-4 mb-4">
+                                    <pre class="text-slate-100 text-sm overflow-x-auto"><code class="language-bash"># Nginxコンテナを起動（ポート80を公開）
+docker run -d -p 80:80 --name my-nginx nginx</code></pre>
+                                </div>
 
-services:
-  web:
-    build: .
-    ports:
-      - "${APP_PORT}:3000"  # .envの変数を使用
-    environment:
-      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-
-  db:
-    image: postgres:15-alpine
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}</code></pre>
-
-                    <div class="warning">
-                        <strong>セキュリティ：</strong><code>.env</code>ファイルは<code>.gitignore</code>に追加し、Gitリポジトリにコミットしないようにしましょう。代わりに<code>.env.example</code>というテンプレートを提供します。
+                                <h4 class="font-medium text-purple-800 mb-2 break-words">コマンドの意味</h4>
+                                <ul class="space-y-2 mb-4">
+                                    <li class="text-purple-900"><code class="bg-purple-100 px-2 py-0.5 rounded">-d</code>: バックグラウンドで実行（デタッチモード）</li>
+                                    <li class="text-purple-900"><code class="bg-purple-100 px-2 py-0.5 rounded">-p 80:80</code>: ポートマッピング（後で詳しく解説）</li>
+                                    <li class="text-purple-900"><code class="bg-purple-100 px-2 py-0.5 rounded">--name my-nginx</code>: コンテナに「my-nginx」という名前をつける</li>
+                                    <li class="text-purple-900"><code class="bg-purple-100 px-2 py-0.5 rounded">nginx</code>: 使用するイメージの名前</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
 
-                    <h3>env_fileオプション</h3>
-                    <p>複数の環境ファイルや、異なる名前のファイルを使用する場合：</p>
-
-                    <pre class="code-block"><code class="language-yaml">services:
-  web:
-    env_file:
-      - .env              # 共通設定
-      - .env.local        # ローカル設定
-    environment:
-      - NODE_ENV=production  # 直接指定も可能</code></pre>
-
-                    <h3>環境別のComposeファイル</h3>
-                    <p>開発環境と本番環境で設定を分ける場合：</p>
-
-                    <pre class="code-block"><code class="language-bash"># 開発環境
-docker compose -f docker-compose.yml -f docker-compose.dev.yml up
-
-# 本番環境
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up</code></pre>
-                </section>
-
-                <!-- 実践例 -->
-                <section id="practical-example">
-                    <h2 class="section-title">実践例：WordPressサイトの構築</h2>
-
-                    <h3>構成概要</h3>
-                    <p>WordPress（PHP）とMySQL、phpMyAdminを組み合わせた完全な開発環境を構築します。</p>
-
-                    <pre class="code-block"><code class="language-yaml">version: '3.8'
-
-services:
-  # WordPress
-  wordpress:
-    image: wordpress:latest
-    ports:
-      - "8080:80"
-    environment:
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: wordpress
-      WORDPRESS_DB_NAME: wordpress_db
-    volumes:
-      - wordpress_data:/var/www/html
-    depends_on:
-      - db
-
-  # MySQL データベース
-  db:
-    image: mysql:8.0
-    environment:
-      MYSQL_DATABASE: wordpress_db
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: wordpress
-      MYSQL_ROOT_PASSWORD: root_password
-    volumes:
-      - db_data:/var/lib/mysql
-
-  # phpMyAdmin（データベース管理）
-  phpmyadmin:
-    image: phpmyadmin:latest
-    ports:
-      - "8081:80"
-    environment:
-      PMA_HOST: db
-      PMA_USER: wordpress
-      PMA_PASSWORD: wordpress
-    depends_on:
-      - db
-
-volumes:
-  wordpress_data:
-  db_data:</code></pre>
-
-                    <h3>起動と確認</h3>
-                    <pre class="code-block"><code class="language-bash"># 起動
-docker compose up -d
-
-# 確認
-docker compose ps
-
-# アクセス
-# WordPress: http://localhost:8080
-# phpMyAdmin: http://localhost:8081</code></pre>
-
-                    <div class="mermaid">
-                        graph TD
-                            A[ブラウザ] -->|:8080| B[WordPress]
-                            A -->|:8081| C[phpMyAdmin]
-                            B -->|MySQL接続| D[MySQLコンテナ]
-                            C -->|MySQL接続| D
-                            B -.->|データ保存| E[wordpress_data]
-                            D -.->|データ保存| F[db_data]
-                            style B fill:#e7f3ff
-                            style C fill:#e7f3ff
-                            style D fill:#e7f3ff
+                    <!-- 動作確認カード -->
+                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5 mb-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-play text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-emerald-800 mb-3 break-words">動作確認</h3>
+                                <p class="text-emerald-900 mb-4 break-words">Webブラウザで以下のURLにアクセスしてください</p>
+                                <div class="bg-white/60 rounded-lg p-4 border border-emerald-200 mb-4">
+                                    <pre class="text-emerald-900 text-sm">http://localhost</pre>
+                                </div>
+                                <h4 class="font-medium text-emerald-800 mb-2 break-words">
+                                    <i class="fas fa-check-circle mr-2"></i>期待される結果
+                                </h4>
+                                <p class="text-emerald-900">「Welcome to nginx!」というページが表示されれば成功です。Nginxのデフォルトページが表示されています。</p>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
-                <!-- 実習課題 -->
-                <section id="exercises">
-                    <h2 class="section-title">実習課題</h2>
+                <!-- セクション4: ポートマッピングの仕組み -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.4 ポートマッピングの仕組み - -p ホスト:コンテナ の意味
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        先ほど使った<code class="bg-slate-100 px-2 py-0.5 rounded text-sm">-p 80:80</code>というオプションについて、詳しく見ていきましょう。
+                    </p>
 
-                    <div class="exercise-container">
-                        <h4>実習1：基本的なWeb + DB構成</h4>
-                        <p><strong>目的：</strong>Docker Composeで複数コンテナを管理する基本を習得する</p>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong class="text-primary-700">ポートマッピング</strong>とは、「ホストマシン（あなたのパソコン）のポート」と「コンテナ内のポート」を橋渡しすることです。
+                    </p>
 
-                        <p><strong>要件：</strong></p>
-                        <ul>
-                            <li>Nginxコンテナ（ポート8080）</li>
-                            <li>PostgreSQLコンテナ（ポート5432）</li>
-                            <li>データベースのデータは永続化</li>
-                        </ul>
+                    <!-- 図解: ポートマッピング -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                            <i class="fas fa-network-wired text-primary-500"></i>
+                            ポートマッピング: -p 80:80 の仕組み
+                        </h3>
+                        <div class="mermaid">
+flowchart LR
+    browser[Webブラウザ] -->|localhostの80番<br/>にアクセス| host[ホストマシン<br/>80番ポート]
+    host -->|マッピング| container[Dockerコンテナ<br/>80番ポート]
+    container --> nginx[Nginx<br/>Webサーバー]
 
-                        <p><strong>手順：</strong></p>
-                        <ol>
-                            <li><code>docker-compose.yml</code>を作成</li>
-                            <li><code>docker compose up -d</code>で起動</li>
-                            <li><code>docker compose ps</code>で状態確認</li>
-                            <li><code>http://localhost:8080</code>にアクセス</li>
-                            <li><code>docker compose down</code>で停止</li>
-                            <li>再度起動してデータが永続化されているか確認</li>
-                        </ol>
+    style browser fill:#fef3c7,stroke:#f59e0b
+    style host fill:#bae6fd,stroke:#0ea5e9
+    style container fill:#e0f2fe,stroke:#0ea5e9
+    style nginx fill:#d1fae5,stroke:#10b981
+                        </div>
+                        <p class="text-sm text-slate-600 mt-4">
+                            ホストの80番ポートへのアクセスが、コンテナ内の80番ポートに転送されます
+                        </p>
                     </div>
 
-                    <div class="exercise-container">
-                        <h4>実習2：環境変数を使った設定管理</h4>
-                        <p><strong>目的：</strong>.envファイルで環境変数を管理する</p>
-
-                        <p><strong>手順：</strong></p>
-                        <ol>
-                            <li><code>.env</code>ファイルを作成し、データベースの設定を記述</li>
-                            <li><code>docker-compose.yml</code>で環境変数を参照</li>
-                            <li>起動して、設定が正しく反映されているか確認</li>
-                            <li><code>.env</code>の値を変更して再起動し、変更が反映されるか確認</li>
-                        </ol>
+                    <!-- -pオプションの書き方 -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-4">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-500 text-lg mt-0.5"></i>
+                            <div>
+                                <h3 class="font-semibold text-blue-800 mb-2">-pオプションの書き方</h3>
+                                <p class="text-blue-900 text-sm mb-3">基本形式: <code class="bg-blue-100 px-2 py-0.5 rounded">-p ホストのポート:コンテナのポート</code></p>
+                                <ul class="space-y-2 text-sm text-blue-900">
+                                    <li><code class="bg-blue-100 px-2 py-0.5 rounded">-p 80:80</code> - ホストの80番とコンテナの80番をつなぐ</li>
+                                    <li><code class="bg-blue-100 px-2 py-0.5 rounded">-p 8080:80</code> - ホストの8080番とコンテナの80番をつなぐ</li>
+                                    <li><code class="bg-blue-100 px-2 py-0.5 rounded">-p 3000:80</code> - ホストの3000番とコンテナの80番をつなぐ</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="exercise-container">
-                        <h4>実習3：ログの確認とトラブルシューティング</h4>
-                        <p><strong>目的：</strong>Docker Composeのログ機能を活用する</p>
+                    <!-- 異なるポート番号の例 -->
+                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-6 my-6">
+                        <h3 class="text-lg font-semibold text-blue-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-flask text-blue-500"></i>
+                            試してみよう: 異なるポート番号でアクセス
+                        </h3>
+                        <p class="text-blue-900 mb-3">既存のコンテナを停止して、別のポート番号でNginxを起動してみましょう</p>
 
-                        <p><strong>手順：</strong></p>
-                        <ol>
-                            <li>複数のサービスを起動</li>
-                            <li><code>docker compose logs</code>ですべてのログを確認</li>
-                            <li><code>docker compose logs -f web</code>で特定サービスをフォロー</li>
-                            <li>意図的にエラーを発生させ、ログからトラブルシューティング</li>
-                        </ol>
+                        <div class="bg-slate-800 rounded-lg p-4 mb-3">
+                            <pre class="text-slate-100 text-sm overflow-x-auto"><code class="language-bash"># 既存のコンテナを停止・削除
+docker stop my-nginx
+docker rm my-nginx
+
+# 今度は8080番ポートで起動
+docker run -d -p 8080:80 --name my-nginx nginx</code></pre>
+                        </div>
+
+                        <p class="text-blue-900 text-sm mt-3">ブラウザで<code class="bg-blue-100 px-2 py-0.5 rounded">http://localhost:8080</code>にアクセスすると、同じNginxページが表示されます。</p>
+                    </div>
+                </section>
+
+                <!-- セクション5: 自分のHTMLを表示する -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.5 自分のHTMLを表示する - ボリュームマウント
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Nginxのデフォルトページではなく、自分で作成したHTMLページを表示してみましょう。そのために<strong class="text-primary-700">-vオプション</strong>を使います。
+                    </p>
+
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 mb-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 5-2: 自分のHTMLページを表示する</h3>
+
+                                <h4 class="font-medium text-purple-800 mb-2 break-words">手順</h4>
+                                <ol class="space-y-3 mb-4">
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
+                                        <span class="flex-1 min-w-0 break-words">自分のパソコンに、HTMLファイル用のフォルダを作成します</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
+                                        <span class="flex-1 min-w-0 break-words">そのフォルダ内に、簡単なHTMLファイルを作成します</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">3</span>
+                                        <span class="flex-1 min-w-0 break-words">そのフォルダをコンテナにマウントしてNginxを起動します</span>
+                                    </li>
+                                </ol>
+
+                                <h4 class="font-medium text-purple-800 mb-2 break-words">1. HTMLファイルの作成</h4>
+                                <div class="bg-slate-800 rounded-lg p-4 mb-4">
+                                    <pre class="text-slate-100 text-sm overflow-x-auto"><code class="language-bash"># ホームディレクトリに移動
+cd ~
+
+# HTMLファイル用のフォルダを作成
+mkdir my-html
+cd my-html
+
+# HTMLファイルを作成（エディタで以下の内容を保存）
+# ファイル名: index.html</code></pre>
+                                </div>
+
+                                <h4 class="font-medium text-purple-800 mb-2 break-words">2. index.html の内容</h4>
+                                <div class="bg-slate-800 rounded-lg p-4 mb-4">
+                                    <pre class="text-slate-100 text-sm overflow-x-auto"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;私のページ&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;こんにちは！Dockerで動いています&lt;/h1&gt;
+    &lt;p&gt;これは私が作成したHTMLページです。&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                                </div>
+
+                                <h4 class="font-medium text-purple-800 mb-2 break-words">3. コンテナの起動（ボリュームマウント）</h4>
+                                <div class="bg-slate-800 rounded-lg p-4 mb-4">
+                                    <pre class="text-slate-100 text-sm overflow-x-auto"><code class="language-bash"># 既存のコンテナがあれば停止・削除
+docker stop my-nginx
+docker rm my-nginx
+
+# ボリュームマウントしてNginxを起動
+docker run -d -p 80:80 \
+  -v ~/my-html:/usr/share/nginx/html \
+  --name my-nginx nginx</code></pre>
+                                </div>
+
+                                <p class="text-purple-900 text-sm mt-3">
+                                    <code class="bg-purple-100 px-2 py-0.5 rounded">-v</code>オプションで、ホストの<code class="bg-purple-100 px-2 py-0.5 rounded">~/my-html</code>フォルダを、コンテナ内の<code class="bg-purple-100 px-2 py-0.5 rounded">/usr/share/nginx/html</code>にマウント（接続）しています。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 図解: ボリュームマウント -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                            <i class="fas fa-diagram-project text-primary-500"></i>
+                            ボリュームマウントの仕組み
+                        </h3>
+                        <div class="mermaid">
+flowchart LR
+    subgraph host[ホストマシン]
+        folder["~/my-html/<br/>index.html"]
+    end
+
+    subgraph container[Dockerコンテナ]
+        nginx_folder["/usr/share/nginx/html/<br/>index.html"]
+        nginx[Nginx]
+    end
+
+    folder -.マウント.-> nginx_folder
+    nginx_folder --> nginx
+
+    style host fill:#bae6fd,stroke:#0ea5e9
+    style container fill:#e0f2fe,stroke:#0ea5e9
+    style nginx fill:#d1fae5,stroke:#10b981
+                        </div>
+                        <p class="text-sm text-slate-600 mt-4">
+                            ホストのフォルダがコンテナ内にマウントされ、Nginxがそのファイルを配信します
+                        </p>
+                    </div>
+
+                    <!-- 動作確認 -->
+                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5 mb-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-play text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-emerald-800 mb-3 break-words">動作確認</h3>
+                                <p class="text-emerald-900 mb-4 break-words">ブラウザで<code class="bg-emerald-100 px-2 py-0.5 rounded">http://localhost</code>にアクセスしてください</p>
+                                <h4 class="font-medium text-emerald-800 mb-2 break-words">
+                                    <i class="fas fa-check-circle mr-2"></i>期待される結果
+                                </h4>
+                                <p class="text-emerald-900">「こんにちは！Dockerで動いています」というあなたのHTMLページが表示されれば成功です。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ヒントカード -->
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">ヒント: ファイルをリアルタイムで更新</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    ホストの<code class="bg-blue-100 px-2 py-0.5 rounded">index.html</code>を編集して保存すると、コンテナを再起動しなくてもブラウザをリロードするだけで変更が反映されます。これは、ホストとコンテナでファイルが共有されているためです。
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
                 <!-- 理解度確認クイズ -->
-                <section id="quiz">
-                    <h2 class="section-title">理解度確認クイズ</h2>
-
-                    <div class="quiz-container">
-                        <h4>Q1: Docker Composeの主な目的</h4>
-                        <p>Docker Composeの主な目的として最も適切なものはどれですか？</p>
-                        <ol type="a">
-                            <li>単一のコンテナの性能を向上させる</li>
-                            <li>複数のコンテナを定義・管理する</li>
-                            <li>Dockerイメージのサイズを削減する</li>
-                            <li>コンテナのセキュリティを強化する</li>
-                        </ol>
-                        <div class="collapse-trigger" data-bs-toggle="collapse" data-bs-target="#answer1">
-                            <strong>解答を表示 ▼</strong>
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
                         </div>
-                        <div class="collapse mt-2" id="answer1">
-                            <div class="alert alert-info">
-                                <strong>答え：b) 複数のコンテナを定義・管理する</strong><br>
-                                Docker Composeは、複数のコンテナから成るアプリケーションを1つのYAMLファイルで定義し、一括管理するためのツールです。
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="quiz-container">
-                        <h4>Q2: YAMLのインデント</h4>
-                        <p>YAMLファイルのインデントについて正しいものはどれですか？</p>
-                        <ol type="a">
-                            <li>タブを使用する</li>
-                            <li>スペースを使用する</li>
-                            <li>タブとスペースを混在させる</li>
-                            <li>インデントは不要</li>
-                        </ol>
-                        <div class="collapse-trigger" data-bs-toggle="collapse" data-bs-target="#answer2">
-                            <strong>解答を表示 ▼</strong>
-                        </div>
-                        <div class="collapse mt-2" id="answer2">
-                            <div class="alert alert-info">
-                                <strong>答え：b) スペースを使用する</strong><br>
-                                YAMLではインデントが文法的に重要であり、スペース（通常2つまたは4つ）を使用します。タブは使用できません。
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="quiz-container">
-                        <h4>Q3: docker compose upの動作</h4>
-                        <p><code>docker compose up -d</code>コマンドの説明として正しいものはどれですか？</p>
-                        <ol type="a">
-                            <li>コンテナを停止する</li>
-                            <li>コンテナを削除する</li>
-                            <li>コンテナをバックグラウンドで起動する</li>
-                            <li>ログをダウンロードする</li>
-                        </ol>
-                        <div class="collapse-trigger" data-bs-toggle="collapse" data-bs-target="#answer3">
-                            <strong>解答を表示 ▼</strong>
-                        </div>
-                        <div class="collapse mt-2" id="answer3">
-                            <div class="alert alert-info">
-                                <strong>答え：c) コンテナをバックグラウンドで起動する</strong><br>
-                                <code>-d</code>オプション（detached mode）は、コンテナをバックグラウンドで起動し、ターミナルを占有しないようにします。
-                            </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q1. コマンド<code class="bg-blue-100 px-2 py-0.5 rounded">docker run -p 3000:80 nginx</code>を実行した場合、ブラウザでNginxにアクセスするにはどのURLを使いますか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            <code class="bg-blue-100 px-2 py-0.5 rounded">http://localhost:3000</code>です。<code class="bg-blue-100 px-2 py-0.5 rounded">-p 3000:80</code>は「ホストの3000番ポート」を「コンテナの80番ポート」にマッピングするという意味なので、ブラウザからはホスト側のポート番号（3000）でアクセスします。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q2. 「ポート」を建物の例えで説明したとき、部屋番号に相当するのは何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            ポート番号です。建物（コンピュータ）の中の各部屋（サービス）にアクセスするために、部屋番号（ポート番号）を指定します。例えば、Webサーバーは通常80番や443番という「部屋」で待機しています。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q3. <code class="bg-blue-100 px-2 py-0.5 rounded">-v ~/my-html:/usr/share/nginx/html</code>というオプションは何をしていますか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            ホストマシンの<code class="bg-blue-100 px-2 py-0.5 rounded">~/my-html</code>フォルダを、コンテナ内の<code class="bg-blue-100 px-2 py-0.5 rounded">/usr/share/nginx/html</code>にマウント（接続）しています。これにより、ホストで編集したHTMLファイルが、コンテナ内のNginxで配信されるようになります。ボリュームマウントと呼ばれる機能です。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
                         </div>
                     </div>
-
-                    <div class="quiz-container">
-                        <h4>Q4: depends_onの動作</h4>
-                        <p>次の設定の説明として正しいものはどれですか？</p>
-                        <pre class="code-block"><code class="language-yaml">services:
-  web:
-    depends_on:
-      - db</code></pre>
-                        <ol type="a">
-                            <li>webサービスはdbサービスの後に起動する</li>
-                            <li>webサービスはdbサービスの準備完了まで待つ</li>
-                            <li>webサービスとdbサービスは同時に起動する</li>
-                            <li>webサービスは起動せず、dbサービスのみ起動する</li>
-                        </ol>
-                        <div class="collapse-trigger" data-bs-toggle="collapse" data-bs-target="#answer4">
-                            <strong>解答を表示 ▼</strong>
-                        </div>
-                        <div class="collapse mt-2" id="answer4">
-                            <div class="alert alert-info">
-                                <strong>答え：a) webサービスはdbサービスの後に起動する</strong><br>
-                                <code>depends_on</code>は起動順序を制御しますが、依存先のサービスが「準備完了」するまでは待ちません。データベースの準備完了を待つには、アプリケーション側でリトライロジックが必要です。
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="quiz-container">
-                        <h4>Q5: .envファイルの用途</h4>
-                        <p><code>.env</code>ファイルをGitにコミットすべきでない理由として最も適切なものはどれですか？</p>
-                        <ol type="a">
-                            <li>ファイルサイズが大きいため</li>
-                            <li>機密情報が含まれる可能性があるため</li>
-                            <li>Docker Composeが読み込めないため</li>
-                            <li>YAML形式でないため</li>
-                        </ol>
-                        <div class="collapse-trigger" data-bs-toggle="collapse" data-bs-target="#answer5">
-                            <strong>解答を表示 ▼</strong>
-                        </div>
-                        <div class="collapse mt-2" id="answer5">
-                            <div class="alert alert-info">
-                                <strong>答え：b) 機密情報が含まれる可能性があるため</strong><br>
-                                <code>.env</code>ファイルには、データベースのパスワードやAPIキーなどの機密情報が含まれることが多いため、<code>.gitignore</code>に追加してリポジトリにコミットしないようにします。代わりに<code>.env.example</code>というテンプレートファイルを提供します。
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ナビゲーション -->
-                <div class="chapter-nav">
-                    <a href="docker-learning-material-04.html" class="btn btn-outline-primary">&larr; 前の章へ</a>
-                    <a href="docker-learning-material-06.html" class="btn btn-primary">次の章へ &rarr;</a>
                 </div>
-            </main>
-        </div>
+
+                <!-- まとめカード -->
+                <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-6 my-6">
+                    <h3 class="text-lg font-semibold text-emerald-800 mb-3 flex items-center gap-2">
+                        <i class="fas fa-check-circle text-emerald-500"></i>
+                        第5章のまとめ
+                    </h3>
+                    <ul class="space-y-2 text-emerald-900">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
+                            <span>Webサーバー（Nginx）をDockerコンテナで起動できるようになった</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
+                            <span>ポートとは建物の部屋番号のようなもので、サービスごとに異なる番号を使う</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
+                            <span>-pオプションでホストとコンテナのポートをマッピングできる</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
+                            <span>-vオプションでホストのフォルダをコンテナにマウントし、自分のHTMLを配信できる</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <!-- 前へ -->
+                    <a href="docker-learning-material-04.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
+                                  transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">第4章: Dockerイメージを理解しよう</span>
+                        </div>
+                    </a>
+                    <!-- 次へ -->
+                    <a href="docker-learning-material-06.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">第6章: Dockerfileを書いてみよう</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-    <!-- Highlight.js初期化 -->
-    <script>
-        hljs.highlightAll();
-    </script>
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 
-    <!-- Mermaid初期化 -->
-    <script>
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'default'
-        });
-    </script>
+    <!-- サイドバー生成 -->
+    <script src="sidebar-content.js"></script>
+
+    <!-- 共通JavaScript -->
+    <script src="main.js"></script>
+
+    <!-- 描画ツール -->
+    <script src="drawing-tool.js"></script>
 </body>
 </html>

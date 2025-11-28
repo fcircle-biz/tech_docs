@@ -2,14 +2,42 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Docker学習教材 第6章 - Dockerボリュームとデータ永続化</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>Docker学習教材 第6章 - Dockerfileを書いてみよう</title>
 
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Docker: Sky Blue
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
 
     <!-- Google Fonts - Noto Sans JP -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Highlight.js CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
@@ -18,1016 +46,811 @@
     <!-- Mermaid.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
 
-    <style>
-        /* ベースレイアウト */
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            padding-top: 56px;
-            line-height: 1.8;
-        }
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        /* ナビゲーション - Docker Blue */
-        .navbar {
-            background-color: #2496ED;
-        }
-
-        /* サイドバー */
-        .sidebar {
-            position: sticky;
-            top: 70px;
-            height: calc(100vh - 70px);
-            overflow-y: auto;
-            background-color: #f8f9fa;
-            padding: 1rem;
-        }
-
-        /* タイトル */
-        .chapter-title {
-            color: #2496ED;
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-            border-bottom: 3px solid #2496ED;
-            padding-bottom: 0.5rem;
-            font-weight: bold;
-        }
-
-        .section-title {
-            color: #1D63ED;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-
-        /* コンテンツボックス */
-        .quiz-container {
-            background-color: #e7f3ff;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #2496ED;
-        }
-
-        .exercise-container {
-            background-color: #f3e5f5;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #9c27b0;
-        }
-
-        .highlight {
-            background-color: #fff9e6;
-            border-radius: 8px;
-            padding: 1.2rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #ffc107;
-        }
-
-        .warning {
-            background-color: #ffebee;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #f44336;
-        }
-
-        /* コードハイライト */
-        .code-block {
-            background-color: #1e1e1e;
-            color: white;
-            border-radius: 5px;
-            padding: 1rem;
-            margin: 1rem 0;
-            overflow-x: auto;
-        }
-
-        pre code.hljs {
-            background-color: #1e1e1e;
-            padding: 1rem;
-            border-radius: 5px;
-        }
-
-        /* ナビゲーション */
-        .nav-link.active {
-            background-color: #2496ED !important;
-            color: white !important;
-            border-radius: 5px;
-        }
-
-        .nav-link {
-            color: #333;
-            transition: all 0.3s;
-        }
-
-        .nav-link:hover {
-            background-color: #e7f3ff;
-            border-radius: 5px;
-        }
-
-        /* Mermaid図表 */
-        .mermaid {
-            text-align: center;
-            margin: 2rem 0;
-        }
-
-        /* ナビゲーションボタン */
-        .chapter-nav {
-            margin: 2rem 0;
-        }
-
-        /* 折りたたみコンテンツ */
-        .collapse-trigger {
-            cursor: pointer;
-            color: #2496ED;
-            user-select: none;
-        }
-
-        .collapse-trigger:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <!-- カスタムスタイル -->
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <!-- ナビゲーションバー -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <i class="fab fa-docker"></i>
-                <strong>Docker学習教材</strong>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
-    </nav>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-cyan-400/30 to-blue-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fab fa-docker text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
 
-    <div class="container-fluid">
-        <div class="row">
-            <!-- サイドバー -->
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        <span>学習章</span>
-                    </h6>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="docker-learning-material-01.html">
-                                第1章: Dockerとは何か
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="docker-learning-material-02.html">
-                                第2章: 環境構築と基本操作
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="docker-learning-material-03.html">
-                                第3章: イメージの理解と管理
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="docker-learning-material-04.html">
-                                第4章: Dockerfileによるイメージ作成
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="docker-learning-material-05.html">
-                                第5章: Docker Compose
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="docker-learning-material-06.html">
-                                第6章: ボリュームとデータ永続化
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="docker-learning-material-07.html">
-                                第7章: ネットワークとコンテナ間通信
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="docker-learning-material-08.html">
-                                第8章: マルチコンテナアプリケーション
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="docker-learning-material-09.html">
-                                第9章: ベストプラクティスとセキュリティ
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="docker-learning-material-10.html">
-                                第10章: 本番環境へのデプロイ
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-
-            <!-- メインコンテンツ -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">第6章: Dockerボリュームとデータ永続化</h1>
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">Docker学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>クラウド・インフラ</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 30分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- 学習目標 -->
-                <div class="highlight">
-                    <h4>学習目標</h4>
-                    <ul>
-                        <li>コンテナのデータが一時的である理由を理解する</li>
-                        <li>3種類のマウント方式（ボリューム、バインドマウント、tmpfs）の違いを理解する</li>
-                        <li>Dockerボリュームを作成・管理できる</li>
-                        <li>バインドマウントを使った開発環境の構築ができる</li>
-                        <li>データのバックアップとリストアができる</li>
-                    </ul>
+                <!-- 右側: モバイルメニューボタン -->
+                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="../" class="hover:text-primary-600 transition-colors">クラウド・インフラ</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="./" class="hover:text-primary-600 transition-colors">Docker</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第6章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第6章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Dockerfileを書いてみよう - オリジナルイメージの作成</h1>
+                    <p class="text-slate-600">Dockerfileとは何か、なぜ必要なのかを解説し、シンプルなDockerfileを一から作成します。FROM、COPY、RUNなどの基本的な命令を一つずつ丁寧に解説し、自分だけのオリジナルイメージを作成する喜びを体験します。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>Dockerfileとは何か、なぜ必要なのかを理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>FROM, COPY, RUN, CMD などの基本命令を習得する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>自分だけのオリジナルイメージを作成する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>docker buildコマンドでイメージをビルドする</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- はじめに -->
-                <section id="intro">
-                    <h2 class="section-title">はじめに</h2>
-                    <p>
-                        Dockerコンテナは<strong>一時的（ephemeral）</strong>な存在です。コンテナを削除すると、その中に保存されていたデータもすべて失われます。しかし、データベースやログファイルなど、永続化が必要なデータを扱う場合があります。
+                <!-- セクション1: Dockerfileとは -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.1 Dockerfileとは何か
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong class="text-primary-700">Dockerfile（ドッカーファイル）</strong>は、Dockerイメージを作成するための「レシピ」です。料理のレシピと同じように、材料（ベースイメージ）と手順（命令）を記述することで、誰でも同じイメージを作ることができます。
                     </p>
-                    <p>
-                        この章では、Dockerにおける<strong>データ永続化</strong>の仕組みを学びます。データをコンテナのライフサイクルとは独立して保存し、コンテナを再作成してもデータが失われないようにする方法を習得します。
-                    </p>
-                </section>
-
-                <!-- データ永続化の問題 -->
-                <section id="data-problem">
-                    <h2 class="section-title">データ永続化の問題</h2>
-
-                    <h3>コンテナの一時的な性質</h3>
-                    <p>
-                        Dockerコンテナ内のファイルシステムは、デフォルトで<strong>一時的</strong>です。コンテナを削除すると、その中で作成・変更されたすべてのデータが失われます。
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        第4章・第5章では、Docker Hubにある既存のイメージを使ってきました。しかし、実際の開発では、自分のアプリケーションを含むオリジナルのイメージを作る必要があります。そのときにDockerfileが必要になります。
                     </p>
 
-                    <div class="mermaid">
-                        graph LR
-                            A[コンテナ起動] --> B[データ作成/変更]
-                            B --> C[コンテナ削除]
-                            C --> D[データ消失]
-                            style D fill:#ffebee
+                    <!-- 図解: 料理レシピの例え -->
+                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-6 my-6">
+                        <h3 class="text-lg font-semibold text-blue-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-utensils text-blue-500"></i>
+                            Dockerfileは料理のレシピと同じ
+                        </h3>
+                        <div class="space-y-3 text-blue-900">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">1</div>
+                                <div>
+                                    <strong>材料を用意（FROM）</strong>
+                                    <p class="text-sm mt-1">ベースとなるイメージを指定します（例: nginx, python, node.js）</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">2</div>
+                                <div>
+                                    <strong>材料を追加（COPY）</strong>
+                                    <p class="text-sm mt-1">自分のファイル（HTMLやソースコード）をコンテナ内にコピーします</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">3</div>
+                                <div>
+                                    <strong>調理する（RUN）</strong>
+                                    <p class="text-sm mt-1">パッケージのインストールなど、必要な準備作業を実行します</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">4</div>
+                                <div>
+                                    <strong>完成したら実行（CMD）</strong>
+                                    <p class="text-sm mt-1">コンテナ起動時にどのコマンドを実行するかを指定します</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <h3>問題のデモンストレーション</h3>
-                    <pre class="code-block"><code class="language-bash"># PostgreSQLコンテナを起動
-docker run --name test-db -e POSTGRES_PASSWORD=secret -d postgres
-
-# データベースに接続してテーブルを作成
-docker exec -it test-db psql -U postgres -c "CREATE TABLE users (id SERIAL, name TEXT);"
-docker exec -it test-db psql -U postgres -c "INSERT INTO users (name) VALUES ('Alice');"
-
-# データが存在することを確認
-docker exec -it test-db psql -U postgres -c "SELECT * FROM users;"
-
-# コンテナを削除
-docker rm -f test-db
-
-# 再度起動
-docker run --name test-db -e POSTGRES_PASSWORD=secret -d postgres
-
-# データが消えている！
-docker exec -it test-db psql -U postgres -c "SELECT * FROM users;"
-# エラー: relation "users" does not exist</code></pre>
-
-                    <h3>データ永続化が必要なケース</h3>
-                    <ul>
-                        <li><strong>データベース</strong>：ユーザーデータ、トランザクション記録</li>
-                        <li><strong>ログファイル</strong>：アプリケーションログ、アクセスログ</li>
-                        <li><strong>アップロードファイル</strong>：ユーザーがアップロードした画像や文書</li>
-                        <li><strong>設定ファイル</strong>：コンテナ外で管理したい設定</li>
-                        <li><strong>開発中のソースコード</strong>：ホットリロードのため</li>
-                    </ul>
-
-                    <div class="warning">
-                        <strong>重要：</strong>コンテナは「いつでも削除・再作成できる」ように設計すべきです。そのため、永続化が必要なデータはコンテナの外に保存する必要があります。
-                    </div>
-                </section>
-
-                <!-- 3種類のマウント方式 -->
-                <section id="mount-types">
-                    <h2 class="section-title">3種類のマウント方式</h2>
-
-                    <p>Dockerには、ホストとコンテナ間でデータを共有する3つの主要な方法があります：</p>
-
-                    <div class="mermaid">
-                        graph TD
-                            A[データ永続化の方法] --> B[Volumes<br/>ボリューム]
-                            A --> C[Bind Mounts<br/>バインドマウント]
-                            A --> D[tmpfs Mounts<br/>tmpfsマウント]
-                            B --> E[Dockerが管理]
-                            C --> F[ホストのパスを指定]
-                            D --> G[メモリ上に保存]
-                    </div>
-
-                    <h3>1. Volumes（ボリューム）</h3>
-                    <ul>
-                        <li><strong>Dockerが完全に管理</strong>する領域</li>
-                        <li>ホストファイルシステムの特定のディレクトリ（通常 <code>/var/lib/docker/volumes/</code>）に保存</li>
-                        <li><strong>推奨される方法</strong>（最も安全で移植性が高い）</li>
-                        <li>複数のコンテナで共有可能</li>
-                    </ul>
-
-                    <h3>2. Bind Mounts（バインドマウント）</h3>
-                    <ul>
-                        <li>ホストマシンの<strong>任意のパス</strong>をコンテナにマウント</li>
-                        <li>開発時に便利（ソースコードの変更を即座に反映）</li>
-                        <li>ホストのファイルシステムに依存するため、移植性は低い</li>
-                        <li>設定ファイルの注入にも使用</li>
-                    </ul>
-
-                    <h3>3. tmpfs Mounts（tmpfsマウント）</h3>
-                    <ul>
-                        <li>ホストのメモリ上にのみ保存（ディスクには書き込まない）</li>
-                        <li>一時的なデータの保存に使用</li>
-                        <li>コンテナ停止時にデータは消失</li>
-                        <li>機密情報の一時保存に有用</li>
-                    </ul>
-
-                    <div class="mermaid">
-                        graph LR
-                            A[ホスト] -->|Volume| B[Dockerボリューム領域]
-                            A -->|Bind Mount| C[任意のディレクトリ]
-                            A -->|tmpfs| D[メモリ]
-                            B -.->|マウント| E[コンテナ]
-                            C -.->|マウント| E
-                            D -.->|マウント| E
-                            style B fill:#e7f3ff
-                            style C fill:#fff9e6
-                            style D fill:#f3e5f5
-                    </div>
-                </section>
-
-                <!-- Dockerボリューム -->
-                <section id="volumes">
-                    <h2 class="section-title">Dockerボリューム（推奨）</h2>
-
-                    <h3>ボリュームの特徴</h3>
-                    <p>
-                        Dockerボリュームは、Dockerが完全に管理するデータ領域です。最も推奨される永続化方法で、以下の利点があります：
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Dockerfileを一度作っておけば、チームメンバーや将来の自分が同じイメージを簡単に再現できます。これがDockerfileの最大のメリットです。
                     </p>
-                    <ul>
-                        <li>Dockerが自動的に管理するため、パスを気にする必要がない</li>
-                        <li>Linux、Windows、macOS間で移植性が高い</li>
-                        <li>バックアップやマイグレーションが簡単</li>
-                        <li>複数のコンテナで安全に共有可能</li>
-                        <li>ボリュームドライバーで拡張可能（リモートストレージ等）</li>
-                    </ul>
-
-                    <h3>ボリュームの作成</h3>
-                    <pre class="code-block"><code class="language-bash"># 名前付きボリュームを作成
-docker volume create my-volume
-
-# ボリューム一覧を表示
-docker volume ls
-
-# ボリュームの詳細情報
-docker volume inspect my-volume</code></pre>
-
-                    <h3>ボリュームの使用</h3>
-                    <pre class="code-block"><code class="language-bash"># ボリュームをマウントしてコンテナを起動
-docker run -d \
-  --name postgres-db \
-  -v my-volume:/var/lib/postgresql/data \
-  -e POSTGRES_PASSWORD=secret \
-  postgres
-
-# または --mount構文（より明示的）
-docker run -d \
-  --name postgres-db \
-  --mount source=my-volume,target=/var/lib/postgresql/data \
-  -e POSTGRES_PASSWORD=secret \
-  postgres</code></pre>
-
-                    <h3>匿名ボリューム vs 名前付きボリューム</h3>
-
-                    <h4>匿名ボリューム</h4>
-                    <pre class="code-block"><code class="language-bash"># ボリューム名を指定しない（自動生成される）
-docker run -d -v /var/lib/postgresql/data postgres
-
-# 自動生成された名前（ランダムなハッシュ）
-docker volume ls
-# DRIVER    VOLUME NAME
-# local     a1b2c3d4e5f6...</code></pre>
-
-                    <h4>名前付きボリューム（推奨）</h4>
-                    <pre class="code-block"><code class="language-bash"># わかりやすい名前を付ける
-docker run -d -v postgres-data:/var/lib/postgresql/data postgres
-
-# 管理しやすい
-docker volume ls
-# DRIVER    VOLUME NAME
-# local     postgres-data</code></pre>
-
-                    <div class="highlight">
-                        <strong>ベストプラクティス：</strong>名前付きボリュームを使用することで、管理が容易になります。匿名ボリュームは、一時的な用途でのみ使用しましょう。
-                    </div>
-
-                    <h3>ボリュームの削除</h3>
-                    <pre class="code-block"><code class="language-bash"># 特定のボリュームを削除
-docker volume rm my-volume
-
-# 使用されていないすべてのボリュームを削除
-docker volume prune
-
-# コンテナ削除時にボリュームも削除
-docker rm -v container-name</code></pre>
-
-                    <h3>Docker Composeでのボリューム使用</h3>
-                    <pre class="code-block"><code class="language-yaml">version: '3.8'
-
-services:
-  db:
-    image: postgres:15
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_PASSWORD: secret
-
-volumes:
-  postgres-data:  # 名前付きボリュームを宣言</code></pre>
                 </section>
 
-                <!-- バインドマウント -->
-                <section id="bind-mounts">
-                    <h2 class="section-title">バインドマウント</h2>
-
-                    <h3>バインドマウントの特徴</h3>
-                    <p>
-                        バインドマウントは、ホストマシンの任意のファイルやディレクトリをコンテナにマウントします。主に開発環境で使用されます。
+                <!-- セクション2: 基本的な命令を学ぶ -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.2 基本的な命令を学ぶ
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Dockerfileで使える命令はたくさんありますが、まずは以下の6つの基本命令を覚えましょう。
                     </p>
 
-                    <h3>使用例：開発時のソースコード共有</h3>
-                    <pre class="code-block"><code class="language-bash"># カレントディレクトリをコンテナの /app にマウント
-docker run -d \
-  --name dev-server \
-  -v $(pwd):/app \
-  -p 3000:3000 \
-  node:18 \
-  npm start
+                    <!-- 命令一覧カード -->
+                    <div class="grid md:grid-cols-2 gap-4 my-6">
+                        <!-- FROM -->
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-layer-group text-white"></i>
+                                </div>
+                                <h3 class="font-semibold text-slate-800">FROM</h3>
+                            </div>
+                            <p class="text-sm text-slate-600 mb-2">
+                                ベースとなるイメージを指定します。<strong>必ず最初に記述</strong>する必要があります。
+                            </p>
+                            <div class="bg-slate-100 rounded-lg p-2 text-xs font-mono text-slate-700">
+                                FROM nginx:latest
+                            </div>
+                        </div>
 
-# ホストでファイルを編集すると、即座にコンテナに反映される</code></pre>
+                        <!-- COPY -->
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-copy text-white"></i>
+                                </div>
+                                <h3 class="font-semibold text-slate-800">COPY</h3>
+                            </div>
+                            <p class="text-sm text-slate-600 mb-2">
+                                ホストマシンのファイルをコンテナ内にコピーします。
+                            </p>
+                            <div class="bg-slate-100 rounded-lg p-2 text-xs font-mono text-slate-700">
+                                COPY index.html /usr/share/nginx/html/
+                            </div>
+                        </div>
 
-                    <h3>絶対パスと相対パス</h3>
-                    <pre class="code-block"><code class="language-bash"># 絶対パスを使用（推奨）
-docker run -v /home/user/myapp:/app myimage
+                        <!-- RUN -->
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-terminal text-white"></i>
+                                </div>
+                                <h3 class="font-semibold text-slate-800">RUN</h3>
+                            </div>
+                            <p class="text-sm text-slate-600 mb-2">
+                                イメージ作成時にコマンドを実行します（パッケージインストールなど）。
+                            </p>
+                            <div class="bg-slate-100 rounded-lg p-2 text-xs font-mono text-slate-700">
+                                RUN apt-get update && apt-get install -y curl
+                            </div>
+                        </div>
 
-# 相対パス（カレントディレクトリ基準）
-docker run -v $(pwd):/app myimage
+                        <!-- CMD -->
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-play text-white"></i>
+                                </div>
+                                <h3 class="font-semibold text-slate-800">CMD</h3>
+                            </div>
+                            <p class="text-sm text-slate-600 mb-2">
+                                コンテナ起動時に実行するデフォルトコマンドを指定します。
+                            </p>
+                            <div class="bg-slate-100 rounded-lg p-2 text-xs font-mono text-slate-700">
+                                CMD ["nginx", "-g", "daemon off;"]
+                            </div>
+                        </div>
 
-# Windowsの場合
-docker run -v C:\Users\user\myapp:/app myimage</code></pre>
+                        <!-- WORKDIR -->
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-folder text-white"></i>
+                                </div>
+                                <h3 class="font-semibold text-slate-800">WORKDIR</h3>
+                            </div>
+                            <p class="text-sm text-slate-600 mb-2">
+                                作業ディレクトリを指定します。以降の命令はこのディレクトリで実行されます。
+                            </p>
+                            <div class="bg-slate-100 rounded-lg p-2 text-xs font-mono text-slate-700">
+                                WORKDIR /app
+                            </div>
+                        </div>
 
-                    <h3>読み取り専用マウント</h3>
-                    <pre class="code-block"><code class="language-bash"># :ro オプションで読み取り専用
-docker run -v $(pwd)/config:/app/config:ro myimage
-
-# コンテナからは変更できない（安全性向上）</code></pre>
-
-                    <h3>Docker Composeでのバインドマウント</h3>
-                    <pre class="code-block"><code class="language-yaml">version: '3.8'
-
-services:
-  web:
-    build: .
-    volumes:
-      # 開発用：ソースコードをマウント
-      - ./src:/app/src
-      # 設定ファイルを読み取り専用でマウント
-      - ./config.json:/app/config.json:ro
-      # node_modulesは名前付きボリュームで保護
-      - node_modules:/app/node_modules
-    ports:
-      - "3000:3000"
-
-volumes:
-  node_modules:</code></pre>
-
-                    <h3>バインドマウントの利点と欠点</h3>
-
-                    <div class="highlight">
-                        <h5>利点</h5>
-                        <ul>
-                            <li>開発時にコードの変更が即座に反映される（ホットリロード）</li>
-                            <li>ホストから直接ファイルを編集できる</li>
-                            <li>設定ファイルの注入が簡単</li>
-                        </ul>
+                        <!-- EXPOSE -->
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-network-wired text-white"></i>
+                                </div>
+                                <h3 class="font-semibold text-slate-800">EXPOSE</h3>
+                            </div>
+                            <p class="text-sm text-slate-600 mb-2">
+                                コンテナが使用するポート番号を宣言します（ドキュメントとしての役割）。
+                            </p>
+                            <div class="bg-slate-100 rounded-lg p-2 text-xs font-mono text-slate-700">
+                                EXPOSE 80
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="warning">
-                        <h5>欠点</h5>
-                        <ul>
-                            <li>ホストのパスに依存するため、移植性が低い</li>
-                            <li>Windows/macOSではファイルシステムの違いでパフォーマンスが低下することがある</li>
-                            <li>セキュリティリスク（ホストのファイルに直接アクセス）</li>
-                        </ul>
+                    <!-- 重要ポイント -->
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-star text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">重要ポイント</p>
+                                <p class="text-emerald-800 text-sm mt-1 break-words">
+                                    <strong>RUN</strong>はイメージ作成時、<strong>CMD</strong>はコンテナ起動時に実行されます。この違いをしっかり理解しましょう。
+                                </p>
+                            </div>
+                        </div>
                     </div>
-
-                    <h3>開発環境での典型的な使用例</h3>
-                    <pre class="code-block"><code class="language-yaml"># docker-compose.dev.yml
-version: '3.8'
-
-services:
-  frontend:
-    build: ./frontend
-    volumes:
-      - ./frontend/src:/app/src  # ソースコードをマウント
-      - /app/node_modules        # node_modulesは除外
-    environment:
-      - NODE_ENV=development
-
-  backend:
-    build: ./backend
-    volumes:
-      - ./backend/src:/app/src
-      - ./backend/tests:/app/tests
-    environment:
-      - DEBUG=true</code></pre>
                 </section>
 
-                <!-- tmpfsマウント -->
-                <section id="tmpfs">
-                    <h2 class="section-title">tmpfsマウント</h2>
-
-                    <h3>tmpfsマウントの特徴</h3>
-                    <p>
-                        tmpfsマウントは、ホストのメモリ上に一時的なファイルシステムを作成します。ディスクには書き込まれないため、高速で、機密情報の一時保存に適しています。
+                <!-- セクション3: はじめてのDockerfileを作成する -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.3 はじめてのDockerfileを作成する
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        それでは、実際にシンプルなDockerfileを作成してみましょう。ここでは、自分のHTMLページを表示するWebサーバーイメージを作成します。
                     </p>
 
-                    <h3>使用例</h3>
-                    <pre class="code-block"><code class="language-bash"># tmpfsマウントを使用
-docker run -d \
-  --name temp-container \
-  --tmpfs /tmp:rw,size=100m \
-  myimage
-
-# /tmp ディレクトリはメモリ上に作成され、コンテナ停止時に消失</code></pre>
-
-                    <h3>tmpfsの用途</h3>
-                    <ul>
-                        <li><strong>一時ファイル</strong>：処理中の一時データ</li>
-                        <li><strong>機密情報</strong>：パスワードやトークンの一時保存（ディスクに残らない）</li>
-                        <li><strong>キャッシュ</strong>：高速なキャッシュストレージ</li>
-                        <li><strong>作業用ディレクトリ</strong>：一時的な作業領域</li>
-                    </ul>
-
-                    <div class="warning">
-                        <strong>注意：</strong>tmpfsはLinuxコンテナでのみ使用可能です。Windowsコンテナでは使用できません。
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 mb-4 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 6-1: オリジナルWebページイメージの作成</h3>
+                                <p class="text-purple-900 mb-4 break-words">自分のHTMLページを表示するDockerイメージを作成します。</p>
+                                <h4 class="font-medium text-purple-800 mb-2 break-words">手順</h4>
+                                <ol class="space-y-3 mb-4">
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
+                                        <span class="flex-1 min-w-0 break-words">作業用フォルダを作成します</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
+                                        <span class="flex-1 min-w-0 break-words">HTMLファイルを作成します</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">3</span>
+                                        <span class="flex-1 min-w-0 break-words">Dockerfileを作成します</span>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
                     </div>
 
-                    <h3>Docker Composeでのtmpfs使用</h3>
-                    <pre class="code-block"><code class="language-yaml">version: '3.8'
-
-services:
-  app:
-    image: myapp
-    tmpfs:
-      - /tmp
-      - /run:size=100m,mode=1777</code></pre>
-                </section>
-
-                <!-- 方式の比較と使い分け -->
-                <section id="comparison">
-                    <h2 class="section-title">方式の比較と使い分け</h2>
-
-                    <h3>比較表</h3>
-                    <table class="table table-bordered">
-                        <thead class="table-light">
-                            <tr>
-                                <th>特徴</th>
-                                <th>Volume</th>
-                                <th>Bind Mount</th>
-                                <th>tmpfs</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>管理者</td>
-                                <td>Docker</td>
-                                <td>ホストOS</td>
-                                <td>メモリ</td>
-                            </tr>
-                            <tr>
-                                <td>保存場所</td>
-                                <td>/var/lib/docker/volumes/</td>
-                                <td>ホストの任意のパス</td>
-                                <td>ホストのメモリ</td>
-                            </tr>
-                            <tr>
-                                <td>移植性</td>
-                                <td>高い</td>
-                                <td>低い</td>
-                                <td>中</td>
-                            </tr>
-                            <tr>
-                                <td>永続性</td>
-                                <td>永続</td>
-                                <td>永続</td>
-                                <td>一時的</td>
-                            </tr>
-                            <tr>
-                                <td>共有</td>
-                                <td>可能</td>
-                                <td>可能</td>
-                                <td>不可</td>
-                            </tr>
-                            <tr>
-                                <td>推奨用途</td>
-                                <td>本番環境、データベース</td>
-                                <td>開発環境、設定ファイル</td>
-                                <td>一時データ、機密情報</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <h3>使い分けのガイドライン</h3>
-
-                    <div class="highlight">
-                        <h5>Dockerボリュームを使用すべき場合</h5>
-                        <ul>
-                            <li>本番環境でのデータ永続化</li>
-                            <li>データベースのデータ保存</li>
-                            <li>複数のコンテナでデータを共有</li>
-                            <li>バックアップやマイグレーションを行う</li>
-                        </ul>
+                    <!-- ステップ1: フォルダ作成 -->
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">ステップ1: 作業用フォルダを作成</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        まず、作業用のフォルダを作成して移動します。
+                    </p>
+                    <div class="bg-slate-800 rounded-lg overflow-hidden mb-4">
+                        <div class="flex items-center justify-between bg-slate-700 px-4 py-2">
+                            <span class="text-slate-300 text-sm">ターミナル</span>
+                        </div>
+                        <pre class="!mt-0 !bg-slate-800"><code class="language-bash"># 作業用フォルダを作成
+mkdir my-web-app
+cd my-web-app</code></pre>
                     </div>
 
-                    <div class="highlight">
-                        <h5>バインドマウントを使用すべき場合</h5>
-                        <ul>
-                            <li>開発環境でソースコードを共有</li>
-                            <li>設定ファイルをコンテナに注入</li>
-                            <li>ホストから直接ファイルを編集したい</li>
-                            <li>ログファイルをホストで監視</li>
-                        </ul>
+                    <!-- ステップ2: HTMLファイル作成 -->
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">ステップ2: HTMLファイルを作成</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        次に、表示したいHTMLファイルを作成します。テキストエディタで<code class="bg-slate-100 px-2 py-1 rounded text-sm">index.html</code>というファイルを作成し、以下の内容を保存してください。
+                    </p>
+                    <div class="bg-slate-800 rounded-lg overflow-hidden mb-4">
+                        <div class="flex items-center justify-between bg-slate-700 px-4 py-2">
+                            <span class="text-slate-300 text-sm">index.html</span>
+                        </div>
+                        <pre class="!mt-0 !bg-slate-800"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;私のDockerページ&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Dockerfileで作った私のWebページ！&lt;/h1&gt;
+    &lt;p&gt;Dockerfileを使って、オリジナルイメージを作成しました。&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
                     </div>
 
-                    <div class="highlight">
-                        <h5>tmpfsマウントを使用すべき場合</h5>
-                        <ul>
-                            <li>機密情報の一時保存</li>
-                            <li>高速な一時ストレージが必要</li>
-                            <li>ディスクI/Oを削減したい</li>
-                            <li>データを永続化したくない</li>
-                        </ul>
+                    <!-- ステップ3: Dockerfile作成 -->
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">ステップ3: Dockerfileを作成</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        次に、Dockerfileを作成します。<strong>ファイル名は必ず「Dockerfile」</strong>（拡張子なし）にしてください。
+                    </p>
+                    <div class="bg-slate-800 rounded-lg overflow-hidden mb-4">
+                        <div class="flex items-center justify-between bg-slate-700 px-4 py-2">
+                            <span class="text-slate-300 text-sm">Dockerfile</span>
+                        </div>
+                        <pre class="!mt-0 !bg-slate-800"><code class="language-bash"># ベースイメージとしてNginxを使用
+FROM nginx:latest
+
+# 作成したHTMLファイルをNginxのドキュメントルートにコピー
+COPY index.html /usr/share/nginx/html/
+
+# ポート80を公開
+EXPOSE 80
+
+# Nginxを起動（デフォルトのままでOK）
+CMD ["nginx", "-g", "daemon off;"]</code></pre>
+                    </div>
+
+                    <!-- ヒント -->
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">ヒント</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    Dockerfileの各行は、上から順番に実行されます。<code class="bg-white px-2 py-1 rounded">#</code>で始まる行はコメントです。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ファイル構成 -->
+                    <div class="bg-slate-100 border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-folder-tree text-slate-500"></i>
+                            現在のフォルダ構成
+                        </h3>
+                        <pre class="bg-slate-800 text-slate-100 rounded-lg p-4 text-sm overflow-x-auto"><code>my-web-app/
+├── Dockerfile        ← イメージのレシピ
+└── index.html        ← 表示したいHTMLファイル</code></pre>
                     </div>
                 </section>
 
-                <!-- バックアップとリストア -->
-                <section id="backup">
-                    <h2 class="section-title">ボリュームのバックアップとリストア</h2>
+                <!-- セクション4: docker buildでイメージを作成する -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.4 docker buildでイメージを作成する
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Dockerfileを作成したら、<code class="bg-slate-100 px-2 py-1 rounded text-sm">docker build</code>コマンドでイメージをビルドします。
+                    </p>
 
-                    <h3>ボリュームのバックアップ</h3>
-                    <p>ボリュームのデータをバックアップする方法を学びます。</p>
-
-                    <pre class="code-block"><code class="language-bash"># バックアップ用の一時コンテナを起動して、tarアーカイブを作成
-docker run --rm \
-  -v postgres-data:/data \
-  -v $(pwd):/backup \
-  ubuntu \
-  tar czf /backup/postgres-backup.tar.gz -C /data .
-
-# postgres-data ボリュームの内容が postgres-backup.tar.gz に保存される</code></pre>
-
-                    <h3>バックアップの仕組み</h3>
-                    <div class="mermaid">
-                        graph LR
-                            A[postgres-dataボリューム] -->|マウント| B[一時コンテナ]
-                            C[ホストのカレントディレクトリ] -->|マウント| B
-                            B -->|tar圧縮| D[backup.tar.gz]
-                            D -->|保存| C
-                            style B fill:#e7f3ff
+                    <!-- ビルドコマンド -->
+                    <div class="bg-slate-800 rounded-lg overflow-hidden mb-4">
+                        <div class="flex items-center justify-between bg-slate-700 px-4 py-2">
+                            <span class="text-slate-300 text-sm">ターミナル</span>
+                        </div>
+                        <pre class="!mt-0 !bg-slate-800"><code class="language-bash"># イメージをビルド（-t でイメージ名を指定、. は現在のフォルダを指定）
+docker build -t my-web-app .</code></pre>
                     </div>
 
-                    <h3>ボリュームのリストア</h3>
-                    <pre class="code-block"><code class="language-bash"># 新しいボリュームを作成
-docker volume create postgres-data-restored
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        ビルドが成功すると、以下のような出力が表示されます。
+                    </p>
 
-# バックアップから復元
-docker run --rm \
-  -v postgres-data-restored:/data \
-  -v $(pwd):/backup \
-  ubuntu \
-  tar xzf /backup/postgres-backup.tar.gz -C /data
+                    <!-- ビルド出力例 -->
+                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5 mb-4 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-check text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-emerald-800 mb-3 break-words">ビルド成功時の出力例</h3>
+                                <div class="bg-white/60 rounded-lg p-4 border border-emerald-200">
+                                    <pre class="text-emerald-900 text-sm whitespace-pre-wrap">[+] Building 2.3s (8/8) FINISHED
+ => [1/2] FROM docker.io/library/nginx:latest
+ => [2/2] COPY index.html /usr/share/nginx/html/
+ => exporting to image
+ => => naming to docker.io/library/my-web-app
+Successfully built 8f3e9a2b1c4d
+Successfully tagged my-web-app:latest</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-# 復元したボリュームを使用
-docker run -d \
-  -v postgres-data-restored:/var/lib/postgresql/data \
-  postgres</code></pre>
+                    <!-- docker buildコマンドの解説 -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                            <i class="fas fa-info-circle text-primary-500"></i>
+                            docker buildコマンドの解説
+                        </h3>
+                        <div class="mermaid">
+flowchart LR
+    A[docker build] --> B[-t my-web-app]
+    B --> C[.]
 
-                    <h3>実践的なバックアップスクリプト</h3>
-                    <pre class="code-block"><code class="language-bash">#!/bin/bash
-# backup-volume.sh
+    A -->|コマンド| D[イメージを<br/>ビルドする]
+    B -->|オプション| E[イメージ名を<br/>指定]
+    C -->|引数| F[Dockerfileの<br/>場所]
 
-VOLUME_NAME=$1
-BACKUP_DIR="./backups"
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-BACKUP_FILE="${BACKUP_DIR}/${VOLUME_NAME}_${TIMESTAMP}.tar.gz"
+    style A fill:#e0f2fe,stroke:#0ea5e9
+    style B fill:#bae6fd,stroke:#0284c7
+    style C fill:#bae6fd,stroke:#0284c7
+                        </div>
+                    </div>
 
-mkdir -p ${BACKUP_DIR}
+                    <!-- イメージ確認 -->
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">作成したイメージを確認</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <code class="bg-slate-100 px-2 py-1 rounded text-sm">docker images</code>コマンドで、イメージが作成されたことを確認できます。
+                    </p>
+                    <div class="bg-slate-800 rounded-lg overflow-hidden mb-4">
+                        <div class="flex items-center justify-between bg-slate-700 px-4 py-2">
+                            <span class="text-slate-300 text-sm">ターミナル</span>
+                        </div>
+                        <pre class="!mt-0 !bg-slate-800"><code class="language-bash"># イメージ一覧を表示
+docker images
 
-docker run --rm \
-  -v ${VOLUME_NAME}:/data \
-  -v ${BACKUP_DIR}:/backup \
-  ubuntu \
-  tar czf /backup/${VOLUME_NAME}_${TIMESTAMP}.tar.gz -C /data .
-
-echo "Backup saved to: ${BACKUP_FILE}"
-
-# 使用例：
-# ./backup-volume.sh postgres-data</code></pre>
-
-                    <h3>Docker Composeでのバックアップ</h3>
-                    <pre class="code-block"><code class="language-bash"># サービスを停止してからバックアップ（データ整合性のため）
-docker compose down
-
-# バックアップ実行
-docker run --rm \
-  -v myapp_postgres-data:/data \
-  -v $(pwd)/backups:/backup \
-  ubuntu \
-  tar czf /backup/backup-$(date +%Y%m%d).tar.gz -C /data .
-
-# サービスを再開
-docker compose up -d</code></pre>
+# 出力例:
+# REPOSITORY      TAG       IMAGE ID       CREATED         SIZE
+# my-web-app      latest    8f3e9a2b1c4d   2 minutes ago   187MB
+# nginx           latest    4f380adfc10f   3 days ago      187MB</code></pre>
+                    </div>
                 </section>
 
-                <!-- 実践的な使用例 -->
-                <section id="practical">
-                    <h2 class="section-title">実践的な使用例</h2>
+                <!-- セクション5: 作成したイメージを実行する -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.5 作成したイメージを実行する
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        それでは、作成したイメージからコンテナを起動してみましょう。
+                    </p>
 
-                    <h3>例1：WordPressの完全な永続化</h3>
-                    <pre class="code-block"><code class="language-yaml">version: '3.8'
+                    <!-- 実行コマンド -->
+                    <div class="bg-slate-800 rounded-lg overflow-hidden mb-4">
+                        <div class="flex items-center justify-between bg-slate-700 px-4 py-2">
+                            <span class="text-slate-300 text-sm">ターミナル</span>
+                        </div>
+                        <pre class="!mt-0 !bg-slate-800"><code class="language-bash"># コンテナを起動（ポート8080で公開）
+docker run -d -p 8080:80 --name my-app my-web-app</code></pre>
+                    </div>
 
-services:
-  wordpress:
-    image: wordpress:latest
-    ports:
-      - "8080:80"
-    environment:
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: secret
-      WORDPRESS_DB_NAME: wordpress
-    volumes:
-      # WordPressのファイルを永続化
-      - wordpress_data:/var/www/html
+                    <!-- 動作確認 -->
+                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5 mb-4 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-play text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-emerald-800 mb-3 break-words">動作確認</h3>
+                                <p class="text-emerald-900 mb-4 break-words">
+                                    ブラウザで<code class="bg-white px-2 py-1 rounded">http://localhost:8080</code>にアクセスしてください。
+                                </p>
+                                <h4 class="font-medium text-emerald-800 mb-2 break-words">
+                                    <i class="fas fa-check-circle mr-2"></i>期待される結果
+                                </h4>
+                                <div class="bg-white/60 rounded-lg p-4 border border-emerald-200">
+                                    <p class="text-emerald-900 text-sm">自分が作成したHTMLページが表示されます。「Dockerfileで作った私のWebページ！」という見出しが表示されれば成功です。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-  db:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: secret
-    volumes:
-      # データベースを永続化
-      - db_data:/var/lib/mysql
+                    <!-- プロセス図 -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                            <i class="fas fa-diagram-project text-primary-500"></i>
+                            Dockerfileからコンテナ起動までの流れ
+                        </h3>
+                        <div class="mermaid">
+flowchart LR
+    A[Dockerfile] -->|docker build| B[Dockerイメージ<br/>my-web-app]
+    B -->|docker run| C[コンテナ]
+    C -->|ブラウザでアクセス| D[Webページ表示]
 
-volumes:
-  wordpress_data:
-  db_data:</code></pre>
+    style A fill:#dbeafe,stroke:#3b82f6
+    style B fill:#bae6fd,stroke:#0284c7
+    style C fill:#e0f2fe,stroke:#0ea5e9
+    style D fill:#d1fae5,stroke:#10b981
+                        </div>
+                        <p class="text-sm text-slate-600 mt-4">
+                            Dockerfileは設計図、イメージは実体、コンテナは実行中のプロセスです。
+                        </p>
+                    </div>
 
-                    <h3>例2：開発環境（ホットリロード対応）</h3>
-                    <pre class="code-block"><code class="language-yaml">version: '3.8'
-
-services:
-  frontend:
-    build: ./frontend
-    ports:
-      - "3000:3000"
-    volumes:
-      # ソースコードをバインドマウント（開発用）
-      - ./frontend/src:/app/src
-      # node_modulesはボリュームで保護
-      - node_modules_frontend:/app/node_modules
-    environment:
-      - NODE_ENV=development
-
-  backend:
-    build: ./backend
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./backend/src:/app/src
-      - node_modules_backend:/app/node_modules
-    environment:
-      - NODE_ENV=development
-
-  db:
-    image: postgres:15
-    volumes:
-      # データベースは名前付きボリューム
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_PASSWORD: devpass
-
-volumes:
-  node_modules_frontend:
-  node_modules_backend:
-  postgres_data:</code></pre>
-
-                    <h3>例3：ログの外部保存</h3>
-                    <pre class="code-block"><code class="language-yaml">version: '3.8'
-
-services:
-  app:
-    build: .
-    volumes:
-      # アプリケーションログをホストに保存
-      - ./logs:/var/log/app
-      # 一時ファイルはtmpfs（高速）
-      - type: tmpfs
-        target: /tmp
-        tmpfs:
-          size: 100m</code></pre>
+                    <!-- クリーンアップ -->
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">後片付け</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        確認が終わったら、コンテナを停止・削除しましょう。
+                    </p>
+                    <div class="bg-slate-800 rounded-lg overflow-hidden mb-4">
+                        <div class="flex items-center justify-between bg-slate-700 px-4 py-2">
+                            <span class="text-slate-300 text-sm">ターミナル</span>
+                        </div>
+                        <pre class="!mt-0 !bg-slate-800"><code class="language-bash"># コンテナを停止して削除
+docker stop my-app
+docker rm my-app</code></pre>
+                    </div>
                 </section>
 
-                <!-- 実習課題 -->
-                <section id="exercises">
-                    <h2 class="section-title">実習課題</h2>
+                <!-- セクション6: Dockerfileのベストプラクティス -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.6 Dockerfileのベストプラクティス（基本）
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Dockerfileを書くときに覚えておきたい基本的なベストプラクティスを紹介します。
+                    </p>
 
-                    <div class="exercise-container">
-                        <h4>実習1：データベースのデータ永続化</h4>
-                        <p><strong>目的：</strong>ボリュームを使ってデータを永続化する</p>
+                    <!-- ベストプラクティス一覧 -->
+                    <div class="space-y-4 my-6">
+                        <div class="bg-white border-l-4 border-primary-500 p-5 rounded-r-xl shadow-sm">
+                            <h3 class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                                <i class="fas fa-check-circle text-primary-500"></i>
+                                1. 軽量なベースイメージを選ぶ
+                            </h3>
+                            <p class="text-sm text-slate-600">
+                                できるだけ小さいイメージを使うと、ダウンロードやビルドが速くなります。例: <code class="bg-slate-100 px-2 py-1 rounded">nginx:alpine</code>は<code class="bg-slate-100 px-2 py-1 rounded">nginx:latest</code>より小さいです。
+                            </p>
+                        </div>
 
-                        <p><strong>手順：</strong></p>
-                        <ol>
-                            <li>名前付きボリューム<code>mysql-data</code>を作成</li>
-                            <li>MySQLコンテナを起動し、ボリュームをマウント</li>
-                            <li>データベースとテーブルを作成し、データを挿入</li>
-                            <li>コンテナを削除</li>
-                            <li>同じボリュームで新しいコンテナを起動</li>
-                            <li>データが保持されているか確認</li>
-                        </ol>
+                        <div class="bg-white border-l-4 border-primary-500 p-5 rounded-r-xl shadow-sm">
+                            <h3 class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                                <i class="fas fa-check-circle text-primary-500"></i>
+                                2. .dockerignoreファイルを活用する
+                            </h3>
+                            <p class="text-sm text-slate-600">
+                                不要なファイル（.git、node_modulesなど）をコピーしないように、<code class="bg-slate-100 px-2 py-1 rounded">.dockerignore</code>ファイルに記述します。イメージサイズの削減につながります。
+                            </p>
+                        </div>
 
-                        <p><strong>確認コマンド例：</strong></p>
-                        <pre class="code-block"><code class="language-bash">docker volume create mysql-data
-docker run -d --name mysql-test -v mysql-data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=pass mysql:8.0
-docker exec -it mysql-test mysql -ppass -e "CREATE DATABASE testdb;"
-docker rm -f mysql-test
-docker run -d --name mysql-test2 -v mysql-data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=pass mysql:8.0
-docker exec -it mysql-test2 mysql -ppass -e "SHOW DATABASES;"</code></pre>
+                        <div class="bg-white border-l-4 border-primary-500 p-5 rounded-r-xl shadow-sm">
+                            <h3 class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                                <i class="fas fa-check-circle text-primary-500"></i>
+                                3. レイヤーを意識する
+                            </h3>
+                            <p class="text-sm text-slate-600">
+                                Dockerfileの各命令（FROM、COPY、RUNなど）は1つのレイヤーを作ります。変更の少ない命令を先に書くと、ビルドが速くなります。
+                            </p>
+                        </div>
+
+                        <div class="bg-white border-l-4 border-primary-500 p-5 rounded-r-xl shadow-sm">
+                            <h3 class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                                <i class="fas fa-check-circle text-primary-500"></i>
+                                4. 1つのRUNで複数のコマンドを実行する
+                            </h3>
+                            <p class="text-sm text-slate-600">
+                                <code class="bg-slate-100 px-2 py-1 rounded">&&</code>で繋げることで、レイヤー数を減らせます。例: <code class="bg-slate-100 px-2 py-1 rounded">RUN apt-get update && apt-get install -y curl</code>
+                            </p>
+                        </div>
                     </div>
 
-                    <div class="exercise-container">
-                        <h4>実習2：バインドマウントで開発環境構築</h4>
-                        <p><strong>目的：</strong>ソースコードの変更をリアルタイムに反映する</p>
-
-                        <p><strong>手順：</strong></p>
-                        <ol>
-                            <li>シンプルなHTMLファイルを作成</li>
-                            <li>Nginxコンテナでカレントディレクトリをマウント</li>
-                            <li>ブラウザでアクセス</li>
-                            <li>HTMLファイルをホスト側で編集</li>
-                            <li>ブラウザをリロードして変更が反映されることを確認</li>
-                        </ol>
-                    </div>
-
-                    <div class="exercise-container">
-                        <h4>実習3：ボリュームのバックアップとリストア</h4>
-                        <p><strong>目的：</strong>データのバックアップとリストアを実践する</p>
-
-                        <p><strong>手順：</strong></p>
-                        <ol>
-                            <li>データを含むボリュームを作成</li>
-                            <li>バックアップスクリプトを使ってtarアーカイブを作成</li>
-                            <li>元のボリュームを削除</li>
-                            <li>新しいボリュームを作成し、バックアップから復元</li>
-                            <li>データが正しく復元されているか確認</li>
-                        </ol>
+                    <!-- 良い例と悪い例 -->
+                    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden my-6">
+                        <div class="bg-slate-100 px-6 py-3 border-b border-slate-200">
+                            <h3 class="font-semibold text-slate-700 flex items-center gap-2">
+                                <i class="fas fa-code-compare"></i>
+                                良い例と悪い例
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <!-- 悪い例 -->
+                                <div>
+                                    <p class="font-semibold text-red-700 mb-2 flex items-center gap-2">
+                                        <i class="fas fa-times-circle"></i>悪い例
+                                    </p>
+                                    <div class="bg-slate-800 rounded-lg p-3 text-xs">
+                                        <pre class="text-white"><code># レイヤーが増える
+RUN apt-get update
+RUN apt-get install -y curl
+RUN apt-get install -y git</code></pre>
+                                    </div>
+                                </div>
+                                <!-- 良い例 -->
+                                <div>
+                                    <p class="font-semibold text-emerald-700 mb-2 flex items-center gap-2">
+                                        <i class="fas fa-check-circle"></i>良い例
+                                    </p>
+                                    <div class="bg-slate-800 rounded-lg p-3 text-xs">
+                                        <pre class="text-white"><code># 1つのレイヤーで完結
+RUN apt-get update && \
+    apt-get install -y curl git</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
                 <!-- 理解度確認クイズ -->
-                <section id="quiz">
-                    <h2 class="section-title">理解度確認クイズ</h2>
-
-                    <div class="quiz-container">
-                        <h4>Q1: コンテナのデータ</h4>
-                        <p>ボリュームを使用せずにコンテナを削除した場合、コンテナ内のデータはどうなりますか？</p>
-                        <ol type="a">
-                            <li>ホストマシンに自動的に保存される</li>
-                            <li>すべて失われる</li>
-                            <li>Docker Hubにバックアップされる</li>
-                            <li>別のコンテナに移動される</li>
-                        </ol>
-                        <div class="collapse-trigger" data-bs-toggle="collapse" data-bs-target="#answer1">
-                            <strong>解答を表示 ▼</strong>
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
                         </div>
-                        <div class="collapse mt-2" id="answer1">
-                            <div class="alert alert-info">
-                                <strong>答え：b) すべて失われる</strong><br>
-                                コンテナは一時的な存在であり、ボリュームやバインドマウントを使用しない限り、コンテナ内のデータはコンテナの削除と共に失われます。
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="quiz-container">
-                        <h4>Q2: 推奨される永続化方法</h4>
-                        <p>本番環境でデータベースのデータを永続化する場合、最も推奨される方法はどれですか？</p>
-                        <ol type="a">
-                            <li>バインドマウント</li>
-                            <li>tmpfsマウント</li>
-                            <li>Dockerボリューム</li>
-                            <li>コンテナ内のファイルシステム</li>
-                        </ol>
-                        <div class="collapse-trigger" data-bs-toggle="collapse" data-bs-target="#answer2">
-                            <strong>解答を表示 ▼</strong>
-                        </div>
-                        <div class="collapse mt-2" id="answer2">
-                            <div class="alert alert-info">
-                                <strong>答え：c) Dockerボリューム</strong><br>
-                                Dockerボリュームは、Dockerが完全に管理し、移植性が高く、本番環境でのデータ永続化に最も適しています。
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="quiz-container">
-                        <h4>Q3: バインドマウントの用途</h4>
-                        <p>バインドマウントが最も適している用途はどれですか？</p>
-                        <ol type="a">
-                            <li>本番環境のデータベース</li>
-                            <li>開発環境でのソースコード共有</li>
-                            <li>一時的なキャッシュデータ</li>
-                            <li>機密情報の保存</li>
-                        </ol>
-                        <div class="collapse-trigger" data-bs-toggle="collapse" data-bs-target="#answer3">
-                            <strong>解答を表示 ▼</strong>
-                        </div>
-                        <div class="collapse mt-2" id="answer3">
-                            <div class="alert alert-info">
-                                <strong>答え：b) 開発環境でのソースコード共有</strong><br>
-                                バインドマウントは、ホストのファイルをコンテナにマウントするため、開発時にソースコードの変更をリアルタイムに反映させるのに最適です。
-                            </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q1. Dockerfileの最初に必ず書かなければならない命令は何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            <strong>FROM</strong>命令です。FROMはベースとなるイメージを指定する命令で、Dockerfileの最初に記述する必要があります。これがないとイメージを作成できません。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q2. RUN命令とCMD命令の違いは何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            <strong>RUN</strong>はイメージをビルドする際（docker build時）に実行され、<strong>CMD</strong>はコンテナを起動する際（docker run時）に実行されます。RUNはパッケージのインストールなど環境準備に使い、CMDはアプリケーションの起動コマンドを指定します。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q3. docker build -t my-app . コマンドの最後の「.（ドット）」は何を意味しますか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            「.（ドット）」は<strong>現在のディレクトリ</strong>を意味します。つまり、「現在のディレクトリにあるDockerfileを使ってイメージをビルドする」という意味になります。また、このディレクトリがビルドコンテキスト（COPYやADD命令でコピーできるファイルの範囲）になります。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
                         </div>
                     </div>
-
-                    <div class="quiz-container">
-                        <h4>Q4: tmpfsマウントの特徴</h4>
-                        <p>tmpfsマウントについて正しいものはどれですか？</p>
-                        <ol type="a">
-                            <li>ディスクに永続的に保存される</li>
-                            <li>メモリ上に一時的に保存される</li>
-                            <li>Docker Hubに自動アップロードされる</li>
-                            <li>複数のコンテナで共有できる</li>
-                        </ol>
-                        <div class="collapse-trigger" data-bs-toggle="collapse" data-bs-target="#answer4">
-                            <strong>解答を表示 ▼</strong>
-                        </div>
-                        <div class="collapse mt-2" id="answer4">
-                            <div class="alert alert-info">
-                                <strong>答え：b) メモリ上に一時的に保存される</strong><br>
-                                tmpfsマウントはホストのメモリ上にのみ保存され、コンテナが停止するとデータは失われます。高速で、機密情報の一時保存に適しています。
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="quiz-container">
-                        <h4>Q5: ボリュームのバックアップ</h4>
-                        <p>ボリュームをバックアップする一般的な方法として正しいものはどれですか？</p>
-                        <ol type="a">
-                            <li>docker volume backup コマンドを使用</li>
-                            <li>一時コンテナを使ってtarアーカイブを作成</li>
-                            <li>Docker Hubに自動的にバックアップされる</li>
-                            <li>ボリュームは自動的に複製される</li>
-                        </ol>
-                        <div class="collapse-trigger" data-bs-toggle="collapse" data-bs-target="#answer5">
-                            <strong>解答を表示 ▼</strong>
-                        </div>
-                        <div class="collapse mt-2" id="answer5">
-                            <div class="alert alert-info">
-                                <strong>答え：b) 一時コンテナを使ってtarアーカイブを作成</strong><br>
-                                ボリュームのバックアップは、ボリュームをマウントした一時コンテナを起動し、<code>tar</code>コマンドでアーカイブを作成するのが一般的な方法です。
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ナビゲーション -->
-                <div class="chapter-nav">
-                    <a href="docker-learning-material-05.html" class="btn btn-outline-primary">&larr; 前の章へ</a>
-                    <a href="docker-learning-material-07.html" class="btn btn-primary">次の章へ &rarr;</a>
                 </div>
-            </main>
-        </div>
+
+                <!-- まとめカード -->
+                <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-6 my-6">
+                    <h3 class="text-lg font-semibold text-emerald-800 mb-3 flex items-center gap-2">
+                        <i class="fas fa-check-circle text-emerald-500"></i>
+                        第6章のまとめ
+                    </h3>
+                    <ul class="space-y-2 text-emerald-900">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
+                            <span>Dockerfileはイメージを作成するための「レシピ」で、料理のレシピのように手順を記述する</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
+                            <span>基本命令: FROM（ベースイメージ）、COPY（ファイルコピー）、RUN（ビルド時実行）、CMD（起動時実行）など</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
+                            <span>docker build -t イメージ名 . でイメージをビルドできる</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
+                            <span>ベストプラクティスを意識することで、効率的で保守しやすいDockerfileが書ける</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <!-- 前へ -->
+                    <a href="docker-learning-material-05.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
+                                  transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">第5章: Webサーバーを動かしてみよう</span>
+                        </div>
+                    </a>
+                    <!-- 次へ -->
+                    <a href="docker-learning-material-07.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">第7章: データを保存しよう</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-    <!-- Highlight.js初期化 -->
-    <script>
-        hljs.highlightAll();
-    </script>
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 
-    <!-- Mermaid初期化 -->
-    <script>
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'default'
-        });
-    </script>
+    <!-- サイドバー生成 -->
+    <script src="sidebar-content.js"></script>
+
+    <!-- 共通JavaScript -->
+    <script src="main.js"></script>
+
+    <!-- 描画ツール -->
+    <script src="drawing-tool.js"></script>
 </body>
 </html>
