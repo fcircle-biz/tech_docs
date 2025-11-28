@@ -137,6 +137,7 @@ step2により以下が作成されている必要があります：
 - スクリプト読み込み部分
 
 ## 参照ファイル（コンポーネントの使い方）
+**以下のファイルをReadツールで読み込み、内容を参照してください：**
 - コンポーネント参考: /home/ichimaru/git/tech_docs/templates/v2/snippets/components.html
 - Mermaid図表参考: /home/ichimaru/git/tech_docs/templates/v2/reference/mermaid-patterns.md
 
@@ -145,6 +146,24 @@ step2により以下が作成されている必要があります：
 2. コードブロックは15行以内、日本語コメント必須
 3. Mermaid図表はデフォルトテーマを使用（darkテーマ禁止）
 4. 第1章HTMLの構造・スタイルを完全に継承すること
+
+## Mermaid図作成時の重要ルール
+**【シンタックスエラー防止】ノードラベルに特殊文字を含む場合は必ずダブルクォートで囲む：**
+- スラッシュ（/）を含むパス: `node["/usr/share/nginx/html"]` ← 正しい
+- チルダ（~）を含むパス: `node["~/my-folder"]` ← 正しい
+- 特殊文字なしの場合: `node[通常のラベル]` ← クォート不要
+
+**悪い例（エラーになる）：**
+```
+folder[/data/mysql]
+path[~/my-html/index.html]
+```
+
+**良い例（正しい）：**
+```
+folder["/data/mysql"]
+path["~/my-html/index.html"]
+```
 
 ## 重要
 - sidebar-content.js, styles.css, main.js, drawing-tool.js は既存のものを使用
