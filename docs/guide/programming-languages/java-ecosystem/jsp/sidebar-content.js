@@ -12,7 +12,7 @@
     'use strict';
 
     // ========================================
-    // Servlet・JSP学習教材の章定義
+    // 章の定義データ（Servlet・JSP入門）
     // ========================================
     const chapters = [
         { number: 1, title: '第1章: Webアプリケーション開発の世界へ', file: 'servlet-jsp-learning-material-01.html' },
@@ -22,10 +22,10 @@
         { number: 5, title: '第5章: JSPの構文をマスターする', file: 'servlet-jsp-learning-material-05.html' },
         { number: 6, title: '第6章: フォーム処理とデータの受け渡し', file: 'servlet-jsp-learning-material-06.html' },
         { number: 7, title: '第7章: セッション管理', file: 'servlet-jsp-learning-material-07.html' },
-        { number: 8, title: '第8章: ServletとJSPの連携', file: 'servlet-jsp-learning-material-08.html' },
+        { number: 8, title: '第8章: ServletとJSPの連携 - MVCパターン入門', file: 'servlet-jsp-learning-material-08.html' },
         { number: 9, title: '第9章: JavaBeansとスコープ', file: 'servlet-jsp-learning-material-09.html' },
         { number: 10, title: '第10章: EL式とJSTL', file: 'servlet-jsp-learning-material-10.html' },
-        { number: 11, title: '第11章: データベース連携', file: 'servlet-jsp-learning-material-11.html' },
+        { number: 11, title: '第11章: データベース連携 - JDBC・DAOパターン', file: 'servlet-jsp-learning-material-11.html' },
         { number: 12, title: '第12章: 実践Webアプリケーション開発', file: 'servlet-jsp-learning-material-12.html' }
     ];
 
