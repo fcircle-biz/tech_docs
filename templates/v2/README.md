@@ -16,12 +16,16 @@
 ```
 templates/v2/
 ├── README.md                                # このファイル
-├── html/                                    # コピー用HTMLテンプレートとJavaScript
+├── html/                                    # 学習教材（guide）用テンプレート
 │   ├── learning-material-template.html      # 学習教材用テンプレート
-│   ├── tutorial-template.html               # チュートリアル用テンプレート
 │   ├── sidebar-content.js                   # サイドバー生成（学習教材用）
-│   ├── sidebar-content-tutorial.js          # サイドバー生成（チュートリアル用）
-│   ├── styles.css                           # 共通カスタムスタイル（外部CSS）
+│   ├── styles.css                           # 共通カスタムスタイル
+│   ├── main.js                              # 共通機能（サイドバー、描画ツールバー生成等）
+│   └── drawing-tool.js                      # 描画ツール機能
+├── html_tutorial/                           # チュートリアル（tutorial）用テンプレート
+│   ├── tutorial-template.html               # チュートリアル用テンプレート
+│   ├── sidebar-content.js                   # サイドバー生成（チュートリアル用）
+│   ├── styles.css                           # 共通カスタムスタイル
 │   ├── main.js                              # 共通機能（サイドバー、描画ツールバー生成等）
 │   └── drawing-tool.js                      # 描画ツール機能
 ├── reference/                               # 参照用ドキュメント
@@ -45,7 +49,7 @@ templates/v2/
 
 - **チュートリアル（tutorial）を作成する場合**
   ```bash
-  cp templates/v2/html/tutorial-template.html docs/tutorial/[分類]/[技術名]/[技術名]-tutorial-01.html
+  cp templates/v2/html_tutorial/tutorial-template.html docs/tutorial/[分類]/[技術名]/[技術名]-tutorial-01.html
   ```
 
 ### 2. TODOコメントを編集
@@ -122,9 +126,9 @@ templates/v2/
 
 #### チュートリアルの場合
 
-1. **sidebar-content-tutorial.jsをコピー＆リネーム**
+1. **sidebar-content.jsをコピー**
    ```bash
-   cp templates/v2/html/sidebar-content-tutorial.js docs/tutorial/[分類]/[技術名]/sidebar-content.js
+   cp templates/v2/html_tutorial/sidebar-content.js docs/tutorial/[分類]/[技術名]/
    ```
 
 2. **プロジェクト情報とステップ定義を編集**
@@ -196,13 +200,11 @@ const chapters = [
    cp templates/v2/html/drawing-tool.js docs/guide/programming-languages/java-ecosystem/java/
 
    # チュートリアル（Django）を作成する場合の例
-   cp templates/v2/html/sidebar-content-tutorial.js docs/tutorial/programming-languages/python-ecosystem/django/sidebar-content.js
-   cp templates/v2/html/styles.css docs/tutorial/programming-languages/python-ecosystem/django/
-   cp templates/v2/html/main.js docs/tutorial/programming-languages/python-ecosystem/django/
-   cp templates/v2/html/drawing-tool.js docs/tutorial/programming-languages/python-ecosystem/django/
+   cp templates/v2/html_tutorial/sidebar-content.js docs/tutorial/programming-languages/python-ecosystem/django/
+   cp templates/v2/html_tutorial/styles.css docs/tutorial/programming-languages/python-ecosystem/django/
+   cp templates/v2/html_tutorial/main.js docs/tutorial/programming-languages/python-ecosystem/django/
+   cp templates/v2/html_tutorial/drawing-tool.js docs/tutorial/programming-languages/python-ecosystem/django/
    ```
-
-   **注意**: チュートリアルの場合は`sidebar-content-tutorial.js`を`sidebar-content.js`にリネームしてコピーします。
 
 2. **HTMLファイルでのパス設定**
 
@@ -232,7 +234,7 @@ const chapters = [
 `styles.css` には以下の共通カスタムスタイルが含まれています：
 - スクロールバーのカスタマイズ
 - コードブロックのライン番号スタイル
-- サイドバーのトランジション・リサイズ機能
+- サイドバーのトランジション
 - コードコピーボタンのスタイル
 - ヘッダーのリッチデザイン（グラデーション・アニメーション）
 - レスポンシブ対応のメディアクエリ
@@ -244,10 +246,9 @@ const chapters = [
 
 `main.js` には以下の共通機能が含まれています：
 - PC環境判定（1024px以上をPC環境と判定）
-- サイドバー開閉制御
+- サイドバートグル制御（PC環境では初期表示、モバイルでは初期非表示）
 - 描画ツールバー生成（PC環境のみ）
 - スクロールトップボタン制御
-- モバイルメニュー制御
 - コードコピー機能
 - Highlight.js / Mermaid.js 初期化
 
@@ -267,8 +268,8 @@ const chapters = [
 
 **レイアウト:**
 - リッチなヘッダーデザイン
-- サイドバー（PC環境: リサイズ可能・トグル可能、モバイル: スライドイン/アウト）
-- サイドバートグルボタン（PC環境のみ、左上固定配置）
+- サイドバー（PC・モバイル共にトグルボタンで開閉）
+- サイドバートグルボタン（ヘッダー右側に配置）
 - 進捗インジケーター
 - 章リストナビゲーション
 
@@ -280,7 +281,6 @@ const chapters = [
 
 **インタラクティブ機能:**
 - 講義用描画ツール（PC環境のみ、右側に配置）
-- サイドバー開閉状態保存（ローカルストレージ）
 - コードコピー機能
 
 ### チュートリアルテンプレート (tutorial-template.html)
@@ -289,8 +289,8 @@ const chapters = [
 
 **レイアウト:**
 - プロジェクト概要カード
-- サイドバー（PC環境: トグル可能、モバイル: スライドイン/アウト）
-- サイドバートグルボタン（PC環境のみ、左上固定配置）
+- サイドバー（PC・モバイル共にトグルボタンで開閉）
+- サイドバートグルボタン（ヘッダー右側に配置）
 - ステップリストナビゲーション
 
 **コンテンツ:**
@@ -301,7 +301,6 @@ const chapters = [
 
 **インタラクティブ機能:**
 - ステップ完了チェックリスト（ローカルストレージ保存）
-- サイドバー開閉状態保存（ローカルストレージ）
 - コードコピー機能
 
 ## スニペットの使い方
@@ -319,25 +318,20 @@ const chapters = [
 ## デバイス別動作仕様
 
 ### PC環境（1024px以上）
-- **サイドバー**: 初期状態は開いた状態（前回の状態をローカルストレージから復元）
-- **サイドバートグルボタン**: 左上に表示、クリックで開閉
-- **サイドバーリサイズ**: マウスドラッグでサイドバー幅を調整可能（240px-480px）
+- **サイドバー**: 初期状態は開いた状態
+- **サイドバートグルボタン**: ヘッダー右側に表示、クリックで開閉
 - **描画ツールバー**: 右側に表示（折りたたみ可能）
 - **スクロールトップボタン**: 表示
 
 ### タブレット・スマートフォン（1024px未満）
 - **サイドバー**: 初期状態は閉じた状態
 - **サイドバー開閉**: ヘッダーのハンバーガーメニューボタンで制御
-- **オーバーレイ**: サイドバー表示時に背景にオーバーレイ表示、クリックで閉じる
-- **サイドバートグルボタン**: 非表示
 - **描画ツールバー**: 非表示
 - **スクロールトップボタン**: 非表示
 
 ### ローカルストレージの使用
 
 以下の設定がローカルストレージに保存されます：
-- `sidebarOpen`: サイドバーの開閉状態（PC環境のみ）
-- `sidebarWidth`: サイドバーの幅（PC環境のみ）
 - チュートリアルのチェックリスト完了状態（該当ページのみ）
 
 ## 必要な外部リソース
@@ -369,7 +363,7 @@ const chapters = [
 **A:** 描画ツールバーはPC環境（1024px以上）でのみ表示されます。タブレット・スマートフォンでは意図的に非表示になっています。
 
 ### Q: サイドバーの初期状態を変更したい
-**A:** 各技術フォルダ内の `main.js` の183-201行目で初期状態を制御しています。カスタマイズする場合はこの部分を編集してください。
+**A:** 各技術フォルダ内の `main.js` の `initSidebarToggle` 関数で初期状態を制御しています。PC環境では初期表示、モバイルでは初期非表示になっています。
 
 ### Q: 技術アイコンが表示されない
 **A:** Font Awesome CDNが正しく読み込まれているか確認してください。また、使用するアイコンクラス（例: `fab fa-python`）が正しいか確認してください。
@@ -385,6 +379,15 @@ const chapters = [
 **A:** 各技術フォルダの `styles.css` を個別に編集することで、技術ごとに異なる色調整が可能です。例えば、ヘッダーのグラデーション色やサイドバーのハイライト色を変更できます。
 
 ## バージョン履歴
+
+### v2.5.0 (2025-11-30)
+- **フォルダ構成変更**: 学習教材とチュートリアルのテンプレートを別フォルダに分離
+- `html/` フォルダ: 学習教材（guide）用テンプレートのみ
+- `html_tutorial/` フォルダ: チュートリアル（tutorial）用テンプレートを新設
+- 各フォルダに必要なファイル一式を配置（コピー時の手間を削減）
+- **サイドバートグル機能追加**: PC・モバイル両環境でサイドバー表示/非表示を切り替え可能
+- サイドバーリサイズ機能を削除（シンプル化）
+- サイドバー開閉処理とオーバーレイを削除（新トグル機能に置換）
 
 ### v2.4.0 (2025-01-27)
 - **サイドバーJavaScript外出し対応**: サイドバーHTMLをJavaScriptで動的生成

@@ -107,7 +107,7 @@
         <!-- サイドバー -->
         <aside id="sidebar" class="fixed md:sticky top-16 left-0 z-40 w-72 h-[calc(100vh-4rem)]
                                    bg-white border-r border-slate-200 overflow-y-auto
-                                   transform -translate-x-full md:translate-x-0 sidebar-transition">
+                                   transform -translate-x-full sidebar-transition">
             <div class="p-4">
                 <!-- プロジェクト概要 -->
                 <div class="mb-6 p-4 bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl border border-primary-200">
