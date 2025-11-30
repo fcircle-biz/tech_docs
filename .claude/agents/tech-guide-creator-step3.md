@@ -74,6 +74,14 @@ step2により以下が作成されている必要があります：
 - パンくずリスト、章ヘッダー、学習目標カードの構造
 - `<footer>`セクションとスクリプト読み込み
 
+### 参照ドキュメント（以下の内容を必ず参照すること）
+
+#### コンポーネント
+@file templates/v2/snippets/components.html
+
+#### Mermaid図表パターン
+@file templates/v2/reference/mermaid-patterns.md
+
 ### 4. 並列生成の実行【最重要ステップ - 必ず実行すること】
 
 **【絶対遵守】Task toolを使用して、各章のHTMLを並列で生成します。**

@@ -2,7 +2,7 @@
 
 ## 概要
 
-v2テンプレートではBootstrapからTailwind CSSに移行しました。このガイドでは、Tailwind CSSの使用方法とカスタムクラスの定義について説明します。
+このガイドでは、Tailwind CSSの使用方法とカスタムクラスの定義について説明します。
 
 ## Tailwind CSS CDN 設定
 
@@ -487,19 +487,3 @@ Tailwind CSSの標準ブレークポイント：
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">...</div>
 ```
 
-## BootstrapからTailwindへの移行マッピング
-
-| Bootstrap | Tailwind CSS |
-|-----------|-------------|
-| `container` | `max-w-screen-xl mx-auto px-4` |
-| `row` | `grid grid-cols-12 gap-4` または `flex` |
-| `col-md-6` | `md:w-1/2` または `md:col-span-6` |
-| `btn btn-primary` | `px-4 py-2 bg-primary-500 text-white rounded-lg` |
-| `alert alert-warning` | `bg-amber-50 border border-amber-200 rounded-lg p-4` |
-| `card` | `bg-white rounded-xl shadow-sm border border-slate-200` |
-| `mt-3` | `mt-3` (同じ) |
-| `py-4` | `py-4` (同じ) |
-| `text-center` | `text-center` (同じ) |
-| `d-flex` | `flex` |
-| `justify-content-between` | `justify-between` |
-| `align-items-center` | `items-center` |

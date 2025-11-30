@@ -34,12 +34,30 @@ color: blue
 - 全章のタイトル一覧
 - 第1章の詳細情報（学習目標、内容）
 
-### 2. 共通ファイルのコピー
+### 2. 共通ファイルのコピーと設定
 @templates/v2/html/ から以下4ファイルを技術フォルダにコピー：
-- `styles.css` - 共通カスタムスタイル
+- `styles.css` - 共通カスタムスタイル（**コピー後に修正が必要**）
 - `main.js` - 共通機能
 - `drawing-tool.js` - 描画ツール機能
 - `sidebar-content.js` - サイドバー動的生成（後で編集）
+
+#### styles.css の修正
+コピー後、`--primary-rgb` のデフォルト値を技術分野のカラーテーマに合わせて修正：
+
+```css
+/* 修正箇所: rgba(var(--primary-rgb, R, G, B), ...) の R, G, B を変更 */
+
+/* 例: Python (blue) の場合 → 59, 130, 246 (デフォルト) */
+/* 例: Java (orange) の場合 → 249, 115, 22 */
+/* 例: Docker (sky) の場合 → 14, 165, 233 */
+```
+
+RGB値は color-themes.md の各技術の `500` カラー（メインカラー）を参照：
+- `#3b82f6` → `59, 130, 246` (Python/PostgreSQL)
+- `#f97316` → `249, 115, 22` (Java/AWS)
+- `#0ea5e9` → `14, 165, 233` (Docker/SQL)
+- `#10b981` → `16, 185, 129` (Spring/Excel)
+- `#8b5cf6` → `139, 92, 246` (.NET)
 
 ### 3. sidebar-content.jsの編集
 README.mdの全章情報から`chapters`配列を生成して編集：
@@ -62,10 +80,20 @@ const chapters = [
 
 ### テンプレート・参照ファイル
 - **ベーステンプレート**: @templates/v2/html/learning-material-template.html
-- **カラーテーマ**: @templates/v2/reference/color-themes.md
-- **CSSスタイル**: @templates/v2/reference/css-styles.md
-- **Mermaid図表**: @templates/v2/reference/mermaid-patterns.md
-- **コンポーネント**: @templates/v2/snippets/components.html
+
+### 参照ドキュメント（以下の内容を必ず参照すること）
+
+#### コンポーネント
+@file templates/v2/snippets/components.html
+
+#### カラーテーマ
+@file templates/v2/reference/color-themes.md
+
+#### CSSスタイル
+@file templates/v2/reference/css-styles.md
+
+#### Mermaid図表パターン
+@file templates/v2/reference/mermaid-patterns.md
 
 ### ファイル命名規則
 - ファイル名：`[技術名]-learning-material-[章番号:2桁].html`
