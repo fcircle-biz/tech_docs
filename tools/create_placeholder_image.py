@@ -45,11 +45,31 @@ def create_placeholder_image(
     img = Image.new('RGB', (width, height), color='#4a4a4a')
     draw = ImageDraw.Draw(img)
 
-    # フォント設定（システムフォントを使用）
+    # フォント設定（日本語対応フォントを使用）
+    # 優先順位: Noto Sans CJK JP > IPA Gothic > DejaVuSans > default
+    font_paths = [
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc",
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf",
+        "/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+    ]
+
+    font_path = None
+    for path in font_paths:
+        if os.path.exists(path):
+            font_path = path
+            break
+
     try:
-        font_large = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 18)
-        font_medium = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 14)
-        font_small = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 12)
+        if font_path:
+            font_large = ImageFont.truetype(font_path, 18)
+            font_medium = ImageFont.truetype(font_path, 14)
+            font_small = ImageFont.truetype(font_path, 12)
+        else:
+            font_large = ImageFont.load_default()
+            font_medium = ImageFont.load_default()
+            font_small = ImageFont.load_default()
     except:
         font_large = ImageFont.load_default()
         font_medium = ImageFont.load_default()
