@@ -2,8 +2,19 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.1">
-    <title>JDBC学習教材 第4章 - データの登録・更新・削除</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>JDBC学習教材 第4章 - データの登録・更新・削除（INSERT/UPDATE/DELETE文）</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,7 +23,7 @@
             theme: {
                 extend: {
                     colors: {
-                        // Java用カラー（オレンジ）
+                        // Java/JDBC - Orange
                         primary: {
                             50: '#fff7ed',
                             100: '#ffedd5',
@@ -49,103 +60,7 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- カスタムスタイル -->
-    <style>
-        /* スクロールバーカスタマイズ */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-        /* コードブロックのラインナンバー */
-        .hljs-ln-numbers {
-            user-select: none;
-            text-align: right;
-            color: #6b7280;
-            padding-right: 12px;
-            border-right: 1px solid #374151;
-        }
-
-        /* サイドバートランジション */
-        .sidebar-transition {
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, width 0.15s ease-out;
-        }
-
-        /* サイドバーリサイズ機能 */
-        .sidebar-resizable {
-            min-width: 240px;
-            max-width: 480px;
-        }
-        .sidebar-resize-handle {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 6px;
-            height: 100%;
-            cursor: ew-resize;
-            background: transparent;
-            transition: background 0.2s;
-            z-index: 10;
-        }
-        .sidebar-resize-handle:hover,
-        .sidebar-resize-handle.resizing {
-            background: linear-gradient(to right, transparent, rgba(249, 115, 22, 0.3));
-        }
-
-        /* スムーズスクロール */
-        html { scroll-behavior: smooth; }
-
-        /* コードコピーボタン */
-        .code-block-wrapper { position: relative; }
-        .copy-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        .code-block-wrapper:hover .copy-btn { opacity: 1; }
-
-        /* ヘッダー情報リッチデザイン */
-        .header-rich {
-            background: linear-gradient(135deg,
-                #c2410c 0%,
-                #f97316 50%,
-                #fb923c 100%);
-            position: relative;
-            overflow: hidden;
-        }
-        .header-rich::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background:
-                linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%),
-                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px);
-            animation: bgSlide 10s linear infinite;
-        }
-        @keyframes bgSlide {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(50px); }
-        }
-
-        .header-rich-shadow {
-            box-shadow:
-                0 4px 6px -1px rgba(249, 115, 22, 0.2),
-                0 10px 25px -5px rgba(249, 115, 22, 0.3),
-                0 0 50px rgba(249, 115, 22, 0.15);
-        }
-
-        .icon-rotate-hover {
-            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-        .icon-rotate-hover:hover {
-            transform: rotate(360deg) scale(1.2);
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body class="font-sans bg-slate-50 text-slate-800 antialiased">
     <!-- ヘッダー/ナビゲーションバー -->
@@ -174,11 +89,11 @@
                         <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
                             <div class="flex items-center gap-1">
                                 <i class="fas fa-code text-[9px]"></i>
-                                <span>プログラミング言語 / Java</span>
+                                <span>プログラミング言語</span>
                             </div>
                             <div class="hidden sm:flex items-center gap-1">
                                 <i class="fas fa-clock text-[9px]"></i>
-                                <span>推奨 40分</span>
+                                <span>推奨 60分</span>
                             </div>
                             <div class="hidden lg:flex items-center gap-1">
                                 <i class="fas fa-language text-[9px]"></i>
@@ -188,8 +103,8 @@
                     </div>
                 </div>
 
-                <!-- 右側: モバイルメニューボタン -->
-                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
                     <i class="fas fa-bars text-lg"></i>
                 </button>
             </div>
@@ -198,145 +113,16 @@
 
     <!-- メインレイアウト -->
     <div class="flex min-h-screen pt-20">
-        <!-- サイドバー -->
-        <aside id="sidebar" class="fixed md:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
-                                   bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
-                                   transform -translate-x-full md:translate-x-0 sidebar-transition sidebar-resizable"
-               style="--sidebar-width: 320px;">
-            <!-- リサイズハンドル -->
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle hidden md:block"></div>
-            <div class="p-4">
-                <!-- 進捗インジケーター -->
-                <div class="mb-6 p-4 bg-primary-50 rounded-xl">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm font-medium text-primary-700">学習進捗</span>
-                        <span class="text-sm text-primary-600">4/10章</span>
-                    </div>
-                    <div class="w-full bg-primary-100 rounded-full h-2">
-                        <div class="bg-primary-500 h-2 rounded-full transition-all duration-300" style="width: 40%"></div>
-                    </div>
-                </div>
-
-                <!-- 章リスト -->
-                <nav>
-                    <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-2">
-                        学習章
-                    </h2>
-                    <ul class="space-y-1">
-                        <li>
-                            <a href="jdbc-learning-material-01.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-emerald-500 text-white text-xs rounded-full">
-                                    <i class="fas fa-check text-[10px]"></i>
-                                </span>
-                                <span class="truncate">JDBCの概要と環境構築</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-02.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-emerald-500 text-white text-xs rounded-full">
-                                    <i class="fas fa-check text-[10px]"></i>
-                                </span>
-                                <span class="truncate">データベース接続の基本</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-03.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-emerald-500 text-white text-xs rounded-full">
-                                    <i class="fas fa-check text-[10px]"></i>
-                                </span>
-                                <span class="truncate">データの取得（SELECT文）</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-04.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      bg-primary-100 text-primary-700 font-medium">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-primary-500 text-white text-xs rounded-full">4</span>
-                                <span class="truncate">データの登録・更新・削除</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-05.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">5</span>
-                                <span class="truncate">PreparedStatementの活用</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-06.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">6</span>
-                                <span class="truncate">例外処理とリソース管理</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-07.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">7</span>
-                                <span class="truncate">トランザクション管理</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-08.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">8</span>
-                                <span class="truncate">DAOパターン入門</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-09.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">9</span>
-                                <span class="truncate">実践演習 - 商品管理システム</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-10.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">10</span>
-                                <span class="truncate">よくある問題と解決策</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </aside>
-
-        <!-- サイドバーオーバーレイ（モバイル用） -->
-        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
 
         <!-- メインコンテンツ -->
         <main class="flex-1 min-w-0">
-            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
                 <!-- パンくずリスト -->
                 <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
-                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <a href="#" class="hover:text-primary-600 transition-colors">ホーム</a>
                     <i class="fas fa-chevron-right text-xs"></i>
-                    <a href="../" class="hover:text-primary-600 transition-colors">Java</a>
-                    <i class="fas fa-chevron-right text-xs"></i>
-                    <a href="./" class="hover:text-primary-600 transition-colors">JDBC</a>
+                    <a href="#" class="hover:text-primary-600 transition-colors">JDBC</a>
                     <i class="fas fa-chevron-right text-xs"></i>
                     <span class="text-slate-700">第4章</span>
                 </nav>
@@ -349,13 +135,13 @@
                             第4章
                         </span>
                     </div>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">データの登録・更新・削除</h1>
-                    <p class="text-slate-600">INSERT、UPDATE、DELETE文を使用したデータ操作を学び、executeUpdate()メソッドの使い方と操作結果の確認方法を習得します。</p>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">データの登録・更新・削除（INSERT/UPDATE/DELETE文）</h1>
+                    <p class="text-slate-600">データベースへの新規データ登録（INSERT）、既存データの更新（UPDATE）、データの削除（DELETE）をJDBCで実行する方法を学びます。executeUpdate()メソッドの使い方と戻り値の意味を理解します。</p>
                 </header>
 
                 <!-- 学習目標カード -->
                 <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
-                            rounded-xl p-5 mb-6">
+                            rounded-xl p-5 mb-6 overflow-hidden">
                     <div class="flex items-start gap-4">
                         <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
                                     flex items-center justify-center">
@@ -366,111 +152,109 @@
                             <ul class="space-y-2">
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>INSERT文を使用した新規データの登録方法</span>
+                                    <span>executeUpdate()メソッドを使ったデータ操作（INSERT/UPDATE/DELETE）の基本</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>UPDATE文を使用した既存データの更新方法</span>
+                                    <span>INSERT文によるデータ登録と、戻り値（影響行数）の確認方法</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>DELETE文を使用したデータの削除方法</span>
+                                    <span>UPDATE文によるデータ更新とWHERE句を使った条件指定</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>executeUpdate()メソッドの戻り値と操作結果の確認方法</span>
+                                    <span>DELETE文によるデータ削除の安全な実行方法と注意点</span>
                                 </li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
-                <!-- セクション1: executeUpdate()メソッドの理解 -->
+                <!-- セクション1 -->
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        4.1 executeUpdate()メソッドの理解
+                        4.1 executeUpdate()メソッドの役割
                     </h2>
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        前章ではSELECT文を使用してデータを取得する方法を学びました。この章では、データベースのデータを変更する操作（INSERT、UPDATE、DELETE）について学びます。これらの操作には<strong>executeUpdate()メソッド</strong>を使用します。
+                        前章では<strong>SELECT文</strong>を使ってデータを検索し、ResultSetで結果を取得する方法を学びました。今回は、データベースの内容を変更する操作（<strong>INSERT、UPDATE、DELETE</strong>）について学習します。
+                    </p>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        これらのSQL文は、検索とは異なり「データを取得する」のではなく「データを変更する」ため、<strong>executeUpdate()メソッド</strong>を使用します。
                     </p>
 
-                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-4 rounded">
+                    <!-- executeUpdate()の特徴 -->
+                    <div class="my-6 bg-white p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-sm font-semibold text-slate-700 mb-4">executeUpdate()とexecuteQuery()の違い</h3>
+                        <pre class="mermaid bg-transparent border-0">
+flowchart LR
+    A[SQL文の種類] --> B{データ変更?}
+    B -->|検索のみ| C[executeQuery]
+    B -->|変更あり| D[executeUpdate]
+
+    C --> E[ResultSetを返す<br/>SELECT文用]
+    D --> F[影響行数を返す<br/>INSERT/UPDATE/DELETE用]
+
+    style B fill:#fff7ed,stroke:#f97316,stroke-width:2px
+    style C fill:#dbeafe,stroke:#3b82f6,stroke-width:2px
+    style D fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style E fill:#dbeafe,stroke:#3b82f6,stroke-width:1px
+    style F fill:#fef3c7,stroke:#f59e0b,stroke-width:1px
+                        </pre>
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6">
                         <div class="flex items-start gap-3">
-                            <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+                            <i class="fas fa-info-circle text-emerald-600 mt-1"></i>
                             <div>
-                                <h4 class="font-semibold text-blue-800 mb-1">executeQuery()とexecuteUpdate()の違い</h4>
-                                <ul class="text-blue-900 space-y-1 text-sm">
-                                    <li><strong>executeQuery()</strong>: SELECT文を実行し、ResultSetオブジェクトを返す</li>
-                                    <li><strong>executeUpdate()</strong>: INSERT、UPDATE、DELETE文を実行し、影響を受けた行数を返す</li>
+                                <p class="font-semibold text-emerald-800 mb-1">重要ポイント</p>
+                                <ul class="text-emerald-900 space-y-1 text-sm">
+                                    <li><strong>executeQuery()</strong>: SELECT文で使用。ResultSetオブジェクトを返す</li>
+                                    <li><strong>executeUpdate()</strong>: INSERT/UPDATE/DELETE文で使用。影響を受けた行数（int型）を返す</li>
+                                    <li>戻り値の行数で、操作が成功したかどうかを判断できる</li>
                                 </ul>
                             </div>
                         </div>
                     </div>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        executeUpdate()メソッドは<strong>int型の戻り値</strong>を持ち、この値によって何行のデータが変更されたかを知ることができます。これにより、操作が成功したかどうかを確認できます。
-                    </p>
-
-                    <!-- Mermaid図: SQL操作の分類 -->
-                    <div class="my-6 bg-white rounded-lg p-4 border border-slate-200">
-                        <pre class="mermaid">
-graph TD
-    A[SQL文] --> B[データ取得]
-    A --> C[データ変更]
-    B --> D[SELECT文<br/>executeQuery使用]
-    C --> E[INSERT文<br/>executeUpdate使用]
-    C --> F[UPDATE文<br/>executeUpdate使用]
-    C --> G[DELETE文<br/>executeUpdate使用]
-
-    style A fill:#fed7aa,stroke:#ea580c,stroke-width:2px
-    style B fill:#dbeafe,stroke:#3b82f6,stroke-width:2px
-    style C fill:#fecaca,stroke:#ef4444,stroke-width:2px
-    style D fill:#e0e7ff,stroke:#6366f1
-    style E fill:#fce7f3,stroke:#ec4899
-    style F fill:#fce7f3,stroke:#ec4899
-    style G fill:#fce7f3,stroke:#ec4899
-                        </pre>
-                    </div>
                 </section>
 
-                <!-- セクション2: INSERT文によるデータ登録 -->
+                <!-- セクション2 -->
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        4.2 INSERT文によるデータ登録
+                        4.2 INSERT文：新しいデータを登録する
                     </h2>
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        INSERT文は、データベースのテーブルに新しいレコード（行）を追加するために使用します。JDBCでは、Statementオブジェクトを使ってINSERT文を実行できます。
+                        <strong>INSERT文</strong>は、データベースのテーブルに新しいデータ（行）を追加するためのSQL文です。例えば、新しい顧客情報や商品情報をデータベースに登録するときに使います。
                     </p>
 
-                    <h3 class="text-lg font-semibold text-slate-800 mb-3 mt-6">INSERT文の基本構文</h3>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        INSERT文の基本構文は次の通りです：
-                    </p>
-
-                    <div class="code-block-wrapper my-6">
+                    <!-- INSERT文の基本構文 -->
+                    <div class="code-block-wrapper mb-4">
                         <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">SQL構文</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
+                            <span class="text-slate-400 text-sm">INSERT文の基本構文</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-sql">INSERT INTO テーブル名 (カラム1, カラム2, カラム3, ...)
-VALUES (値1, 値2, 値3, ...);</code></pre>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-sql">-- 基本構文
+INSERT INTO テーブル名 (列1, 列2, 列3, ...)
+VALUES (値1, 値2, 値3, ...);
+
+-- 例: 顧客テーブルに新規顧客を登録
+INSERT INTO customers (name, email, phone)
+VALUES ('山田太郎', 'yamada@example.com', '090-1234-5678');</code></pre>
                     </div>
 
-                    <h3 class="text-lg font-semibold text-slate-800 mb-3 mt-6">実装例：ユーザー情報の登録</h3>
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        usersテーブルに新しいユーザー情報を登録するプログラムを作成してみましょう。
+                        JDBCでINSERT文を実行する場合、Statementまたは<strong>PreparedStatement</strong>を使用します。ここでは、まずStatementを使った基本的な例を見てみましょう。
                     </p>
 
-                    <div class="code-block-wrapper my-6">
+                    <!-- JDBCでのINSERT実行例 -->
+                    <div class="code-block-wrapper mb-4">
                         <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
                             <span class="text-slate-400 text-sm">InsertExample.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
@@ -478,105 +262,100 @@ VALUES (値1, 値2, 値3, ...);</code></pre>
 
 public class InsertExample {
     public static void main(String[] args) {
-        // データベース接続情報
-        String url = "jdbc:postgresql://localhost:5432/mydb";
-        String user = "postgres";
-        String password = "password";
+        String url = "jdbc:h2:~/test";
+        String user = "sa";
+        String password = "";
 
-        // 登録するデータ
-        String name = "田中太郎";
-        String email = "tanaka@example.com";
-        int age = 28;
+        try (Connection conn = DriverManager.getConnection(url, user, password);
+             Statement stmt = conn.createStatement()) {
 
-        try (Connection conn = DriverManager.getConnection(url, user, password)) {
-            // INSERT文を作成
-            String sql = "INSERT INTO users (name, email, age) VALUES ('"
-                        + name + "', '" + email + "', " + age + ")";
+            // INSERT文を定義
+            String sql = "INSERT INTO customers (name, email, phone) " +
+                         "VALUES ('山田太郎', 'yamada@example.com', '090-1234-5678')";
 
-            // Statementオブジェクトを作成
-            Statement stmt = conn.createStatement();
+            // executeUpdate()でINSERT実行
+            int rowsAffected = stmt.executeUpdate(sql);
 
-            // INSERT文を実行
-            int rowsInserted = stmt.executeUpdate(sql);
+            System.out.println(rowsAffected + "件のデータを登録しました");
 
-            // 実行結果を確認
-            if (rowsInserted > 0) {
-                System.out.println(rowsInserted + "件のデータを登録しました。");
-            }
-
-            stmt.close();
         } catch (SQLException e) {
-            System.out.println("データベースエラー: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }</code></pre>
                     </div>
 
-                    <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 my-4 rounded">
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6">
                         <div class="flex items-start gap-3">
-                            <i class="fas fa-exclamation-triangle text-yellow-600 mt-1"></i>
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
                             <div>
-                                <h4 class="font-semibold text-yellow-800 mb-1">重要な注意点</h4>
-                                <p class="text-yellow-900 text-sm">
-                                    このコード例はStatementの基本的な使い方を示すためのものです。実際の開発では、<strong>SQLインジェクション攻撃</strong>を防ぐため、次章で学ぶ<strong>PreparedStatement</strong>を使用することが強く推奨されます。
+                                <p class="font-semibold text-blue-800 mb-1">初心者向けヒント</p>
+                                <p class="text-blue-900 text-sm">
+                                    <code>executeUpdate()</code>の戻り値は、影響を受けた行数です。INSERT文の場合、成功すれば通常1が返ります（1件追加されたという意味）。0が返ってきた場合は、何らかの理由で登録されなかったことを意味します。
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <h3 class="text-lg font-semibold text-slate-800 mb-3 mt-6">実行結果の確認</h3>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        executeUpdate()メソッドの戻り値を確認することで、データが正常に登録されたかを判断できます：
-                    </p>
-
-                    <div class="bg-slate-100 rounded-lg p-4 my-4">
-                        <p class="text-sm text-slate-700 mb-2"><strong>実行結果：</strong></p>
-                        <code class="text-slate-900">1件のデータを登録しました。</code>
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-red-800 mb-1">注意</p>
+                                <p class="text-red-900 text-sm">
+                                    上記のコードでは、SQL文に直接値を埋め込んでいます。これは学習用の簡単な例ですが、実務では<strong>SQLインジェクション</strong>という攻撃に対して脆弱です。次章で学ぶ<strong>PreparedStatement</strong>を使うことで、安全にデータを扱えます。
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
-                <!-- セクション3: UPDATE文によるデータ更新 -->
+                <!-- セクション3 -->
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        4.3 UPDATE文によるデータ更新
+                        4.3 UPDATE文：既存のデータを更新する
                     </h2>
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        UPDATE文は、既に存在するデータの値を変更するために使用します。WHERE句を使用して、更新対象のレコードを指定することが重要です。
+                        <strong>UPDATE文</strong>は、データベース内の既存のデータを変更するためのSQL文です。例えば、顧客の電話番号が変わった場合や、商品の価格を変更したい場合に使います。
                     </p>
 
-                    <h3 class="text-lg font-semibold text-slate-800 mb-3 mt-6">UPDATE文の基本構文</h3>
-                    <div class="code-block-wrapper my-6">
+                    <!-- UPDATE文の基本構文 -->
+                    <div class="code-block-wrapper mb-4">
                         <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">SQL構文</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
+                            <span class="text-slate-400 text-sm">UPDATE文の基本構文</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-sql">UPDATE テーブル名
-SET カラム1 = 値1, カラム2 = 値2, ...
-WHERE 条件;</code></pre>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-sql">-- 基本構文
+UPDATE テーブル名
+SET 列1 = 値1, 列2 = 値2, ...
+WHERE 条件;
+
+-- 例: ID=1の顧客の電話番号を更新
+UPDATE customers
+SET phone = '090-9999-8888'
+WHERE id = 1;</code></pre>
                     </div>
 
-                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-4 rounded">
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6">
                         <div class="flex items-start gap-3">
-                            <i class="fas fa-exclamation-circle text-red-500 mt-1"></i>
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
                             <div>
-                                <h4 class="font-semibold text-red-800 mb-1">WHERE句を忘れずに！</h4>
+                                <p class="font-semibold text-red-800 mb-1">非常に重要な注意点</p>
                                 <p class="text-red-900 text-sm">
-                                    WHERE句を指定しない場合、<strong>テーブル内の全てのレコードが更新されてしまいます</strong>。必ず更新対象を特定する条件を指定してください。
+                                    <strong>WHERE句を忘れると、テーブル内のすべてのデータが更新されてしまいます。</strong>例えば、上記のWHERE句を書き忘れると、全顧客の電話番号が同じ値に書き換わってしまいます。UPDATE文を書く際は、必ずWHERE句を確認してください。
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <h3 class="text-lg font-semibold text-slate-800 mb-3 mt-6">実装例：メールアドレスの更新</h3>
-                    <div class="code-block-wrapper my-6">
+                    <!-- JDBCでのUPDATE実行例 -->
+                    <div class="code-block-wrapper mb-4">
                         <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
                             <span class="text-slate-400 text-sm">UpdateExample.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
@@ -584,100 +363,88 @@ WHERE 条件;</code></pre>
 
 public class UpdateExample {
     public static void main(String[] args) {
-        String url = "jdbc:postgresql://localhost:5432/mydb";
-        String user = "postgres";
-        String password = "password";
+        String url = "jdbc:h2:~/test";
+        String user = "sa";
+        String password = "";
 
-        // 更新するデータ
-        int userId = 1;
-        String newEmail = "tanaka.new@example.com";
+        try (Connection conn = DriverManager.getConnection(url, user, password);
+             Statement stmt = conn.createStatement()) {
 
-        try (Connection conn = DriverManager.getConnection(url, user, password)) {
-            // UPDATE文を作成
-            String sql = "UPDATE users SET email = '" + newEmail
-                        + "' WHERE id = " + userId;
+            // UPDATE文を定義（WHERE句で対象を限定）
+            String sql = "UPDATE customers SET phone = '090-9999-8888' WHERE id = 1";
 
-            // Statementオブジェクトを作成
-            Statement stmt = conn.createStatement();
+            // executeUpdate()でUPDATE実行
+            int rowsAffected = stmt.executeUpdate(sql);
 
-            // UPDATE文を実行
-            int rowsUpdated = stmt.executeUpdate(sql);
+            System.out.println(rowsAffected + "件のデータを更新しました");
 
-            // 実行結果を確認
-            if (rowsUpdated > 0) {
-                System.out.println(rowsUpdated + "件のデータを更新しました。");
-            } else {
-                System.out.println("指定されたIDのユーザーは存在しません。");
-            }
-
-            stmt.close();
         } catch (SQLException e) {
-            System.out.println("データベースエラー: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }</code></pre>
                     </div>
 
-                    <h3 class="text-lg font-semibold text-slate-800 mb-3 mt-6">複数カラムの同時更新</h3>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        カンマで区切ることで、複数のカラムを一度に更新できます：
-                    </p>
-
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">複数カラム更新例</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-blue-800 mb-1">戻り値の活用</p>
+                                <p class="text-blue-900 text-sm">
+                                    UPDATE文の戻り値も、影響を受けた行数です。0が返った場合は、WHERE句の条件に一致するデータが存在しなかった（更新対象がなかった）ことを意味します。これを利用して、「更新対象が見つからなかった」というエラー処理を実装できます。
+                                </p>
+                            </div>
                         </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// 名前とメールアドレスを同時に更新
-String sql = "UPDATE users SET name = '田中二郎', email = 'tanaka.jiro@example.com' " +
-             "WHERE id = " + userId;</code></pre>
                     </div>
                 </section>
 
-                <!-- セクション4: DELETE文によるデータ削除 -->
+                <!-- セクション4 -->
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        4.4 DELETE文によるデータ削除
+                        4.4 DELETE文：データを削除する
                     </h2>
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        DELETE文は、テーブルからレコードを削除するために使用します。UPDATEと同様に、WHERE句を使用して削除対象を特定することが非常に重要です。
+                        <strong>DELETE文</strong>は、データベースから不要になったデータを削除するためのSQL文です。例えば、退会した顧客情報を削除する場合などに使います。
                     </p>
 
-                    <h3 class="text-lg font-semibold text-slate-800 mb-3 mt-6">DELETE文の基本構文</h3>
-                    <div class="code-block-wrapper my-6">
+                    <!-- DELETE文の基本構文 -->
+                    <div class="code-block-wrapper mb-4">
                         <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">SQL構文</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
+                            <span class="text-slate-400 text-sm">DELETE文の基本構文</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-sql">DELETE FROM テーブル名
-WHERE 条件;</code></pre>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-sql">-- 基本構文
+DELETE FROM テーブル名
+WHERE 条件;
+
+-- 例: ID=5の顧客を削除
+DELETE FROM customers
+WHERE id = 5;</code></pre>
                     </div>
 
-                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-4 rounded">
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6">
                         <div class="flex items-start gap-3">
-                            <i class="fas fa-exclamation-circle text-red-500 mt-1"></i>
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
                             <div>
-                                <h4 class="font-semibold text-red-800 mb-1">データの削除は取り消せません</h4>
+                                <p class="font-semibold text-red-800 mb-1">DELETE文の危険性</p>
+                                <p class="text-red-900 text-sm mb-2">
+                                    <strong>WHERE句を忘れると、テーブル内のすべてのデータが削除されてしまいます。</strong>削除されたデータは元に戻せないため、DELETE文は特に慎重に扱う必要があります。
+                                </p>
                                 <p class="text-red-900 text-sm">
-                                    DELETE文で削除されたデータは復元できません。WHERE句を忘れると<strong>全てのデータが削除されます</strong>。削除前に必ず確認しましょう。
+                                    実務では、本当に削除するのではなく「削除フラグ」を立てる方法（論理削除）がよく使われます。例えば、<code>deleted</code>という列を用意し、削除時にはUPDATE文で<code>deleted = true</code>に変更します。
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <h3 class="text-lg font-semibold text-slate-800 mb-3 mt-6">実装例：ユーザーの削除</h3>
-                    <div class="code-block-wrapper my-6">
+                    <!-- JDBCでのDELETE実行例 -->
+                    <div class="code-block-wrapper mb-4">
                         <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
                             <span class="text-slate-400 text-sm">DeleteExample.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
@@ -685,308 +452,242 @@ WHERE 条件;</code></pre>
 
 public class DeleteExample {
     public static void main(String[] args) {
-        String url = "jdbc:postgresql://localhost:5432/mydb";
-        String user = "postgres";
-        String password = "password";
+        String url = "jdbc:h2:~/test";
+        String user = "sa";
+        String password = "";
 
-        // 削除対象のユーザーID
-        int userId = 5;
+        try (Connection conn = DriverManager.getConnection(url, user, password);
+             Statement stmt = conn.createStatement()) {
 
-        try (Connection conn = DriverManager.getConnection(url, user, password)) {
-            // DELETE文を作成
-            String sql = "DELETE FROM users WHERE id = " + userId;
+            // DELETE文を定義（WHERE句で対象を限定）
+            String sql = "DELETE FROM customers WHERE id = 5";
 
-            // Statementオブジェクトを作成
-            Statement stmt = conn.createStatement();
+            // executeUpdate()でDELETE実行
+            int rowsAffected = stmt.executeUpdate(sql);
 
-            // DELETE文を実行
-            int rowsDeleted = stmt.executeUpdate(sql);
+            System.out.println(rowsAffected + "件のデータを削除しました");
 
-            // 実行結果を確認
-            if (rowsDeleted > 0) {
-                System.out.println(rowsDeleted + "件のデータを削除しました。");
-            } else {
-                System.out.println("指定されたIDのユーザーは存在しません。");
-            }
-
-            stmt.close();
         } catch (SQLException e) {
-            System.out.println("データベースエラー: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }</code></pre>
                     </div>
 
-                    <h3 class="text-lg font-semibold text-slate-800 mb-3 mt-6">条件を満たす複数レコードの削除</h3>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        WHERE句の条件に複数のレコードが該当する場合、それら全てが削除されます：
-                    </p>
-
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">複数レコード削除例</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-blue-800 mb-1">削除前の確認処理</p>
+                                <p class="text-blue-900 text-sm">
+                                    実務では、削除する前にSELECT文で該当データが存在するか確認し、ユーザーに「本当に削除しますか？」と確認メッセージを表示するのが一般的です。また、削除後は戻り値が1以上であることを確認して、正しく削除されたかチェックします。
+                                </p>
+                            </div>
                         </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// 30歳未満のユーザーを全て削除
-String sql = "DELETE FROM users WHERE age < 30";
-int rowsDeleted = stmt.executeUpdate(sql);
-System.out.println(rowsDeleted + "件のデータを削除しました。");</code></pre>
                     </div>
                 </section>
 
-                <!-- セクション5: 戻り値を活用した処理制御 -->
+                <!-- セクション5 -->
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        4.5 戻り値を活用した処理制御
+                        4.5 executeUpdate()の戻り値の活用
                     </h2>
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        executeUpdate()メソッドの戻り値を活用することで、データベース操作の結果に応じた適切な処理を行うことができます。
+                        <code>executeUpdate()</code>メソッドの戻り値（影響を受けた行数）は、処理が成功したかどうかを判断する重要な情報です。実務では、この戻り値を使ってエラーハンドリングを行います。
                     </p>
 
-                    <h3 class="text-lg font-semibold text-slate-800 mb-3 mt-6">戻り値の意味</h3>
-                    <div class="bg-slate-100 rounded-lg p-4 my-4">
-                        <ul class="space-y-2 text-slate-700">
-                            <li><strong>正の整数</strong>: その数だけのレコードが影響を受けた（成功）</li>
-                            <li><strong>0</strong>: 条件に一致するレコードが存在しなかった（影響なし）</li>
-                            <li><strong>例外発生</strong>: SQL文の構文エラーや接続エラーなどの問題が発生</li>
-                        </ul>
-                    </div>
-
-                    <h3 class="text-lg font-semibold text-slate-800 mb-3 mt-6">実装例：戻り値に基づく条件分岐</h3>
-                    <div class="code-block-wrapper my-6">
+                    <!-- 戻り値を活用したエラー処理例 -->
+                    <div class="code-block-wrapper mb-4">
                         <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">UpdateWithValidation.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
+                            <span class="text-slate-400 text-sm">戻り値を使ったエラーハンドリング例</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.sql.*;
-import java.util.Scanner;
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// UPDATE文で特定のIDのデータを更新
+String sql = "UPDATE customers SET phone = '090-1111-2222' WHERE id = 100";
+int rowsAffected = stmt.executeUpdate(sql);
 
-public class UpdateWithValidation {
-    public static void main(String[] args) {
-        String url = "jdbc:postgresql://localhost:5432/mydb";
-        String user = "postgres";
-        String password = "password";
-
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("更新するユーザーIDを入力: ");
-        int userId = scanner.nextInt();
-        scanner.nextLine(); // 改行を消費
-
-        System.out.print("新しいメールアドレスを入力: ");
-        String newEmail = scanner.nextLine();
-
-        try (Connection conn = DriverManager.getConnection(url, user, password)) {
-            String sql = "UPDATE users SET email = '" + newEmail
-                        + "' WHERE id = " + userId;
-
-            Statement stmt = conn.createStatement();
-            int rowsUpdated = stmt.executeUpdate(sql);
-
-            // 戻り値に基づいて処理を分岐
-            if (rowsUpdated > 0) {
-                System.out.println("✓ データの更新に成功しました。");
-                System.out.println("  更新件数: " + rowsUpdated + "件");
-            } else {
-                System.out.println("✗ 指定されたIDのユーザーが見つかりません。");
-                System.out.println("  IDを確認してください。");
-            }
-
-            stmt.close();
-        } catch (SQLException e) {
-            System.out.println("✗ データベースエラーが発生しました。");
-            System.out.println("  詳細: " + e.getMessage());
-        }
-
-        scanner.close();
-    }
+if (rowsAffected > 0) {
+    System.out.println("更新に成功しました");
+} else {
+    System.out.println("更新対象のデータが見つかりませんでした");
 }</code></pre>
                     </div>
 
-                    <h3 class="text-lg font-semibold text-slate-800 mb-3 mt-6">バッチ処理での活用</h3>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        複数のデータを連続して登録する場合、戻り値を累計することで全体の処理結果を把握できます：
-                    </p>
+                    <!-- 戻り値の意味 -->
+                    <div class="my-6 bg-white p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-sm font-semibold text-slate-700 mb-4">executeUpdate()の戻り値の意味</h3>
+                        <table class="min-w-full text-sm">
+                            <thead class="bg-slate-100">
+                                <tr>
+                                    <th class="px-4 py-2 text-left font-semibold text-slate-700">戻り値</th>
+                                    <th class="px-4 py-2 text-left font-semibold text-slate-700">意味</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-slate-600">
+                                <tr class="border-t border-slate-200">
+                                    <td class="px-4 py-2"><code>1以上</code></td>
+                                    <td class="px-4 py-2">指定した行数のデータが変更された（成功）</td>
+                                </tr>
+                                <tr class="border-t border-slate-200">
+                                    <td class="px-4 py-2"><code>0</code></td>
+                                    <td class="px-4 py-2">条件に一致するデータがなかった（更新・削除対象なし）</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">BatchInsert.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-emerald-600 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-emerald-800 mb-1">ベストプラクティス</p>
+                                <p class="text-emerald-900 text-sm">
+                                    INSERT/UPDATE/DELETE文を実行したら、必ず戻り値を確認する習慣をつけましょう。これにより、意図しない動作（例：更新対象が見つからなかった、削除対象がなかった）を早期に検出できます。
+                                </p>
+                            </div>
                         </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// 複数ユーザーの一括登録
-String[][] userData = {
-    {"山田花子", "yamada@example.com", "25"},
-    {"佐藤次郎", "sato@example.com", "32"},
-    {"鈴木三郎", "suzuki@example.com", "28"}
-};
-
-int totalInserted = 0;
-
-for (String[] data : userData) {
-    String sql = "INSERT INTO users (name, email, age) VALUES ('"
-                + data[0] + "', '" + data[1] + "', " + data[2] + ")";
-
-    int result = stmt.executeUpdate(sql);
-    totalInserted += result;
-}
-
-System.out.println("合計 " + totalInserted + "件のデータを登録しました。");</code></pre>
                     </div>
                 </section>
 
                 <!-- 実習カード -->
-                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
-                            rounded-xl p-5 my-6">
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 mb-6 overflow-hidden">
                     <div class="flex items-start gap-4">
-                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
-                                    flex items-center justify-center">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
                             <i class="fas fa-code text-white"></i>
                         </div>
-                        <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-purple-800 mb-3">
-                                実習 4-1: ユーザー管理プログラムの作成
-                            </h3>
-                            <p class="text-purple-900 mb-4">
-                                INSERT、UPDATE、DELETEの3つの操作を組み合わせて、簡単なユーザー管理プログラムを作成してください。
-                            </p>
-
-                            <h4 class="font-medium text-purple-800 mb-2">要件</h4>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 4-1: CRUD操作を実装してみよう</h3>
+                            <p class="text-purple-900 mb-4 break-words">データベースの基本操作（CRUD: Create, Read, Update, Delete）を実際に動かして理解を深めましょう。</p>
+                            <h4 class="font-medium text-purple-800 mb-2 break-words">準備</h4>
                             <ol class="space-y-3 mb-4">
                                 <li class="flex items-start gap-3 text-purple-900">
-                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                 flex items-center justify-center text-sm font-medium">1</span>
-                                    <span>メニューを表示し、ユーザーに操作を選択させる（1: 登録、2: 更新、3: 削除、4: 終了）</span>
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
+                                    <span class="flex-1 min-w-0 break-words">H2データベースに接続し、以下のSQL文でテーブルを作成してください：
+                                        <code class="bg-purple-100 px-1 rounded text-sm block mt-1">CREATE TABLE products (id INT PRIMARY KEY, name VARCHAR(100), price INT)</code>
+                                    </span>
                                 </li>
                                 <li class="flex items-start gap-3 text-purple-900">
-                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                 flex items-center justify-center text-sm font-medium">2</span>
-                                    <span>各操作で必要な情報をユーザーから入力で受け取る</span>
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
+                                    <span class="flex-1 min-w-0 break-words">以下のデータ操作をJDBCで実装してみましょう：<br>
+                                    - INSERT: 商品データを3件登録<br>
+                                    - SELECT: 全商品を検索して表示<br>
+                                    - UPDATE: ID=2の商品の価格を変更<br>
+                                    - DELETE: ID=3の商品を削除<br>
+                                    - SELECT: 削除後の全商品を再度表示して確認
+                                    </span>
                                 </li>
                                 <li class="flex items-start gap-3 text-purple-900">
-                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                 flex items-center justify-center text-sm font-medium">3</span>
-                                    <span>executeUpdate()の戻り値を使って、操作結果を分かりやすく表示する</span>
-                                </li>
-                                <li class="flex items-start gap-3 text-purple-900">
-                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                 flex items-center justify-center text-sm font-medium">4</span>
-                                    <span>終了が選択されるまで、繰り返しメニューを表示する</span>
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">3</span>
+                                    <span class="flex-1 min-w-0 break-words">各操作の後に、executeUpdate()の戻り値を確認して画面に表示してください</span>
                                 </li>
                             </ol>
-
-                            <h4 class="font-medium text-purple-800 mb-2">ヒント</h4>
-                            <div class="bg-white/50 rounded-lg p-3 mb-4">
-                                <ul class="space-y-1 text-purple-900 text-sm">
-                                    <li>• while文を使って、メニューをループ表示します</li>
-                                    <li>• switch文で操作を分岐させると読みやすいコードになります</li>
-                                    <li>• Scannerクラスを使用してユーザー入力を受け取ります</li>
-                                    <li>• try-catch文で例外処理を適切に行いましょう</li>
-                                </ul>
-                            </div>
-
-                            <h4 class="font-medium text-purple-800 mb-2">実行例</h4>
-                            <pre class="!bg-slate-800 !rounded-lg text-sm"><code class="language-plaintext">========== ユーザー管理システム ==========
-1. ユーザー登録
-2. ユーザー情報更新
-3. ユーザー削除
-4. 終了
-操作を選択してください: 1
-
-名前を入力: 山田太郎
-メールアドレスを入力: yamada@example.com
-年齢を入力: 30
-
-✓ 1件のデータを登録しました。
-
-操作を選択してください: 4
-システムを終了します。</code></pre>
                         </div>
+                    </div>
+                </div>
+
+                <!-- トラブルシューティング -->
+                <div class="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-xl overflow-hidden mb-6">
+                    <div class="bg-orange-100 px-6 py-3 border-b border-orange-200">
+                        <h3 class="font-semibold text-orange-800 flex items-center gap-2">
+                            <i class="fas fa-tools"></i>
+                            トラブルシューティング
+                        </h3>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <details class="group">
+                            <summary class="flex items-center gap-3 cursor-pointer list-none p-3 rounded-lg bg-white border border-orange-200 hover:bg-orange-50 transition-colors">
+                                <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                <span class="font-medium text-orange-800">executeUpdate()が0を返す</span>
+                                <i class="fas fa-chevron-down ml-auto text-orange-400 transition-transform group-open:rotate-180"></i>
+                            </summary>
+                            <div class="mt-3 pl-10 text-orange-900">
+                                <p class="mb-2"><strong>原因:</strong> WHERE句の条件に一致するデータが存在しないため、UPDATE/DELETE対象が見つかりませんでした。</p>
+                                <p><strong>解決方法:</strong> まずSELECT文で該当データが存在するか確認してください。また、WHERE句の条件（ID、名前など）が正しいか再確認しましょう。</p>
+                            </div>
+                        </details>
+
+                        <details class="group">
+                            <summary class="flex items-center gap-3 cursor-pointer list-none p-3 rounded-lg bg-white border border-orange-200 hover:bg-orange-50 transition-colors">
+                                <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                <span class="font-medium text-orange-800">全件が更新/削除されてしまった</span>
+                                <i class="fas fa-chevron-down ml-auto text-orange-400 transition-transform group-open:rotate-180"></i>
+                            </summary>
+                            <div class="mt-3 pl-10 text-orange-900">
+                                <p class="mb-2"><strong>原因:</strong> UPDATE文またはDELETE文でWHERE句を書き忘れたため、テーブル内の全データが対象になりました。</p>
+                                <p><strong>解決方法:</strong> UPDATE/DELETE文を書く際は、必ず最初にWHERE句を記述してから実行する癖をつけましょう。可能であれば、実行前にSELECT文で対象データを確認することをお勧めします。</p>
+                            </div>
+                        </details>
+
+                        <details class="group">
+                            <summary class="flex items-center gap-3 cursor-pointer list-none p-3 rounded-lg bg-white border border-orange-200 hover:bg-orange-50 transition-colors">
+                                <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                <span class="font-medium text-orange-800">SQLSyntaxErrorException: SQL構文エラー</span>
+                                <i class="fas fa-chevron-down ml-auto text-orange-400 transition-transform group-open:rotate-180"></i>
+                            </summary>
+                            <div class="mt-3 pl-10 text-orange-900">
+                                <p class="mb-2"><strong>原因:</strong> SQL文の構文に誤りがあります（例：VALUESのスペルミス、カンマの位置間違いなど）。</p>
+                                <p><strong>解決方法:</strong> エラーメッセージに表示されるSQL文をよく読み、構文が正しいか確認してください。可能であれば、H2のコンソール画面でSQL文を単体で実行してみると、エラーの原因が分かりやすいです。</p>
+                            </div>
+                        </details>
                     </div>
                 </div>
 
                 <!-- 理解度確認クイズ -->
                 <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
-                            rounded-xl p-5 my-6">
+                            rounded-xl p-5 my-6 overflow-hidden">
                     <div class="flex items-start gap-4">
                         <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
                                     flex items-center justify-center">
                             <i class="fas fa-question text-white"></i>
                         </div>
-                        <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-blue-800 mb-4">理解度確認クイズ</h3>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
                             <ol class="space-y-4">
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2">Q1. executeUpdate()メソッドの戻り値は何を表していますか？</p>
+                                    <p class="font-medium mb-2 break-words">Q1. executeUpdate()メソッドの戻り値は何を表していますか？</p>
                                     <details class="mt-2">
-                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
-                                            <strong>影響を受けた行数（int型）</strong><br>
-                                            INSERT、UPDATE、DELETE文によって影響を受けたレコードの件数を返します。例えば、1件のデータを登録した場合は1が返され、3件のデータを削除した場合は3が返されます。条件に該当するデータが存在しない場合は0が返されます。
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            影響を受けた行数（int型）を返します。INSERT/UPDATE/DELETE文によって、実際に追加、更新、または削除された行の数です。処理が成功したかどうかを判断するために使用します。
                                         </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2">Q2. UPDATE文やDELETE文でWHERE句を指定しないとどうなりますか？</p>
+                                    <p class="font-medium mb-2 break-words">Q2. UPDATE文やDELETE文でWHERE句を省略すると、どうなりますか？</p>
                                     <details class="mt-2">
-                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
-                                            <strong>テーブル内の全てのレコードが対象になります</strong><br>
-                                            WHERE句がない場合、条件による絞り込みが行われないため、テーブル内の全てのレコードが更新または削除されてしまいます。これは通常、意図しない動作であり、データの損失につながる可能性があります。必ずWHERE句で対象を限定しましょう。
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            テーブル内のすべてのデータが更新または削除されてしまいます。これは意図しない動作になることが多く、データを失う危険性があるため、UPDATE/DELETE文では必ずWHERE句を記述することが重要です。
                                         </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2">Q3. executeQuery()とexecuteUpdate()の違いを説明してください。</p>
+                                    <p class="font-medium mb-2 break-words">Q3. executeUpdate()とexecuteQuery()の違いは何ですか？</p>
                                     <details class="mt-2">
-                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
-                                            <strong>用途と戻り値が異なります</strong><br>
-                                            • <strong>executeQuery()</strong>: SELECT文を実行し、ResultSetオブジェクトを返す。データの取得に使用。<br>
-                                            • <strong>executeUpdate()</strong>: INSERT、UPDATE、DELETE文を実行し、影響を受けた行数（int型）を返す。データの変更に使用。<br>
-                                            データを読み取る場合はexecuteQuery()、データを変更する場合はexecuteUpdate()を使用します。
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            <strong>executeQuery()</strong>: SELECT文用。ResultSetオブジェクトを返す（検索結果を取得）<br>
+                                            <strong>executeUpdate()</strong>: INSERT/UPDATE/DELETE文用。影響を受けた行数（int型）を返す（データを変更）
                                         </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2">Q4. 次のコードの問題点を指摘してください：<br>
-                                    <code class="text-sm bg-white/70 px-2 py-1 rounded">String sql = "DELETE FROM users";</code></p>
+                                    <p class="font-medium mb-2 break-words">Q4. 実務でDELETE文の代わりに「論理削除」を使う理由は何ですか？</p>
                                     <details class="mt-2">
-                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
-                                            <strong>WHERE句がありません</strong><br>
-                                            このSQL文はWHERE句による条件指定がないため、usersテーブルの全てのレコードを削除してしまいます。通常、特定のレコードのみを削除したい場合がほとんどなので、WHERE句を追加して削除対象を限定する必要があります。例：<br>
-                                            <code class="text-sm">DELETE FROM users WHERE id = 5;</code>
-                                        </p>
-                                    </details>
-                                </li>
-                                <li class="text-blue-900">
-                                    <p class="font-medium mb-2">Q5. INSERT文で複数のレコードを一度に登録する方法を考えてください。</p>
-                                    <details class="mt-2">
-                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
-                                            回答を表示
-                                        </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
-                                            <strong>主に2つの方法があります</strong><br>
-                                            1. <strong>ループを使って複数回executeUpdate()を実行</strong>：配列やListに登録したいデータを格納し、for文やfor-each文でループしながら1件ずつINSERTする方法。理解しやすく、初心者向け。<br>
-                                            2. <strong>VALUES句に複数の値セットを指定</strong>：SQL文で複数のVALUES句をカンマで区切って指定する方法。例：<code class="text-sm">INSERT INTO users (name, email) VALUES ('田中', 'tanaka@example.com'), ('山田', 'yamada@example.com');</code><br>
-                                            また、次の章で学ぶPreparedStatementにはバッチ処理機能があり、より効率的に複数データを登録できます。
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            DELETE文で物理的に削除すると、データを完全に失ってしまい、復元できません。論理削除（削除フラグを立てる方法）を使えば、データを残しつつ「削除された状態」として扱えるため、誤削除の際に復元できます。また、削除履歴を保持できるため、監査や分析にも役立ちます。
                                         </p>
                                     </details>
                                 </li>
@@ -996,67 +697,48 @@ System.out.println("合計 " + totalInserted + "件のデータを登録しま�
                 </div>
 
                 <!-- まとめ -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-5">
-                        <h3 class="text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2">
-                            <i class="fas fa-bookmark text-primary-500"></i>
-                            この章のまとめ
-                        </h3>
-                        <ul class="space-y-2 text-slate-700">
-                            <li class="flex items-start gap-2">
-                                <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
-                                <span><strong>executeUpdate()メソッド</strong>は、INSERT、UPDATE、DELETE文を実行し、影響を受けた行数を返す</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
-                                <span><strong>INSERT文</strong>で新しいレコードを登録できる。VALUES句で登録する値を指定する</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
-                                <span><strong>UPDATE文</strong>で既存のレコードを更新できる。SET句で更新内容、WHERE句で対象を指定する</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
-                                <span><strong>DELETE文</strong>でレコードを削除できる。WHERE句で削除対象を限定することが重要</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
-                                <span>UPDATE文とDELETE文では<strong>WHERE句を忘れると全レコードが対象</strong>になるため注意が必要</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
-                                <span>戻り値を確認することで、<strong>操作が成功したかどうかを判断</strong>できる</span>
-                            </li>
-                        </ul>
-                    </div>
-                </section>
-
-                <!-- 次章への導入 -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <div class="bg-gradient-to-r from-primary-50 to-orange-50 border border-primary-200 rounded-xl p-5">
-                        <h3 class="text-lg font-semibold text-primary-800 mb-3 flex items-center gap-2">
-                            <i class="fas fa-arrow-right text-primary-500"></i>
-                            次章の予告
-                        </h3>
-                        <p class="text-primary-900 mb-3">
-                            この章では、Statementを使ったデータ変更の基本を学びました。しかし、SQL文に直接値を埋め込む方法には<strong>重大なセキュリティリスク（SQLインジェクション）</strong>が存在します。
-                        </p>
-                        <p class="text-primary-900">
-                            次章では、より安全で効率的な<strong>PreparedStatement</strong>の使い方を学びます。PreparedStatementを使用することで、セキュアなデータベースアクセスを実現できます。
-                        </p>
-                    </div>
-                </section>
+                <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-300 rounded-xl p-6 my-8">
+                    <h3 class="flex items-center gap-2 text-lg font-semibold text-slate-800 mb-4">
+                        <i class="fas fa-bookmark text-primary-500"></i>
+                        この章のまとめ
+                    </h3>
+                    <ul class="space-y-2 text-slate-700">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span><strong>executeUpdate()</strong>は、INSERT/UPDATE/DELETE文を実行し、影響を受けた行数を返す</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span><strong>INSERT文</strong>は新規データを登録、戻り値が1なら成功（1件追加）</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span><strong>UPDATE文</strong>は既存データを変更、WHERE句を忘れると全件更新されるので要注意</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span><strong>DELETE文</strong>はデータを削除、WHERE句を忘れると全件削除されるため特に注意が必要</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>戻り値が0の場合、条件に一致するデータがなかったことを意味する（エラーハンドリングに活用）</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>実務では論理削除（削除フラグ）を使うことで、データの復元可能性を保つことが多い</span>
+                        </li>
+                    </ul>
+                </div>
 
                 <!-- 章間ナビゲーション -->
                 <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
                     <a href="jdbc-learning-material-03.html"
                        class="group flex items-center gap-3 px-4 py-3 rounded-xl
                               bg-slate-100 hover:bg-slate-200 transition-colors">
-                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
-                                  transition-transform group-hover:-translate-x-1"></i>
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600 transition-transform group-hover:-translate-x-1"></i>
                         <div>
                             <span class="text-xs text-slate-500 block">前の章</span>
-                            <span class="text-slate-700 font-medium">データの取得（SELECT文）</span>
+                            <span class="text-slate-700 font-medium">データの検索（SELECT文）</span>
                         </div>
                     </a>
                     <a href="jdbc-learning-material-05.html"
@@ -1082,7 +764,7 @@ System.out.println("合計 " + totalInserted + "件のデータを登録しま�
                     本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
                 </p>
                 <div class="flex items-center gap-4">
-                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                    <a href="#" class="hover:text-white transition-colors">
                         <i class="fab fa-github text-xl"></i>
                     </a>
                 </div>
@@ -1099,216 +781,8 @@ System.out.println("合計 " + totalInserted + "件のデータを登録しま�
         <i class="fas fa-arrow-up"></i>
     </button>
 
-    <!-- 描画用Canvasオーバーレイ -->
-    <canvas id="drawing-canvas" class="fixed inset-0 z-[100] pointer-events-none"></canvas>
-
-    <!-- 描画ツールバー（右端） -->
-    <div id="drawing-toolbar" class="fixed right-4 top-1/2 -translate-y-1/2 z-[110]
-                                     bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl
-                                     border border-slate-200 p-2 flex flex-col gap-1
-                                     transition-all duration-300">
-        <!-- ツールバー折りたたみボタン -->
-        <button id="toolbar-toggle"
-                class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
-                       flex items-center justify-center transition-colors mb-2"
-                title="ツールバーを開く">
-            <i class="fas fa-chevron-left text-slate-600"></i>
-        </button>
-
-        <div id="toolbar-content" class="hidden flex-col gap-1">
-            <!-- ペンツール -->
-            <button id="pen-tool"
-                    class="tool-btn w-10 h-10 rounded-xl bg-primary-100 text-primary-600
-                           hover:bg-primary-200 flex items-center justify-center transition-colors"
-                    title="ペン (P)">
-                <i class="fas fa-pen"></i>
-            </button>
-
-            <!-- 消しゴムツール -->
-            <button id="eraser-tool"
-                    class="tool-btn w-10 h-10 rounded-xl bg-slate-100 text-slate-600
-                           hover:bg-slate-200 flex items-center justify-center transition-colors"
-                    title="消しゴム (E)">
-                <i class="fas fa-eraser"></i>
-            </button>
-
-            <!-- 区切り線 -->
-            <div class="h-px bg-slate-200 my-1"></div>
-
-            <!-- 色選択 -->
-            <div id="color-picker" class="flex flex-col gap-1">
-                <button class="color-btn w-10 h-10 rounded-xl border-2 border-red-400 bg-red-500
-                               hover:scale-110 transition-transform" data-color="#ef4444" title="赤"></button>
-                <button class="color-btn w-10 h-10 rounded-xl border-2 border-blue-400 bg-blue-500
-                               hover:scale-110 transition-transform" data-color="#3b82f6" title="青"></button>
-                <button class="color-btn w-10 h-10 rounded-xl border-2 border-slate-600 bg-slate-800
-                               hover:scale-110 transition-transform active-color" data-color="#1e293b" title="黒"></button>
-                <button class="color-btn w-10 h-10 rounded-xl border-2 border-emerald-400 bg-emerald-500
-                               hover:scale-110 transition-transform" data-color="#10b981" title="緑"></button>
-                <button class="color-btn w-10 h-10 rounded-xl border-2 border-amber-400 bg-amber-500
-                               hover:scale-110 transition-transform" data-color="#f59e0b" title="黄"></button>
-            </div>
-
-            <!-- 区切り線 -->
-            <div class="h-px bg-slate-200 my-1"></div>
-
-            <!-- 線の太さ -->
-            <div id="stroke-width" class="flex flex-col gap-1">
-                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
-                               flex items-center justify-center transition-colors" data-width="2" title="細い">
-                    <div class="w-4 h-0.5 bg-slate-600 rounded-full"></div>
-                </button>
-                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
-                               flex items-center justify-center transition-colors active-stroke" data-width="4" title="普通">
-                    <div class="w-4 h-1 bg-slate-600 rounded-full"></div>
-                </button>
-                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
-                               flex items-center justify-center transition-colors" data-width="8" title="太い">
-                    <div class="w-4 h-2 bg-slate-600 rounded-full"></div>
-                </button>
-            </div>
-
-            <!-- 区切り線 -->
-            <div class="h-px bg-slate-200 my-1"></div>
-
-            <!-- 元に戻す -->
-            <button id="undo-btn"
-                    class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600
-                           hover:bg-slate-200 flex items-center justify-center transition-colors
-                           disabled:opacity-40 disabled:cursor-not-allowed"
-                    title="元に戻す (Ctrl+Z)" disabled>
-                <i class="fas fa-undo"></i>
-            </button>
-
-            <!-- 全消去 -->
-            <button id="clear-btn"
-                    class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600
-                           hover:bg-rose-200 flex items-center justify-center transition-colors"
-                    title="全消去 (C)">
-                <i class="fas fa-trash-alt"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- JavaScript -->
-    <script>
-        // Highlight.js 初期化
-        hljs.highlightAll();
-
-        // Mermaid.js 初期化
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'default',
-            securityLevel: 'loose'
-        });
-
-        // モバイルメニュー制御
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebar-overlay');
-        const menuBtn = document.getElementById('mobile-menu-btn');
-
-        menuBtn?.addEventListener('click', () => {
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
-        });
-
-        overlay?.addEventListener('click', () => {
-            sidebar.classList.add('-translate-x-full');
-            overlay.classList.add('hidden');
-        });
-
-        // スクロールトップボタン表示制御
-        const scrollTopBtn = document.getElementById('scroll-top-btn');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                scrollTopBtn.classList.remove('opacity-0', 'invisible', 'translate-y-4');
-            } else {
-                scrollTopBtn.classList.add('opacity-0', 'invisible', 'translate-y-4');
-            }
-        });
-
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // コードコピー機能
-        function copyCode(btn) {
-            const code = btn.closest('.code-block-wrapper').querySelector('code').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                const icon = btn.querySelector('i');
-                icon.classList.remove('fa-copy');
-                icon.classList.add('fa-check');
-                setTimeout(() => {
-                    icon.classList.remove('fa-check');
-                    icon.classList.add('fa-copy');
-                }, 2000);
-            });
-        }
-
-        // サイドバーリサイズ機能
-        const resizeHandle = document.getElementById('sidebar-resize-handle');
-        let isResizing = false;
-        let startX, startWidth;
-
-        resizeHandle?.addEventListener('mousedown', (e) => {
-            isResizing = true;
-            startX = e.clientX;
-            startWidth = sidebar.offsetWidth;
-            resizeHandle.classList.add('resizing');
-            document.body.style.cursor = 'ew-resize';
-            document.body.style.userSelect = 'none';
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (!isResizing) return;
-            const diff = e.clientX - startX;
-            const newWidth = Math.min(Math.max(startWidth + diff, 240), 480);
-            sidebar.style.width = newWidth + 'px';
-        });
-
-        document.addEventListener('mouseup', () => {
-            if (isResizing) {
-                isResizing = false;
-                resizeHandle.classList.remove('resizing');
-                document.body.style.cursor = '';
-                document.body.style.userSelect = '';
-                // サイドバー幅をローカルストレージに保存
-                localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
-            }
-        });
-
-        // ページ読み込み時にサイドバー幅を復元
-        const savedWidth = localStorage.getItem('sidebarWidth');
-        if (savedWidth && window.innerWidth >= 768) {
-            sidebar.style.width = savedWidth + 'px';
-        }
-
-        // 描画ツールバー折りたたみ機能
-        const toolbarToggle = document.getElementById('toolbar-toggle');
-        const toolbarContent = document.getElementById('toolbar-content');
-        let isToolbarOpen = false;
-
-        toolbarToggle?.addEventListener('click', () => {
-            isToolbarOpen = !isToolbarOpen;
-            const icon = toolbarToggle.querySelector('i');
-
-            if (isToolbarOpen) {
-                toolbarContent.classList.remove('hidden');
-                toolbarContent.classList.add('flex');
-                icon.classList.remove('fa-chevron-left');
-                icon.classList.add('fa-chevron-right');
-                toolbarToggle.title = 'ツールバーを閉じる';
-            } else {
-                toolbarContent.classList.add('hidden');
-                toolbarContent.classList.remove('flex');
-                icon.classList.remove('fa-chevron-right');
-                icon.classList.add('fa-chevron-left');
-                toolbarToggle.title = 'ツールバーを開く';
-            }
-        });
-    </script>
-
-    <!-- 描画ツール -->
+    <script src="sidebar-content.js"></script>
+    <script src="main.js"></script>
     <script src="drawing-tool.js"></script>
 </body>
 </html>

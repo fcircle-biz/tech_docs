@@ -2,8 +2,19 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.1">
-    <title>JDBC学習教材 第6章 - 例外処理とリソース管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>JDBC学習教材 第6章 - トランザクション処理と例外処理</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,7 +23,7 @@
             theme: {
                 extend: {
                     colors: {
-                        // Java Orange
+                        // Java/JDBC - Orange
                         primary: {
                             50: '#fff7ed',
                             100: '#ffedd5',
@@ -49,103 +60,7 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- カスタムスタイル -->
-    <style>
-        /* スクロールバーカスタマイズ */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-        /* コードブロックのラインナンバー */
-        .hljs-ln-numbers {
-            user-select: none;
-            text-align: right;
-            color: #6b7280;
-            padding-right: 12px;
-            border-right: 1px solid #374151;
-        }
-
-        /* サイドバートランジション */
-        .sidebar-transition {
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, width 0.15s ease-out;
-        }
-
-        /* サイドバーリサイズ機能 */
-        .sidebar-resizable {
-            min-width: 240px;
-            max-width: 480px;
-        }
-        .sidebar-resize-handle {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 6px;
-            height: 100%;
-            cursor: ew-resize;
-            background: transparent;
-            transition: background 0.2s;
-            z-index: 10;
-        }
-        .sidebar-resize-handle:hover,
-        .sidebar-resize-handle.resizing {
-            background: linear-gradient(to right, transparent, rgba(249, 115, 22, 0.3));
-        }
-
-        /* スムーズスクロール */
-        html { scroll-behavior: smooth; }
-
-        /* コードコピーボタン */
-        .code-block-wrapper { position: relative; }
-        .copy-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        .code-block-wrapper:hover .copy-btn { opacity: 1; }
-
-        /* ヘッダー情報リッチデザイン */
-        .header-rich {
-            background: linear-gradient(135deg,
-                #c2410c 0%,
-                #f97316 50%,
-                #fb923c 100%);
-            position: relative;
-            overflow: hidden;
-        }
-        .header-rich::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background:
-                linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%),
-                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px);
-            animation: bgSlide 10s linear infinite;
-        }
-        @keyframes bgSlide {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(50px); }
-        }
-
-        .header-rich-shadow {
-            box-shadow:
-                0 4px 6px -1px rgba(249, 115, 22, 0.2),
-                0 10px 25px -5px rgba(249, 115, 22, 0.3),
-                0 0 50px rgba(249, 115, 22, 0.15);
-        }
-
-        .icon-rotate-hover {
-            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-        .icon-rotate-hover:hover {
-            transform: rotate(360deg) scale(1.2);
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body class="font-sans bg-slate-50 text-slate-800 antialiased">
     <!-- ヘッダー/ナビゲーションバー -->
@@ -178,7 +93,7 @@
                             </div>
                             <div class="hidden sm:flex items-center gap-1">
                                 <i class="fas fa-clock text-[9px]"></i>
-                                <span>推奨 30分</span>
+                                <span>推奨 45分</span>
                             </div>
                             <div class="hidden lg:flex items-center gap-1">
                                 <i class="fas fa-language text-[9px]"></i>
@@ -188,8 +103,8 @@
                     </div>
                 </div>
 
-                <!-- 右側: モバイルメニューボタン -->
-                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
                     <i class="fas fa-bars text-lg"></i>
                 </button>
             </div>
@@ -198,149 +113,16 @@
 
     <!-- メインレイアウト -->
     <div class="flex min-h-screen pt-20">
-        <!-- サイドバー -->
-        <aside id="sidebar" class="fixed md:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
-                                   bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
-                                   transform -translate-x-full md:translate-x-0 sidebar-transition sidebar-resizable"
-               style="--sidebar-width: 320px;">
-            <!-- リサイズハンドル -->
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle hidden md:block"></div>
-            <div class="p-4">
-                <!-- 進捗インジケーター -->
-                <div class="mb-6 p-4 bg-primary-50 rounded-xl">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm font-medium text-primary-700">学習進捗</span>
-                        <span class="text-sm text-primary-600">6/10章</span>
-                    </div>
-                    <div class="w-full bg-primary-100 rounded-full h-2">
-                        <div class="bg-primary-500 h-2 rounded-full transition-all duration-300" style="width: 60%"></div>
-                    </div>
-                </div>
-
-                <!-- 章リスト -->
-                <nav>
-                    <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-2">
-                        学習章
-                    </h2>
-                    <ul class="space-y-1">
-                        <li>
-                            <a href="jdbc-learning-material-01.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-emerald-500 text-white text-xs rounded-full">
-                                    <i class="fas fa-check text-[10px]"></i>
-                                </span>
-                                <span class="truncate">JDBCの概要と環境構築</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-02.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-emerald-500 text-white text-xs rounded-full">
-                                    <i class="fas fa-check text-[10px]"></i>
-                                </span>
-                                <span class="truncate">データベース接続の基本</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-03.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-emerald-500 text-white text-xs rounded-full">
-                                    <i class="fas fa-check text-[10px]"></i>
-                                </span>
-                                <span class="truncate">データの取得（SELECT文）</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-04.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-emerald-500 text-white text-xs rounded-full">
-                                    <i class="fas fa-check text-[10px]"></i>
-                                </span>
-                                <span class="truncate">データの登録・更新・削除</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-05.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-emerald-500 text-white text-xs rounded-full">
-                                    <i class="fas fa-check text-[10px]"></i>
-                                </span>
-                                <span class="truncate">PreparedStatementの活用</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-06.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      bg-primary-100 text-primary-700 font-medium">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-primary-500 text-white text-xs rounded-full">6</span>
-                                <span class="truncate">例外処理とリソース管理</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-07.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">7</span>
-                                <span class="truncate">トランザクション管理</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-08.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">8</span>
-                                <span class="truncate">DAOパターン入門</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-09.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">9</span>
-                                <span class="truncate">実践演習 - 商品管理システム</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-10.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">10</span>
-                                <span class="truncate">よくある問題と解決策</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </aside>
-
-        <!-- サイドバーオーバーレイ（モバイル用） -->
-        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
 
         <!-- メインコンテンツ -->
         <main class="flex-1 min-w-0">
-            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
                 <!-- パンくずリスト -->
                 <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
-                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <a href="#" class="hover:text-primary-600 transition-colors">ホーム</a>
                     <i class="fas fa-chevron-right text-xs"></i>
-                    <a href="../" class="hover:text-primary-600 transition-colors">Java Ecosystem</a>
-                    <i class="fas fa-chevron-right text-xs"></i>
-                    <a href="./" class="hover:text-primary-600 transition-colors">JDBC</a>
+                    <a href="#" class="hover:text-primary-600 transition-colors">JDBC</a>
                     <i class="fas fa-chevron-right text-xs"></i>
                     <span class="text-slate-700">第6章</span>
                 </nav>
@@ -353,13 +135,13 @@
                             第6章
                         </span>
                     </div>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">例外処理とリソース管理</h1>
-                    <p class="text-slate-600">JDBCプログラミングにおける例外処理の重要性と実装方法を学び、try-with-resources構文を使用した効率的なリソース管理とSQLExceptionの適切な処理方法を習得します。</p>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">トランザクション処理と例外処理</h1>
+                    <p class="text-slate-600">データの整合性を保つためのトランザクション制御（commit、rollback）、自動コミットの設定、try-catch-finallyを使った適切な例外処理とリソース管理を学びます。</p>
                 </header>
 
                 <!-- 学習目標カード -->
                 <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
-                            rounded-xl p-5 mb-6">
+                            rounded-xl p-5 mb-6 overflow-hidden">
                     <div class="flex items-start gap-4">
                         <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
                                     flex items-center justify-center">
@@ -370,19 +152,19 @@
                             <ul class="space-y-2">
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>JDBCにおける例外処理の重要性とSQLExceptionの基本</span>
+                                    <span>トランザクションとは何か、なぜ必要なのかを理解する</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>try-with-resources構文を使用した自動リソース管理の実装</span>
+                                    <span>commit（確定）とrollback（取り消し）の使い方を学ぶ</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>リソースリーク防止とメモリ効率化のベストプラクティス</span>
+                                    <span>自動コミットの設定とその影響を理解する</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>複数のSQLExceptionを正確に処理する方法</span>
+                                    <span>try-catch-finallyを使った適切な例外処理とリソース管理を習得する</span>
                                 </li>
                             </ul>
                         </div>
@@ -393,90 +175,56 @@
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        6.1 JDBCにおける例外処理の重要性
+                        6.1 トランザクションとは？
                     </h2>
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        JDBCプログラミングでは、データベース接続失敗、SQL構文エラー、ネットワーク障害など、様々な理由で例外が発生する可能性があります。適切な例外処理を行わないと、データベース接続やResultSetなどのリソースが正しくクローズされず、<strong class="text-slate-800">リソースリーク</strong>（メモリやコネクションの漏れ）が発生し、システム全体のパフォーマンスや安定性に悪影響を及ぼします。
+                        <strong>トランザクション</strong>とは、複数のデータベース操作を「1つのまとまった処理」として扱う仕組みです。すべての操作が成功したときだけデータベースに反映し、途中で1つでも失敗したら全体を取り消します。
                     </p>
-                    <div class="bg-rose-50 border-l-4 border-rose-400 rounded-lg p-4 mb-4">
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-exclamation-triangle text-rose-500 text-lg mt-1"></i>
-                            <div>
-                                <h3 class="text-rose-800 font-semibold mb-2">例外処理を怠った場合の問題</h3>
-                                <ul class="text-rose-900 space-y-1 text-sm">
-                                    <li>・データベースコネクションが使い切られ、新規接続ができなくなる</li>
-                                    <li>・メモリリークによりアプリケーションのパフォーマンスが低下する</li>
-                                    <li>・エラーの原因が特定しづらくなり、デバッグが困難になる</li>
-                                    <li>・データの整合性が失われる可能性がある</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">SQLExceptionとは</h3>
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        <code class="text-primary-600 bg-primary-50 px-2 py-0.5 rounded">SQLException</code>は、JDBC操作中に発生するデータベース関連のエラーを表す例外クラスです。SQLExceptionには、エラーコード、SQLステート、エラーメッセージなどの詳細情報が含まれており、問題の特定と対処に役立ちます。
+                        例えば、銀行の送金処理を考えてみましょう。「Aさんの口座から1万円引き出す」「Bさんの口座に1万円入金する」という2つの操作があります。もし片方だけ成功してしまったら、お金が消えたり増えたりして大変ですよね。トランザクションを使えば、両方成功したときだけ確定し、片方が失敗したら両方とも取り消すことができます。
                     </p>
 
-                    <!-- SQLExceptionの構造図 -->
-                    <div class="bg-white border border-slate-200 rounded-lg p-4 mb-4">
-                        <pre class="mermaid">
-classDiagram
-    class SQLException {
-        +String getMessage()
-        +String getSQLState()
-        +int getErrorCode()
-        +SQLException getNextException()
-    }
-    class Connection
-    class Statement
-    class ResultSet
+                    <!-- トランザクションの概念図 -->
+                    <div class="my-6 bg-white p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-sm font-semibold text-slate-700 mb-4">トランザクションの動作イメージ</h3>
+                        <pre class="mermaid bg-transparent border-0">
+graph TB
+    Start[トランザクション開始]
+    Op1[操作1: Aさんの口座から1万円引き出し]
+    Op2[操作2: Bさんの口座に1万円入金]
+    Check{すべて成功?}
+    Commit[commit: データベースに確定]
+    Rollback[rollback: すべて取り消し]
+    End[処理終了]
 
-    Connection --|> SQLException : スロー
-    Statement --|> SQLException : スロー
-    ResultSet --|> SQLException : スロー
+    Start --> Op1
+    Op1 --> Op2
+    Op2 --> Check
+    Check -->|成功| Commit
+    Check -->|失敗| Rollback
+    Commit --> End
+    Rollback --> End
 
-    note for SQLException "データベースアクセスエラーやその他のエラー情報を提供"
+    style Start fill:#fff7ed,stroke:#f97316,stroke-width:2px
+    style Commit fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style Rollback fill:#fee2e2,stroke:#ef4444,stroke-width:2px
+    style End fill:#f3f4f6,stroke:#6b7280,stroke-width:2px
                         </pre>
                     </div>
 
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">SqlExceptionExample.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-emerald-600 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-emerald-800 mb-1">トランザクションの4つの性質（ACID）</p>
+                                <ul class="text-emerald-900 space-y-1 text-sm">
+                                    <li><strong>原子性（Atomicity）</strong>: すべて成功か、すべて失敗か。中途半端な状態にならない</li>
+                                    <li><strong>一貫性（Consistency）</strong>: データベースの整合性が保たれる</li>
+                                    <li><strong>独立性（Isolation）</strong>: 複数のトランザクションが干渉しない</li>
+                                    <li><strong>永続性（Durability）</strong>: 確定した内容は失われない</li>
+                                </ul>
+                            </div>
                         </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.sql.*;
-
-public class SqlExceptionExample {
-    public static void main(String[] args) {
-        String url = "jdbc:postgresql://localhost:5432/testdb";
-        String user = "testuser";
-        String password = "testpass";
-
-        try {
-            // 存在しないテーブルへのアクセスを試みる
-            Connection conn = DriverManager.getConnection(url, user, password);
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM non_existent_table");
-
-        } catch (SQLException e) {
-            // SQLExceptionの詳細情報を取得
-            System.out.println("エラーメッセージ: " + e.getMessage());
-            System.out.println("SQLステート: " + e.getSQLState());
-            System.out.println("エラーコード: " + e.getErrorCode());
-
-            // 連鎖する例外がある場合は全て表示
-            SQLException nextEx = e.getNextException();
-            while (nextEx != null) {
-                System.out.println("次の例外: " + nextEx.getMessage());
-                nextEx = nextEx.getNextException();
-            }
-        }
-    }
-}</code></pre>
                     </div>
                 </section>
 
@@ -484,85 +232,56 @@ public class SqlExceptionExample {
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        6.2 従来のリソース管理方法（try-catch-finally）
+                        6.2 自動コミットの設定
                     </h2>
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        Java 7以前では、JDBCリソースを適切に管理するために<code class="text-primary-600 bg-primary-50 px-2 py-0.5 rounded">try-catch-finally</code>構文を使用していました。finallyブロックでは、例外が発生した場合でも必ず実行されるため、ここでリソースのクローズ処理を記述します。
+                        JDBCのConnectionは、デフォルトで<strong>自動コミット（Auto-Commit）モード</strong>が有効になっています。自動コミットがONの場合、SQL文を1つ実行するたびに自動的にcommitされます。
+                    </p>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        複数の操作をまとめて1つのトランザクションとして扱いたい場合は、自動コミットをOFFにする必要があります。
                     </p>
 
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">TraditionalResourceManagement.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
+                    <!-- 自動コミットの設定コード -->
+                    <div class="code-block-wrapper my-4">
+                        <div class="code-block-header">
+                            <span class="code-block-title">自動コミットの設定</span>
+                            <button class="code-copy-btn">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.sql.*;
+                        <pre><code class="language-java">import java.sql.Connection;
+import java.sql.DriverManager;
 
-public class TraditionalResourceManagement {
+public class TransactionExample {
     public static void main(String[] args) {
-        String url = "jdbc:postgresql://localhost:5432/testdb";
-        String user = "testuser";
-        String password = "testpass";
-
-        // リソースを変数として宣言
         Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
 
         try {
-            // データベース接続
-            conn = DriverManager.getConnection(url, user, password);
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery("SELECT * FROM users");
+            // データベースに接続
+            conn = DriverManager.getConnection(
+                "jdbc:h2:~/test", "sa", ""
+            );
 
-            // データ処理
-            while (rs.next()) {
-                System.out.println("ID: " + rs.getInt("id"));
-                System.out.println("名前: " + rs.getString("name"));
-            }
+            // 自動コミットをOFFにする（トランザクション開始）
+            conn.setAutoCommit(false);
 
-        } catch (SQLException e) {
-            System.err.println("データベースエラー: " + e.getMessage());
+            // ここで複数のSQL文を実行...
+
+        } catch (Exception e) {
             e.printStackTrace();
-
-        } finally {
-            // リソースのクローズ処理（必ず実行される）
-            // 順番に注意: ResultSet → Statement → Connection
-            try {
-                if (rs != null) rs.close();
-            } catch (SQLException e) {
-                System.err.println("ResultSetのクローズに失敗: " + e.getMessage());
-            }
-
-            try {
-                if (stmt != null) stmt.close();
-            } catch (SQLException e) {
-                System.err.println("Statementのクローズに失敗: " + e.getMessage());
-            }
-
-            try {
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                System.err.println("Connectionのクローズに失敗: " + e.getMessage());
-            }
         }
     }
 }</code></pre>
                     </div>
 
-                    <div class="bg-amber-50 border-l-4 border-amber-400 rounded-lg p-4 mb-4">
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6">
                         <div class="flex items-start gap-3">
-                            <i class="fas fa-lightbulb text-amber-500 text-lg mt-1"></i>
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
                             <div>
-                                <h3 class="text-amber-800 font-semibold mb-2">従来の方法の問題点</h3>
-                                <ul class="text-amber-900 space-y-1 text-sm">
-                                    <li>・コードが冗長で可読性が低い</li>
-                                    <li>・各リソースのクローズ処理で個別にtry-catchが必要</li>
-                                    <li>・null チェックを忘れるとNullPointerExceptionが発生する</li>
-                                    <li>・クローズの順番を間違えるとエラーになる可能性がある</li>
-                                </ul>
+                                <p class="font-semibold text-blue-800 mb-1">初心者向けヒント</p>
+                                <p class="text-blue-900 text-sm">
+                                    <code>setAutoCommit(false)</code>にすると、明示的に<code>commit()</code>を呼ぶまでデータベースに反映されません。エラーが発生したら<code>rollback()</code>で取り消すことができます。
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -572,130 +291,79 @@ public class TraditionalResourceManagement {
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        6.3 try-with-resources構文による自動リソース管理
+                        6.3 commitとrollbackの使い方
                     </h2>
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        Java 7以降では、<code class="text-primary-600 bg-primary-50 px-2 py-0.5 rounded">try-with-resources</code>構文を使用することで、リソースの自動クローズが可能になりました。この構文では、tryブロックの終了時に、宣言されたリソースが自動的にクローズされます。コードがシンプルになり、リソースリークのリスクも大幅に減少します。
+                        トランザクション内のすべての操作が成功したら<strong>commit()</strong>を呼んでデータベースに確定します。途中でエラーが発生したら<strong>rollback()</strong>を呼んですべての操作を取り消します。
                     </p>
 
-                    <!-- try-with-resourcesの仕組み図 -->
-                    <div class="bg-white border border-slate-200 rounded-lg p-4 mb-4">
-                        <pre class="mermaid">
-flowchart LR
-    A[try-with-resourcesブロック開始] --> B[リソース初期化]
-    B --> C[処理実行]
-    C --> D{例外発生?}
-    D -->|Yes| E[catch処理]
-    D -->|No| F[自動クローズ]
-    E --> F
-    F --> G[プログラム継続]
-
-    style B fill:#dbeafe
-    style F fill:#dcfce7
-    style E fill:#fed7aa
-                        </pre>
-                    </div>
-
-                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">基本構文</h3>
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">TryWithResourcesBasic.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
+                    <!-- commitとrollbackの実装例 -->
+                    <div class="code-block-wrapper my-4">
+                        <div class="code-block-header">
+                            <span class="code-block-title">トランザクション制御の実装例</span>
+                            <button class="code-copy-btn">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.sql.*;
+                        <pre><code class="language-java">import java.sql.*;
 
-public class TryWithResourcesBasic {
+public class BankTransferExample {
     public static void main(String[] args) {
-        String url = "jdbc:postgresql://localhost:5432/testdb";
-        String user = "testuser";
-        String password = "testpass";
+        Connection conn = null;
+        PreparedStatement pstmt1 = null;
+        PreparedStatement pstmt2 = null;
 
-        // try-with-resources: リソースは自動的にクローズされる
-        try (Connection conn = DriverManager.getConnection(url, user, password);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM users")) {
+        try {
+            // データベース接続
+            conn = DriverManager.getConnection("jdbc:h2:~/test", "sa", "");
 
-            // データ処理
-            while (rs.next()) {
-                System.out.println("ID: " + rs.getInt("id"));
-                System.out.println("名前: " + rs.getString("name"));
-            }
+            // 自動コミットOFF（トランザクション開始）
+            conn.setAutoCommit(false);
+
+            // 操作1: Aさんの口座から1万円引き出し
+            String sql1 = "UPDATE accounts SET balance = balance - ? WHERE name = ?";
+            pstmt1 = conn.prepareStatement(sql1);
+            pstmt1.setInt(1, 10000);  // 引き出し額
+            pstmt1.setString(2, "Aさん");
+            pstmt1.executeUpdate();
+
+            // 操作2: Bさんの口座に1万円入金
+            String sql2 = "UPDATE accounts SET balance = balance + ? WHERE name = ?";
+            pstmt2 = conn.prepareStatement(sql2);
+            pstmt2.setInt(1, 10000);  // 入金額
+            pstmt2.setString(2, "Bさん");
+            pstmt2.executeUpdate();
+
+            // すべて成功したのでコミット（確定）
+            conn.commit();
+            System.out.println("送金が完了しました");
 
         } catch (SQLException e) {
-            System.err.println("データベースエラー: " + e.getMessage());
-            e.printStackTrace();
-        }
-        // finallyブロックは不要！
-        // リソースは自動的に正しい順序でクローズされる
-    }
-}</code></pre>
-                    </div>
-
-                    <div class="bg-emerald-50 border-l-4 border-emerald-400 rounded-lg p-4 mb-4">
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-check-circle text-emerald-500 text-lg mt-1"></i>
-                            <div>
-                                <h3 class="text-emerald-800 font-semibold mb-2">try-with-resourcesの利点</h3>
-                                <ul class="text-emerald-900 space-y-1 text-sm">
-                                    <li>・コードが簡潔で読みやすくなる</li>
-                                    <li>・リソースのクローズ忘れを防止できる</li>
-                                    <li>・リソースは宣言とは逆順に自動クローズされる（安全）</li>
-                                    <li>・複数の例外が発生した場合も適切に処理される</li>
-                                    <li>・null チェックが不要</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">PreparedStatementとの組み合わせ</h3>
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">TryWithResourcesPrepared.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.sql.*;
-
-public class TryWithResourcesPrepared {
-    public static void findUserById(int userId) {
-        String url = "jdbc:postgresql://localhost:5432/testdb";
-        String user = "testuser";
-        String password = "testpass";
-        String sql = "SELECT * FROM users WHERE id = ?";
-
-        // PreparedStatementもtry-with-resourcesで管理
-        try (Connection conn = DriverManager.getConnection(url, user, password);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            // パラメータ設定
-            pstmt.setInt(1, userId);
-
-            // クエリ実行
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    System.out.println("ユーザーID: " + rs.getInt("id"));
-                    System.out.println("ユーザー名: " + rs.getString("name"));
-                    System.out.println("メール: " + rs.getString("email"));
-                } else {
-                    System.out.println("ユーザーが見つかりません");
+            // エラー発生時はロールバック（取り消し）
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                    System.out.println("エラーが発生したため送金を取り消しました");
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
                 }
             }
-
-        } catch (SQLException e) {
-            System.err.println("データベースエラー: " + e.getMessage());
             e.printStackTrace();
         }
     }
-
-    public static void main(String[] args) {
-        findUserById(1);
-    }
 }</code></pre>
+                    </div>
+
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-red-800 mb-1">重要な注意点</p>
+                                <p class="text-red-900 text-sm">
+                                    <code>commit()</code>を呼ぶ前にConnectionをcloseしてしまうと、未確定の変更は自動的にrollbackされてしまいます。必ず<code>commit()</code>を先に呼んでからcloseしましょう。
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -703,172 +371,174 @@ public class TryWithResourcesPrepared {
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        6.4 例外処理のベストプラクティス
+                        6.4 try-catch-finallyを使った例外処理
                     </h2>
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        効果的な例外処理を実装するためには、いくつかの重要なポイントがあります。適切なログ記録、エラーメッセージの明確化、例外の再スローなど、実務で役立つテクニックを紹介します。
+                        JDBCを使う際は、必ず<strong>例外処理</strong>を行う必要があります。データベース接続エラー、SQL構文エラー、ネットワークエラーなど、さまざまなエラーが発生する可能性があるためです。
+                    </p>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <code>try-catch-finally</code>文を使って、適切にエラー処理とリソース解放を行いましょう。
                     </p>
 
-                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">1. 詳細なエラー情報のログ記録</h3>
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">ExceptionLogging.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
+                    <!-- try-catch-finallyの構造図 -->
+                    <div class="my-6 bg-white p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-sm font-semibold text-slate-700 mb-4">try-catch-finallyの処理フロー</h3>
+                        <pre class="mermaid bg-transparent border-0">
+graph TB
+    Try[try ブロック<br/>データベース操作]
+    Success{エラー発生?}
+    Normal[正常処理<br/>commit]
+    Catch[catch ブロック<br/>エラー処理・rollback]
+    Finally[finally ブロック<br/>リソース解放]
+    End[処理終了]
+
+    Try --> Success
+    Success -->|なし| Normal
+    Success -->|あり| Catch
+    Normal --> Finally
+    Catch --> Finally
+    Finally --> End
+
+    style Try fill:#dbeafe,stroke:#3b82f6,stroke-width:2px
+    style Normal fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style Catch fill:#fee2e2,stroke:#ef4444,stroke-width:2px
+    style Finally fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+                        </pre>
+                    </div>
+
+                    <!-- try-catch-finallyの実装例 -->
+                    <div class="code-block-wrapper my-4">
+                        <div class="code-block-header">
+                            <span class="code-block-title">完全な例外処理とリソース管理の例</span>
+                            <button class="code-copy-btn">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.sql.*;
-import java.time.LocalDateTime;
+                        <pre><code class="language-java">import java.sql.*;
 
-public class ExceptionLogging {
-    public static void executeQuery(String sql) {
-        String url = "jdbc:postgresql://localhost:5432/testdb";
-        String user = "testuser";
-        String password = "testpass";
+public class ProperExceptionHandling {
+    public static void main(String[] args) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
 
-        try (Connection conn = DriverManager.getConnection(url, user, password);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        try {
+            // データベース接続
+            conn = DriverManager.getConnection("jdbc:h2:~/test", "sa", "");
+            conn.setAutoCommit(false);  // トランザクション開始
 
-            // 処理実行
-            while (rs.next()) {
-                // データ処理
-            }
+            // SQL実行
+            String sql = "UPDATE products SET stock = stock - ? WHERE id = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, 5);
+            pstmt.setInt(2, 1);
+            pstmt.executeUpdate();
+
+            // 成功したのでコミット
+            conn.commit();
 
         } catch (SQLException e) {
-            // 詳細なエラー情報をログに記録
-            logSQLException(e, sql);
-        }
-    }
-
-    private static void logSQLException(SQLException e, String sql) {
-        System.err.println("====== SQLエラー詳細 ======");
-        System.err.println("発生時刻: " + LocalDateTime.now());
-        System.err.println("実行SQL: " + sql);
-        System.err.println("エラーメッセージ: " + e.getMessage());
-        System.err.println("SQLステート: " + e.getSQLState());
-        System.err.println("エラーコード: " + e.getErrorCode());
-
-        // スタックトレースの出力
-        e.printStackTrace();
-
-        // 連鎖する例外がある場合
-        SQLException nextEx = e.getNextException();
-        int exCount = 1;
-        while (nextEx != null) {
-            System.err.println("--- 連鎖例外 " + exCount + " ---");
-            System.err.println(nextEx.getMessage());
-            nextEx = nextEx.getNextException();
-            exCount++;
-        }
-        System.err.println("===========================");
-    }
-}</code></pre>
-                    </div>
-
-                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">2. カスタム例外の定義と使用</h3>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        アプリケーション固有のエラー処理を実装するために、カスタム例外クラスを定義することができます。これにより、エラーの種類をより明確に表現でき、呼び出し側での処理が容易になります。
-                    </p>
-
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">DatabaseException.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// カスタム例外クラス
-public class DatabaseException extends Exception {
-    private String sqlState;
-    private int errorCode;
-
-    public DatabaseException(String message, SQLException cause) {
-        super(message, cause);
-        this.sqlState = cause.getSQLState();
-        this.errorCode = cause.getErrorCode();
-    }
-
-    public String getSqlState() {
-        return sqlState;
-    }
-
-    public int getErrorCode() {
-        return errorCode;
-    }
-}</code></pre>
-                    </div>
-
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">CustomExceptionUsage.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.sql.*;
-
-public class CustomExceptionUsage {
-    // カスタム例外をスローするメソッド
-    public static void findUserById(int userId) throws DatabaseException {
-        String url = "jdbc:postgresql://localhost:5432/testdb";
-        String user = "testuser";
-        String password = "testpass";
-        String sql = "SELECT * FROM users WHERE id = ?";
-
-        try (Connection conn = DriverManager.getConnection(url, user, password);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, userId);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    System.out.println("ユーザー名: " + rs.getString("name"));
-                } else {
-                    throw new DatabaseException(
-                        "ユーザーID " + userId + " が見つかりません",
-                        new SQLException("データが存在しません")
-                    );
+            // エラー発生時はロールバック
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
                 }
             }
+            e.printStackTrace();
 
-        } catch (SQLException e) {
-            // SQLExceptionをカスタム例外でラップ
-            throw new DatabaseException(
-                "ユーザー検索中にエラーが発生しました: " + e.getMessage(),
-                e
-            );
-        }
-    }
-
-    public static void main(String[] args) {
-        try {
-            findUserById(999);
-        } catch (DatabaseException e) {
-            System.err.println("データベース処理エラー: " + e.getMessage());
-            System.err.println("SQLステート: " + e.getSqlState());
-            System.err.println("エラーコード: " + e.getErrorCode());
+        } finally {
+            // リソースを必ず解放（finallyブロック）
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }</code></pre>
                     </div>
 
-                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">3. リソースリークの検出と防止</h3>
-                    <div class="bg-blue-50 border-l-4 border-blue-400 rounded-lg p-4 mb-4">
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6">
                         <div class="flex items-start gap-3">
-                            <i class="fas fa-info-circle text-blue-500 text-lg mt-1"></i>
+                            <i class="fas fa-info-circle text-emerald-600 mt-1"></i>
                             <div>
-                                <h3 class="text-blue-800 font-semibold mb-2">リソースリーク防止のチェックリスト</h3>
-                                <ul class="text-blue-900 space-y-1 text-sm">
-                                    <li>✓ try-with-resources構文を可能な限り使用する</li>
-                                    <li>✓ 従来のtry-finallyを使う場合は、必ずリソースをクローズする</li>
-                                    <li>✓ nullチェックを忘れない</li>
-                                    <li>✓ ResultSet → Statement → Connection の順にクローズする</li>
-                                    <li>✓ 各クローズ処理で個別にtry-catchを使用する</li>
-                                    <li>✓ コネクションプールを使用する場合は、必ず返却する</li>
+                                <p class="font-semibold text-emerald-800 mb-1">finallyブロックの重要性</p>
+                                <p class="text-emerald-900 text-sm">
+                                    <code>finally</code>ブロックは、tryブロックで例外が発生してもしなくても必ず実行されます。データベース接続やStatementなどのリソースは、使い終わったら必ず解放する必要があるため、finallyブロックで確実にclose処理を行います。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション5 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.5 try-with-resourcesを使った簡潔な書き方
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Java 7以降では、<strong>try-with-resources文</strong>を使うことで、リソースの解放を自動的に行うことができます。これにより、finallyブロックを書かなくてもConnectionやStatementが自動的にcloseされます。
+                    </p>
+
+                    <!-- try-with-resourcesの実装例 -->
+                    <div class="code-block-wrapper my-4">
+                        <div class="code-block-header">
+                            <span class="code-block-title">try-with-resourcesを使った実装例</span>
+                            <button class="code-copy-btn">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre><code class="language-java">import java.sql.*;
+
+public class TryWithResourcesExample {
+    public static void main(String[] args) {
+        // try-with-resources: リソースを自動的にcloseする
+        try (
+            Connection conn = DriverManager.getConnection("jdbc:h2:~/test", "sa", "");
+            PreparedStatement pstmt = conn.prepareStatement(
+                "UPDATE products SET stock = stock - ? WHERE id = ?"
+            )
+        ) {
+            // 自動コミットOFF
+            conn.setAutoCommit(false);
+
+            // SQL実行
+            pstmt.setInt(1, 5);
+            pstmt.setInt(2, 1);
+            pstmt.executeUpdate();
+
+            // コミット
+            conn.commit();
+
+        } catch (SQLException e) {
+            // エラー処理
+            e.printStackTrace();
+        }
+        // ConnectionとPreparedStatementは自動的にcloseされる
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-blue-800 mb-1">try-with-resourcesのメリット</p>
+                                <ul class="text-blue-900 text-sm space-y-1">
+                                    <li>コードが短く、読みやすくなる</li>
+                                    <li>close忘れを防げる</li>
+                                    <li>例外が発生しても確実にリソースが解放される</li>
                                 </ul>
                             </div>
                         </div>
@@ -877,90 +547,35 @@ public class CustomExceptionUsage {
 
                 <!-- 実習カード -->
                 <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
-                            rounded-xl p-5 my-6">
+                            rounded-xl p-5 my-6 overflow-hidden">
                     <div class="flex items-start gap-4">
                         <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
                                     flex items-center justify-center">
-                            <i class="fas fa-code text-white"></i>
+                            <i class="fas fa-laptop-code text-white"></i>
                         </div>
-                        <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-purple-800 mb-3">
-                                実習 6-1: try-with-resourcesを使用した安全なデータアクセス
-                            </h3>
-                            <p class="text-purple-900 mb-4">try-with-resources構文を使用して、ユーザー情報を検索し、適切な例外処理とリソース管理を実装しましょう。</p>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-4 break-words">実習：トランザクションを使った商品購入処理</h3>
+                            <p class="text-purple-900 mb-4">
+                                トランザクションを使って、商品の在庫を減らし、注文履歴に記録する処理を実装してみましょう。
+                            </p>
 
-                            <h4 class="font-medium text-purple-800 mb-2">手順</h4>
-                            <ol class="space-y-3 mb-4">
-                                <li class="flex items-start gap-3 text-purple-900">
-                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                 flex items-center justify-center text-sm font-medium">1</span>
-                                    <span>データベースに接続し、usersテーブルを作成してサンプルデータを挿入する</span>
-                                </li>
-                                <li class="flex items-start gap-3 text-purple-900">
-                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                 flex items-center justify-center text-sm font-medium">2</span>
-                                    <span>try-with-resources構文を使用して、特定のユーザー名でデータを検索するメソッドを作成する</span>
-                                </li>
-                                <li class="flex items-start gap-3 text-purple-900">
-                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                 flex items-center justify-center text-sm font-medium">3</span>
-                                    <span>SQLExceptionをキャッチし、詳細なエラー情報を表示する処理を実装する</span>
-                                </li>
-                                <li class="flex items-start gap-3 text-purple-900">
-                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                 flex items-center justify-center text-sm font-medium">4</span>
-                                    <span>存在するユーザー名と存在しないユーザー名の両方で検索を実行し、動作を確認する</span>
-                                </li>
-                            </ol>
+                            <div class="bg-white/80 rounded-lg p-4 mb-4">
+                                <p class="font-semibold text-purple-900 mb-2">実装する処理：</p>
+                                <ol class="list-decimal list-inside space-y-1 text-sm text-purple-900">
+                                    <li>商品テーブル（products）の在庫数を1減らす</li>
+                                    <li>注文テーブル（orders）に注文履歴を追加する</li>
+                                    <li>両方成功したらcommit、失敗したらrollback</li>
+                                </ol>
+                            </div>
 
-                            <h4 class="font-medium text-purple-800 mb-2">実装例</h4>
-                            <pre class="!bg-slate-800 !rounded-lg"><code class="language-java">import java.sql.*;
-
-public class SafeDatabaseAccess {
-    private static final String URL = "jdbc:postgresql://localhost:5432/testdb";
-    private static final String USER = "testuser";
-    private static final String PASSWORD = "testpass";
-
-    public static void findUserByName(String userName) {
-        String sql = "SELECT * FROM users WHERE name = ?";
-
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, userName);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    System.out.println("===== ユーザー情報 =====");
-                    System.out.println("ID: " + rs.getInt("id"));
-                    System.out.println("名前: " + rs.getString("name"));
-                    System.out.println("メール: " + rs.getString("email"));
-                } else {
-                    System.out.println("ユーザー '" + userName + "' が見つかりません");
-                }
-            }
-
-        } catch (SQLException e) {
-            System.err.println("エラー詳細:");
-            System.err.println("  メッセージ: " + e.getMessage());
-            System.err.println("  SQLステート: " + e.getSQLState());
-            System.err.println("  エラーコード: " + e.getErrorCode());
-        }
-    }
-
-    public static void main(String[] args) {
-        findUserByName("田中太郎");  // 存在するユーザー
-        findUserByName("存在しない");  // 存在しないユーザー
-    }
-}</code></pre>
-
-                            <h4 class="font-medium text-purple-800 mt-4 mb-2">期待される結果</h4>
-                            <div class="bg-white/50 rounded-lg p-3 text-purple-900">
-                                <code>===== ユーザー情報 =====<br>
-ID: 1<br>
-名前: 田中太郎<br>
-メール: tanaka@example.com<br>
-ユーザー '存在しない' が見つかりません</code>
+                            <div class="bg-white/80 rounded-lg p-4">
+                                <p class="font-semibold text-purple-900 mb-2">ヒント：</p>
+                                <ul class="list-disc list-inside space-y-1 text-sm text-purple-900">
+                                    <li><code>setAutoCommit(false)</code>でトランザクション開始</li>
+                                    <li>2つのUPDATE/INSERT文を実行</li>
+                                    <li>成功したら<code>commit()</code>、エラー時は<code>rollback()</code></li>
+                                    <li>try-with-resourcesを使ってリソース管理</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -968,74 +583,59 @@ ID: 1<br>
 
                 <!-- 理解度確認クイズ -->
                 <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
-                            rounded-xl p-5 my-6">
+                            rounded-xl p-5 my-6 overflow-hidden">
                     <div class="flex items-start gap-4">
                         <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
                                     flex items-center justify-center">
                             <i class="fas fa-question text-white"></i>
                         </div>
-                        <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-blue-800 mb-4">理解度確認クイズ</h3>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
                             <ol class="space-y-4">
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2">Q1. try-with-resources構文の主な利点を3つ挙げてください。</p>
+                                    <p class="font-medium mb-2 break-words">Q1. トランザクションとは何ですか？なぜ必要なのでしょうか？</p>
                                     <details class="mt-2">
-                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
-                                            <strong>回答:</strong><br>
-                                            1. <strong>自動リソース管理</strong>: リソースが自動的にクローズされるため、クローズ忘れを防止できる<br>
-                                            2. <strong>コードの簡潔性</strong>: finally ブロックや null チェックが不要になり、コードが読みやすくなる<br>
-                                            3. <strong>安全なクローズ順序</strong>: リソースは宣言とは逆順に自動的にクローズされるため、依存関係のあるリソースも安全に処理できる
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            トランザクションは、複数のデータベース操作を「1つのまとまった処理」として扱う仕組みです。すべての操作が成功したときだけデータベースに反映し、途中で1つでも失敗したら全体を取り消すことで、データの整合性を保つために必要です。
                                         </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2">Q2. SQLExceptionから取得できる情報には何がありますか？また、それぞれどのようなメソッドで取得できますか？</p>
+                                    <p class="font-medium mb-2 break-words">Q2. commit()とrollback()の違いを説明してください。</p>
                                     <details class="mt-2">
-                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
-                                            <strong>回答:</strong><br>
-                                            1. <strong>エラーメッセージ</strong>: getMessage() - エラーの詳細な説明<br>
-                                            2. <strong>SQLステート</strong>: getSQLState() - SQL標準のエラーコード（5文字）<br>
-                                            3. <strong>エラーコード</strong>: getErrorCode() - データベースベンダー固有のエラーコード<br>
-                                            4. <strong>連鎖例外</strong>: getNextException() - 複数の例外が発生した場合、次の例外を取得
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            <strong>commit()</strong>: トランザクション内の変更をデータベースに確定する（反映する）<br>
+                                            <strong>rollback()</strong>: トランザクション内の変更をすべて取り消す（元に戻す）
                                         </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2">Q3. 従来のtry-catch-finally構文でリソースをクローズする際、どのような順序でクローズする必要がありますか？その理由も説明してください。</p>
+                                    <p class="font-medium mb-2 break-words">Q3. setAutoCommit(false)の役割は何ですか？</p>
                                     <details class="mt-2">
-                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
-                                            <strong>回答:</strong><br>
-                                            クローズの順序: <strong>ResultSet → Statement（またはPreparedStatement） → Connection</strong><br><br>
-                                            <strong>理由:</strong><br>
-                                            ・ResultSetはStatementに依存しているため、Statementをクローズする前にResultSetをクローズする必要がある<br>
-                                            ・StatementはConnectionに依存しているため、Connectionをクローズする前にStatementをクローズする必要がある<br>
-                                            ・つまり、生成とは逆順にクローズすることで、依存関係を正しく解決できる<br>
-                                            （try-with-resourcesでは、この順序が自動的に守られます）
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            自動コミットを無効にして、複数のSQL文を1つのトランザクションとして扱えるようにします。これにより、明示的に<code>commit()</code>を呼ぶまでデータベースに反映されず、エラー時には<code>rollback()</code>で取り消すことができます。
                                         </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2">Q4. リソースリークが発生すると、システムにどのような影響がありますか？</p>
+                                    <p class="font-medium mb-2 break-words">Q4. try-with-resources文を使うメリットを3つ挙げてください。</p>
                                     <details class="mt-2">
-                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
-                                            <strong>回答:</strong><br>
-                                            リソースリークによる主な影響:<br>
-                                            1. <strong>コネクション枯渇</strong>: データベース接続が使い切られ、新しい接続ができなくなる<br>
-                                            2. <strong>メモリリーク</strong>: 解放されないメモリが蓄積し、アプリケーションのパフォーマンスが低下する<br>
-                                            3. <strong>システムの不安定化</strong>: 最終的にOutOfMemoryErrorやシステムクラッシュを引き起こす可能性がある<br>
-                                            4. <strong>運用コストの増加</strong>: 頻繁な再起動や追加のハードウェアリソースが必要になる
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            1. コードが短く、読みやすくなる<br>
+                                            2. close忘れを防げる<br>
+                                            3. 例外が発生しても確実にリソースが解放される
                                         </p>
                                     </details>
                                 </li>
@@ -1044,28 +644,32 @@ ID: 1<br>
                     </div>
                 </div>
 
-                <!-- まとめセクション -->
-                <div class="bg-slate-100 border border-slate-300 rounded-xl p-5 my-6">
-                    <h3 class="text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2">
-                        <i class="fas fa-book text-primary-500"></i>
+                <!-- まとめ -->
+                <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-300 rounded-xl p-6 my-8">
+                    <h3 class="flex items-center gap-2 text-lg font-semibold text-slate-800 mb-4">
+                        <i class="fas fa-bookmark text-primary-500"></i>
                         この章のまとめ
                     </h3>
                     <ul class="space-y-2 text-slate-700">
                         <li class="flex items-start gap-2">
-                            <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
-                            <span>JDBCプログラミングでは、適切な例外処理とリソース管理が非常に重要</span>
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span><strong>トランザクション</strong>は、複数の操作をまとめて扱い、すべて成功したときだけ確定する仕組み</span>
                         </li>
                         <li class="flex items-start gap-2">
-                            <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
-                            <span>try-with-resources構文を使用することで、リソースが自動的にクローズされ、リソースリークを防止できる</span>
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span><code>setAutoCommit(false)</code>で自動コミットを無効にし、トランザクションを開始</span>
                         </li>
                         <li class="flex items-start gap-2">
-                            <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
-                            <span>SQLExceptionから詳細なエラー情報を取得し、適切にログ記録することでデバッグが容易になる</span>
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span><code>commit()</code>で確定、<code>rollback()</code>で取り消し</span>
                         </li>
                         <li class="flex items-start gap-2">
-                            <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
-                            <span>カスタム例外を定義することで、アプリケーション固有のエラー処理を実装できる</span>
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span><code>try-catch-finally</code>で例外処理とリソース解放を確実に行う</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span><code>try-with-resources</code>を使えば、リソースの自動解放が可能</span>
                         </li>
                     </ul>
                 </div>
@@ -1074,12 +678,11 @@ ID: 1<br>
                 <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
                     <a href="jdbc-learning-material-05.html"
                        class="group flex items-center gap-3 px-4 py-3 rounded-xl
-                              bg-slate-100 hover:bg-slate-200 transition-colors">
-                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
-                                  transition-transform group-hover:-translate-x-1"></i>
-                        <div>
+                              bg-slate-200 hover:bg-slate-300 text-slate-700 transition-colors">
+                        <i class="fas fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
+                        <div class="text-left">
                             <span class="text-xs text-slate-500 block">前の章</span>
-                            <span class="text-slate-700 font-medium">PreparedStatementの活用</span>
+                            <span class="font-medium">PreparedStatementの活用</span>
                         </div>
                     </a>
                     <a href="jdbc-learning-material-07.html"
@@ -1087,7 +690,7 @@ ID: 1<br>
                               bg-primary-500 hover:bg-primary-600 text-white transition-colors">
                         <div class="text-right">
                             <span class="text-xs text-primary-100 block">次の章</span>
-                            <span class="font-medium">トランザクション管理</span>
+                            <span class="font-medium">DAOパターン</span>
                         </div>
                         <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
                     </a>
@@ -1105,7 +708,7 @@ ID: 1<br>
                     本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
                 </p>
                 <div class="flex items-center gap-4">
-                    <a href="https://github.com/fcircle-biz" class="hover:text-white transition-colors">
+                    <a href="#" class="hover:text-white transition-colors">
                         <i class="fab fa-github text-xl"></i>
                     </a>
                 </div>
@@ -1122,216 +725,8 @@ ID: 1<br>
         <i class="fas fa-arrow-up"></i>
     </button>
 
-    <!-- 描画用Canvasオーバーレイ -->
-    <canvas id="drawing-canvas" class="fixed inset-0 z-[100] pointer-events-none"></canvas>
-
-    <!-- 描画ツールバー（右端） -->
-    <div id="drawing-toolbar" class="fixed right-4 top-1/2 -translate-y-1/2 z-[110]
-                                     bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl
-                                     border border-slate-200 p-2 flex flex-col gap-1
-                                     transition-all duration-300">
-        <!-- ツールバー折りたたみボタン -->
-        <button id="toolbar-toggle"
-                class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
-                       flex items-center justify-center transition-colors mb-2"
-                title="ツールバーを開く">
-            <i class="fas fa-chevron-left text-slate-600"></i>
-        </button>
-
-        <div id="toolbar-content" class="hidden flex-col gap-1">
-            <!-- ペンツール -->
-            <button id="pen-tool"
-                    class="tool-btn w-10 h-10 rounded-xl bg-primary-100 text-primary-600
-                           hover:bg-primary-200 flex items-center justify-center transition-colors"
-                    title="ペン (P)">
-                <i class="fas fa-pen"></i>
-            </button>
-
-            <!-- 消しゴムツール -->
-            <button id="eraser-tool"
-                    class="tool-btn w-10 h-10 rounded-xl bg-slate-100 text-slate-600
-                           hover:bg-slate-200 flex items-center justify-center transition-colors"
-                    title="消しゴム (E)">
-                <i class="fas fa-eraser"></i>
-            </button>
-
-            <!-- 区切り線 -->
-            <div class="h-px bg-slate-200 my-1"></div>
-
-            <!-- 色選択 -->
-            <div id="color-picker" class="flex flex-col gap-1">
-                <button class="color-btn w-10 h-10 rounded-xl border-2 border-red-400 bg-red-500
-                               hover:scale-110 transition-transform" data-color="#ef4444" title="赤"></button>
-                <button class="color-btn w-10 h-10 rounded-xl border-2 border-blue-400 bg-blue-500
-                               hover:scale-110 transition-transform" data-color="#3b82f6" title="青"></button>
-                <button class="color-btn w-10 h-10 rounded-xl border-2 border-slate-600 bg-slate-800
-                               hover:scale-110 transition-transform active-color" data-color="#1e293b" title="黒"></button>
-                <button class="color-btn w-10 h-10 rounded-xl border-2 border-emerald-400 bg-emerald-500
-                               hover:scale-110 transition-transform" data-color="#10b981" title="緑"></button>
-                <button class="color-btn w-10 h-10 rounded-xl border-2 border-amber-400 bg-amber-500
-                               hover:scale-110 transition-transform" data-color="#f59e0b" title="黄"></button>
-            </div>
-
-            <!-- 区切り線 -->
-            <div class="h-px bg-slate-200 my-1"></div>
-
-            <!-- 線の太さ -->
-            <div id="stroke-width" class="flex flex-col gap-1">
-                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
-                               flex items-center justify-center transition-colors" data-width="2" title="細い">
-                    <div class="w-4 h-0.5 bg-slate-600 rounded-full"></div>
-                </button>
-                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
-                               flex items-center justify-center transition-colors active-stroke" data-width="4" title="普通">
-                    <div class="w-4 h-1 bg-slate-600 rounded-full"></div>
-                </button>
-                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
-                               flex items-center justify-center transition-colors" data-width="8" title="太い">
-                    <div class="w-4 h-2 bg-slate-600 rounded-full"></div>
-                </button>
-            </div>
-
-            <!-- 区切り線 -->
-            <div class="h-px bg-slate-200 my-1"></div>
-
-            <!-- 元に戻す -->
-            <button id="undo-btn"
-                    class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600
-                           hover:bg-slate-200 flex items-center justify-center transition-colors
-                           disabled:opacity-40 disabled:cursor-not-allowed"
-                    title="元に戻す (Ctrl+Z)" disabled>
-                <i class="fas fa-undo"></i>
-            </button>
-
-            <!-- 全消去 -->
-            <button id="clear-btn"
-                    class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600
-                           hover:bg-rose-200 flex items-center justify-center transition-colors"
-                    title="全消去 (C)">
-                <i class="fas fa-trash-alt"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- JavaScript -->
-    <script>
-        // Highlight.js 初期化
-        hljs.highlightAll();
-
-        // Mermaid.js 初期化
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'default',
-            securityLevel: 'loose'
-        });
-
-        // モバイルメニュー制御
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebar-overlay');
-        const menuBtn = document.getElementById('mobile-menu-btn');
-
-        menuBtn?.addEventListener('click', () => {
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
-        });
-
-        overlay?.addEventListener('click', () => {
-            sidebar.classList.add('-translate-x-full');
-            overlay.classList.add('hidden');
-        });
-
-        // スクロールトップボタン表示制御
-        const scrollTopBtn = document.getElementById('scroll-top-btn');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                scrollTopBtn.classList.remove('opacity-0', 'invisible', 'translate-y-4');
-            } else {
-                scrollTopBtn.classList.add('opacity-0', 'invisible', 'translate-y-4');
-            }
-        });
-
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // コードコピー機能
-        function copyCode(btn) {
-            const code = btn.closest('.code-block-wrapper').querySelector('code').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                const icon = btn.querySelector('i');
-                icon.classList.remove('fa-copy');
-                icon.classList.add('fa-check');
-                setTimeout(() => {
-                    icon.classList.remove('fa-check');
-                    icon.classList.add('fa-copy');
-                }, 2000);
-            });
-        }
-
-        // サイドバーリサイズ機能
-        const resizeHandle = document.getElementById('sidebar-resize-handle');
-        let isResizing = false;
-        let startX, startWidth;
-
-        resizeHandle?.addEventListener('mousedown', (e) => {
-            isResizing = true;
-            startX = e.clientX;
-            startWidth = sidebar.offsetWidth;
-            resizeHandle.classList.add('resizing');
-            document.body.style.cursor = 'ew-resize';
-            document.body.style.userSelect = 'none';
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (!isResizing) return;
-            const diff = e.clientX - startX;
-            const newWidth = Math.min(Math.max(startWidth + diff, 240), 480);
-            sidebar.style.width = newWidth + 'px';
-        });
-
-        document.addEventListener('mouseup', () => {
-            if (isResizing) {
-                isResizing = false;
-                resizeHandle.classList.remove('resizing');
-                document.body.style.cursor = '';
-                document.body.style.userSelect = '';
-                // サイドバー幅をローカルストレージに保存
-                localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
-            }
-        });
-
-        // ページ読み込み時にサイドバー幅を復元
-        const savedWidth = localStorage.getItem('sidebarWidth');
-        if (savedWidth && window.innerWidth >= 768) {
-            sidebar.style.width = savedWidth + 'px';
-        }
-
-        // 描画ツールバー折りたたみ機能
-        const toolbarToggle = document.getElementById('toolbar-toggle');
-        const toolbarContent = document.getElementById('toolbar-content');
-        let isToolbarOpen = false;
-
-        toolbarToggle?.addEventListener('click', () => {
-            isToolbarOpen = !isToolbarOpen;
-            const icon = toolbarToggle.querySelector('i');
-
-            if (isToolbarOpen) {
-                toolbarContent.classList.remove('hidden');
-                toolbarContent.classList.add('flex');
-                icon.classList.remove('fa-chevron-left');
-                icon.classList.add('fa-chevron-right');
-                toolbarToggle.title = 'ツールバーを閉じる';
-            } else {
-                toolbarContent.classList.add('hidden');
-                toolbarContent.classList.remove('flex');
-                icon.classList.remove('fa-chevron-right');
-                icon.classList.add('fa-chevron-left');
-                toolbarToggle.title = 'ツールバーを開く';
-            }
-        });
-    </script>
-
-    <!-- 描画ツール -->
+    <script src="sidebar-content.js"></script>
+    <script src="main.js"></script>
     <script src="drawing-tool.js"></script>
 </body>
 </html>
