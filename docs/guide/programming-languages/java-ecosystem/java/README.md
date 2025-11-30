@@ -1,711 +1,88 @@
-# Java基礎 学習ガイドライン
+# Java 学習ガイドライン
 
-このガイドラインでは、Java言語の基礎をプログラミング初心者向けに段階的に学習するためのカリキュラムを提供しています。プログラミングが初めての方でも安心して学べるよう、基本的な概念から丁寧に解説しています。
+このガイドラインでは、Javaの基礎をプログラミング初心者向けに段階的に学習するためのカリキュラムを提供しています。
 
 ## 前提条件
 ### 必要な環境
-- JDK（Java Development Kit）17以降
-- テキストエディタまたは統合開発環境（VS Code、IntelliJ IDEA Community、Eclipse等）
-- コマンドライン/ターミナルの基本操作知識
+- Java Development Kit (JDK) 17以上（LTS版推奨）
+- 統合開発環境 (IDE): IntelliJ IDEA Community Edition、Eclipse、VS Codeのいずれか
+- コマンドラインツール（ターミナルまたはコマンドプロンプト）
 
 ### 参考リソース
-- [Oracle Java公式ドキュメント](https://docs.oracle.com/en/java/)
-- [Java SE APIドキュメント（日本語）](https://docs.oracle.com/javase/jp/17/docs/api/)
-- [Oracle Javaチュートリアル](https://docs.oracle.com/javase/tutorial/)
+- [Oracle Java公式ドキュメント](https://docs.oracle.com/javase/jp/)
+- [OpenJDK公式サイト](https://openjdk.org/)
+- [Java Tutorial (Oracle)](https://docs.oracle.com/javase/tutorial/)
 
 ### 前提知識
-- **必須**: コンピュータの基本的な操作（ファイルの保存、フォルダの作成など）
-- **推奨**: プログラミングへの興味と学習意欲
+- **必須**: なし（プログラミング完全初心者向け）
+- **推奨**: コンピュータの基本操作、テキストエディタの使用経験
 
 ## 学習コンテンツ
+### [1. Javaとプログラミングの基本](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-01.html)
+Javaとは何か、プログラミングとは何か、そしてJava開発環境の構築について学びます。初めてのプログラムとして「Hello World」を実行し、プログラムが動く仕組みを理解します。
 
-### [1. Javaの世界へようこそ - 環境構築と最初の一歩](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-01.html)
-Javaとは何か、なぜ世界中で使われているのかを理解し、開発環境のセットアップから最初のプログラム「Hello World」を作成・実行するまでを学びます。
+### [2. 変数とデータ型の基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-02.html)
+データを扱うための基本概念である変数とデータ型について学びます。整数、小数、文字列などの様々なデータ型と、それらを組み合わせた計算や処理方法を理解します。
 
-**学習目標:**
-- Javaプログラミング言語の特徴と用途を理解する
-- JDKのインストールと環境変数の設定ができる
-- テキストエディタまたはIDEでJavaプログラムを作成できる
-- コンパイルと実行の仕組みを理解し、Hello Worldプログラムを動かせる
+### [3. 演算子と式](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-03.html)
+算術演算、比較演算、論理演算など、プログラムで値を計算したり判定したりするための演算子について学びます。式の評価順序や型変換についても理解を深めます。
 
-**学習内容:**
-1. **Javaとは何か**
-   - Javaの歴史と「Write Once, Run Anywhere」の理念
-   - JVM（Java仮想マシン）の役割と仕組み
-   - JDK、JRE、JVMの違い
-   - Javaが使われている分野（Webアプリ、Android、業務システムなど）
+### [4. 条件分岐とプログラムの流れ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-04.html)
+if文やswitch文を使った条件分岐について学びます。プログラムが状況に応じて異なる処理を実行する仕組みを理解し、実践的な判定ロジックを作成します。
 
-2. **開発環境のセットアップ**
-   - JDKのダウンロードとインストール（Windows/Mac）
-   - 環境変数（JAVA_HOME、PATH）の設定
-   - インストールの確認方法（`java -version`、`javac -version`）
-   - IDEの選択と基本設定（VS Code + Extension Pack for Java）
+### [5. 繰り返し処理（ループ）](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-05.html)
+for文、while文、do-while文を使った繰り返し処理について学びます。同じ処理を効率的に実行する方法や、ループの制御（break、continue）についても理解します。
 
-3. **最初のプログラム - Hello World**
-   - ソースファイル（.java）の作成
-   - プログラムの基本構造（クラス、mainメソッド）
-   - コンパイル（`javac`）と実行（`java`）の流れ
-   - よくあるエラーとその対処法
+### [6. 配列とコレクション入門](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-06.html)
+複数のデータをまとめて扱うための配列について学びます。配列の宣言、初期化、要素へのアクセス、多次元配列、そして拡張forループによる走査方法を理解します。
 
-**つまずきやすいポイント:**
-- 環境変数の設定ミス → 設定確認手順を詳細に解説
-- ファイル名とクラス名の不一致 → 命名規則の重要性を強調
-- 文字コードの問題（日本語表示） → UTF-8設定の方法
+### [7. メソッドの基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-07.html)
+処理をまとめて再利用するためのメソッドについて学びます。メソッドの定義、呼び出し、引数と戻り値、オーバーロードなど、構造化プログラミングの基本を理解します。
 
-**演習課題:**
-- 自分の名前を表示するプログラムを作成
-- 複数行のメッセージを表示するプログラムを作成
-- コンパイルエラーを意図的に発生させ、エラーメッセージを読む練習
+### [8. クラスとオブジェクトの基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-08.html)
+Javaの中核概念であるクラスとオブジェクトについて学びます。フィールド、メソッド、コンストラクタ、インスタンス生成など、オブジェクト指向プログラミングの基礎を理解します。
 
----
+### [9. カプセル化とアクセス制御](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-09.html)
+オブジェクト指向の重要原則であるカプセル化について学びます。アクセス修飾子（public、private、protected）の使い分けや、getter/setterによる適切な情報隠蔽を理解します。
 
-### [2. 変数とデータ型 - データを扱う基本](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-02.html)
-プログラムでデータを扱うための「変数」の概念と、Javaで使用できるさまざまなデータ型について学びます。
+### [10. 継承とポリモーフィズム](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-10.html)
+クラスの継承、メソッドのオーバーライド、ポリモーフィズム（多態性）について学びます。コードの再利用性を高め、柔軟な設計を実現する方法を理解します。
 
-**学習目標:**
-- 変数の概念と役割を理解する
-- 基本データ型（プリミティブ型）を使い分けられる
-- 変数の宣言、初期化、代入ができる
-- 型変換（キャスト）の仕組みを理解する
+### [11. 抽象クラスとインターフェース](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-11.html)
+抽象クラスとインターフェースを使った高度な抽象化について学びます。契約による設計や、実装の柔軟性を高める技法を理解します。
 
-**学習内容:**
-1. **変数とは何か**
-   - 変数を「データの入れ物」として理解する
-   - 変数名のつけ方（命名規則、予約語）
-   - 変数の宣言と初期化
-   - 変数のスコープ（有効範囲）の基礎
-
-2. **基本データ型（プリミティブ型）**
-   - 整数型: `byte`, `short`, `int`, `long`（数値の大きさによる使い分け）
-   - 浮動小数点型: `float`, `double`（小数を扱う）
-   - 文字型: `char`（1文字を扱う）
-   - 論理型: `boolean`（true/false）
-   - 各型のメモリサイズと値の範囲
-
-3. **文字列型（String）**
-   - Stringクラスの基本（参照型の導入）
-   - 文字列の作成と連結
-   - 文字列の比較（`==` と `equals()` の違い）
-   - 基本的な文字列操作メソッド
-
-4. **型変換（キャスト）**
-   - 暗黙的な型変換（自動変換）
-   - 明示的な型変換（キャスト演算子）
-   - 文字列と数値の変換
-   - オーバーフローと精度の問題
-
-**つまずきやすいポイント:**
-- `int`と`double`の計算結果 → 暗黙の型変換ルールを図解
-- 文字列の`==`比較 → `equals()`メソッドの重要性
-- 変数の初期化忘れ → コンパイラが教えてくれることを説明
-
-**演習課題:**
-- 自己紹介情報（名前、年齢、身長など）を変数に格納して表示
-- 様々なデータ型の変数を宣言し、型変換を試す
-- 計算結果を変数に保存して表示するプログラム
-
----
-
-### [3. 演算子と式 - 計算と比較の方法](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-03.html)
-Javaで使用できる様々な演算子を学び、数値の計算や条件の比較ができるようになります。
-
-**学習目標:**
-- 算術演算子を使った計算ができる
-- 比較演算子と論理演算子を理解する
-- 代入演算子と複合代入演算子を使える
-- 演算子の優先順位を理解する
-
-**学習内容:**
-1. **算術演算子**
-   - 基本演算: `+`, `-`, `*`, `/`（四則演算）
-   - 剰余演算子: `%`（割り算の余りを求める）
-   - 整数同士の割り算の注意点
-   - 増減演算子: `++`, `--`（前置と後置の違い）
-
-2. **比較演算子**
-   - 等価比較: `==`, `!=`
-   - 大小比較: `<`, `>`, `<=`, `>=`
-   - 比較結果はboolean型になること
-   - 文字列の比較の特殊性
-
-3. **論理演算子**
-   - AND演算: `&&`（両方がtrueならtrue）
-   - OR演算: `||`（どちらかがtrueならtrue）
-   - NOT演算: `!`（trueとfalseを反転）
-   - 短絡評価（ショートサーキット）の仕組み
-
-4. **代入演算子**
-   - 基本代入: `=`
-   - 複合代入: `+=`, `-=`, `*=`, `/=`, `%=`
-   - インクリメント・デクリメントの活用
-
-5. **演算子の優先順位**
-   - 優先順位の一覧表
-   - 括弧 `()` を使った優先順位の明示
-   - 読みやすいコードを書くためのヒント
-
-**つまずきやすいポイント:**
-- 整数の割り算で小数が出ない → 型変換の必要性
-- `=`と`==`の混同 → 代入と比較の明確な区別
-- `++i`と`i++`の違い → 実例で丁寧に解説
-
-**演習課題:**
-- 簡単な電卓プログラム（2つの数値の四則演算）
-- BMI計算プログラム（体重と身長から計算）
-- 論理演算子を使った条件判定の練習
-
----
-
-### [4. 条件分岐 - プログラムに判断させる](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-04.html)
-プログラムが状況に応じて異なる動作をする「条件分岐」の仕組みを学びます。
-
-**学習目標:**
-- if文を使った基本的な条件分岐ができる
-- if-else文、if-else if-else文で複数の条件を処理できる
-- switch文の使い方と適用場面を理解する
-- 条件分岐のネスト（入れ子）を理解する
-
-**学習内容:**
-1. **if文の基本**
-   - if文の構文と動作の仕組み
-   - 条件式の書き方（比較演算子、論理演算子の活用）
-   - ブロック `{}` の意味と省略の危険性
-   - 条件が真のときだけ実行される
-
-2. **if-else文**
-   - 「もし〜ならば、そうでなければ」の構造
-   - 2つの選択肢から1つを選ぶ
-   - else文の正しい使い方
-
-3. **if-else if-else文**
-   - 複数の条件を順番にチェック
-   - 条件の順序の重要性
-   - 最後のelseの役割（それ以外の場合）
-
-4. **switch文**
-   - switch文の構文と動作
-   - case、break、defaultキーワード
-   - switch式（Java 14以降の新しい書き方）
-   - if文との使い分け
-
-5. **条件分岐のネスト**
-   - if文の中にif文を書く
-   - ネストが深くなりすぎる問題と解決策
-   - 読みやすいコードを書くためのヒント
-
-**つまずきやすいポイント:**
-- ブロック `{}` の省略による予期しない動作 → 常に`{}`を付ける習慣
-- switch文のbreak忘れ（フォールスルー） → 図解で説明
-- 条件の順序ミス → 先に評価される条件を意識
-
-**演習課題:**
-- 点数に応じた成績評価プログラム（A/B/C/D/F）
-- 年齢に応じた料金計算プログラム（子供/大人/シニア）
-- じゃんけんゲームの判定ロジック
-
----
-
-### [5. 繰り返し処理 - 同じ処理を効率的に](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-05.html)
-同じ処理を繰り返し実行する「ループ」の仕組みを学び、効率的なプログラムを書けるようになります。
-
-**学習目標:**
-- for文を使った繰り返し処理ができる
-- while文とdo-while文の違いを理解する
-- breakとcontinueで繰り返しを制御できる
-- 多重ループ（ループのネスト）を理解する
-
-**学習内容:**
-1. **for文の基本**
-   - for文の構文: 初期化、条件、更新
-   - カウンタ変数を使った繰り返し
-   - for文の実行フロー（図解）
-   - よくあるforループのパターン
-
-2. **while文**
-   - while文の構文と動作
-   - 条件が真の間繰り返す
-   - 無限ループと脱出方法
-   - forとwhileの使い分け
-
-3. **do-while文**
-   - do-while文の構文と動作
-   - 「最低1回は実行される」特徴
-   - while文との違い
-   - 使用場面の例（ユーザー入力の検証）
-
-4. **繰り返しの制御**
-   - break: ループを途中で抜ける
-   - continue: 次の繰り返しにスキップ
-   - ラベル付きbreak/continue（多重ループでの使用）
-   - 無限ループ + breakのパターン
-
-5. **多重ループ**
-   - ループの中にループを書く
-   - 九九の表、パターン出力の例
-   - 処理効率の考え方
-
-**つまずきやすいポイント:**
-- 無限ループに陥る → 終了条件の確認方法
-- 1つずれるエラー（off-by-one） → 境界値の考え方
-- 多重ループでの変数名の混同 → 意味のある変数名
-
-**演習課題:**
-- 1から100までの合計を計算
-- 九九の表を表示するプログラム
-- 素数を判定するプログラム
-- 星を使った図形（三角形、ピラミッド）の描画
-
----
-
-### [6. 配列 - 複数のデータをまとめて管理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-06.html)
-同じ種類のデータを複数まとめて扱う「配列」の概念と使い方を学びます。
-
-**学習目標:**
-- 配列の概念と必要性を理解する
-- 配列の宣言、生成、初期化ができる
-- 配列の要素にアクセスし操作できる
-- 拡張for文（for-each）を使える
-- 多次元配列の基本を理解する
-
-**学習内容:**
-1. **配列とは何か**
-   - 配列の概念（同じ型のデータの集まり）
-   - 配列を使う利点
-   - インデックス（添え字）の概念
-   - 配列の長さ（length）
-
-2. **配列の作成と初期化**
-   - 配列の宣言: `int[] numbers;`
-   - 配列の生成: `new int[5];`
-   - 初期化子を使った作成: `{1, 2, 3, 4, 5}`
-   - デフォルト値（初期値）
-
-3. **配列の操作**
-   - 要素へのアクセス: `numbers[0]`
-   - 要素の代入と更新
-   - 配列の長さの取得: `numbers.length`
-   - ArrayIndexOutOfBoundsExceptionの理解と回避
-
-4. **配列とループの組み合わせ**
-   - for文で配列の全要素を処理
-   - 拡張for文（for-each文）: `for (int n : numbers)`
-   - 配列の検索、集計、最大値・最小値の探索
-   - 配列のコピーと比較
-
-5. **多次元配列**
-   - 2次元配列の概念（表形式のデータ）
-   - 2次元配列の宣言と初期化
-   - 2次元配列の要素へのアクセス
-   - ジャグ配列（不規則な配列）
-
-**つまずきやすいポイント:**
-- インデックスが0から始まる → 図解で説明
-- 配列の範囲外アクセス → エラーの読み方と対処
-- 配列の参照渡し → 変数とは異なる動作
-
-**演習課題:**
-- テストの点数を配列に格納し、平均点を計算
-- 配列の要素を逆順に並び替え
-- 2次元配列で座席表を作成
-- 配列から特定の値を検索
-
----
-
-### [7. メソッド - 処理をまとめて再利用](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-07.html)
-一連の処理を「メソッド」としてまとめ、再利用可能なコードを書く方法を学びます。
-
-**学習目標:**
-- メソッドの概念と利点を理解する
-- メソッドの定義と呼び出しができる
-- 引数と戻り値の仕組みを理解する
-- メソッドのオーバーロードを理解する
-
-**学習内容:**
-1. **メソッドとは何か**
-   - メソッドを「処理の塊」として理解
-   - メソッドを使う利点（再利用性、可読性、保守性）
-   - mainメソッドの役割の再確認
-   - メソッドの基本構造
-
-2. **メソッドの定義**
-   - メソッドの構文: 修飾子、戻り値型、メソッド名、引数
-   - voidメソッド（戻り値なし）
-   - メソッド名の命名規則
-   - staticメソッドの意味（この段階では概要のみ）
-
-3. **引数（パラメータ）**
-   - 引数とは「メソッドへの入力」
-   - 仮引数と実引数
-   - 複数の引数を持つメソッド
-   - 値渡しと参照渡しの違い
-
-4. **戻り値（リターン値）**
-   - 戻り値とは「メソッドからの出力」
-   - return文の使い方
-   - 戻り値の型と一致する必要性
-   - 戻り値を使った計算の連鎖
-
-5. **メソッドのオーバーロード**
-   - 同じ名前で異なる引数を持つメソッド
-   - オーバーロードの解決ルール
-   - オーバーロードの活用例（printlnなど）
-
-**つまずきやすいポイント:**
-- 引数の順序と型の一致 → コンパイラのエラーメッセージを読む
-- 戻り値の受け取り忘れ → 呼び出し側での処理
-- スコープの混乱 → ローカル変数の有効範囲
-
-**演習課題:**
-- 2つの数値の最大値を返すメソッドを作成
-- 配列の合計と平均を計算するメソッドを作成
-- 様々な計算機能を持つユーティリティメソッドの作成
-- オーバーロードを使った柔軟な挨拶メソッド
-
----
-
-### [8. クラスとオブジェクト - オブジェクト指向の基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-08.html)
-Javaの核心である「オブジェクト指向プログラミング」の基本概念を学び、クラスとオブジェクトを作成できるようになります。
-
-**学習目標:**
-- オブジェクト指向プログラミングの基本概念を理解する
-- クラスの定義ができる
-- オブジェクト（インスタンス）を生成して使用できる
-- フィールドとメソッドの関係を理解する
-
-**学習内容:**
-1. **オブジェクト指向とは**
-   - オブジェクト指向の考え方（現実世界のモデル化）
-   - クラスとオブジェクトの関係（設計図と実体）
-   - オブジェクト指向の3大要素（カプセル化、継承、ポリモーフィズム）の概要
-   - 手続き型との違い
-
-2. **クラスの定義**
-   - クラスの構文
-   - フィールド（属性、メンバ変数）
-   - メソッド（振る舞い）
-   - 1ファイル1クラスの原則
-
-3. **オブジェクトの生成と使用**
-   - new演算子によるインスタンス化
-   - 参照変数の概念
-   - フィールドへのアクセス（ドット演算子）
-   - メソッドの呼び出し
-   - 複数のオブジェクトを作成する
-
-4. **コンストラクタ**
-   - コンストラクタとは（初期化のための特別なメソッド）
-   - デフォルトコンストラクタ
-   - 引数付きコンストラクタ
-   - コンストラクタのオーバーロード
-   - thisキーワード
-
-5. **アクセス修飾子とカプセル化**
-   - public、private、protected、デフォルトの違い
-   - カプセル化の重要性
-   - getter/setterメソッド
-   - データの隠蔽と安全なアクセス
-
-**つまずきやすいポイント:**
-- クラスとオブジェクトの混同 → 設計図と実体の比喩
-- 参照とnullの理解 → NullPointerExceptionの原因と対処
-- thisキーワードの役割 → フィールドとローカル変数の区別
-
-**演習課題:**
-- 「犬」クラスを作成（名前、年齢、鳴くメソッド）
-- 「銀行口座」クラスを作成（残高、入金、出金メソッド）
-- 「学生」クラスを作成（名前、点数、成績判定メソッド）
-- getter/setterを使った安全なデータアクセス
-
----
-
-### [9. 継承とポリモーフィズム - クラスの関係性](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-09.html)
-クラス間の関係性を表現する「継承」と、柔軟なプログラム設計を可能にする「ポリモーフィズム」を学びます。
-
-**学習目標:**
-- 継承の概念と使い方を理解する
-- メソッドのオーバーライドができる
-- ポリモーフィズムの仕組みを理解する
-- 抽象クラスとインターフェースの基礎を学ぶ
-
-**学習内容:**
-1. **継承とは**
-   - 継承の概念（is-a関係）
-   - extendsキーワード
-   - 親クラス（スーパークラス）と子クラス（サブクラス）
-   - 継承で引き継がれるもの
-
-2. **継承の実装**
-   - 基本的な継承の書き方
-   - superキーワード（親クラスのアクセス）
-   - 親クラスのコンストラクタ呼び出し
-   - 継承の階層構造
-
-3. **メソッドのオーバーライド**
-   - オーバーライドとは（親クラスのメソッドを上書き）
-   - @Overrideアノテーション
-   - オーバーライドのルール
-   - オーバーロードとの違い
-
-4. **ポリモーフィズム**
-   - ポリモーフィズム（多態性）の概念
-   - 親クラス型の変数で子クラスのオブジェクトを扱う
-   - 動的バインディング
-   - ポリモーフィズムの利点
-
-5. **抽象クラスとインターフェース（入門）**
-   - 抽象クラスとは（abstractキーワード）
-   - 抽象メソッド
-   - インターフェースの概念
-   - implementsキーワード
-   - クラスとインターフェースの使い分け
-
-**つまずきやすいポイント:**
-- 継承の乱用 → 「is-a関係」の確認
-- オーバーライドとオーバーロードの混同 → 明確な違いを表で整理
-- ポリモーフィズムの動作 → 図解とサンプルコード
-
-**演習課題:**
-- 「動物」クラスと派生クラス（犬、猫、鳥）の作成
-- 「図形」クラスと派生クラス（円、長方形、三角形）の作成
-- インターフェースを使った「飛べる」機能の実装
-- ポリモーフィズムを活用した動物園プログラム
-
----
-
-### [10. 例外処理とJava APIの活用 - 堅牢なプログラムを書く](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-10.html)
-エラーに強いプログラムを作るための「例外処理」と、実践的なプログラミングに必要なJava標準APIの使い方を学びます。
-
-**学習目標:**
-- 例外処理の仕組みを理解し実装できる
-- try-catch-finally構文を正しく使える
-- 主要なJava標準APIを活用できる
-- 実践的なプログラムを作成できる
-
-**学習内容:**
-1. **例外とは何か**
-   - 例外の概念（プログラム実行時のエラー）
-   - エラーと例外の違い
-   - 検査例外と非検査例外
-   - 例外の階層構造（Throwable、Exception、RuntimeException）
-
-2. **例外処理の基本**
-   - try-catch構文
-   - 複数のcatchブロック
-   - finally節（必ず実行される処理）
-   - try-with-resources構文（リソースの自動クローズ）
-
-3. **例外の発生と伝播**
-   - throwによる例外の発生
-   - throwsによる例外の宣言
-   - 例外の伝播（呼び出し元への委譲）
-   - 独自例外クラスの作成
-
-4. **主要なJava API**
-   - **Stringクラス**: 文字列操作メソッド
-   - **Mathクラス**: 数学計算
-   - **ArrayListクラス**: 可変長配列
-   - **Scanner/BufferedReader**: 入力処理
-   - **日付時刻API**: LocalDate、LocalTimeの基本
-
-5. **実践的なプログラミング**
-   - ユーザー入力の検証と例外処理
-   - ファイル入出力の基礎
-   - コレクションを使ったデータ管理
-   - これまでの知識を統合した総合演習
-
-**つまずきやすいポイント:**
-- 例外をどこでキャッチすべきか → 適切な場所の判断基準
-- リソースのクローズ忘れ → try-with-resourcesの活用
-- 例外の握りつぶし → 適切なエラーハンドリング
-
-**演習課題:**
-- ファイルを読み込んで内容を表示するプログラム
-- ArrayListを使った住所録アプリケーション
-- ユーザー入力を検証する電卓プログラム
-- 総合演習: 学生成績管理システム
-
----
-
-### [11. コレクションフレームワーク - データ構造を使いこなす](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-11.html)
-Javaが提供する豊富なデータ構造「コレクションフレームワーク」を学び、配列よりも柔軟で強力なデータ管理方法を習得します。
-
-**学習目標:**
-- コレクションフレームワークの全体像を理解する
-- List、Set、Mapの違いと使い分けができる
-- 各コレクションの主要なメソッドを使いこなせる
-- イテレータを使った反復処理ができる
-
-**学習内容:**
-1. **コレクションフレームワークとは**
-   - コレクションフレームワークの概要と利点
-   - 配列との違いと使い分け
-   - 主要なインターフェース（Collection、List、Set、Map）
-   - ジェネリクスの基礎（型パラメータ `<E>` の意味）
-
-2. **Listインターフェース**
-   - ArrayList: 動的配列の実装
-     - 要素の追加（`add`）、取得（`get`）、削除（`remove`）
-     - サイズの取得（`size`）、存在確認（`contains`）
-   - LinkedList: 連結リストの実装
-   - ArrayListとLinkedListの性能特性と使い分け
-   - Listの便利なメソッド（`indexOf`、`subList`、`sort`）
-
-3. **Setインターフェース**
-   - Setの特徴（重複を許さない、順序を保証しない）
-   - HashSet: ハッシュベースの高速な集合
-   - TreeSet: ソートされた順序を維持する集合
-   - LinkedHashSet: 挿入順序を維持する集合
-   - 集合演算（和集合、積集合、差集合）
-
-4. **Mapインターフェース**
-   - Mapの概念（キーと値のペア）
-   - HashMap: 高速なキー・バリュー検索
-     - 値の追加（`put`）、取得（`get`）、削除（`remove`）
-     - キーの存在確認（`containsKey`）、値の存在確認（`containsValue`）
-   - TreeMap: ソートされたキー順序を維持
-   - LinkedHashMap: 挿入順序を維持
-   - Mapの反復処理（`keySet`、`values`、`entrySet`）
-
-5. **コレクションの操作**
-   - イテレータ（Iterator）パターン
-   - 拡張for文でのコレクション反復
-   - Collectionsユーティリティクラス
-     - ソート（`sort`）、シャッフル（`shuffle`）
-     - 最大値・最小値（`max`、`min`）
-     - 逆順（`reverse`）、同期化（`synchronizedList`）
-   - 不変コレクション（`List.of`、`Set.of`、`Map.of`）
-
-**つまずきやすいポイント:**
-- ジェネリクスの型指定忘れ → コンパイラ警告の重要性
-- HashSetでの重複判定 → `equals()`と`hashCode()`のオーバーライド
-- ConcurrentModificationException → イテレータ使用時のコレクション変更
-
-**演習課題:**
-- 単語の出現回数をカウントするプログラム（HashMap使用）
-- 重複を除去したリストを作成する（Setへの変換）
-- 学生情報を管理するプログラム（学籍番号をキーとしたMap）
-- ToDoリスト管理アプリケーション（ArrayList使用）
-
----
-
-### [12. ラムダ式とStream API - モダンJavaプログラミング](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-12.html)
-Java 8で導入された「ラムダ式」と「Stream API」を学び、より簡潔で宣言的なコードを書けるようになります。
-
-**学習目標:**
-- ラムダ式の構文と使い方を理解する
-- 関数型インターフェースの概念を理解する
-- Stream APIを使ったデータ処理ができる
-- メソッド参照を活用できる
-
-**学習内容:**
-1. **ラムダ式とは**
-   - ラムダ式の概念（無名関数）
-   - 従来の匿名クラスとの比較
-   - ラムダ式の構文: `(引数) -> { 処理 }`
-   - ラムダ式の省略記法
-     - 引数が1つの場合の括弧省略
-     - 処理が1文の場合の波括弧とreturn省略
-     - 型推論による引数の型省略
-
-2. **関数型インターフェース**
-   - 関数型インターフェースとは（抽象メソッドが1つのインターフェース）
-   - `@FunctionalInterface`アノテーション
-   - 主要な標準関数型インターフェース
-     - `Predicate<T>`: 条件判定（T → boolean）
-     - `Function<T, R>`: 変換（T → R）
-     - `Consumer<T>`: 消費（T → void）
-     - `Supplier<T>`: 供給（() → T）
-     - `BiFunction<T, U, R>`: 2引数変換
-
-3. **メソッド参照**
-   - メソッド参照の概念（既存メソッドをラムダ式として使用）
-   - 静的メソッド参照: `クラス名::メソッド名`
-   - インスタンスメソッド参照: `オブジェクト::メソッド名`
-   - コンストラクタ参照: `クラス名::new`
-   - ラムダ式とメソッド参照の使い分け
-
-4. **Stream APIの基礎**
-   - Streamとは（データ処理のパイプライン）
-   - Streamの生成方法
-     - コレクションから: `collection.stream()`
-     - 配列から: `Arrays.stream(array)`
-     - 値から: `Stream.of(values)`
-   - 中間操作と終端操作の違い
-   - Streamの遅延評価
-
-5. **Stream APIの中間操作**
-   - `filter`: 条件に合う要素を抽出
-   - `map`: 要素を変換
-   - `flatMap`: ネストした構造をフラット化
-   - `sorted`: ソート
-   - `distinct`: 重複除去
-   - `limit`/`skip`: 要素数の制限
-   - `peek`: デバッグ用の覗き見
-
-6. **Stream APIの終端操作**
-   - `forEach`: 各要素に処理を適用
-   - `collect`: 結果をコレクションに収集
-     - `Collectors.toList()`, `toSet()`, `toMap()`
-     - `Collectors.joining()`, `groupingBy()`
-   - `reduce`: 集約処理
-   - `count`, `sum`, `average`, `max`, `min`: 集計
-   - `anyMatch`, `allMatch`, `noneMatch`: 条件判定
-   - `findFirst`, `findAny`: 要素の検索
-
-7. **Optional クラス**
-   - Optionalの概念（nullを安全に扱う）
-   - Optionalの生成: `of`, `ofNullable`, `empty`
-   - 値の取得: `get`, `orElse`, `orElseGet`, `orElseThrow`
-   - 値の処理: `ifPresent`, `map`, `filter`
-
-**つまずきやすいポイント:**
-- Streamの再利用不可 → 一度使ったStreamは再利用できない
-- 中間操作だけでは実行されない → 終端操作が必要（遅延評価）
-- 並列Streamの注意点 → 状態を持つ操作での問題
-
-**演習課題:**
-- リストから条件に合う要素を抽出して新しいリストを作成
-- 文字列リストを大文字に変換して結合
-- 数値リストの統計情報（合計、平均、最大、最小）を計算
-- 商品リストを価格でソートしてトップ5を表示
-- グループ化を使った集計処理（例: 部門別の従業員数）
-
----
+### [12. 例外処理とデバッグ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-12.html)
+プログラムのエラーに対処するための例外処理について学びます。try-catch-finally構文、例外の種類、カスタム例外の作成、そして効果的なデバッグ手法を理解します。
 
 ## 学習の進め方
-1. **環境構築から始める**: 第1章でJava開発環境を正しくセットアップし、Hello Worldが動くことを確認してから次に進みましょう
-2. **順序立てて学習**: 各章は前章の知識を前提としているため、必ず順番に進めてください
-3. **手を動かして覚える**: 読むだけでなく、必ずコードを自分で入力して実行してみましょう
-4. **エラーを恐れない**: エラーメッセージは上達のヒントです。エラーの原因を自分で調べる習慣をつけましょう
-5. **演習問題に取り組む**: 各章の演習問題を解くことで、理解が定着します
+1. **環境構築から始める**: 第1章でJDKとIDEをインストールし、開発環境を整えます。
+2. **実際にコードを書く**: 各章のサンプルコードを必ず自分で入力し、実行して動作を確認します。
+3. **演習問題に取り組む**: 各章の演習問題を解くことで、学んだ知識を定着させます。
+4. **エラーを恐れない**: エラーメッセージは学習の機会です。エラーの意味を理解し、解決方法を探しましょう。
+5. **小さなプログラムを作る**: 学んだ内容を組み合わせて、簡単なプログラムを自分で設計・実装してみます。
 
 ## 推奨学習期間
-- **基礎習得コース** (1-6章): 4-6週間
-  - プログラミングの基本構文をマスター
-- **オブジェクト指向コース** (7-10章): 4-6週間
-  - Javaらしいオブジェクト指向プログラミングを習得
-- **モダンJavaコース** (11-12章): 2-3週間
-  - コレクションとラムダ式・Stream APIを習得
-- **合計学習期間**: 10-15週間（週5-8時間の学習を想定）
+- **プログラミング基礎コース** (1-7章): 4-6週間（週3-4回、1回2-3時間）
+- **オブジェクト指向マスターコース** (8-12章): 4-6週間（週3-4回、1回2-3時間）
+- **全体を通した完全習得**: 2-3ヶ月（週3-4回、1回2-3時間）
 
 ## 関連リソース
-- [Java初心者向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/java-cheatsheet.html)
-- [JDBC初心者向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/jdbc-cheatsheet.html)
+- [Java チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/java-ecosystem/java/java-cheatsheet.html)
+- [Spring Boot 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring-boot/README.md)
+- [Jakarta EE 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jakarta-ee/README.md)
 
 ## 学習目標
 このガイドを完了すると、以下のスキルを身につけることができます：
-- Javaの基本文法を理解し、簡単なプログラムを作成できる
-- 変数、演算子、制御構文を使いこなせる
-- 配列とメソッドを活用して効率的なコードが書ける
-- クラスとオブジェクトを使ったプログラミングができる
-- 継承とポリモーフィズムの基本を理解している
-- 例外処理を含む堅牢なプログラムを作成できる
-- Java標準APIを活用した実践的なプログラムが書ける
-- List、Set、Mapなどのコレクションを適切に使い分けられる
-- ラムダ式とStream APIを使ったモダンなJavaプログラミングができる
+- **プログラミング基礎力**: 変数、条件分岐、繰り返し、メソッドなどプログラミングの基本概念を理解し、使いこなせる
+- **Javaの構文知識**: Java言語の基本構文を習得し、自力でシンプルなプログラムを作成できる
+- **オブジェクト指向の理解**: クラス、継承、ポリモーフィズムなどOOPの基本概念を理解し、実践できる
+- **問題解決能力**: エラーに対処し、デバッグして問題を解決できる
+- **コード読解力**: 他人が書いたJavaコードを読んで理解できる
+- **実装力**: 仕様から簡単なプログラムを設計・実装できる
 
 ## 次のステップ
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
-- [Spring学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/) - WebアプリケーションフレームワークSpring/Spring Bootを学ぶ
-- [JDBC学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/) - データベース接続の基礎を学ぶ
-- [JUnit学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/junit/) - 単体テストの書き方を学ぶ
+- [Spring Boot 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring-boot/README.md) - Webアプリケーション開発
+- [Jakarta EE 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jakarta-ee/README.md) - エンタープライズJava開発
+- データ構造とアルゴリズムの学習
+- テスト駆動開発（TDD）とJUnit
