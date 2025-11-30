@@ -100,7 +100,7 @@
             }
         },
 
-        updateMermaidTheme: function(isDark) {
+        updateMermaidTheme: async function(isDark) {
             // Mermaid図のテーマを更新
             mermaid.initialize({
                 startOnLoad: false,
@@ -109,16 +109,21 @@
             });
 
             // 既存のMermaid図を再描画
-            document.querySelectorAll('.mermaid').forEach(function(el) {
-                const code = el.getAttribute('data-mermaid-code') || el.textContent;
-                if (!el.getAttribute('data-mermaid-code')) {
-                    el.setAttribute('data-mermaid-code', code);
+            const elements = document.querySelectorAll('.mermaid');
+            for (let i = 0; i < elements.length; i++) {
+                const el = elements[i];
+                const code = el.getAttribute('data-mermaid-code');
+                if (code) {
+                    try {
+                        // ユニークIDを生成
+                        const id = 'mermaid-' + Date.now() + '-' + i;
+                        const { svg } = await mermaid.render(id, code);
+                        el.innerHTML = svg;
+                    } catch (e) {
+                        console.error('Mermaid render error:', e);
+                    }
                 }
-                el.innerHTML = code;
-                el.removeAttribute('data-processed');
-            });
-
-            mermaid.init(undefined, '.mermaid');
+            }
         }
     };
 
@@ -290,6 +295,14 @@
     // Mermaid.js 初期化（ダークモード対応）
     if (typeof mermaid !== 'undefined') {
         const isDarkMode = document.documentElement.classList.contains('dark');
+
+        // レンダリング前に元のコードを保存
+        document.querySelectorAll('.mermaid').forEach(function(el) {
+            if (!el.getAttribute('data-mermaid-code')) {
+                el.setAttribute('data-mermaid-code', el.textContent.trim());
+            }
+        });
+
         mermaid.initialize({
             startOnLoad: true,
             theme: isDarkMode ? 'dark' : 'default',
