@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Communication Style
+
+- **Language**: Always output responses and artifacts in **Japanese** (日本語), unless explicitly requested otherwise.
+- **Tone**: Professional, helpful, and concise.
+
 ## Repository Overview
 
 Japanese technical documentation repository containing structured learning materials (guides, tutorials, cheatsheets) covering IT and software development topics. All content is static HTML/Markdown served via GitHub Pages.
@@ -58,6 +63,8 @@ Available automation agents in `.claude/agents/`:
 | `tutorial-creator-step2` | Generate step 1 HTML + common files | `@agent-tutorial-creator-step2 [readme-path]` |
 | `tutorial-creator-step3` | Generate single step HTML | `@agent-tutorial-creator-step3 [readme-path] [step]` |
 | `folder-structure-readme-updater` | Auto-generate folder READMEs | `@agent-folder-structure-readme-updater` |
+| `illustration-suggester` | Analyze HTML guides and suggest illustrations | `@agent-illustration-suggester [directory-path]` |
+| `illustration-generator` | Generate placeholder JPGs with AI prompts from suggestions | `@agent-illustration-generator [suggestions-md-path] [chapter?]` |
 
 ## Template Standards
 
