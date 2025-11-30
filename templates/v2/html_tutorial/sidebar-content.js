@@ -105,8 +105,8 @@
 
         const sidebarHTML = `
         <!-- サイドバー -->
-        <aside id="sidebar" class="fixed md:sticky top-16 left-0 z-40 w-72 h-[calc(100vh-4rem)]
-                                   bg-white border-r border-slate-200 overflow-y-auto
+        <aside id="sidebar" class="fixed md:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
+                                   bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
                                    transform -translate-x-full sidebar-transition">
             <div class="p-4">
                 <!-- プロジェクト概要 -->
@@ -149,7 +149,7 @@ ${stepListHTML}
     // サイドバーをDOMに挿入
     function insertSidebar() {
         // メインレイアウトのdiv要素を取得
-        const mainLayout = document.querySelector('.flex.min-h-screen.pt-16');
+        const mainLayout = document.querySelector('.flex.min-h-screen.pt-20');
 
         if (mainLayout) {
             // サイドバーHTMLを生成して挿入
