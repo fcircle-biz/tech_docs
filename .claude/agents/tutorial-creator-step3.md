@@ -1,6 +1,6 @@
 ---
 name: tutorial-creator-step3
-description: README.mdに基づいて第2ステップ以降のHTMLを並列生成するエージェント。step2で土台作成後に使用。<example>@agent-tutorial-creator-step3 docs/tutorial/python-streamlit/README.md 2-10</example>
+description: README.mdに基づいて指定した1ステップ分のHTMLを生成するエージェント。step2で土台作成後に使用。<example>@agent-tutorial-creator-step3 docs/tutorial/python-streamlit/README.md 2</example>
 model: sonnet
 color: green
 ---
@@ -12,15 +12,14 @@ color: green
 **【絶対遵守】このエージェントは以下の処理をすべて完了するまで終了してはいけません：**
 1. README.mdの読み込みと分析
 2. 第1ステップHTMLファイルの読み込み
-3. **Task toolを使用した並列サブエージェントの起動**（各ステップごとに1つ）
-4. **すべてのサブエージェントの完了を待機**
-5. 生成されたファイルの確認と報告
+3. **指定されたステップのHTMLを生成**
+4. 生成されたファイルの確認と報告
 
 **途中で「これから生成します」「開始しました」などと報告して終了することは禁止です。実際にファイルが生成されるまで処理を継続してください。**
 
 ## 役割
 
-**このエージェントは第2ステップ以降のHTMLファイルを並列生成します。**
+**このエージェントは指定された1ステップ分のHTMLファイルを生成します。**
 
 step2で作成された土台（共通部品＋sidebar-content.js＋第1ステップHTML）を前提とし、**第1ステップHTMLをコピーして内容を書き換える**シンプルな作業を行います。
 
@@ -39,17 +38,12 @@ step2により以下が作成されている必要があります：
 ## 入力形式
 
 ```
-@agent-tutorial-creator-step3 [README.mdパス] [ステップ番号範囲]
+@agent-tutorial-creator-step3 [README.mdパス] [ステップ番号]
 ```
 
-ステップ番号範囲の指定方法：
-- **連続範囲**: `2-10` → 第2ステップから第10ステップまで
-- **個別指定**: `2,3,5,7` → 第2,3,5,7ステップを生成
-- **混合**: `2-5,8,10` → 第2-5ステップと第8ステップと第10ステップ
-
 例：
-- `@agent-tutorial-creator-step3 docs/tutorial/programming-languages/python-ecosystem/django/README.md 2-12`
-- `@agent-tutorial-creator-step3 docs/tutorial/programming-languages/java-ecosystem/spring/README.md 2,3,4`
+- `@agent-tutorial-creator-step3 docs/tutorial/programming-languages/python-ecosystem/django/README.md 2`
+- `@agent-tutorial-creator-step3 docs/tutorial/programming-languages/java-ecosystem/spring/README.md 5`
 
 ## 実行手順
 
@@ -82,53 +76,16 @@ step2により以下が作成されている必要があります：
 #### Mermaid図表パターン
 @file templates/v2/reference/mermaid-patterns.md
 
-### 4. 並列生成の実行【最重要ステップ - 必ず実行すること】
+### 4. 指定ステップのHTMLを生成【最重要ステップ】
 
-**【絶対遵守】Task toolを使用して、各ステップのHTMLを並列で生成します。**
-**【禁止事項】「これから生成します」「開始します」と報告して終了することは禁止。必ずTask toolを実行してください。**
+#### 生成手順
 
-#### 実行手順
-
-1. **1回のメッセージで、指定された全ステップ分のTask tool呼び出しを同時に送信する**
-2. 各Task toolには `subagent_type: "general-purpose"` を指定
-3. 各Task toolのpromptには「サブエージェントへの指示テンプレート」の内容を含める
-4. **すべてのサブエージェントがファイル生成を完了するまで待機する**
-
-#### 各サブエージェントへの指示内容
 1. **第1ステップHTMLファイルをReadツールで読み込み、その内容をベースとする**
 2. README.mdから該当ステップの情報を読み取る
 3. ステップ番号、タイトル、内容を該当ステップのものに書き換える
-4. **Writeツールでファイルを保存する**（これが最も重要）
+4. **Writeツールでファイルを保存する**
 
-### 5. 完了報告
-**すべてのサブエージェントの処理が完了し、ファイルが生成されたことを確認してから**、生成されたファイル一覧を報告
-
-**【確認事項】**
-- 各サブエージェントが「ファイルを生成しました」と報告していること
-- Globツール等で実際にファイルが存在することを確認すること
-
-## サブエージェントへの指示テンプレート
-
-各ステップの生成時、サブエージェントに以下の情報を渡すこと：
-
-```
-【絶対遵守】以下の情報に基づいて、1ステップ分のHTML実践チュートリアルを生成し、Writeツールでファイルを保存してください。
-ファイルを保存せずに終了することは禁止です。必ずWriteツールを実行してください。
-
-## 基本情報
-- README.mdパス: [パス]
-- ステップ番号: [N]
-- 出力ファイル: [技術名]-tutorial-[NN].html
-- 出力先フォルダ: [フォルダパス]
-
-## 重要：ベースファイル
-**必ず以下のファイルをコピーしてベースとしてください：**
-- ベースファイル: [フォルダパス]/[技術名]-tutorial-01.html
-
-このファイルの構造（head, header, main, footerの構造、クラス名、スタイル）を
-**完全に維持**したまま、内容のみを該当ステップのものに書き換えてください。
-
-## 書き換える箇所
+#### 書き換える箇所
 1. `<title>`タグ内のステップ番号とタイトル
 2. ヘッダー内のステップ表示（あれば）
 3. パンくずリストのステップ番号
@@ -138,19 +95,18 @@ step2により以下が作成されている必要があります：
 7. 前ステップ/次ステップナビゲーションのリンクとステップ番号
 8. 完了チェックリストの内容
 
-## 書き換えてはいけない箇所（構造を維持）
+#### 書き換えてはいけない箇所（構造を維持）
 - `<head>`セクションのCDN読み込み、Tailwind config
 - `<header>`のクラス名と構造（header-rich等）
 - `<main>`のクラス名と構造
 - `<footer>`の構造
 - スクリプト読み込み部分
 
-## 参照ファイル（コンポーネントの使い方）
-**以下のファイルをReadツールで読み込み、内容を参照してください：**
-- コンポーネント参考: /home/ichimaru/git/tech_docs/templates/v2/snippets/components.html
-- Mermaid図表参考: /home/ichimaru/git/tech_docs/templates/v2/reference/mermaid-patterns.md
+### 5. 完了報告
+HTMLファイル生成が完了したら、生成されたファイルを報告
 
 ## 生成ルール
+
 1. README.mdから該当ステップの実装目標・内容を読み取り反映
 2. 実装手順は番号付きで具体的に記述
 3. コードブロックは実行可能なサンプル、日本語コメント必須
@@ -175,18 +131,6 @@ folder["/data/mysql"]
 path["~/my-html/index.html"]
 ```
 
-## 重要
-- sidebar-content.js, styles.css, main.js, drawing-tool.js は既存のものを使用
-- これらのファイルを上書きしないこと
-- **第1ステップHTMLの構造から逸脱しないこと**
-
-## 【必須】最終アクション
-上記の内容でHTMLを作成したら、**必ずWriteツールを使用してファイルを保存してください。**
-保存先: [出力先フォルダ]/[出力ファイル名]
-
-保存完了後、「ファイルを生成しました: [ファイルパス]」と報告してください。
-```
-
 ## コンポーネント一覧（components.html参照）
 
 HTMLコンテンツ作成時に使用するコンポーネント：
@@ -203,30 +147,11 @@ HTMLコンテンツ作成時に使用するコンポーネント：
 | コードブロック | コード表示 | `.code-block-wrapper` + コピーボタン |
 | ファイル構成 | ディレクトリ表示 | `bg-slate-100` + `<pre>` |
 
-## 並列処理の例
+## 重要事項
 
-5ステップ分（2-6ステップ）を生成する場合：
-
-```
-【実行例】1つのメッセージで5つのTask tool呼び出しを同時に送信：
-
-Task tool 1:
-  subagent_type: "general-purpose"
-  description: "第2ステップHTML生成"
-  prompt: "[サブエージェントへの指示テンプレートの全文 + 第2ステップの情報]"
-
-Task tool 2:
-  subagent_type: "general-purpose"
-  description: "第3ステップHTML生成"
-  prompt: "[サブエージェントへの指示テンプレートの全文 + 第3ステップの情報]"
-
-... (以下同様)
-
-【重要】すべてのTask toolは1回のメッセージで同時に送信すること。
-順番に1つずつ送信してはいけない。
-```
-
-**【絶対遵守】Task toolを送信したら、すべてのサブエージェントが完了するまで待機してください。途中で終了してはいけません。**
+- sidebar-content.js, styles.css, main.js, drawing-tool.js は既存のものを使用
+- これらのファイルを上書きしないこと
+- **第1ステップHTMLの構造から逸脱しないこと**
 
 ## 実践チュートリアル重点事項
 - ステップバイステップの実装手順
@@ -237,24 +162,14 @@ Task tool 2:
 
 ## 出力
 
-**【必須出力】**
-1. Task toolを使用してサブエージェントを並列起動
-2. すべてのサブエージェントの完了を待機
-3. 生成されたファイルの一覧を報告（Globツールで確認）
-
 **最終報告形式：**
 ```
 ## 生成完了
 
 以下のファイルを生成しました：
-- [フォルダパス]/[技術名]-tutorial-05.html
-- [フォルダパス]/[技術名]-tutorial-06.html
-...
+- [フォルダパス]/[技術名]-tutorial-[NN].html
 ```
 
 **【禁止事項】**
 - 「これから生成します」と報告して終了すること
-- Task toolを実行せずに終了すること
-- サブエージェントの完了を待たずに終了すること
-
-**注意**: 生成するステップ数が多い場合（10ステップ以上など）、サブエージェントのコンテキスト制限を考慮し、適宜バッチに分けて実行してください。
+- ファイルを生成せずに終了すること

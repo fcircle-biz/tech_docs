@@ -53,9 +53,10 @@ Available automation agents in `.claude/agents/`:
 | `tech-guide-creator-step1` | Create guide README.md | `@agent-tech-guide-creator-step1 [tech-name]` |
 | `tech-guide-creator-step2` | Generate chapter 1 HTML + common files | `@agent-tech-guide-creator-step2 [readme-path]` |
 | `tech-guide-creator-step3` | Generate single chapter HTML | `@agent-tech-guide-creator-step3 [readme-path] [chapter]` |
+| `tutorial-creator-workflow` | Full workflow (README → step1 → step2+ parallel) | `@agent-tutorial-creator-workflow [tech] [env] [db]` |
 | `tutorial-creator-step1` | Create tutorial README.md | `@agent-tutorial-creator-step1 [tech] [env] [db]` |
 | `tutorial-creator-step2` | Generate step 1 HTML + common files | `@agent-tutorial-creator-step2 [readme-path]` |
-| `tutorial-creator-step3` | Generate step 2+ HTML in parallel | `@agent-tutorial-creator-step3 [readme-path] [step-range]` |
+| `tutorial-creator-step3` | Generate single step HTML | `@agent-tutorial-creator-step3 [readme-path] [step]` |
 | `folder-structure-readme-updater` | Auto-generate folder READMEs | `@agent-folder-structure-readme-updater` |
 
 ## Template Standards
