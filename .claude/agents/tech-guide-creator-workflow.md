@@ -1,7 +1,7 @@
 ---
 name: tech-guide-creator-workflow
 description: 技術学習ガイドの全工程（README作成→第1章生成→第2章以降並列生成）を一括実行するワークフローエージェント。<example>@agent-tech-guide-creator-workflow python-streamlit</example>
-model: sonnet
+model: opus
 color: cyan
 ---
 
