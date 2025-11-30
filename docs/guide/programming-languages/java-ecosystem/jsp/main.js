@@ -209,4 +209,43 @@
         });
     };
 
+    // サイドバートグル機能
+    function initSidebarToggle() {
+        const toggleBtn = document.getElementById('sidebar-toggle-btn');
+        const sidebar = document.getElementById('sidebar');
+
+        if (!toggleBtn || !sidebar) return;
+
+        // サイドバーの表示状態を管理（PC環境ではデフォルト表示）
+        let isSidebarVisible = isPC;
+
+        // 初期状態を設定
+        if (isPC) {
+            sidebar.classList.remove('-translate-x-full');
+            sidebar.classList.add('translate-x-0');
+            sidebar.style.width = '20rem'; // w-80 = 320px
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            isSidebarVisible = !isSidebarVisible;
+
+            if (isSidebarVisible) {
+                // サイドバーを表示
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+                sidebar.style.width = '20rem';
+                sidebar.style.overflow = 'auto';
+            } else {
+                // サイドバーを非表示
+                sidebar.classList.add('-translate-x-full');
+                sidebar.classList.remove('translate-x-0');
+                sidebar.style.width = '0';
+                sidebar.style.overflow = 'hidden';
+            }
+        });
+    }
+
+    // DOM読み込み後にサイドバートグルを初期化（sidebar-content.jsの後に実行されるよう遅延）
+    setTimeout(initSidebarToggle, 100);
+
 })();
