@@ -105,9 +105,9 @@
 
         const sidebarHTML = `
         <!-- サイドバー -->
-        <aside id="sidebar" class="fixed md:sticky top-16 left-0 z-40 w-72 h-[calc(100vh-4rem)]
-                                   bg-white border-r border-slate-200 overflow-y-auto
-                                   transform -translate-x-full md:translate-x-0 sidebar-transition">
+        <aside id="sidebar" class="fixed md:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
+                                   bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
+                                   transform -translate-x-full sidebar-transition">
             <div class="p-4">
                 <!-- プロジェクト概要 -->
                 <div class="mb-6 p-4 bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl border border-primary-200">
@@ -141,13 +141,6 @@ ${stepListHTML}
             </div>
         </aside>
 
-        <!-- サイドバーオーバーレイ（モバイル用） -->
-        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
-
-        <!-- サイドバートグルボタン（PC用） -->
-        <button id="sidebar-toggle-btn" class="sidebar-toggle-btn hidden md:flex items-center justify-center w-10 h-10">
-            <i class="fas fa-chevron-left text-slate-600"></i>
-        </button>
         `;
 
         return sidebarHTML;
@@ -156,7 +149,7 @@ ${stepListHTML}
     // サイドバーをDOMに挿入
     function insertSidebar() {
         // メインレイアウトのdiv要素を取得
-        const mainLayout = document.querySelector('.flex.min-h-screen.pt-16');
+        const mainLayout = document.querySelector('.flex.min-h-screen.pt-20');
 
         if (mainLayout) {
             // サイドバーHTMLを生成して挿入

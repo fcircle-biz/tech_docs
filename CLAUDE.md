@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Communication Style
+
+- **Language**: Always output responses and artifacts in **Japanese** (日本語), unless explicitly requested otherwise.
+- **Tone**: Professional, helpful, and concise.
+
 ## Repository Overview
 
 Japanese technical documentation repository containing structured learning materials (guides, tutorials, cheatsheets) covering IT and software development topics. All content is static HTML/Markdown served via GitHub Pages.
@@ -49,21 +54,34 @@ Available automation agents in `.claude/agents/`:
 
 | Agent | Purpose | Trigger |
 |-------|---------|---------|
+| `tech-guide-creator-workflow` | Full workflow (README → ch1 → ch2+ parallel) | `@agent-tech-guide-creator-workflow [tech-name]` |
 | `tech-guide-creator-step1` | Create guide README.md | `@agent-tech-guide-creator-step1 [tech-name]` |
-| `tech-guide-creator-step2` | Generate HTML chapters | `@agent-tech-guide-creator-step2 [readme-path] [chapter-num]` |
-| `tutorial-creator-step1/2` | Create practical tutorials | `@agent-tutorial-creator-step1 [tech] [env] [db]` |
+| `tech-guide-creator-step2` | Generate chapter 1 HTML + common files | `@agent-tech-guide-creator-step2 [readme-path]` |
+| `tech-guide-creator-step3` | Generate single chapter HTML | `@agent-tech-guide-creator-step3 [readme-path] [chapter]` |
+| `tutorial-creator-workflow` | Full workflow (README → step1 → step2+ parallel) | `@agent-tutorial-creator-workflow [tech] [env] [db]` |
+| `tutorial-creator-step1` | Create tutorial README.md | `@agent-tutorial-creator-step1 [tech] [env] [db]` |
+| `tutorial-creator-step2` | Generate step 1 HTML + common files | `@agent-tutorial-creator-step2 [readme-path]` |
+| `tutorial-creator-step3` | Generate single step HTML | `@agent-tutorial-creator-step3 [readme-path] [step]` |
 | `folder-structure-readme-updater` | Auto-generate folder READMEs | `@agent-folder-structure-readme-updater` |
+| `illustration-creator-workflow` | Full workflow (suggestions → parallel image generation & HTML insert) | `@agent-illustration-creator-workflow [directory-path]` |
+| `illustration-creator-step1` | Analyze HTML guides and suggest illustrations | `@agent-illustration-creator-step1 [directory-path]` |
+| `illustration-creator-step2` | Generate placeholder JPGs, insert into HTML (parallel subagents for multi-chapter) | `@agent-illustration-creator-step2 [suggestions-md-path] [chapter?]` |
 
 ## Template Standards
 
 HTML content must follow standards in `/templates/v2/`:
 
-### Template Files (`html/`)
+### Template Files (`html/`) - 学習教材用
 - **learning-material-template.html** - 学習教材用テンプレート
-- **tutorial-template.html** - チュートリアル用テンプレート
 - **sidebar-content.js** - サイドバー生成（学習教材用）
-- **sidebar-content-tutorial.js** - サイドバー生成（チュートリアル用）
 - **styles.css** - 共通カスタムスタイル
+- **main.js** - 共通機能
+- **drawing-tool.js** - 描画ツール機能
+
+### Template Files (`html_tutorial/`) - チュートリアル用
+- **tutorial-template.html** - チュートリアル用テンプレート
+- **sidebar-content.js** - サイドバー生成（チュートリアル用）
+- **styles.css** - 共通カスタムスタイル（ヘッダー緑色）
 - **main.js** - 共通機能
 - **drawing-tool.js** - 描画ツール機能
 

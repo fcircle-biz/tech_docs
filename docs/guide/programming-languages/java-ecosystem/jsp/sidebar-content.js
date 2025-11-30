@@ -12,19 +12,21 @@
     'use strict';
 
     // ========================================
-    // TODO: 章の定義データをカスタマイズ
+    // 章の定義データ（Servlet・JSP入門）
     // ========================================
     const chapters = [
-        { number: 1, title: '第1章: イントロダクション', file: 'learning-material-01.html' },
-        { number: 2, title: '第2章: 基本構文', file: 'learning-material-02.html' },
-        { number: 3, title: '第3章: データ型', file: 'learning-material-03.html' },
-        { number: 4, title: '第4章: 制御構文', file: 'learning-material-04.html' },
-        { number: 5, title: '第5章: 関数・メソッド', file: 'learning-material-05.html' },
-        { number: 6, title: '第6章: オブジェクト指向', file: 'learning-material-06.html' },
-        { number: 7, title: '第7章: エラー処理', file: 'learning-material-07.html' },
-        { number: 8, title: '第8章: ファイル操作', file: 'learning-material-08.html' },
-        { number: 9, title: '第9章: ライブラリ活用', file: 'learning-material-09.html' },
-        { number: 10, title: '第10章: 実践プロジェクト', file: 'learning-material-10.html' }
+        { number: 1, title: '第1章: Webアプリケーション開発の世界へ', file: 'servlet-jsp-learning-material-01.html' },
+        { number: 2, title: '第2章: はじめてのServlet', file: 'servlet-jsp-learning-material-02.html' },
+        { number: 3, title: '第3章: リクエストとレスポンス', file: 'servlet-jsp-learning-material-03.html' },
+        { number: 4, title: '第4章: はじめてのJSP', file: 'servlet-jsp-learning-material-04.html' },
+        { number: 5, title: '第5章: JSPの構文をマスターする', file: 'servlet-jsp-learning-material-05.html' },
+        { number: 6, title: '第6章: フォーム処理とデータの受け渡し', file: 'servlet-jsp-learning-material-06.html' },
+        { number: 7, title: '第7章: セッション管理', file: 'servlet-jsp-learning-material-07.html' },
+        { number: 8, title: '第8章: ServletとJSPの連携 - MVCパターン入門', file: 'servlet-jsp-learning-material-08.html' },
+        { number: 9, title: '第9章: JavaBeansとスコープ', file: 'servlet-jsp-learning-material-09.html' },
+        { number: 10, title: '第10章: EL式とJSTL', file: 'servlet-jsp-learning-material-10.html' },
+        { number: 11, title: '第11章: データベース連携 - JDBC・DAOパターン', file: 'servlet-jsp-learning-material-11.html' },
+        { number: 12, title: '第12章: 実践Webアプリケーション開発', file: 'servlet-jsp-learning-material-12.html' }
     ];
 
     // 現在のページのファイル名を取得
