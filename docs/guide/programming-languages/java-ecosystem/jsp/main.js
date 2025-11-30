@@ -9,6 +9,128 @@
     // PC環境判定（最初に実行）
     const isPC = window.innerWidth >= 1024;
 
+    // ダークモード機能
+    const DarkMode = {
+        storageKey: 'darkMode',
+
+        init: function() {
+            // 保存された設定またはシステム設定を適用
+            const savedMode = localStorage.getItem(this.storageKey);
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (savedMode === 'dark' || (savedMode === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+
+            // トグルボタンを生成
+            this.createToggleButton();
+
+            // システム設定の変更を監視
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                if (localStorage.getItem(this.storageKey) === null) {
+                    if (e.matches) {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                    }
+                    this.updateIcon();
+                }
+            });
+        },
+
+        createToggleButton: function() {
+            const self = this;
+            const isDark = document.documentElement.classList.contains('dark');
+
+            // ヘッダーの右側ボタンエリアを探す
+            const headerNav = document.querySelector('header nav .flex.items-center.justify-between');
+            if (!headerNav) return;
+
+            // 既存のサイドバートグルボタンを取得
+            const sidebarBtn = document.getElementById('sidebar-toggle-btn');
+            if (!sidebarBtn) return;
+
+            // ボタンコンテナを作成
+            const btnContainer = document.createElement('div');
+            btnContainer.className = 'flex items-center gap-2';
+
+            // ダークモードトグルボタンを作成
+            const toggleBtn = document.createElement('button');
+            toggleBtn.id = 'dark-mode-toggle';
+            toggleBtn.className = 'w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95';
+            toggleBtn.title = isDark ? 'ライトモードに切り替え' : 'ダークモードに切り替え';
+            toggleBtn.innerHTML = `<i class="fas ${isDark ? 'fa-sun' : 'fa-moon'} text-lg"></i>`;
+
+            toggleBtn.addEventListener('click', function() {
+                self.toggle();
+            });
+
+            // サイドバーボタンの前に挿入
+            sidebarBtn.parentNode.insertBefore(btnContainer, sidebarBtn);
+            btnContainer.appendChild(toggleBtn);
+            btnContainer.appendChild(sidebarBtn);
+        },
+
+        toggle: function() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem(this.storageKey, isDark ? 'dark' : 'light');
+            this.updateIcon();
+
+            // Mermaid図を再描画（ダークモード対応）
+            if (typeof mermaid !== 'undefined') {
+                this.updateMermaidTheme(isDark);
+            }
+        },
+
+        updateIcon: function() {
+            const btn = document.getElementById('dark-mode-toggle');
+            if (!btn) return;
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const icon = btn.querySelector('i');
+
+            if (isDark) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                btn.title = 'ライトモードに切り替え';
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                btn.title = 'ダークモードに切り替え';
+            }
+        },
+
+        updateMermaidTheme: function(isDark) {
+            // Mermaid図のテーマを更新
+            mermaid.initialize({
+                startOnLoad: false,
+                theme: isDark ? 'dark' : 'default',
+                securityLevel: 'loose'
+            });
+
+            // 既存のMermaid図を再描画
+            document.querySelectorAll('.mermaid').forEach(function(el) {
+                const code = el.getAttribute('data-mermaid-code') || el.textContent;
+                if (!el.getAttribute('data-mermaid-code')) {
+                    el.setAttribute('data-mermaid-code', code);
+                }
+                el.innerHTML = code;
+                el.removeAttribute('data-processed');
+            });
+
+            mermaid.init(undefined, '.mermaid');
+        }
+    };
+
+    // ページ読み込み時にダークモードを初期化
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            DarkMode.init();
+        });
+    } else {
+        DarkMode.init();
+    }
+
     // 描画ツールバーとCanvasのHTML生成（PC環境のみ）
     function createDrawingToolbar() {
         // 非PC環境では生成しない
@@ -165,11 +287,12 @@
         hljs.highlightAll();
     }
 
-    // Mermaid.js 初期化
+    // Mermaid.js 初期化（ダークモード対応）
     if (typeof mermaid !== 'undefined') {
+        const isDarkMode = document.documentElement.classList.contains('dark');
         mermaid.initialize({
             startOnLoad: true,
-            theme: 'default',
+            theme: isDarkMode ? 'dark' : 'default',
             securityLevel: 'loose'
         });
     }
