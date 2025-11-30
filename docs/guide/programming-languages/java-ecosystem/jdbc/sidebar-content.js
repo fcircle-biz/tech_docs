@@ -12,19 +12,17 @@
     'use strict';
 
     // ========================================
-    // TODO: 章の定義データをカスタマイズ
+    // JDBC学習ガイド - 章の定義
     // ========================================
     const chapters = [
-        { number: 1, title: '第1章: イントロダクション', file: 'learning-material-01.html' },
-        { number: 2, title: '第2章: 基本構文', file: 'learning-material-02.html' },
-        { number: 3, title: '第3章: データ型', file: 'learning-material-03.html' },
-        { number: 4, title: '第4章: 制御構文', file: 'learning-material-04.html' },
-        { number: 5, title: '第5章: 関数・メソッド', file: 'learning-material-05.html' },
-        { number: 6, title: '第6章: オブジェクト指向', file: 'learning-material-06.html' },
-        { number: 7, title: '第7章: エラー処理', file: 'learning-material-07.html' },
-        { number: 8, title: '第8章: ファイル操作', file: 'learning-material-08.html' },
-        { number: 9, title: '第9章: ライブラリ活用', file: 'learning-material-09.html' },
-        { number: 10, title: '第10章: 実践プロジェクト', file: 'learning-material-10.html' }
+        { number: 1, title: '第1章: JDBCとは？ データベース接続の基本', file: 'jdbc-learning-material-01.html' },
+        { number: 2, title: '第2章: 開発環境の準備と初めての接続', file: 'jdbc-learning-material-02.html' },
+        { number: 3, title: '第3章: データの検索（SELECT文）をマスターする', file: 'jdbc-learning-material-03.html' },
+        { number: 4, title: '第4章: データの登録・更新・削除（INSERT/UPDATE/DELETE文）', file: 'jdbc-learning-material-04.html' },
+        { number: 5, title: '第5章: プリペアドステートメント（PreparedStatement）の活用', file: 'jdbc-learning-material-05.html' },
+        { number: 6, title: '第6章: トランザクション処理と例外処理', file: 'jdbc-learning-material-06.html' },
+        { number: 7, title: '第7章: 実践的なDAO（Data Access Object）パターン', file: 'jdbc-learning-material-07.html' },
+        { number: 8, title: '第8章: ベストプラクティスとトラブルシューティング', file: 'jdbc-learning-material-08.html' }
     ];
 
     // 現在のページのファイル名を取得

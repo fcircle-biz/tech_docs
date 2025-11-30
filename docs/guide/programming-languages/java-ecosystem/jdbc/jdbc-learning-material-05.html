@@ -2,8 +2,19 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.1">
-    <title>JDBC学習教材 第5章 - PreparedStatementの活用</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>JDBC学習教材 第5章 - プリペアドステートメント（PreparedStatement）の活用</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,6 +23,7 @@
             theme: {
                 extend: {
                     colors: {
+                        // Java/JDBC - Orange
                         primary: {
                             50: '#fff7ed',
                             100: '#ffedd5',
@@ -48,100 +60,7 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- カスタムスタイル -->
-    <style>
-        /* スクロールバーカスタマイズ */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-        /* コードブロックのラインナンバー */
-        .hljs-ln-numbers {
-            user-select: none;
-            text-align: right;
-            color: #6b7280;
-            padding-right: 12px;
-            border-right: 1px solid #374151;
-        }
-
-        /* サイドバートランジション */
-        .sidebar-transition {
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, width 0.15s ease-out;
-        }
-
-        /* サイドバーリサイズ機能 */
-        .sidebar-resizable {
-            min-width: 240px;
-            max-width: 480px;
-        }
-        .sidebar-resize-handle {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 6px;
-            height: 100%;
-            cursor: ew-resize;
-            background: transparent;
-            transition: background 0.2s;
-            z-index: 10;
-        }
-        .sidebar-resize-handle:hover,
-        .sidebar-resize-handle.resizing {
-            background: linear-gradient(to right, transparent, rgba(249, 115, 22, 0.3));
-        }
-
-        /* スムーズスクロール */
-        html { scroll-behavior: smooth; }
-
-        /* コードコピーボタン */
-        .code-block-wrapper { position: relative; }
-        .copy-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        .code-block-wrapper:hover .copy-btn { opacity: 1; }
-
-        /* ヘッダー情報リッチデザイン */
-        .header-rich {
-            background: linear-gradient(135deg, #c2410c 0%, #f97316 50%, #fb923c 100%);
-            position: relative;
-            overflow: hidden;
-        }
-        .header-rich::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background:
-                linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%),
-                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px);
-            animation: bgSlide 10s linear infinite;
-        }
-        @keyframes bgSlide {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(50px); }
-        }
-
-        .header-rich-shadow {
-            box-shadow:
-                0 4px 6px -1px rgba(249, 115, 22, 0.2),
-                0 10px 25px -5px rgba(249, 115, 22, 0.3),
-                0 0 50px rgba(249, 115, 22, 0.15);
-        }
-
-        .icon-rotate-hover {
-            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-        .icon-rotate-hover:hover {
-            transform: rotate(360deg) scale(1.2);
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body class="font-sans bg-slate-50 text-slate-800 antialiased">
     <!-- ヘッダー/ナビゲーションバー -->
@@ -170,11 +89,11 @@
                         <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
                             <div class="flex items-center gap-1">
                                 <i class="fas fa-code text-[9px]"></i>
-                                <span>データベース接続</span>
+                                <span>プログラミング言語</span>
                             </div>
                             <div class="hidden sm:flex items-center gap-1">
                                 <i class="fas fa-clock text-[9px]"></i>
-                                <span>推奨 45分</span>
+                                <span>推奨 50分</span>
                             </div>
                             <div class="hidden lg:flex items-center gap-1">
                                 <i class="fas fa-language text-[9px]"></i>
@@ -184,8 +103,8 @@
                     </div>
                 </div>
 
-                <!-- 右側: モバイルメニューボタン -->
-                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
                     <i class="fas fa-bars text-lg"></i>
                 </button>
             </div>
@@ -194,133 +113,11 @@
 
     <!-- メインレイアウト -->
     <div class="flex min-h-screen pt-20">
-        <!-- サイドバー -->
-        <aside id="sidebar" class="fixed md:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
-                                   bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
-                                   transform -translate-x-full md:translate-x-0 sidebar-transition sidebar-resizable"
-               style="--sidebar-width: 320px;">
-            <!-- リサイズハンドル -->
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle hidden md:block"></div>
-            <div class="p-4">
-                <!-- 進捗インジケーター -->
-                <div class="mb-6 p-4 bg-primary-50 rounded-xl">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm font-medium text-primary-700">学習進捗</span>
-                        <span class="text-sm text-primary-600">5/10章</span>
-                    </div>
-                    <div class="w-full bg-primary-100 rounded-full h-2">
-                        <div class="bg-primary-500 h-2 rounded-full transition-all duration-300" style="width: 50%"></div>
-                    </div>
-                </div>
-
-                <!-- 章リスト -->
-                <nav>
-                    <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-2">
-                        学習章
-                    </h2>
-                    <ul class="space-y-1">
-                        <li>
-                            <a href="jdbc-learning-material-01.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">1</span>
-                                <span class="truncate">JDBCの概要と環境構築</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-02.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">2</span>
-                                <span class="truncate">データベース接続の基本</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-03.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">3</span>
-                                <span class="truncate">データの取得（SELECT文）</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-04.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">4</span>
-                                <span class="truncate">データの登録・更新・削除</span>
-                            </a>
-                        </li>
-                        <!-- アクティブな章 -->
-                        <li>
-                            <a href="jdbc-learning-material-05.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      bg-primary-100 text-primary-700 font-medium">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-primary-500 text-white text-xs rounded-full">5</span>
-                                <span class="truncate">PreparedStatementの活用</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-06.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">6</span>
-                                <span class="truncate">例外処理とリソース管理</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-07.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">7</span>
-                                <span class="truncate">トランザクション管理</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-08.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">8</span>
-                                <span class="truncate">DAOパターン入門</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-09.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">9</span>
-                                <span class="truncate">実践演習 - 商品管理システム</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="jdbc-learning-material-10.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">10</span>
-                                <span class="truncate">よくある問題と解決策</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </aside>
-
-        <!-- サイドバーオーバーレイ（モバイル用） -->
-        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
 
         <!-- メインコンテンツ -->
         <main class="flex-1 min-w-0">
-            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
                 <!-- パンくずリスト -->
                 <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
                     <a href="#" class="hover:text-primary-600 transition-colors">ホーム</a>
@@ -338,13 +135,13 @@
                             第5章
                         </span>
                     </div>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">PreparedStatementの活用</h1>
-                    <p class="text-slate-600">パラメータ化されたクエリを使って、安全で効率的なデータベースアクセスを実現する方法を学びます。</p>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">プリペアドステートメント（PreparedStatement）の活用</h1>
+                    <p class="text-slate-600">SQLインジェクション対策と処理速度向上のためのPreparedStatementの使い方を詳しく学びます。プレースホルダ（?）の使い方、パラメータのバインド方法、Statementとの違いを理解します。</p>
                 </header>
 
                 <!-- 学習目標カード -->
                 <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
-                            rounded-xl p-5 mb-6">
+                            rounded-xl p-5 mb-6 overflow-hidden">
                     <div class="flex items-start gap-4">
                         <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
                                     flex items-center justify-center">
@@ -355,662 +152,564 @@
                             <ul class="space-y-2">
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>PreparedStatementとStatementの違いとメリット</span>
+                                    <span>PreparedStatementとStatementの違いを理解する</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>SQLインジェクション攻撃とその対策方法</span>
+                                    <span>SQLインジェクション攻撃とその対策方法を学ぶ</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>パラメータの設定方法と様々なデータ型への対応</span>
+                                    <span>プレースホルダ（?）を使ったパラメータバインド方法を習得する</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>PreparedStatementを使った安全なCRUD操作の実装</span>
+                                    <span>PreparedStatementのパフォーマンス上のメリットを理解する</span>
                                 </li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
-                <!-- セクション 5.1 -->
+                <!-- セクション1 -->
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        5.1 PreparedStatementとは
+                        5.1 PreparedStatementとは？
                     </h2>
-
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        <strong>PreparedStatement</strong>は、パラメータ化されたSQL文を実行するためのインターフェースです。これまで学んだStatementと比較して、以下のような重要な特徴があります。
+                        <strong>PreparedStatement</strong>は、SQL文を事前にコンパイルして実行するためのJDBCインターフェースです。第3章で学んだStatementの上位版で、より安全で効率的にSQL文を実行できます。
+                    </p>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        PreparedStatementを使う主な理由は以下の2つです：
                     </p>
 
-                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-                        <h3 class="text-blue-800 font-semibold mb-2 flex items-center gap-2">
-                            <i class="fas fa-info-circle"></i>
-                            StatementとPreparedStatementの違い
-                        </h3>
-                        <div class="text-blue-900 text-sm space-y-2">
-                            <p><strong>Statement:</strong> SQL文を文字列として直接組み立てて実行</p>
-                            <p><strong>PreparedStatement:</strong> SQL文のテンプレートを事前に準備し、パラメータを後から設定して実行</p>
-                        </div>
-                    </div>
-
-                    <h3 class="text-lg font-semibold text-slate-800 mb-3 mt-6">PreparedStatementの3つのメリット</h3>
-
-                    <div class="grid md:grid-cols-3 gap-4 mb-6">
-                        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg p-4">
-                            <div class="flex items-center gap-2 mb-2">
-                                <i class="fas fa-shield-alt text-emerald-600"></i>
-                                <h4 class="font-semibold text-emerald-800">セキュリティ</h4>
+                    <div class="grid md:grid-cols-2 gap-4 my-6">
+                        <div class="bg-gradient-to-br from-red-50 to-rose-50 p-5 rounded-xl border border-red-200">
+                            <div class="flex items-start gap-3">
+                                <i class="fas fa-shield-alt text-red-600 text-xl mt-1"></i>
+                                <div>
+                                    <h3 class="font-semibold text-slate-800 mb-2">1. セキュリティ対策</h3>
+                                    <p class="text-sm text-slate-600">SQLインジェクション攻撃を防ぐことができます。ユーザー入力をSQL文に安全に埋め込めます。</p>
+                                </div>
                             </div>
-                            <p class="text-sm text-emerald-900">SQLインジェクション攻撃を防止</p>
                         </div>
-                        <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4">
-                            <div class="flex items-center gap-2 mb-2">
-                                <i class="fas fa-tachometer-alt text-blue-600"></i>
-                                <h4 class="font-semibold text-blue-800">パフォーマンス</h4>
+
+                        <div class="bg-gradient-to-br from-blue-50 to-cyan-50 p-5 rounded-xl border border-blue-200">
+                            <div class="flex items-start gap-3">
+                                <i class="fas fa-tachometer-alt text-blue-600 text-xl mt-1"></i>
+                                <div>
+                                    <h3 class="font-semibold text-slate-800 mb-2">2. パフォーマンス向上</h3>
+                                    <p class="text-sm text-slate-600">SQL文が事前にコンパイルされるため、同じSQL文を繰り返し実行する場合に処理が高速になります。</p>
+                                </div>
                             </div>
-                            <p class="text-sm text-blue-900">SQL文の事前コンパイルで実行速度向上</p>
-                        </div>
-                        <div class="bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-4">
-                            <div class="flex items-center gap-2 mb-2">
-                                <i class="fas fa-code text-purple-600"></i>
-                                <h4 class="font-semibold text-purple-800">可読性</h4>
-                            </div>
-                            <p class="text-sm text-purple-900">コードが読みやすく保守しやすい</p>
                         </div>
                     </div>
 
-                    <div class="my-8">
-                        <h3 class="text-lg font-semibold text-slate-800 mb-4">StatementとPreparedStatementの処理の違い</h3>
-                        <div class="bg-white p-4 rounded-lg border border-slate-200">
-                            <pre class="mermaid">
-flowchart LR
-    subgraph Statement処理
-        A1[SQL文字列を<br/>動的に組み立て] --> A2[データベースに送信]
-        A2 --> A3[SQLパース]
-        A3 --> A4[実行計画作成]
-        A4 --> A5[実行]
-    end
-
-    subgraph PreparedStatement処理
-        B1[SQL文テンプレート<br/>作成] --> B2[事前コンパイル<br/>SQLパース]
-        B2 --> B3[実行計画作成]
-        B3 --> B4[パラメータ設定]
-        B4 --> B5[実行]
-        B5 -.再利用.-> B4
-    end
-                            </pre>
-                        </div>
-                    </div>
-
-                    <!-- コードブロック - 比較 -->
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">StatementとPreparedStatementの比較</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// ❌ Statementの場合（非推奨）
-String name = "田中太郎";
-String sql = "SELECT * FROM users WHERE name = '" + name + "'";
-Statement stmt = conn.createStatement();
-ResultSet rs = stmt.executeQuery(sql);
-
-// ✅ PreparedStatementの場合（推奨）
-String sql = "SELECT * FROM users WHERE name = ?";
-PreparedStatement pstmt = conn.prepareStatement(sql);
-pstmt.setString(1, "田中太郎");  // パラメータを安全に設定
-ResultSet rs = pstmt.executeQuery();</code></pre>
-                    </div>
-                </section>
-
-                <!-- セクション 5.2 -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        5.2 SQLインジェクション攻撃とは
-                    </h2>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        SQLインジェクションは、悪意のあるユーザーが入力値を通じてSQL文を改ざんし、データベースに不正アクセスする攻撃手法です。PreparedStatementを使用することで、この脅威から保護できます。
-                    </p>
-
-                    <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
-                        <h3 class="text-red-800 font-semibold mb-2 flex items-center gap-2">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            危険な例：Statementの脆弱性
-                        </h3>
-                        <p class="text-red-900 text-sm mb-3">
-                            ユーザー入力を直接SQL文に組み込むと、以下のような攻撃を受けます。
-                        </p>
-                    </div>
-
-                    <!-- コードブロック - SQLインジェクションの危険性 -->
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">VulnerableExample.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// ❌ 危険なコード（SQLインジェクションの脆弱性）
-String userId = request.getParameter("userId");  // ユーザー入力
-String sql = "SELECT * FROM users WHERE id = " + userId;
-Statement stmt = conn.createStatement();
-ResultSet rs = stmt.executeQuery(sql);
-
-// 攻撃者が userId に "1 OR 1=1" を入力すると...
-// 実行されるSQL: SELECT * FROM users WHERE id = 1 OR 1=1
-// → 全てのユーザー情報が取得されてしまう！</code></pre>
-                    </div>
-
-                    <div class="my-8">
-                        <h3 class="text-lg font-semibold text-slate-800 mb-4">SQLインジェクション攻撃の仕組み</h3>
-                        <div class="bg-white p-4 rounded-lg border border-slate-200">
-                            <pre class="mermaid">
-sequenceDiagram
-    participant U as 攻撃者
-    participant W as Webアプリ
-    participant DB as データベース
-
-    U->>W: userId = "1 OR 1=1"<br/>(悪意のある入力)
-    W->>W: SQL組み立て<br/>"SELECT * FROM users WHERE id = " + userId
-    W->>DB: SELECT * FROM users WHERE id = 1 OR 1=1
-    Note over DB: OR 1=1 が常に真のため<br/>全レコードを返却
-    DB-->>W: 全ユーザーのデータ
-    W-->>U: 機密情報が漏洩
-                            </pre>
-                        </div>
-                    </div>
-
-                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 mb-6">
-                        <h3 class="text-emerald-800 font-semibold mb-2 flex items-center gap-2">
-                            <i class="fas fa-shield-alt"></i>
-                            安全な実装：PreparedStatementによる対策
-                        </h3>
-                        <p class="text-emerald-900 text-sm">
-                            PreparedStatementではパラメータが文字列リテラルとして扱われるため、SQL文の構造が変更されません。
-                        </p>
-                    </div>
-
-                    <!-- コードブロック - 安全な実装 -->
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">SecureExample.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// ✅ 安全なコード（SQLインジェクション対策済み）
-String userId = request.getParameter("userId");
-String sql = "SELECT * FROM users WHERE id = ?";
-PreparedStatement pstmt = conn.prepareStatement(sql);
-pstmt.setString(1, userId);  // パラメータとして安全に設定
-ResultSet rs = pstmt.executeQuery();
-
-// 攻撃者が userId に "1 OR 1=1" を入力しても...
-// データベースは "1 OR 1=1" という文字列として検索
-// → SQLインジェクションは発生しない！</code></pre>
-                    </div>
-                </section>
-
-                <!-- セクション 5.3 -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        5.3 PreparedStatementの基本的な使い方
-                    </h2>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        PreparedStatementの基本的な使用手順は、①SQL文テンプレート作成、②PreparedStatementオブジェクト生成、③パラメータ設定、④実行の4ステップです。
-                    </p>
-
-                    <h3 class="text-lg font-semibold text-slate-800 mb-3 mt-6">基本的な使用手順</h3>
-
-                    <div class="bg-white p-4 rounded-lg border border-slate-200 mb-6">
-                        <pre class="mermaid">
-flowchart TD
-    A[1. SQL文テンプレート作成<br/>プレースホルダ ? を使用] --> B[2. PreparedStatementを生成<br/>conn.prepareStatement]
-    B --> C[3. パラメータを設定<br/>setXxx メソッド]
-    C --> D{クエリ種別}
-    D -->|SELECT| E[executeQuery<br/>→ ResultSet]
-    D -->|INSERT/UPDATE/DELETE| F[executeUpdate<br/>→ 影響行数]
-    E --> G[5. 結果の処理]
-    F --> G
-    G --> H[6. リソース解放]
-                        </pre>
-                    </div>
-
-                    <!-- コードブロック - 基本的な使い方 -->
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">PreparedStatementBasic.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// 1. SQL文テンプレートを作成（? がプレースホルダ）
-String sql = "SELECT * FROM users WHERE age >= ? AND city = ?";
-
-// 2. PreparedStatementオブジェクトを生成
-PreparedStatement pstmt = conn.prepareStatement(sql);
-
-// 3. パラメータを設定（番号は1から始まる）
-pstmt.setInt(1, 20);        // 第1パラメータ（age）に整数値を設定
-pstmt.setString(2, "東京");  // 第2パラメータ（city）に文字列を設定
-
-// 4. クエリを実行
-ResultSet rs = pstmt.executeQuery();
-
-// 5. 結果を処理
-while (rs.next()) {
-    System.out.println(rs.getString("name"));
-}</code></pre>
-                    </div>
-
-                    <h3 class="text-lg font-semibold text-slate-800 mb-3 mt-6">主要なsetXxxメソッド一覧</h3>
-
-                    <div class="overflow-x-auto mb-6">
-                        <table class="min-w-full bg-white border border-slate-300 rounded-lg">
-                            <thead class="bg-slate-100">
-                                <tr>
-                                    <th class="px-4 py-2 text-left text-sm font-semibold text-slate-700 border-b">メソッド</th>
-                                    <th class="px-4 py-2 text-left text-sm font-semibold text-slate-700 border-b">データ型</th>
-                                    <th class="px-4 py-2 text-left text-sm font-semibold text-slate-700 border-b">使用例</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-sm">
-                                <tr class="border-b">
-                                    <td class="px-4 py-2 font-mono text-primary-600">setString()</td>
-                                    <td class="px-4 py-2">文字列（VARCHAR, CHAR）</td>
-                                    <td class="px-4 py-2 font-mono text-xs">pstmt.setString(1, "田中")</td>
-                                </tr>
-                                <tr class="border-b">
-                                    <td class="px-4 py-2 font-mono text-primary-600">setInt()</td>
-                                    <td class="px-4 py-2">整数（INT）</td>
-                                    <td class="px-4 py-2 font-mono text-xs">pstmt.setInt(1, 25)</td>
-                                </tr>
-                                <tr class="border-b">
-                                    <td class="px-4 py-2 font-mono text-primary-600">setLong()</td>
-                                    <td class="px-4 py-2">長整数（BIGINT）</td>
-                                    <td class="px-4 py-2 font-mono text-xs">pstmt.setLong(1, 1000000L)</td>
-                                </tr>
-                                <tr class="border-b">
-                                    <td class="px-4 py-2 font-mono text-primary-600">setDouble()</td>
-                                    <td class="px-4 py-2">浮動小数点（DOUBLE）</td>
-                                    <td class="px-4 py-2 font-mono text-xs">pstmt.setDouble(1, 98.5)</td>
-                                </tr>
-                                <tr class="border-b">
-                                    <td class="px-4 py-2 font-mono text-primary-600">setBoolean()</td>
-                                    <td class="px-4 py-2">真偽値（BOOLEAN）</td>
-                                    <td class="px-4 py-2 font-mono text-xs">pstmt.setBoolean(1, true)</td>
-                                </tr>
-                                <tr class="border-b">
-                                    <td class="px-4 py-2 font-mono text-primary-600">setDate()</td>
-                                    <td class="px-4 py-2">日付（DATE）</td>
-                                    <td class="px-4 py-2 font-mono text-xs">pstmt.setDate(1, sqlDate)</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-2 font-mono text-primary-600">setTimestamp()</td>
-                                    <td class="px-4 py-2">日時（TIMESTAMP）</td>
-                                    <td class="px-4 py-2 font-mono text-xs">pstmt.setTimestamp(1, ts)</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <!-- セクション 5.4 -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        5.4 PreparedStatementを使ったCRUD操作
-                    </h2>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        ここでは、PreparedStatementを使った4つの基本操作（Create, Read, Update, Delete）の実装例を見ていきましょう。
-                    </p>
-
-                    <!-- コードブロック - INSERT -->
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">INSERT例 - データ登録</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// 新規ユーザーを登録
-String sql = "INSERT INTO users (name, email, age, city) VALUES (?, ?, ?, ?)";
-PreparedStatement pstmt = conn.prepareStatement(sql);
-
-pstmt.setString(1, "佐藤花子");
-pstmt.setString(2, "hanako@example.com");
-pstmt.setInt(3, 28);
-pstmt.setString(4, "大阪");
-
-int rowsInserted = pstmt.executeUpdate();
-System.out.println(rowsInserted + "件のデータを登録しました。");</code></pre>
-                    </div>
-
-                    <!-- コードブロック - SELECT -->
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">SELECT例 - データ検索</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// 特定の都市に住む20歳以上のユーザーを検索
-String sql = "SELECT * FROM users WHERE city = ? AND age >= ?";
-PreparedStatement pstmt = conn.prepareStatement(sql);
-
-pstmt.setString(1, "東京");
-pstmt.setInt(2, 20);
-
-ResultSet rs = pstmt.executeQuery();
-while (rs.next()) {
-    System.out.println("名前: " + rs.getString("name"));
-    System.out.println("年齢: " + rs.getInt("age"));
-}</code></pre>
-                    </div>
-
-                    <!-- コードブロック - UPDATE -->
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">UPDATE例 - データ更新</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// 特定ユーザーの都市を更新
-String sql = "UPDATE users SET city = ? WHERE email = ?";
-PreparedStatement pstmt = conn.prepareStatement(sql);
-
-pstmt.setString(1, "横浜");
-pstmt.setString(2, "hanako@example.com");
-
-int rowsUpdated = pstmt.executeUpdate();
-System.out.println(rowsUpdated + "件のデータを更新しました。");</code></pre>
-                    </div>
-
-                    <!-- コードブロック - DELETE -->
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">DELETE例 - データ削除</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// 特定年齢未満のユーザーを削除
-String sql = "DELETE FROM users WHERE age < ?";
-PreparedStatement pstmt = conn.prepareStatement(sql);
-
-pstmt.setInt(1, 18);
-
-int rowsDeleted = pstmt.executeUpdate();
-System.out.println(rowsDeleted + "件のデータを削除しました。");</code></pre>
-                    </div>
-                </section>
-
-                <!-- 実習カード -->
-                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
-                            rounded-xl p-5 my-6">
-                    <div class="flex items-start gap-4">
-                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
-                                    flex items-center justify-center">
-                            <i class="fas fa-code text-white"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-purple-800 mb-3">
-                                実習 5-1: PreparedStatementでユーザー検索機能を作成
-                            </h3>
-                            <p class="text-purple-900 mb-4">
-                                PreparedStatementを使用して、名前の一部で検索できる機能を実装しましょう。LIKE演算子とワイルドカードを組み合わせて使います。
-                            </p>
-
-                            <h4 class="font-medium text-purple-800 mb-2">手順</h4>
-                            <ol class="space-y-3 mb-4">
-                                <li class="flex items-start gap-3 text-purple-900">
-                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                 flex items-center justify-center text-sm font-medium">1</span>
-                                    <span>LIKE演算子を使ったSQL文テンプレートを作成（"SELECT * FROM users WHERE name LIKE ?"）</span>
-                                </li>
-                                <li class="flex items-start gap-3 text-purple-900">
-                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                 flex items-center justify-center text-sm font-medium">2</span>
-                                    <span>PreparedStatementオブジェクトを生成</span>
-                                </li>
-                                <li class="flex items-start gap-3 text-purple-900">
-                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                 flex items-center justify-center text-sm font-medium">3</span>
-                                    <span>検索キーワードの前後に%を付けてパラメータに設定（部分一致検索）</span>
-                                </li>
-                                <li class="flex items-start gap-3 text-purple-900">
-                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                 flex items-center justify-center text-sm font-medium">4</span>
-                                    <span>executeQuery()を実行し、結果を表示</span>
-                                </li>
-                            </ol>
-
-                            <h4 class="font-medium text-purple-800 mb-2">実装例</h4>
-                            <pre class="!bg-slate-800 !rounded-lg"><code class="language-java">String keyword = "田中";  // ユーザー入力
-String sql = "SELECT * FROM users WHERE name LIKE ?";
-PreparedStatement pstmt = conn.prepareStatement(sql);
-
-// ワイルドカードを付けて部分一致検索
-pstmt.setString(1, "%" + keyword + "%");
-
-ResultSet rs = pstmt.executeQuery();
-while (rs.next()) {
-    System.out.println("ID: " + rs.getInt("id"));
-    System.out.println("名前: " + rs.getString("name"));
-    System.out.println("---");
-}</code></pre>
-
-                            <h4 class="font-medium text-purple-800 mt-4 mb-2">期待される結果</h4>
-                            <div class="bg-white/50 rounded-lg p-3 text-purple-900 font-mono text-sm">
-                                ID: 1<br>
-                                名前: 田中太郎<br>
-                                ---<br>
-                                ID: 5<br>
-                                名前: 田中花子<br>
-                                ---
-                            </div>
-
-                            <div class="bg-purple-100 rounded-lg p-3 mt-4">
-                                <p class="text-sm text-purple-900">
-                                    <strong>ポイント:</strong> LIKE演算子を使う際、ワイルドカード（%）はJavaコード側で付与します。SQL文には含めません。
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-emerald-600 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-emerald-800 mb-1">重要ポイント</p>
+                                <p class="text-emerald-900 text-sm">
+                                    <strong>実務では原則としてPreparedStatementを使用します。</strong>Statementは特殊な理由がない限り使いません。セキュリティと性能の両面で優れているためです。
                                 </p>
                             </div>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <!-- セクション 5.5 -->
+                <!-- セクション2 -->
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        5.5 PreparedStatementのベストプラクティス
+                        5.2 SQLインジェクション攻撃とは？
                     </h2>
-
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        PreparedStatementを効果的に使用するためのベストプラクティスを理解しましょう。
+                        SQLインジェクションは、悪意のあるSQL文を注入することで、データベースを不正に操作する攻撃手法です。Statementを使った文字列連結でSQL文を作成すると、この攻撃を受けやすくなります。
                     </p>
 
-                    <div class="grid md:grid-cols-2 gap-4 mb-6">
-                        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-                            <h3 class="text-emerald-800 font-semibold mb-2 flex items-center gap-2">
-                                <i class="fas fa-check-circle"></i>
-                                推奨される使い方
-                            </h3>
-                            <ul class="text-sm text-emerald-900 space-y-2">
-                                <li>✅ ユーザー入力を含むSQL文は必ずPreparedStatementを使用</li>
-                                <li>✅ 同じSQL文を繰り返し実行する場合は再利用</li>
-                                <li>✅ try-with-resources文でリソースを適切に管理</li>
-                                <li>✅ パラメータインデックスは1から始まることを意識</li>
-                            </ul>
-                        </div>
-                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-                            <h3 class="text-red-800 font-semibold mb-2 flex items-center gap-2">
-                                <i class="fas fa-times-circle"></i>
-                                避けるべき使い方
-                            </h3>
-                            <ul class="text-sm text-red-900 space-y-2">
-                                <li>❌ テーブル名やカラム名をパラメータで指定</li>
-                                <li>❌ パラメータ設定後にSQL文を再構築</li>
-                                <li>❌ 閉じ忘れによるリソースリーク</li>
-                                <li>❌ 不要な部分でStatementを使い続ける</li>
-                            </ul>
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-red-800 mb-2">危険な例（Statementを使った場合）</p>
+                                <p class="text-red-900 text-sm mb-2">
+                                    以下のコードは、ユーザーが入力した名前でデータベースを検索していますが、悪意のある入力に対して脆弱です。
+                                </p>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- コードブロック - ベストプラクティス -->
-                    <div class="code-block-wrapper my-6">
+                    <!-- 危険なコード例 -->
+                    <div class="code-block-wrapper mb-4">
                         <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">ベストプラクティス例</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
+                            <span class="text-slate-400 text-sm">BadExample.java（セキュリティ上危険）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// ✅ try-with-resourcesで自動的にリソース解放
-String sql = "SELECT * FROM users WHERE city = ? AND age >= ?";
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// ユーザーが入力した名前
+String userName = request.getParameter("name");
 
-try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-    // パラメータを設定
-    pstmt.setString(1, "東京");
-    pstmt.setInt(2, 20);
-
-    // クエリを実行
-    try (ResultSet rs = pstmt.executeQuery()) {
-        while (rs.next()) {
-            System.out.println(rs.getString("name"));
-        }
-    }
-} catch (SQLException e) {
-    e.printStackTrace();
-}
-// pstmt と rs は自動的に close() される</code></pre>
+// 文字列連結でSQL文を作成（危険！）
+String sql = "SELECT * FROM users WHERE name = '" + userName + "'";
+Statement stmt = conn.createStatement();
+ResultSet rs = stmt.executeQuery(sql);</code></pre>
                     </div>
 
-                    <div class="bg-amber-50 border-l-4 border-amber-500 p-4 mb-6">
-                        <h3 class="text-amber-800 font-semibold mb-2 flex items-center gap-2">
-                            <i class="fas fa-exclamation-circle"></i>
-                            注意：PreparedStatementでできないこと
-                        </h3>
-                        <p class="text-amber-900 text-sm mb-2">
-                            PreparedStatementのパラメータ（?）は<strong>値</strong>のみを指定できます。テーブル名やカラム名、SQL構文の一部は指定できません。
-                        </p>
-                        <pre class="!bg-slate-800 !rounded-lg text-xs"><code class="language-java">// ❌ これはできない（テーブル名をパラメータにできない）
-String sql = "SELECT * FROM ? WHERE id = ?";
-pstmt.setString(1, "users");  // エラー！
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        攻撃者が名前欄に<code class="bg-slate-100 px-1 py-0.5 rounded text-sm">山田' OR '1'='1</code>と入力すると、実行されるSQL文は以下のようになります：
+                    </p>
 
-// ✅ テーブル名を動的にする場合は文字列連結（ただし入力検証が必須）
-String tableName = "users";  // ホワイトリストで検証済みの値
-String sql = "SELECT * FROM " + tableName + " WHERE id = ?";
-pstmt.setInt(1, userId);</code></pre>
+                    <div class="bg-slate-100 border border-slate-200 rounded-xl p-4 mb-4">
+                        <pre class="text-sm text-slate-800"><code>SELECT * FROM users WHERE name = '山田' OR '1'='1'</code></pre>
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <code class="bg-slate-100 px-1 py-0.5 rounded text-sm">'1'='1'</code>は常に真なので、WHERE句の条件が無効化され、<strong>すべてのユーザー情報が取得されてしまいます</strong>。これがSQLインジェクション攻撃です。
+                    </p>
+
+                    <!-- SQLインジェクション攻撃の流れ図 -->
+                    <div class="my-6 bg-white p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-sm font-semibold text-slate-700 mb-4">SQLインジェクション攻撃の仕組み</h3>
+                        <pre class="mermaid bg-transparent border-0">
+flowchart TD
+    A[ユーザー入力:<br/>"山田' OR '1'='1"]
+    B["SQL文字列連結:<br/>SELECT * FROM users WHERE name = '" + input + "'"]
+    C["実行されるSQL:<br/>SELECT * FROM users WHERE name = '山田' OR '1'='1'"]
+    D[攻撃成功:<br/>全ユーザー情報が取得される]
+
+    A --> B
+    B --> C
+    C --> D
+
+    style A fill:#fed7aa,stroke:#ea580c,stroke-width:2px
+    style B fill:#fecaca,stroke:#dc2626,stroke-width:2px
+    style C fill:#fecaca,stroke:#dc2626,stroke-width:2px
+    style D fill:#fca5a5,stroke:#b91c1c,stroke-width:2px
+                        </pre>
+                    </div>
+                </section>
+
+                <!-- セクション3 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.3 PreparedStatementでSQLインジェクションを防ぐ
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        PreparedStatementを使うと、SQL文の構造とデータを明確に分離できるため、SQLインジェクション攻撃を防げます。
+                    </p>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>プレースホルダ（?）</strong>を使ってパラメータの位置を指定し、後から値をバインド（設定）します。
+                    </p>
+
+                    <!-- 安全なコード例 -->
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">GoodExample.java（安全）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// ユーザーが入力した名前
+String userName = request.getParameter("name");
+
+// プレースホルダ（?）を使ったSQL文
+String sql = "SELECT * FROM users WHERE name = ?";
+PreparedStatement pstmt = conn.prepareStatement(sql);
+
+// パラメータをバインド（1番目の?にuserNameを設定）
+pstmt.setString(1, userName);
+
+// SQL実行
+ResultSet rs = pstmt.executeQuery();</code></pre>
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        このコードでは、攻撃者が<code class="bg-slate-100 px-1 py-0.5 rounded text-sm">山田' OR '1'='1</code>と入力しても、その文字列全体が<strong>単なる文字列データ</strong>として扱われ、SQL文の構造は変化しません。
+                    </p>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-shield-alt text-emerald-600 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-emerald-800 mb-1">安全な理由</p>
+                                <p class="text-emerald-900 text-sm">
+                                    PreparedStatementは、SQL文の構造が最初に決まり、後から値が入るため、<code>'</code>や<code>OR</code>などの特殊な文字が含まれていても、それらはSQL文として解釈されず、ただの文字データとして扱われます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション4 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.4 プレースホルダとパラメータバインド
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        PreparedStatementでは、<strong>?（プレースホルダ）</strong>を使ってパラメータの位置を指定します。その後、<code>setXxx()</code>メソッドで値をバインド（設定）します。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mb-3">主なsetXxx()メソッド</h3>
+
+                    <div class="overflow-x-auto mb-6">
+                        <table class="min-w-full bg-white border border-slate-200 rounded-lg overflow-hidden">
+                            <thead class="bg-slate-100">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-sm font-semibold text-slate-700">メソッド</th>
+                                    <th class="px-4 py-2 text-left text-sm font-semibold text-slate-700">用途</th>
+                                    <th class="px-4 py-2 text-left text-sm font-semibold text-slate-700">例</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200">
+                                <tr>
+                                    <td class="px-4 py-2 text-sm font-mono text-slate-600">setString(int, String)</td>
+                                    <td class="px-4 py-2 text-sm text-slate-600">文字列型データ（VARCHAR, TEXT）</td>
+                                    <td class="px-4 py-2 text-sm font-mono text-slate-600">pstmt.setString(1, "山田太郎")</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 text-sm font-mono text-slate-600">setInt(int, int)</td>
+                                    <td class="px-4 py-2 text-sm text-slate-600">整数型データ（INT）</td>
+                                    <td class="px-4 py-2 text-sm font-mono text-slate-600">pstmt.setInt(2, 30)</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 text-sm font-mono text-slate-600">setDouble(int, double)</td>
+                                    <td class="px-4 py-2 text-sm text-slate-600">浮動小数点数（DOUBLE, FLOAT）</td>
+                                    <td class="px-4 py-2 text-sm font-mono text-slate-600">pstmt.setDouble(3, 1500.50)</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 text-sm font-mono text-slate-600">setDate(int, Date)</td>
+                                    <td class="px-4 py-2 text-sm text-slate-600">日付型データ（DATE）</td>
+                                    <td class="px-4 py-2 text-sm font-mono text-slate-600">pstmt.setDate(4, sqlDate)</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 text-sm font-mono text-slate-600">setBoolean(int, boolean)</td>
+                                    <td class="px-4 py-2 text-sm text-slate-600">真偽値（BOOLEAN）</td>
+                                    <td class="px-4 py-2 text-sm font-mono text-slate-600">pstmt.setBoolean(5, true)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-blue-800 mb-1">プレースホルダの番号</p>
+                                <p class="text-blue-900 text-sm">
+                                    プレースホルダの番号は<strong>1から始まります</strong>（0ではありません）。SQL文の左から順に、1番目、2番目、3番目...となります。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 複数パラメータの例 -->
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">MultipleParameters.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// 複数のパラメータを持つSQL文
+String sql = "INSERT INTO employees (name, age, salary) VALUES (?, ?, ?)";
+PreparedStatement pstmt = conn.prepareStatement(sql);
+
+// 1番目のプレースホルダに名前をセット
+pstmt.setString(1, "佐藤花子");
+
+// 2番目のプレースホルダに年齢をセット
+pstmt.setInt(2, 28);
+
+// 3番目のプレースホルダに給与をセット
+pstmt.setDouble(3, 350000.00);
+
+// SQL実行
+int rows = pstmt.executeUpdate();
+System.out.println(rows + "件登録しました");</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション5 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.5 StatementとPreparedStatementの比較
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        StatementとPreparedStatementの違いを具体例で比較してみましょう。
+                    </p>
+
+                    <div class="grid md:grid-cols-2 gap-6 my-6">
+                        <!-- Statement版 -->
+                        <div class="bg-slate-50 border border-slate-300 rounded-xl p-5">
+                            <h3 class="font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                                <i class="fas fa-times-circle text-red-500"></i>
+                                Statement（非推奨）
+                            </h3>
+                            <div class="code-block-wrapper">
+                                <pre class="!mt-0 text-sm"><code class="language-java">String name = "山田太郎";
+int age = 30;
+
+String sql = "SELECT * FROM users "
+    + "WHERE name = '" + name + "' "
+    + "AND age = " + age;
+
+Statement stmt =
+    conn.createStatement();
+ResultSet rs =
+    stmt.executeQuery(sql);</code></pre>
+                            </div>
+                            <ul class="text-sm text-slate-600 mt-3 space-y-1">
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-times text-red-500 mt-0.5"></i>
+                                    <span>SQLインジェクションの危険</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-times text-red-500 mt-0.5"></i>
+                                    <span>文字列連結が複雑で読みにくい</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-times text-red-500 mt-0.5"></i>
+                                    <span>毎回SQLがコンパイルされる</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- PreparedStatement版 -->
+                        <div class="bg-emerald-50 border border-emerald-300 rounded-xl p-5">
+                            <h3 class="font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                                <i class="fas fa-check-circle text-emerald-600"></i>
+                                PreparedStatement（推奨）
+                            </h3>
+                            <div class="code-block-wrapper">
+                                <pre class="!mt-0 text-sm"><code class="language-java">String name = "山田太郎";
+int age = 30;
+
+String sql = "SELECT * FROM users "
+    + "WHERE name = ? AND age = ?";
+
+PreparedStatement pstmt =
+    conn.prepareStatement(sql);
+pstmt.setString(1, name);
+pstmt.setInt(2, age);
+ResultSet rs =
+    pstmt.executeQuery();</code></pre>
+                            </div>
+                            <ul class="text-sm text-slate-600 mt-3 space-y-1">
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-check text-emerald-600 mt-0.5"></i>
+                                    <span>SQLインジェクション対策済み</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-check text-emerald-600 mt-0.5"></i>
+                                    <span>コードが読みやすい</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-check text-emerald-600 mt-0.5"></i>
+                                    <span>SQL文が再利用され高速</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 実習カード -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 mb-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 5-1: PreparedStatementでデータ検索</h3>
+                            <p class="text-purple-900 mb-4 break-words">ユーザーが入力した年齢以上の従業員を検索するプログラムを作成します。</p>
+                            <h4 class="font-medium text-purple-800 mb-2 break-words">手順</h4>
+                            <ol class="space-y-3 mb-4">
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
+                                    <span class="flex-1 min-w-0 break-words">Scanner等でユーザーに年齢を入力してもらう</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
+                                    <span class="flex-1 min-w-0 break-words">PreparedStatementでSELECT文を作成（WHERE age >= ?）</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">3</span>
+                                    <span class="flex-1 min-w-0 break-words">setInt()で年齢をバインド</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">4</span>
+                                    <span class="flex-1 min-w-0 break-words">executeQuery()で実行し、結果を表示</span>
+                                </li>
+                            </ol>
+
+                            <!-- サンプルコード -->
+                            <div class="code-block-wrapper">
+                                <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                    <span class="text-slate-400 text-sm">SearchByAge.java</span>
+                                    <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                                <pre class="!mt-0 !rounded-t-none"><code class="language-java">Scanner scanner = new Scanner(System.in);
+System.out.print("年齢を入力: ");
+int inputAge = scanner.nextInt();
+
+String sql = "SELECT * FROM employees WHERE age >= ?";
+PreparedStatement pstmt = conn.prepareStatement(sql);
+pstmt.setInt(1, inputAge);
+
+ResultSet rs = pstmt.executeQuery();
+while (rs.next()) {
+    System.out.println(rs.getString("name") + " : " + rs.getInt("age") + "歳");
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション6 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.6 PreparedStatementのパフォーマンス上のメリット
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        PreparedStatementは、SQL文を<strong>事前にコンパイル（プリコンパイル）</strong>するため、同じSQL文を繰り返し実行する場合に高速になります。
+                    </p>
+
+                    <!-- パフォーマンス比較図 -->
+                    <div class="my-6 bg-white p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-sm font-semibold text-slate-700 mb-4">StatementとPreparedStatementの処理フロー比較</h3>
+                        <pre class="mermaid bg-transparent border-0">
+flowchart LR
+    subgraph S[Statement（毎回コンパイル）]
+        S1[SQL文字列作成]
+        S2[SQL解析]
+        S3[SQL実行]
+        S1 --> S2 --> S3
+    end
+
+    subgraph P[PreparedStatement（1回だけコンパイル）]
+        P1[SQL文作成<br/>プレースホルダ使用]
+        P2[SQL解析<br/>コンパイル<br/>1回のみ]
+        P3[パラメータ<br/>バインド]
+        P4[SQL実行]
+        P1 --> P2
+        P2 --> P3
+        P3 --> P4
+        P4 -.再利用.-> P3
+    end
+
+    style S fill:#fecaca,stroke:#dc2626,stroke-width:2px
+    style P fill:#bbf7d0,stroke:#16a34a,stroke-width:2px
+                        </pre>
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        大量のデータを登録する場合、PreparedStatementを使うと処理時間が大幅に短縮されます。
+                    </p>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-tachometer-alt text-emerald-600 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-emerald-800 mb-1">パフォーマンスのコツ</p>
+                                <p class="text-emerald-900 text-sm">
+                                    同じSQL文を繰り返し実行する場合は、PreparedStatementを1回だけprepareし、パラメータだけを変えて繰り返し実行すると効率的です。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 繰り返し実行の例 -->
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">BatchInsert.java（効率的な繰り返し実行）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// 1回だけprepareする
+String sql = "INSERT INTO products (name, price) VALUES (?, ?)";
+PreparedStatement pstmt = conn.prepareStatement(sql);
+
+// 複数のデータを登録（パラメータだけ変更して繰り返し実行）
+pstmt.setString(1, "商品A");
+pstmt.setInt(2, 1000);
+pstmt.executeUpdate();
+
+pstmt.setString(1, "商品B");
+pstmt.setInt(2, 2000);
+pstmt.executeUpdate();
+
+pstmt.setString(1, "商品C");
+pstmt.setInt(2, 3000);
+pstmt.executeUpdate();</code></pre>
                     </div>
                 </section>
 
                 <!-- 理解度確認クイズ -->
                 <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
-                            rounded-xl p-5 my-6">
+                            rounded-xl p-5 my-6 overflow-hidden">
                     <div class="flex items-start gap-4">
                         <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
                                     flex items-center justify-center">
                             <i class="fas fa-question text-white"></i>
                         </div>
-                        <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-blue-800 mb-4">理解度確認クイズ</h3>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
                             <ol class="space-y-4">
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2">Q1. PreparedStatementを使用する主なメリットを3つ挙げてください。</p>
+                                    <p class="font-medium mb-2 break-words">Q1. PreparedStatementを使う主なメリットを2つ挙げてください。</p>
                                     <details class="mt-2">
-                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <div class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
-                                            <p class="mb-2"><strong>3つのメリット:</strong></p>
-                                            <ol class="list-decimal list-inside space-y-1">
-                                                <li><strong>セキュリティ:</strong> SQLインジェクション攻撃を防止できる</li>
-                                                <li><strong>パフォーマンス:</strong> SQL文が事前にコンパイルされるため、繰り返し実行時の性能が向上</li>
-                                                <li><strong>可読性:</strong> SQL文とパラメータが分離され、コードが読みやすくメンテナンスしやすい</li>
-                                            </ol>
-                                        </div>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            1. <strong>セキュリティ対策</strong>: SQLインジェクション攻撃を防ぐことができる<br>
+                                            2. <strong>パフォーマンス向上</strong>: SQL文が事前にコンパイルされるため、同じSQL文を繰り返し実行する場合に高速
+                                        </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2">Q2. 次のコードにはどんな問題がありますか？また、どのように修正すべきでしょうか？</p>
-                                    <pre class="!bg-slate-800 !rounded-lg text-xs mb-2"><code class="language-java">String userId = request.getParameter("id");
-String sql = "DELETE FROM users WHERE id = " + userId;
-Statement stmt = conn.createStatement();
-stmt.executeUpdate(sql);</code></pre>
+                                    <p class="font-medium mb-2 break-words">Q2. SQLインジェクション攻撃とは何ですか？また、なぜPreparedStatementを使うと防げるのでしょうか？</p>
                                     <details class="mt-2">
-                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <div class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
-                                            <p class="mb-2"><strong>問題点:</strong></p>
-                                            <ul class="list-disc list-inside mb-3">
-                                                <li>ユーザー入力を直接SQL文に連結しているため、SQLインジェクションの脆弱性がある</li>
-                                                <li>攻撃者が "1 OR 1=1" などを入力すると、全てのユーザーが削除される可能性がある</li>
-                                            </ul>
-                                            <p class="mb-2"><strong>修正方法:</strong></p>
-                                            <pre class="!bg-slate-800 !rounded-lg text-xs"><code class="language-java">String userId = request.getParameter("id");
-String sql = "DELETE FROM users WHERE id = ?";
-PreparedStatement pstmt = conn.prepareStatement(sql);
-pstmt.setString(1, userId);
-pstmt.executeUpdate();</code></pre>
-                                        </div>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            SQLインジェクション攻撃は、悪意のあるSQL文を注入することで、データベースを不正に操作する攻撃手法です。PreparedStatementはSQL文の構造とデータを明確に分離し、パラメータをプレースホルダ（?）で指定するため、ユーザー入力がSQL文として解釈されず、ただの文字データとして扱われます。
+                                        </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2">Q3. PreparedStatementのパラメータインデックスは何番から始まりますか？また、間違えやすい点は何ですか？</p>
+                                    <p class="font-medium mb-2 break-words">Q3. プレースホルダ（?）の番号は何番から始まりますか？また、以下のSQL文で年齢をバインドするコードを書いてください。<br><code class="bg-blue-100 px-1 rounded">SELECT * FROM users WHERE name = ? AND age = ?</code></p>
                                     <details class="mt-2">
-                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <div class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
-                                            <p class="mb-2"><strong>インデックスの開始番号: 1</strong></p>
-                                            <p class="mb-2">PreparedStatementのパラメータインデックスは1から始まります（0ではない）。</p>
-                                            <p class="mb-2"><strong>間違えやすい点:</strong></p>
-                                            <ul class="list-disc list-inside">
-                                                <li>Javaの配列は0から始まるため、0から始めてしまうミス</li>
-                                                <li>パラメータの順序を間違える（SQL文の?の順番とsetXxxメソッドの順番を一致させる必要がある）</li>
-                                                <li>パラメータの個数とsetXxxメソッドの呼び出し回数が一致していない</li>
-                                            </ul>
-                                        </div>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            プレースホルダの番号は<strong>1番から始まります</strong>（0ではありません）。<br><br>
+                                            <code class="bg-blue-100 px-1 rounded">pstmt.setString(1, "山田太郎"); // 1番目の?に名前をバインド<br>
+                                            pstmt.setInt(2, 30); // 2番目の?に年齢をバインド</code>
+                                        </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2">Q4. PreparedStatementで部分一致検索（LIKE演算子）を実装する場合、ワイルドカード（%）はどこで付けるべきですか？</p>
+                                    <p class="font-medium mb-2 break-words">Q4. 実務ではStatementとPreparedStatementのどちらを使うべきですか？その理由も説明してください。</p>
                                     <details class="mt-2">
-                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <div class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
-                                            <p class="mb-2"><strong>正解: Javaコード側で付ける</strong></p>
-                                            <p class="mb-2">SQL文テンプレート内ではなく、setStringメソッドで値を設定する際にワイルドカードを含めます。</p>
-                                            <pre class="!bg-slate-800 !rounded-lg text-xs mt-2"><code class="language-java">// ✅ 正しい方法
-String sql = "SELECT * FROM users WHERE name LIKE ?";
-pstmt.setString(1, "%" + keyword + "%");
-
-// ❌ 間違った方法
-String sql = "SELECT * FROM users WHERE name LIKE '%?%'";
-pstmt.setString(1, keyword);  // これでは動作しない</code></pre>
-                                            <p class="mt-2">SQL文内に%を含めると、?がプレースホルダとして認識されなくなります。</p>
-                                        </div>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            <strong>PreparedStatementを使うべきです。</strong>理由は、SQLインジェクション対策とパフォーマンス向上の両面で優れているためです。Statementは特殊な理由がない限り使用しません。
+                                        </p>
                                     </details>
                                 </li>
                             </ol>
@@ -1019,49 +718,41 @@ pstmt.setString(1, keyword);  // これでは動作しない</code></pre>
                 </div>
 
                 <!-- まとめ -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-300 rounded-xl p-6">
-                        <h2 class="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                            <i class="fas fa-bookmark text-primary-500"></i>
-                            第5章のまとめ
-                        </h2>
-                        <ul class="space-y-2 text-slate-700">
-                            <li class="flex items-start gap-2">
-                                <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
-                                <span><strong>PreparedStatement</strong>は、パラメータ化されたSQL文を実行するための安全で効率的な方法</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
-                                <span><strong>SQLインジェクション</strong>は深刻なセキュリティ脅威であり、PreparedStatementで対策可能</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
-                                <span><strong>setXxxメソッド</strong>で様々なデータ型をパラメータとして安全に設定できる</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
-                                <span><strong>パラメータインデックス</strong>は1から始まり、SQL文の?の順序と対応させる</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
-                                <span><strong>try-with-resources</strong>を使用してリソースを適切に管理する</span>
-                            </li>
-                        </ul>
-                        <div class="mt-4 p-3 bg-primary-50 rounded-lg">
-                            <p class="text-sm text-primary-900">
-                                <strong>次のステップ:</strong> 第6章では、例外処理とリソース管理について詳しく学び、より堅牢なJDBCプログラムの作成方法を習得します。
-                            </p>
-                        </div>
-                    </div>
-                </section>
+                <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-300 rounded-xl p-6 my-8">
+                    <h3 class="flex items-center gap-2 text-lg font-semibold text-slate-800 mb-4">
+                        <i class="fas fa-bookmark text-primary-500"></i>
+                        この章のまとめ
+                    </h3>
+                    <ul class="space-y-2 text-slate-700">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span><strong>PreparedStatement</strong>は、SQL文を事前にコンパイルして実行するためのインターフェース</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span><strong>SQLインジェクション攻撃</strong>を防ぐため、実務では原則としてPreparedStatementを使用する</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span><strong>プレースホルダ（?）</strong>でパラメータ位置を指定し、setXxx()メソッドで値をバインド</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>プレースホルダの番号は<strong>1から始まる</strong></span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>PreparedStatementは同じSQL文を繰り返し実行する場合に<strong>パフォーマンスが向上</strong>する</span>
+                        </li>
+                    </ul>
+                </div>
 
                 <!-- 章間ナビゲーション -->
                 <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
                     <a href="jdbc-learning-material-04.html"
                        class="group flex items-center gap-3 px-4 py-3 rounded-xl
                               bg-slate-100 hover:bg-slate-200 transition-colors">
-                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
-                                  transition-transform group-hover:-translate-x-1"></i>
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600 transition-transform group-hover:-translate-x-1"></i>
                         <div>
                             <span class="text-xs text-slate-500 block">前の章</span>
                             <span class="text-slate-700 font-medium">データの登録・更新・削除</span>
@@ -1072,7 +763,7 @@ pstmt.setString(1, keyword);  // これでは動作しない</code></pre>
                               bg-primary-500 hover:bg-primary-600 text-white transition-colors">
                         <div class="text-right">
                             <span class="text-xs text-primary-100 block">次の章</span>
-                            <span class="font-medium">例外処理とリソース管理</span>
+                            <span class="font-medium">トランザクション処理</span>
                         </div>
                         <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
                     </a>
@@ -1107,216 +798,8 @@ pstmt.setString(1, keyword);  // これでは動作しない</code></pre>
         <i class="fas fa-arrow-up"></i>
     </button>
 
-    <!-- 描画用Canvasオーバーレイ -->
-    <canvas id="drawing-canvas" class="fixed inset-0 z-[100] pointer-events-none"></canvas>
-
-    <!-- 描画ツールバー（右端） -->
-    <div id="drawing-toolbar" class="fixed right-4 top-1/2 -translate-y-1/2 z-[110]
-                                     bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl
-                                     border border-slate-200 p-2 flex flex-col gap-1
-                                     transition-all duration-300">
-        <!-- ツールバー折りたたみボタン -->
-        <button id="toolbar-toggle"
-                class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
-                       flex items-center justify-center transition-colors mb-2"
-                title="ツールバーを開く">
-            <i class="fas fa-chevron-left text-slate-600"></i>
-        </button>
-
-        <div id="toolbar-content" class="hidden flex-col gap-1">
-            <!-- ペンツール -->
-            <button id="pen-tool"
-                    class="tool-btn w-10 h-10 rounded-xl bg-primary-100 text-primary-600
-                           hover:bg-primary-200 flex items-center justify-center transition-colors"
-                    title="ペン (P)">
-                <i class="fas fa-pen"></i>
-            </button>
-
-            <!-- 消しゴムツール -->
-            <button id="eraser-tool"
-                    class="tool-btn w-10 h-10 rounded-xl bg-slate-100 text-slate-600
-                           hover:bg-slate-200 flex items-center justify-center transition-colors"
-                    title="消しゴム (E)">
-                <i class="fas fa-eraser"></i>
-            </button>
-
-            <!-- 区切り線 -->
-            <div class="h-px bg-slate-200 my-1"></div>
-
-            <!-- 色選択 -->
-            <div id="color-picker" class="flex flex-col gap-1">
-                <button class="color-btn w-10 h-10 rounded-xl border-2 border-red-400 bg-red-500
-                               hover:scale-110 transition-transform" data-color="#ef4444" title="赤"></button>
-                <button class="color-btn w-10 h-10 rounded-xl border-2 border-blue-400 bg-blue-500
-                               hover:scale-110 transition-transform" data-color="#3b82f6" title="青"></button>
-                <button class="color-btn w-10 h-10 rounded-xl border-2 border-slate-600 bg-slate-800
-                               hover:scale-110 transition-transform active-color" data-color="#1e293b" title="黒"></button>
-                <button class="color-btn w-10 h-10 rounded-xl border-2 border-emerald-400 bg-emerald-500
-                               hover:scale-110 transition-transform" data-color="#10b981" title="緑"></button>
-                <button class="color-btn w-10 h-10 rounded-xl border-2 border-amber-400 bg-amber-500
-                               hover:scale-110 transition-transform" data-color="#f59e0b" title="黄"></button>
-            </div>
-
-            <!-- 区切り線 -->
-            <div class="h-px bg-slate-200 my-1"></div>
-
-            <!-- 線の太さ -->
-            <div id="stroke-width" class="flex flex-col gap-1">
-                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
-                               flex items-center justify-center transition-colors" data-width="2" title="細い">
-                    <div class="w-4 h-0.5 bg-slate-600 rounded-full"></div>
-                </button>
-                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
-                               flex items-center justify-center transition-colors active-stroke" data-width="4" title="普通">
-                    <div class="w-4 h-1 bg-slate-600 rounded-full"></div>
-                </button>
-                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
-                               flex items-center justify-center transition-colors" data-width="8" title="太い">
-                    <div class="w-4 h-2 bg-slate-600 rounded-full"></div>
-                </button>
-            </div>
-
-            <!-- 区切り線 -->
-            <div class="h-px bg-slate-200 my-1"></div>
-
-            <!-- 元に戻す -->
-            <button id="undo-btn"
-                    class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600
-                           hover:bg-slate-200 flex items-center justify-center transition-colors
-                           disabled:opacity-40 disabled:cursor-not-allowed"
-                    title="元に戻す (Ctrl+Z)" disabled>
-                <i class="fas fa-undo"></i>
-            </button>
-
-            <!-- 全消去 -->
-            <button id="clear-btn"
-                    class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600
-                           hover:bg-rose-200 flex items-center justify-center transition-colors"
-                    title="全消去 (C)">
-                <i class="fas fa-trash-alt"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- JavaScript -->
-    <script>
-        // Highlight.js 初期化
-        hljs.highlightAll();
-
-        // Mermaid.js 初期化
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'default',
-            securityLevel: 'loose'
-        });
-
-        // モバイルメニュー制御
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebar-overlay');
-        const menuBtn = document.getElementById('mobile-menu-btn');
-
-        menuBtn?.addEventListener('click', () => {
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
-        });
-
-        overlay?.addEventListener('click', () => {
-            sidebar.classList.add('-translate-x-full');
-            overlay.classList.add('hidden');
-        });
-
-        // スクロールトップボタン表示制御
-        const scrollTopBtn = document.getElementById('scroll-top-btn');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                scrollTopBtn.classList.remove('opacity-0', 'invisible', 'translate-y-4');
-            } else {
-                scrollTopBtn.classList.add('opacity-0', 'invisible', 'translate-y-4');
-            }
-        });
-
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // コードコピー機能
-        function copyCode(btn) {
-            const code = btn.closest('.code-block-wrapper').querySelector('code').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                const icon = btn.querySelector('i');
-                icon.classList.remove('fa-copy');
-                icon.classList.add('fa-check');
-                setTimeout(() => {
-                    icon.classList.remove('fa-check');
-                    icon.classList.add('fa-copy');
-                }, 2000);
-            });
-        }
-
-        // サイドバーリサイズ機能
-        const resizeHandle = document.getElementById('sidebar-resize-handle');
-        let isResizing = false;
-        let startX, startWidth;
-
-        resizeHandle?.addEventListener('mousedown', (e) => {
-            isResizing = true;
-            startX = e.clientX;
-            startWidth = sidebar.offsetWidth;
-            resizeHandle.classList.add('resizing');
-            document.body.style.cursor = 'ew-resize';
-            document.body.style.userSelect = 'none';
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (!isResizing) return;
-            const diff = e.clientX - startX;
-            const newWidth = Math.min(Math.max(startWidth + diff, 240), 480);
-            sidebar.style.width = newWidth + 'px';
-        });
-
-        document.addEventListener('mouseup', () => {
-            if (isResizing) {
-                isResizing = false;
-                resizeHandle.classList.remove('resizing');
-                document.body.style.cursor = '';
-                document.body.style.userSelect = '';
-                // サイドバー幅をローカルストレージに保存
-                localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
-            }
-        });
-
-        // ページ読み込み時にサイドバー幅を復元
-        const savedWidth = localStorage.getItem('sidebarWidth');
-        if (savedWidth && window.innerWidth >= 768) {
-            sidebar.style.width = savedWidth + 'px';
-        }
-
-        // 描画ツールバー折りたたみ機能
-        const toolbarToggle = document.getElementById('toolbar-toggle');
-        const toolbarContent = document.getElementById('toolbar-content');
-        let isToolbarOpen = false;
-
-        toolbarToggle?.addEventListener('click', () => {
-            isToolbarOpen = !isToolbarOpen;
-            const icon = toolbarToggle.querySelector('i');
-
-            if (isToolbarOpen) {
-                toolbarContent.classList.remove('hidden');
-                toolbarContent.classList.add('flex');
-                icon.classList.remove('fa-chevron-left');
-                icon.classList.add('fa-chevron-right');
-                toolbarToggle.title = 'ツールバーを閉じる';
-            } else {
-                toolbarContent.classList.add('hidden');
-                toolbarContent.classList.remove('flex');
-                icon.classList.remove('fa-chevron-right');
-                icon.classList.add('fa-chevron-left');
-                toolbarToggle.title = 'ツールバーを開く';
-            }
-        });
-    </script>
-
-    <!-- 描画ツール -->
+    <script src="sidebar-content.js"></script>
+    <script src="main.js"></script>
     <script src="drawing-tool.js"></script>
 </body>
 </html>

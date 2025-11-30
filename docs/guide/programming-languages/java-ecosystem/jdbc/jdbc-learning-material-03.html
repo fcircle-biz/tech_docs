@@ -2,8 +2,19 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.1">
-    <title>JDBC基礎学習教材 第3章 - データの取得(SELECT文)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>JDBC学習教材 第3章 - データの検索（SELECT文）をマスターする</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,6 +23,7 @@
             theme: {
                 extend: {
                     colors: {
+                        // Java/JDBC - Orange
                         primary: {
                             50: '#fff7ed',
                             100: '#ffedd5',
@@ -48,103 +60,7 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- カスタムスタイル -->
-    <style>
-        /* スクロールバーカスタマイズ */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-        /* コードブロックのラインナンバー */
-        .hljs-ln-numbers {
-            user-select: none;
-            text-align: right;
-            color: #6b7280;
-            padding-right: 12px;
-            border-right: 1px solid #374151;
-        }
-
-        /* サイドバートランジション */
-        .sidebar-transition {
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, width 0.15s ease-out;
-        }
-
-        /* サイドバーリサイズ機能 */
-        .sidebar-resizable {
-            min-width: 240px;
-            max-width: 480px;
-        }
-        .sidebar-resize-handle {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 6px;
-            height: 100%;
-            cursor: ew-resize;
-            background: transparent;
-            transition: background 0.2s;
-            z-index: 10;
-        }
-        .sidebar-resize-handle:hover,
-        .sidebar-resize-handle.resizing {
-            background: linear-gradient(to right, transparent, rgba(249, 115, 22, 0.3));
-        }
-
-        /* スムーズスクロール */
-        html { scroll-behavior: smooth; }
-
-        /* コードコピーボタン */
-        .code-block-wrapper { position: relative; }
-        .copy-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        .code-block-wrapper:hover .copy-btn { opacity: 1; }
-
-        /* ヘッダー情報リッチデザイン */
-        .header-rich {
-            background: linear-gradient(135deg,
-                #c2410c 0%,
-                #f97316 50%,
-                #fb923c 100%);
-            position: relative;
-            overflow: hidden;
-        }
-        .header-rich::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background:
-                linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%),
-                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255, 255, 255, 0.03) 2px, rgba(255, 255, 255, 0.03) 4px);
-            animation: bgSlide 10s linear infinite;
-        }
-        @keyframes bgSlide {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(50px); }
-        }
-
-        .header-rich-shadow {
-            box-shadow:
-                0 4px 6px -1px rgba(249, 115, 22, 0.2),
-                0 10px 25px -5px rgba(249, 115, 22, 0.3),
-                0 0 50px rgba(249, 115, 22, 0.15);
-        }
-
-        .icon-rotate-hover {
-            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-        .icon-rotate-hover:hover {
-            transform: rotate(360deg) scale(1.2);
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body class="font-sans bg-slate-50 text-slate-800 antialiased">
     <!-- ヘッダー/ナビゲーションバー -->
@@ -164,7 +80,7 @@
                     <!-- タイトルとメタ情報 -->
                     <div class="flex flex-col gap-1">
                         <div class="flex items-center gap-2">
-                            <span class="text-xl font-bold tracking-wide drop-shadow-md">JDBC基礎学習教材</span>
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">JDBC学習教材</span>
                             <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
                                 <i class="fas fa-star text-yellow-300 text-[8px]"></i>
                                 初級
@@ -173,11 +89,11 @@
                         <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
                             <div class="flex items-center gap-1">
                                 <i class="fas fa-code text-[9px]"></i>
-                                <span>プログラミング言語 - Java</span>
+                                <span>プログラミング言語</span>
                             </div>
                             <div class="hidden sm:flex items-center gap-1">
                                 <i class="fas fa-clock text-[9px]"></i>
-                                <span>推奨 40分</span>
+                                <span>推奨 50分</span>
                             </div>
                             <div class="hidden lg:flex items-center gap-1">
                                 <i class="fas fa-language text-[9px]"></i>
@@ -187,8 +103,8 @@
                     </div>
                 </div>
 
-                <!-- 右側: モバイルメニューボタン -->
-                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
                     <i class="fas fa-bars text-lg"></i>
                 </button>
             </div>
@@ -197,153 +113,16 @@
 
     <!-- メインレイアウト -->
     <div class="flex min-h-screen pt-20">
-        <!-- サイドバー -->
-        <aside id="sidebar" class="fixed md:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
-                                   bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
-                                   transform -translate-x-full md:translate-x-0 sidebar-transition sidebar-resizable"
-               style="--sidebar-width: 320px;">
-            <!-- リサイズハンドル -->
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle hidden md:block"></div>
-            <div class="p-4">
-                <!-- 進捗インジケーター -->
-                <div class="mb-6 p-4 bg-primary-50 rounded-xl">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm font-medium text-primary-700">学習進捗</span>
-                        <span class="text-sm text-primary-600">3/10章</span>
-                    </div>
-                    <div class="w-full bg-primary-100 rounded-full h-2">
-                        <div class="bg-primary-500 h-2 rounded-full transition-all duration-300" style="width: 30%"></div>
-                    </div>
-                </div>
-
-                <!-- 章リスト -->
-                <nav>
-                    <h2 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-2">
-                        学習章
-                    </h2>
-                    <ul class="space-y-1">
-                        <!-- 完了した章 -->
-                        <li>
-                            <a href="jdbc-learning-material-01.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-emerald-500 text-white text-xs rounded-full">
-                                    <i class="fas fa-check text-[10px]"></i>
-                                </span>
-                                <span class="truncate">JDBCの概要と環境構築</span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="jdbc-learning-material-02.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-emerald-500 text-white text-xs rounded-full">
-                                    <i class="fas fa-check text-[10px]"></i>
-                                </span>
-                                <span class="truncate">データベース接続の基本</span>
-                            </a>
-                        </li>
-
-                        <!-- アクティブな章 -->
-                        <li>
-                            <a href="jdbc-learning-material-03.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      bg-primary-100 text-primary-700 font-medium">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-primary-500 text-white text-xs rounded-full">3</span>
-                                <span class="truncate">データの取得（SELECT文）</span>
-                            </a>
-                        </li>
-
-                        <!-- 今後の章 -->
-                        <li>
-                            <a href="jdbc-learning-material-04.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">4</span>
-                                <span class="truncate">データの登録・更新・削除</span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="jdbc-learning-material-05.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">5</span>
-                                <span class="truncate">PreparedStatementの活用</span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="jdbc-learning-material-06.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">6</span>
-                                <span class="truncate">例外処理とリソース管理</span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="jdbc-learning-material-07.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">7</span>
-                                <span class="truncate">トランザクション管理</span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="jdbc-learning-material-08.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">8</span>
-                                <span class="truncate">DAOパターン入門</span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="jdbc-learning-material-09.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">9</span>
-                                <span class="truncate">実践演習 - 商品管理システム</span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="jdbc-learning-material-10.html"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg
-                                      text-slate-600 hover:bg-slate-100 transition-colors">
-                                <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                                             bg-slate-200 text-slate-600 text-xs rounded-full">10</span>
-                                <span class="truncate">よくある問題と解決策</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </aside>
-
-        <!-- サイドバーオーバーレイ（モバイル用） -->
-        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
 
         <!-- メインコンテンツ -->
         <main class="flex-1 min-w-0">
-            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
                 <!-- パンくずリスト -->
                 <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
-                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <a href="#" class="hover:text-primary-600 transition-colors">ホーム</a>
                     <i class="fas fa-chevron-right text-xs"></i>
-                    <a href="https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/" class="hover:text-primary-600 transition-colors">JDBC基礎</a>
+                    <a href="#" class="hover:text-primary-600 transition-colors">JDBC</a>
                     <i class="fas fa-chevron-right text-xs"></i>
                     <span class="text-slate-700">第3章</span>
                 </nav>
@@ -356,13 +135,13 @@
                             第3章
                         </span>
                     </div>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">データの取得(SELECT文)</h1>
-                    <p class="text-slate-600">SELECT文を使用してデータベースからデータを取得する方法を学びます。ResultSetオブジェクトを使ったデータの読み取り、様々なデータ型の取得方法、条件付きクエリの実行方法を習得します。</p>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">データの検索（SELECT文）をマスターする</h1>
+                    <p class="text-slate-600">Statement、PreparedStatementを使ったSELECT文の実行、ResultSetを使った検索結果の取得と処理方法を学びます。WHERE句を使った条件検索、複数件データの取得方法を実践します。</p>
                 </header>
 
                 <!-- 学習目標カード -->
                 <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
-                            rounded-xl p-5 mb-6">
+                            rounded-xl p-5 mb-6 overflow-hidden">
                     <div class="flex items-start gap-4">
                         <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
                                     flex items-center justify-center">
@@ -373,19 +152,19 @@
                             <ul class="space-y-2">
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>SELECT文を使用したデータベースからのデータ取得方法</span>
+                                    <span>StatementとPreparedStatementの使い分けとSELECT文の実行方法を理解する</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>ResultSetオブジェクトを使ったデータの読み取りと操作</span>
+                                    <span>ResultSetを使った検索結果の取得と処理の基本を習得する</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>様々なデータ型（文字列、数値、日付）の取得方法</span>
+                                    <span>WHERE句を使った条件検索の実装方法を身につける</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>WHERE句を使った条件付きデータ取得の実装</span>
+                                    <span>複数件データのループ処理と安全なリソース管理を実践する</span>
                                 </li>
                             </ul>
                         </div>
@@ -396,112 +175,59 @@
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        3.1 SELECT文の基本
+                        3.1 SELECT文とは？ データベースからデータを取り出す
                     </h2>
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        SELECT文は、データベースからデータを取得するための最も基本的なSQL文です。JDBCでSELECT文を実行するには、前章で学んだStatementオブジェクトを使用します。取得したデータはResultSetオブジェクトに格納され、このオブジェクトを通じてデータにアクセスできます。
+                        <strong>SELECT文</strong>は、データベースからデータを検索・取得するためのSQL文です。第2章で接続を確立した後、実際にデータを取り出すのがこの章のテーマです。
+                    </p>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        SELECT文は、データベース操作の中で最も頻繁に使われます。商品一覧の表示、顧客情報の検索、注文履歴の確認など、あらゆる場面でSELECT文が活躍します。
                     </p>
 
-                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 my-4">
+                    <!-- SELECT文の基本構文 -->
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6">
                         <div class="flex items-start gap-3">
-                            <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+                            <i class="fas fa-info-circle text-emerald-600 mt-1"></i>
                             <div>
-                                <h4 class="font-semibold text-blue-800 mb-2">SELECT文の実行フロー</h4>
-                                <p class="text-blue-900 text-sm">
-                                    1. Connectionオブジェクトを取得<br>
-                                    2. StatementオブジェクトをConnectionから作成<br>
-                                    3. executeQuery()メソッドでSELECT文を実行<br>
-                                    4. ResultSetオブジェクトで結果を受け取る<br>
-                                    5. ResultSetから各行のデータを順に読み取る
-                                </p>
+                                <p class="font-semibold text-emerald-800 mb-1">SELECT文の基本構文</p>
+                                <div class="text-emerald-900 space-y-1 text-sm">
+                                    <p><strong>全件取得:</strong> <code class="bg-emerald-100 px-2 py-0.5 rounded">SELECT * FROM テーブル名</code></p>
+                                    <p><strong>特定カラムのみ:</strong> <code class="bg-emerald-100 px-2 py-0.5 rounded">SELECT カラム1, カラム2 FROM テーブル名</code></p>
+                                    <p><strong>条件付き検索:</strong> <code class="bg-emerald-100 px-2 py-0.5 rounded">SELECT * FROM テーブル名 WHERE 条件</code></p>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- データ取得フロー図 -->
-                    <div class="my-6 bg-white p-4 rounded-lg border border-slate-200">
-                        <pre class="mermaid">
-sequenceDiagram
-    participant Java as Javaプログラム
-    participant Conn as Connection
-    participant Stmt as Statement
-    participant DB as データベース
-    participant RS as ResultSet
+                    <!-- SELECT実行の流れ -->
+                    <div class="my-6 bg-white p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-sm font-semibold text-slate-700 mb-4">JDBCでのSELECT実行の流れ</h3>
+                        <pre class="mermaid bg-transparent border-0">
+flowchart TD
+    S1[1. Connection取得]
+    S2[2. Statement/PreparedStatement作成]
+    S3[3. SQL文を実行<br/>executeQuery]
+    S4[4. ResultSet取得]
+    S5[5. 結果をループ処理<br/>while結果がある間]
+    S6[6. 各行のデータ取得<br/>getStringなど]
+    S7[7. リソース解放<br/>close]
 
-    Java->>Conn: createStatement()
-    Conn->>Stmt: Statementオブジェクト返却
-    Java->>Stmt: executeQuery(SQL文)
-    Stmt->>DB: SELECT文実行
-    DB->>RS: 検索結果を格納
-    RS->>Java: ResultSetオブジェクト返却
-    loop 各行の処理
-        Java->>RS: next()で次の行へ移動
-        Java->>RS: getXxx()でデータ取得
-    end
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+    S6 --> S5
+    S5 -->|終了| S7
+
+    style S1 fill:#fff7ed,stroke:#f97316,stroke-width:2px
+    style S2 fill:#fff7ed,stroke:#f97316,stroke-width:2px
+    style S3 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style S4 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style S5 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style S6 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style S7 fill:#fff7ed,stroke:#f97316,stroke-width:2px
                         </pre>
-                    </div>
-
-                    <!-- 基本的なSELECT文のコード例 -->
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">BasicSelectExample.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.sql.*;
-
-public class BasicSelectExample {
-    public static void main(String[] args) {
-        // データベース接続情報
-        String url = "jdbc:postgresql://localhost:5432/mydb";
-        String user = "postgres";
-        String password = "password";
-
-        // データベース接続と検索処理
-        try (Connection conn = DriverManager.getConnection(url, user, password);
-             Statement stmt = conn.createStatement()) {
-
-            // SELECT文を実行してResultSetを取得
-            String sql = "SELECT id, name, email FROM users";
-            ResultSet rs = stmt.executeQuery(sql);
-
-            // 結果セットから1行ずつデータを取得
-            while (rs.next()) {
-                // カラム名を指定してデータを取得
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                String email = rs.getString("email");
-
-                // 取得したデータを表示
-                System.out.println("ID: " + id +
-                                 ", 名前: " + name +
-                                 ", Email: " + email);
-            }
-
-            rs.close(); // ResultSetをクローズ
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-}</code></pre>
-                    </div>
-
-                    <div class="bg-green-50 border-l-4 border-green-400 p-4 my-4">
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-check-circle text-green-500 mt-1"></i>
-                            <div>
-                                <h4 class="font-semibold text-green-800 mb-2">ポイント</h4>
-                                <ul class="text-green-900 text-sm space-y-1 list-disc list-inside">
-                                    <li><strong>executeQuery()</strong>: SELECT文を実行する際に使用するメソッド</li>
-                                    <li><strong>ResultSet</strong>: 検索結果を保持するオブジェクト</li>
-                                    <li><strong>next()</strong>: ResultSet内のカーソルを次の行に移動させる（最初はデータの前にいるため必ず呼び出す）</li>
-                                    <li><strong>getXxx()</strong>: 各カラムのデータを取得するメソッド（Xxxはデータ型に対応）</li>
-                                </ul>
-                            </div>
-                        </div>
                     </div>
                 </section>
 
@@ -509,142 +235,70 @@ public class BasicSelectExample {
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        3.2 ResultSetからのデータ取得
+                        3.2 Statementを使った基本的なSELECT
                     </h2>
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        ResultSetオブジェクトは、データベースから取得した結果セットを表します。カーソルという概念を使って、1行ずつデータにアクセスします。カーソルは最初はデータの前にあり、next()メソッドで次の行に移動します。next()メソッドは、次の行が存在すればtrueを、存在しなければfalseを返します。
+                        まず、最もシンプルな<strong>Statement</strong>を使ったSELECT文の実行方法を学びましょう。Statementは、固定のSQL文を実行するときに使います。
                     </p>
 
-                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">
-                        <i class="fas fa-database text-primary-500 mr-2"></i>
-                        データ型別の取得メソッド
-                    </h3>
-
-                    <div class="overflow-x-auto my-4">
-                        <table class="min-w-full bg-white border border-slate-200 rounded-lg">
-                            <thead class="bg-slate-100">
-                                <tr>
-                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700 border-b">データ型</th>
-                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700 border-b">取得メソッド</th>
-                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700 border-b">説明</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-200">
-                                <tr class="hover:bg-slate-50">
-                                    <td class="px-4 py-3 text-sm text-slate-600">整数</td>
-                                    <td class="px-4 py-3 text-sm"><code class="text-primary-600">getInt()</code></td>
-                                    <td class="px-4 py-3 text-sm text-slate-600">INT型のデータを取得</td>
-                                </tr>
-                                <tr class="hover:bg-slate-50">
-                                    <td class="px-4 py-3 text-sm text-slate-600">長整数</td>
-                                    <td class="px-4 py-3 text-sm"><code class="text-primary-600">getLong()</code></td>
-                                    <td class="px-4 py-3 text-sm text-slate-600">BIGINT型のデータを取得</td>
-                                </tr>
-                                <tr class="hover:bg-slate-50">
-                                    <td class="px-4 py-3 text-sm text-slate-600">文字列</td>
-                                    <td class="px-4 py-3 text-sm"><code class="text-primary-600">getString()</code></td>
-                                    <td class="px-4 py-3 text-sm text-slate-600">VARCHAR, TEXT型のデータを取得</td>
-                                </tr>
-                                <tr class="hover:bg-slate-50">
-                                    <td class="px-4 py-3 text-sm text-slate-600">浮動小数点</td>
-                                    <td class="px-4 py-3 text-sm"><code class="text-primary-600">getDouble()</code></td>
-                                    <td class="px-4 py-3 text-sm text-slate-600">DOUBLE型のデータを取得</td>
-                                </tr>
-                                <tr class="hover:bg-slate-50">
-                                    <td class="px-4 py-3 text-sm text-slate-600">真偽値</td>
-                                    <td class="px-4 py-3 text-sm"><code class="text-primary-600">getBoolean()</code></td>
-                                    <td class="px-4 py-3 text-sm text-slate-600">BOOLEAN型のデータを取得</td>
-                                </tr>
-                                <tr class="hover:bg-slate-50">
-                                    <td class="px-4 py-3 text-sm text-slate-600">日付</td>
-                                    <td class="px-4 py-3 text-sm"><code class="text-primary-600">getDate()</code></td>
-                                    <td class="px-4 py-3 text-sm text-slate-600">DATE型のデータを取得</td>
-                                </tr>
-                                <tr class="hover:bg-slate-50">
-                                    <td class="px-4 py-3 text-sm text-slate-600">日時</td>
-                                    <td class="px-4 py-3 text-sm"><code class="text-primary-600">getTimestamp()</code></td>
-                                    <td class="px-4 py-3 text-sm text-slate-600">TIMESTAMP型のデータを取得</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">
-                        <i class="fas fa-list-ol text-primary-500 mr-2"></i>
-                        カラムの指定方法
-                    </h3>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        ResultSetからデータを取得する際、カラムを指定する方法は2つあります。
-                    </p>
-
-                    <!-- カラム指定方法のコード例 -->
-                    <div class="code-block-wrapper my-6">
+                    <!-- コードブロック -->
+                    <div class="code-block-wrapper mb-4">
                         <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">ColumnSpecification.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// 方法1: カラム名で指定（推奨）
-String name = rs.getString("name");
-int age = rs.getInt("age");
-
-// 方法2: カラム番号で指定（1から始まる）
-String name = rs.getString(1);  // 1番目のカラム
-int age = rs.getInt(2);         // 2番目のカラム</code></pre>
-                    </div>
-
-                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 my-4">
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-exclamation-triangle text-yellow-500 mt-1"></i>
-                            <div>
-                                <h4 class="font-semibold text-yellow-800 mb-2">推奨事項</h4>
-                                <p class="text-yellow-900 text-sm">
-                                    <strong>カラム名での指定を推奨します。</strong>カラム番号での指定は、テーブル構造の変更に弱く、コードの可読性も低くなります。カラム名を使用することで、コードの保守性と理解しやすさが向上します。
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 様々なデータ型の取得例 -->
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">DataTypeExample.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
+                            <span class="text-slate-400 text-sm">SelectExample.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
                         <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.sql.*;
 
-public class DataTypeExample {
+public class SelectExample {
     public static void main(String[] args) {
-        String url = "jdbc:postgresql://localhost:5432/mydb";
-        String sql = "SELECT id, name, price, available, created_at FROM products";
+        // 接続URL（H2データベース）
+        String url = "jdbc:h2:~/testdb";
+        String user = "sa";
+        String password = "";
 
-        try (Connection conn = DriverManager.getConnection(url, "user", "pass");
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        try (Connection conn = DriverManager.getConnection(url, user, password);
+             Statement stmt = conn.createStatement()) {
 
+            // SQL文を作成
+            String sql = "SELECT id, name, age FROM users";
+
+            // SQL文を実行してResultSetを取得
+            ResultSet rs = stmt.executeQuery(sql);
+
+            // 結果をループで処理
             while (rs.next()) {
-                // 各データ型の取得例
-                int id = rs.getInt("id");                    // 整数型
-                String name = rs.getString("name");          // 文字列型
-                double price = rs.getDouble("price");        // 浮動小数点型
-                boolean available = rs.getBoolean("available"); // 真偽値型
-                Timestamp createdAt = rs.getTimestamp("created_at"); // 日時型
+                // 各カラムの値を取得
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                int age = rs.getInt("age");
 
-                System.out.printf("ID: %d, 商品名: %s, 価格: %.2f円, " +
-                                "在庫あり: %s, 登録日: %s%n",
-                                id, name, price, available, createdAt);
+                System.out.println(id + " | " + name + " | " + age);
             }
 
+            rs.close();  // ResultSetを閉じる
+
         } catch (SQLException e) {
-            System.err.println("データ取得エラー: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }</code></pre>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-blue-800 mb-1">コードのポイント</p>
+                                <ul class="text-blue-900 text-sm space-y-1">
+                                    <li><strong>executeQuery()</strong>: SELECT文を実行し、ResultSetを返す</li>
+                                    <li><strong>rs.next()</strong>: 次の行に移動し、行があればtrueを返す</li>
+                                    <li><strong>rs.getInt("カラム名")</strong>: 指定カラムの整数値を取得</li>
+                                    <li><strong>rs.getString("カラム名")</strong>: 指定カラムの文字列を取得</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -652,169 +306,260 @@ public class DataTypeExample {
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        3.3 条件付きデータ取得（WHERE句）
+                        3.3 ResultSetの使い方 - 検索結果を取り出す
                     </h2>
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        実際のアプリケーションでは、特定の条件に合致するデータのみを取得することがほとんどです。SQL文にWHERE句を追加することで、条件に合うデータだけを取得できます。
+                        <strong>ResultSet</strong>は、SELECT文の実行結果を保持するオブジェクトです。表形式のデータを行単位で取り出すためのメソッドを提供します。
                     </p>
 
-                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">
-                        <i class="fas fa-filter text-primary-500 mr-2"></i>
-                        基本的なWHERE句の使用
-                    </h3>
+                    <!-- ResultSetの仕組み図 -->
+                    <div class="my-6 bg-white p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-sm font-semibold text-slate-700 mb-4">ResultSetのカーソルの動き</h3>
+                        <pre class="mermaid bg-transparent border-0">
+flowchart TD
+    Start([ResultSet取得直後<br/>カーソルは最初の行の前])
+    R1[rs.next 1回目<br/>→ 1行目に移動]
+    Get1[rs.getString等で<br/>1行目のデータ取得]
+    R2[rs.next 2回目<br/>→ 2行目に移動]
+    Get2[rs.getString等で<br/>2行目のデータ取得]
+    R3[rs.next 3回目<br/>→ 3行目に移動]
+    Get3[rs.getString等で<br/>3行目のデータ取得]
+    End[rs.next<br/>→ falseで終了]
 
-                    <!-- WHERE句の基本例 -->
-                    <div class="code-block-wrapper my-6">
+    Start --> R1
+    R1 --> Get1
+    Get1 --> R2
+    R2 --> Get2
+    Get2 --> R3
+    R3 --> Get3
+    Get3 --> End
+
+    style Start fill:#fff7ed,stroke:#f97316,stroke-width:2px
+    style R1 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style Get1 fill:#dbeafe,stroke:#3b82f6,stroke-width:2px
+    style R2 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style Get2 fill:#dbeafe,stroke:#3b82f6,stroke-width:2px
+    style R3 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style Get3 fill:#dbeafe,stroke:#3b82f6,stroke-width:2px
+    style End fill:#fff7ed,stroke:#f97316,stroke-width:2px
+                        </pre>
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-emerald-600 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-emerald-800 mb-1">主なResultSetメソッド</p>
+                                <ul class="text-emerald-900 space-y-1 text-sm">
+                                    <li><code class="bg-emerald-100 px-2 py-0.5 rounded">boolean next()</code>: 次の行に移動（行があればtrue）</li>
+                                    <li><code class="bg-emerald-100 px-2 py-0.5 rounded">int getInt(String columnName)</code>: 整数値を取得</li>
+                                    <li><code class="bg-emerald-100 px-2 py-0.5 rounded">String getString(String columnName)</code>: 文字列を取得</li>
+                                    <li><code class="bg-emerald-100 px-2 py-0.5 rounded">double getDouble(String columnName)</code>: 小数値を取得</li>
+                                    <li><code class="bg-emerald-100 px-2 py-0.5 rounded">Date getDate(String columnName)</code>: 日付を取得</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション4 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        3.4 WHERE句を使った条件検索
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        全件取得だけでなく、条件に合うデータだけを検索する<strong>WHERE句</strong>の使い方を学びましょう。実務では、特定の条件に合うデータのみを取得することがほとんどです。
+                    </p>
+
+                    <!-- コードブロック -->
+                    <div class="code-block-wrapper mb-4">
                         <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">WhereClauseExample.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
+                            <span class="text-slate-400 text-sm">WhereExample.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
                         <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.sql.*;
 
-public class WhereClauseExample {
+public class WhereExample {
     public static void main(String[] args) {
-        String url = "jdbc:postgresql://localhost:5432/mydb";
+        String url = "jdbc:h2:~/testdb";
 
-        try (Connection conn = DriverManager.getConnection(url, "user", "pass");
+        try (Connection conn = DriverManager.getConnection(url, "sa", "");
              Statement stmt = conn.createStatement()) {
 
-            // 例1: 特定の値と一致するデータを取得
-            String sql1 = "SELECT * FROM users WHERE age = 25";
-            ResultSet rs1 = stmt.executeQuery(sql1);
-
-            System.out.println("=== 年齢が25歳のユーザー ===");
-            while (rs1.next()) {
-                System.out.println("名前: " + rs1.getString("name") +
-                                 ", 年齢: " + rs1.getInt("age"));
-            }
-            rs1.close();
-
-            // 例2: 範囲指定でデータを取得
-            String sql2 = "SELECT * FROM users WHERE age >= 20 AND age <= 30";
-            ResultSet rs2 = stmt.executeQuery(sql2);
-
-            System.out.println("\n=== 20歳以上30歳以下のユーザー ===");
-            while (rs2.next()) {
-                System.out.println("名前: " + rs2.getString("name") +
-                                 ", 年齢: " + rs2.getInt("age"));
-            }
-            rs2.close();
-
-            // 例3: 部分一致検索（LIKE句）
-            String sql3 = "SELECT * FROM users WHERE name LIKE '%田%'";
-            ResultSet rs3 = stmt.executeQuery(sql3);
-
-            System.out.println("\n=== 名前に「田」が含まれるユーザー ===");
-            while (rs3.next()) {
-                System.out.println("名前: " + rs3.getString("name"));
-            }
-            rs3.close();
-
-        } catch (SQLException e) {
-            System.err.println("データベースエラー: " + e.getMessage());
-        }
-    }
-}</code></pre>
-                    </div>
-
-                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">
-                        <i class="fas fa-sort text-primary-500 mr-2"></i>
-                        並び替え（ORDER BY句）
-                    </h3>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        取得したデータを特定の順序で並び替えるには、ORDER BY句を使用します。
-                    </p>
-
-                    <!-- ORDER BY句の例 -->
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">OrderByExample.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// 昇順で並び替え（ASC: Ascending = 昇順、デフォルト）
-String sql1 = "SELECT * FROM products ORDER BY price ASC";
-
-// 降順で並び替え（DESC: Descending = 降順）
-String sql2 = "SELECT * FROM products ORDER BY price DESC";
-
-// 複数カラムで並び替え
-String sql3 = "SELECT * FROM products ORDER BY category ASC, price DESC";</code></pre>
-                    </div>
-
-                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">
-                        <i class="fas fa-calculator text-primary-500 mr-2"></i>
-                        集計関数の使用
-                    </h3>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        SQLの集計関数を使用して、データの合計、平均、最大値、最小値、件数などを取得できます。
-                    </p>
-
-                    <!-- 集計関数の例 -->
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">AggregateFunctionExample.java</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.sql.*;
-
-public class AggregateFunctionExample {
-    public static void main(String[] args) {
-        String url = "jdbc:postgresql://localhost:5432/mydb";
-
-        try (Connection conn = DriverManager.getConnection(url, "user", "pass");
-             Statement stmt = conn.createStatement()) {
-
-            // 集計関数を使ったSQL文
-            String sql = "SELECT COUNT(*) as user_count, " +
-                        "AVG(age) as avg_age, " +
-                        "MAX(age) as max_age, " +
-                        "MIN(age) as min_age " +
-                        "FROM users";
+            // WHERE句で年齢が30以上のユーザーを検索
+            String sql = "SELECT id, name, age FROM users WHERE age >= 30";
 
             ResultSet rs = stmt.executeQuery(sql);
 
-            if (rs.next()) {
-                int count = rs.getInt("user_count");      // 件数
-                double avgAge = rs.getDouble("avg_age");  // 平均
-                int maxAge = rs.getInt("max_age");        // 最大値
-                int minAge = rs.getInt("min_age");        // 最小値
+            System.out.println("年齢30歳以上のユーザー:");
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                int age = rs.getInt("age");
 
-                System.out.println("=== ユーザー統計情報 ===");
-                System.out.println("総ユーザー数: " + count + "人");
-                System.out.printf("平均年齢: %.1f歳%n", avgAge);
-                System.out.println("最高年齢: " + maxAge + "歳");
-                System.out.println("最低年齢: " + minAge + "歳");
+                System.out.println(id + " | " + name + " | " + age + "歳");
             }
 
             rs.close();
 
         } catch (SQLException e) {
-            System.err.println("データベースエラー: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }</code></pre>
                     </div>
 
-                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 my-4">
+                    <div class="bg-orange-50 border-l-4 border-orange-500 p-4 my-6">
                         <div class="flex items-start gap-3">
-                            <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+                            <i class="fas fa-exclamation-triangle text-orange-600 mt-1"></i>
                             <div>
-                                <h4 class="font-semibold text-blue-800 mb-2">主な集計関数</h4>
-                                <ul class="text-blue-900 text-sm space-y-1 list-disc list-inside">
-                                    <li><code class="bg-blue-100 px-1 rounded">COUNT(*)</code> - 行数をカウント</li>
-                                    <li><code class="bg-blue-100 px-1 rounded">SUM(カラム名)</code> - 合計を計算</li>
-                                    <li><code class="bg-blue-100 px-1 rounded">AVG(カラム名)</code> - 平均を計算</li>
-                                    <li><code class="bg-blue-100 px-1 rounded">MAX(カラム名)</code> - 最大値を取得</li>
-                                    <li><code class="bg-blue-100 px-1 rounded">MIN(カラム名)</code> - 最小値を取得</li>
+                                <p class="font-semibold text-orange-800 mb-1">注意: Statementでの条件検索のリスク</p>
+                                <p class="text-orange-900 text-sm">
+                                    上記のコードは固定の条件ですが、ユーザー入力を直接SQL文に埋め込むと<strong>SQLインジェクション</strong>という重大なセキュリティ問題が発生します。次のセクションで安全な方法（PreparedStatement）を学びます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション5 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        3.5 PreparedStatementを使った安全な検索
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        ユーザーからの入力値を条件に使う場合、<strong>PreparedStatement</strong>を使うのが安全です。プレースホルダ（<code>?</code>）を使って、値を安全に埋め込むことができます。
+                    </p>
+
+                    <!-- コードブロック -->
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">PreparedSelectExample.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.sql.*;
+
+public class PreparedSelectExample {
+    public static void main(String[] args) {
+        String url = "jdbc:h2:~/testdb";
+
+        // ユーザーからの入力を想定（本来はキーボード入力など）
+        int minAge = 25;
+
+        try (Connection conn = DriverManager.getConnection(url, "sa", "")) {
+
+            // プレースホルダ（?）を使ったSQL文
+            String sql = "SELECT id, name, age FROM users WHERE age >= ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+
+            // プレースホルダに値をセット
+            pstmt.setInt(1, minAge);  // 1番目の?にminAgeをセット
+
+            ResultSet rs = pstmt.executeQuery();
+
+            System.out.println("年齢" + minAge + "歳以上のユーザー:");
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                int age = rs.getInt("age");
+
+                System.out.println(id + " | " + name + " | " + age + "歳");
+            }
+
+            rs.close();
+            pstmt.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-star text-emerald-600 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-emerald-800 mb-1">重要ポイント</p>
+                                <ul class="text-emerald-900 text-sm space-y-1">
+                                    <li><code>?</code>をプレースホルダとして使用</li>
+                                    <li><code>setInt(番号, 値)</code>で値をセット（番号は1から始まる）</li>
+                                    <li>文字列は<code>setString()</code>、日付は<code>setDate()</code>を使う</li>
+                                    <li>PreparedStatementはSQLインジェクション対策になる</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション6 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        3.6 複数条件のWHERE句とLIKE検索
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        実務では、複数の条件を組み合わせた検索や、あいまい検索（LIKE）を使うことがよくあります。
+                    </p>
+
+                    <!-- コードブロック -->
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">MultiConditionExample.java</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.sql.*;
+
+public class MultiConditionExample {
+    public static void main(String[] args) {
+        String url = "jdbc:h2:~/testdb";
+
+        try (Connection conn = DriverManager.getConnection(url, "sa", "")) {
+
+            // 複数条件（AND）とLIKE検索
+            String sql = "SELECT id, name, age FROM users " +
+                         "WHERE age >= ? AND name LIKE ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+
+            pstmt.setInt(1, 20);          // 年齢20歳以上
+            pstmt.setString(2, "%田%");    // 名前に「田」を含む
+
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                System.out.println(rs.getInt("id") + " | " +
+                                   rs.getString("name") + " | " +
+                                   rs.getInt("age") + "歳");
+            }
+
+            rs.close();
+            pstmt.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-blue-800 mb-1">LIKE検索のワイルドカード</p>
+                                <ul class="text-blue-900 text-sm space-y-1">
+                                    <li><code>%</code>: 0文字以上の任意の文字列</li>
+                                    <li><code>_</code>: 任意の1文字</li>
+                                    <li>例: <code>%田%</code> → 「田中」「山田」などにマッチ</li>
+                                    <li>例: <code>田_</code> → 「田中」「田口」などにマッチ</li>
                                 </ul>
                             </div>
                         </div>
@@ -822,264 +567,94 @@ public class AggregateFunctionExample {
                 </section>
 
                 <!-- 実習カード -->
-                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
-                            rounded-xl p-5 my-6">
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 mb-6 overflow-hidden">
                     <div class="flex items-start gap-4">
-                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
-                                    flex items-center justify-center">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
                             <i class="fas fa-code text-white"></i>
                         </div>
-                        <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-purple-800 mb-3">
-                                実習 3-1: 書籍検索プログラムの作成
-                            </h3>
-                            <p class="text-purple-900 mb-4">
-                                書籍データベースから特定の条件に合う書籍を検索し、結果を表示するプログラムを作成してみましょう。
-                            </p>
-
-                            <h4 class="font-medium text-purple-800 mb-2">前提条件</h4>
-                            <p class="text-purple-900 text-sm mb-3">
-                                以下のテーブルが存在することを想定します：
-                            </p>
-                            <div class="code-block-wrapper mb-4">
-                                <pre class="!bg-slate-800 !rounded-lg"><code class="language-sql">CREATE TABLE books (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(200) NOT NULL,
-    author VARCHAR(100) NOT NULL,
-    price INTEGER NOT NULL,
-    published_year INTEGER NOT NULL
-);</code></pre>
-                            </div>
-
-                            <h4 class="font-medium text-purple-800 mb-2">課題</h4>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 3-1: 条件検索プログラムを作成しよう</h3>
+                            <p class="text-purple-900 mb-4 break-words">PreparedStatementを使って、ユーザーが指定した年齢以上のユーザーを検索するプログラムを作成します。</p>
+                            <h4 class="font-medium text-purple-800 mb-2 break-words">手順</h4>
                             <ol class="space-y-3 mb-4">
                                 <li class="flex items-start gap-3 text-purple-900">
-                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                 flex items-center justify-center text-sm font-medium">1</span>
-                                    <span>2020年以降に出版された書籍を検索する</span>
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
+                                    <span class="flex-1 min-w-0 break-words">データベースに接続し、PreparedStatementを作成する</span>
                                 </li>
                                 <li class="flex items-start gap-3 text-purple-900">
-                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                 flex items-center justify-center text-sm font-medium">2</span>
-                                    <span>価格が2000円以下の書籍を価格の安い順に表示する</span>
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
+                                    <span class="flex-1 min-w-0 break-words">SQL文に<code>WHERE age >= ?</code>を含め、プレースホルダを使う</span>
                                 </li>
                                 <li class="flex items-start gap-3 text-purple-900">
-                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                 flex items-center justify-center text-sm font-medium">3</span>
-                                    <span>著者名に「山田」が含まれる書籍を検索する</span>
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">3</span>
+                                    <span class="flex-1 min-w-0 break-words">setInt()で年齢をセットし、executeQuery()を実行</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">4</span>
+                                    <span class="flex-1 min-w-0 break-words">ResultSetをwhile文でループし、結果を画面に表示する</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">5</span>
+                                    <span class="flex-1 min-w-0 break-words">try-with-resourcesを使って、リソースを確実に解放する</span>
                                 </li>
                             </ol>
-
-                            <h4 class="font-medium text-purple-800 mb-2">実装例</h4>
-                            <div class="code-block-wrapper">
-                                <pre class="!bg-slate-800 !rounded-lg"><code class="language-java">import java.sql.*;
-
-public class BookSearchProgram {
-    private static final String URL = "jdbc:postgresql://localhost:5432/bookstore";
-    private static final String USER = "postgres";
-    private static final String PASS = "password";
-
-    public static void main(String[] args) {
-        // 課題1: 2020年以降の書籍を検索
-        searchRecentBooks(2020);
-
-        // 課題2: 2000円以下の書籍を安い順に表示
-        searchCheapBooks(2000);
-
-        // 課題3: 著者名に「山田」が含まれる書籍を検索
-        searchBooksByAuthor("山田");
-    }
-
-    // 2020年以降の書籍を検索
-    private static void searchRecentBooks(int year) {
-        String sql = "SELECT * FROM books WHERE published_year >= " + year;
-
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-
-            System.out.println("=== " + year + "年以降に出版された書籍 ===");
-            while (rs.next()) {
-                displayBook(rs);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // 指定価格以下の書籍を安い順に検索
-    private static void searchCheapBooks(int maxPrice) {
-        String sql = "SELECT * FROM books WHERE price <= " + maxPrice +
-                    " ORDER BY price ASC";
-
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-
-            System.out.println("\n=== " + maxPrice + "円以下の書籍（安い順） ===");
-            while (rs.next()) {
-                displayBook(rs);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // 著者名で書籍を検索
-    private static void searchBooksByAuthor(String authorName) {
-        String sql = "SELECT * FROM books WHERE author LIKE '%" + authorName + "%'";
-
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-
-            System.out.println("\n=== 著者「" + authorName + "」の書籍 ===");
-            while (rs.next()) {
-                displayBook(rs);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // 書籍情報を表示する共通メソッド
-    private static void displayBook(ResultSet rs) throws SQLException {
-        System.out.printf("[%d] %s / %s (%d年) - %d円%n",
-            rs.getInt("id"),
-            rs.getString("title"),
-            rs.getString("author"),
-            rs.getInt("published_year"),
-            rs.getInt("price")
-        );
-    }
-}</code></pre>
-                            </div>
-
-                            <h4 class="font-medium text-purple-800 mt-4 mb-2">実行結果例</h4>
-                            <div class="bg-white/50 rounded-lg p-3 text-purple-900 font-mono text-sm">
-                                <pre>=== 2020年以降に出版された書籍 ===
-[3] Java完全ガイド / 山田太郎 (2021年) - 3200円
-[5] SQL入門 / 鈴木花子 (2022年) - 2500円
-
-=== 2000円以下の書籍（安い順） ===
-[1] プログラミング入門 / 田中一郎 (2019年) - 1800円
-[2] データベース基礎 / 佐藤次郎 (2020年) - 1950円
-
-=== 著者「山田」の書籍 ===
-[3] Java完全ガイド / 山田太郎 (2021年) - 3200円
-[4] Web開発の基礎 / 山田花子 (2020年) - 2800円</pre>
-                            </div>
-
-                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 mt-4">
-                                <div class="flex items-start gap-2">
-                                    <i class="fas fa-exclamation-triangle text-yellow-500 text-sm mt-0.5"></i>
-                                    <div>
-                                        <h5 class="font-semibold text-yellow-800 text-sm mb-1">注意</h5>
-                                        <p class="text-yellow-900 text-xs">
-                                            上記の実装例では、SQL文に直接値を埋め込んでいます。これは学習目的の簡略化された例です。実際の開発では、次章で学ぶ<strong>PreparedStatement</strong>を使用して、SQLインジェクション対策を行う必要があります。
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- 理解度確認クイズ -->
                 <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
-                            rounded-xl p-5 my-6">
+                            rounded-xl p-5 my-6 overflow-hidden">
                     <div class="flex items-start gap-4">
                         <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
                                     flex items-center justify-center">
                             <i class="fas fa-question text-white"></i>
                         </div>
-                        <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-blue-800 mb-4">理解度確認クイズ</h3>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
                             <ol class="space-y-4">
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2">Q1. ResultSetオブジェクトのnext()メソッドの役割は何ですか？</p>
+                                    <p class="font-medium mb-2 break-words">Q1. StatementとPreparedStatementの違いは何ですか？PreparedStatementを使う主な理由を説明してください。</p>
                                     <details class="mt-2">
-                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
-                                            next()メソッドは、ResultSet内のカーソルを次の行に移動させる役割を持ちます。次の行が存在すればtrueを、存在しなければfalseを返します。ResultSetは最初データの前にカーソルがあるため、データにアクセスする前に必ずnext()を呼び出す必要があります。通常はwhile文と組み合わせて使用します。
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            <strong>Statement</strong>は固定のSQL文を実行するのに対し、<strong>PreparedStatement</strong>はプレースホルダ（?）を使って動的に値をセットできます。PreparedStatementを使う主な理由は、<strong>SQLインジェクション対策</strong>と<strong>パフォーマンス向上</strong>（SQL文の再利用による高速化）です。
                                         </p>
                                     </details>
                                 </li>
-
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2">Q2. ResultSetからデータを取得する際、カラム名指定とカラム番号指定のどちらが推奨されますか？その理由も説明してください。</p>
+                                    <p class="font-medium mb-2 break-words">Q2. ResultSetの<code>next()</code>メソッドは何をするメソッドですか？また、戻り値の意味を説明してください。</p>
                                     <details class="mt-2">
-                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
-                                            <strong>カラム名での指定が推奨されます。</strong><br>
-                                            理由：<br>
-                                            ① コードの可読性が高く、どのカラムのデータを取得しているか明確<br>
-                                            ② テーブル構造の変更（カラムの追加や順序変更）に強い<br>
-                                            ③ メンテナンス性が向上する<br>
-                                            カラム番号指定は、SELECT文のカラム順序に依存するため、変更に弱く、コードの保守性が低下します。
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            <code>next()</code>メソッドは、ResultSetのカーソルを次の行に移動させます。戻り値は<strong>boolean型</strong>で、次の行が存在すれば<strong>true</strong>、存在しなければ<strong>false</strong>を返します。そのため、<code>while (rs.next())</code>というループで全行を処理できます。
                                         </p>
                                     </details>
                                 </li>
-
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2">Q3. SELECT文を実行する際に使用するStatementメソッドは何ですか？また、その戻り値の型は何ですか？</p>
+                                    <p class="font-medium mb-2 break-words">Q3. PreparedStatementで<code>setString(1, "%田%")</code>を実行した場合、SQL文のどこに値がセットされますか？</p>
                                     <details class="mt-2">
-                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
-                                            <strong>executeQuery()メソッド</strong>を使用します。<br>
-                                            戻り値の型は<strong>ResultSet</strong>です。<br>
-                                            使用例：<code class="bg-blue-100 px-1 rounded">ResultSet rs = stmt.executeQuery(sql);</code><br>
-                                            このメソッドはSELECT文専用で、取得した結果セットをResultSetオブジェクトとして返します。
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            SQL文の<strong>1番目のプレースホルダ（?）</strong>に値がセットされます。プレースホルダの番号は<strong>1から始まる</strong>点に注意してください（0ではありません）。
                                         </p>
                                     </details>
                                 </li>
-
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2">Q4. SQLのWHERE句で部分一致検索を行う場合、どの演算子を使用しますか？また、ワイルドカードの記号は何ですか？</p>
+                                    <p class="font-medium mb-2 break-words">Q4. ResultSetから整数値を取得するメソッドと、文字列を取得するメソッドの名前をそれぞれ答えてください。</p>
                                     <details class="mt-2">
-                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
-                                            <strong>LIKE演算子</strong>を使用します。<br>
-                                            ワイルドカードは<strong>%（パーセント）</strong>を使用します。<br>
-                                            使用例：<br>
-                                            ・<code class="bg-blue-100 px-1 rounded">WHERE name LIKE '%田%'</code> - 「田」を含む<br>
-                                            ・<code class="bg-blue-100 px-1 rounded">WHERE name LIKE '田%'</code> - 「田」で始まる<br>
-                                            ・<code class="bg-blue-100 px-1 rounded">WHERE name LIKE '%田'</code> - 「田」で終わる
-                                        </p>
-                                    </details>
-                                </li>
-
-                                <li class="text-blue-900">
-                                    <p class="font-medium mb-2">Q5. 次のコードの問題点を指摘してください。</p>
-                                    <div class="bg-white/70 rounded p-2 my-2 font-mono text-sm">
-                                        <code>ResultSet rs = stmt.executeQuery("SELECT * FROM users");<br>
-String name = rs.getString("name");<br>
-System.out.println(name);</code>
-                                    </div>
-                                    <details class="mt-2">
-                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700">
-                                            回答を表示
-                                        </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3">
-                                            <strong>問題点：next()メソッドを呼び出していない</strong><br>
-                                            ResultSetは最初、データの前にカーソルがあります。データにアクセスする前に必ずnext()を呼び出してカーソルを最初の行に移動させる必要があります。<br><br>
-                                            <strong>修正例：</strong><br>
-                                            <code class="bg-blue-100 px-1 rounded">ResultSet rs = stmt.executeQuery("SELECT * FROM users");<br>
-if (rs.next()) { // または while (rs.next())<br>
-&nbsp;&nbsp;&nbsp;&nbsp;String name = rs.getString("name");<br>
-&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(name);<br>
-}</code>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            整数値: <code>getInt("カラム名")</code> または <code>getInt(カラム番号)</code><br>
+                                            文字列: <code>getString("カラム名")</code> または <code>getString(カラム番号)</code>
                                         </p>
                                     </details>
                                 </li>
@@ -1088,57 +663,45 @@ if (rs.next()) { // または while (rs.next())<br>
                     </div>
                 </div>
 
-                <!-- まとめセクション -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        <i class="fas fa-bookmark"></i>
+                <!-- まとめ -->
+                <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-300 rounded-xl p-6 my-8">
+                    <h3 class="flex items-center gap-2 text-lg font-semibold text-slate-800 mb-4">
+                        <i class="fas fa-bookmark text-primary-500"></i>
                         この章のまとめ
-                    </h2>
-                    <div class="bg-slate-50 rounded-lg p-5 border border-slate-200">
-                        <ul class="space-y-3 text-slate-700">
-                            <li class="flex items-start gap-3">
-                                <i class="fas fa-check-circle text-emerald-500 mt-1 flex-shrink-0"></i>
-                                <span><strong>SELECT文の実行</strong>にはexecuteQuery()メソッドを使用し、結果はResultSetオブジェクトに格納される</span>
-                            </li>
-                            <li class="flex items-start gap-3">
-                                <i class="fas fa-check-circle text-emerald-500 mt-1 flex-shrink-0"></i>
-                                <span><strong>ResultSetのnext()メソッド</strong>でカーソルを次の行に移動し、データにアクセスする</span>
-                            </li>
-                            <li class="flex items-start gap-3">
-                                <i class="fas fa-check-circle text-emerald-500 mt-1 flex-shrink-0"></i>
-                                <span><strong>getXxx()メソッド</strong>（getString, getInt, getDouble等）を使って、カラムのデータを取得する</span>
-                            </li>
-                            <li class="flex items-start gap-3">
-                                <i class="fas fa-check-circle text-emerald-500 mt-1 flex-shrink-0"></i>
-                                <span>カラムの指定は<strong>カラム名での指定が推奨</strong>される（可読性と保守性の向上）</span>
-                            </li>
-                            <li class="flex items-start gap-3">
-                                <i class="fas fa-check-circle text-emerald-500 mt-1 flex-shrink-0"></i>
-                                <span><strong>WHERE句</strong>を使用して条件に合致するデータのみを取得できる</span>
-                            </li>
-                            <li class="flex items-start gap-3">
-                                <i class="fas fa-check-circle text-emerald-500 mt-1 flex-shrink-0"></i>
-                                <span><strong>ORDER BY句</strong>でデータの並び順を制御できる（ASC: 昇順、DESC: 降順）</span>
-                            </li>
-                            <li class="flex items-start gap-3">
-                                <i class="fas fa-check-circle text-emerald-500 mt-1 flex-shrink-0"></i>
-                                <span><strong>集計関数</strong>（COUNT, SUM, AVG, MAX, MIN）を使用してデータの統計情報を取得できる</span>
-                            </li>
-                        </ul>
-                    </div>
-                </section>
+                    </h3>
+                    <ul class="space-y-2 text-slate-700">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span><strong>SELECT文</strong>はデータベースからデータを検索・取得するためのSQL文</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span><strong>executeQuery()</strong>メソッドでSELECT文を実行し、ResultSetを取得する</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span><strong>ResultSet</strong>は検索結果を保持し、next()で行を移動、getStringやgetIntで値を取得</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span><strong>PreparedStatement</strong>を使うと、プレースホルダ（?）で安全に条件値をセットできる</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span><strong>WHERE句</strong>で条件検索、LIKE演算子であいまい検索が可能</span>
+                        </li>
+                    </ul>
+                </div>
 
                 <!-- 章間ナビゲーション -->
                 <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
                     <a href="jdbc-learning-material-02.html"
                        class="group flex items-center gap-3 px-4 py-3 rounded-xl
                               bg-slate-100 hover:bg-slate-200 transition-colors">
-                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
-                                  transition-transform group-hover:-translate-x-1"></i>
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600 transition-transform group-hover:-translate-x-1"></i>
                         <div>
                             <span class="text-xs text-slate-500 block">前の章</span>
-                            <span class="text-slate-700 font-medium">データベース接続の基本</span>
+                            <span class="text-slate-700 font-medium">開発環境の準備</span>
                         </div>
                     </a>
                     <a href="jdbc-learning-material-04.html"
@@ -1164,7 +727,7 @@ if (rs.next()) { // または while (rs.next())<br>
                     本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
                 </p>
                 <div class="flex items-center gap-4">
-                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                    <a href="#" class="hover:text-white transition-colors">
                         <i class="fab fa-github text-xl"></i>
                     </a>
                 </div>
@@ -1181,216 +744,8 @@ if (rs.next()) { // または while (rs.next())<br>
         <i class="fas fa-arrow-up"></i>
     </button>
 
-    <!-- 描画用Canvasオーバーレイ -->
-    <canvas id="drawing-canvas" class="fixed inset-0 z-[100] pointer-events-none"></canvas>
-
-    <!-- 描画ツールバー（右端） -->
-    <div id="drawing-toolbar" class="fixed right-4 top-1/2 -translate-y-1/2 z-[110]
-                                     bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl
-                                     border border-slate-200 p-2 flex flex-col gap-1
-                                     transition-all duration-300">
-        <!-- ツールバー折りたたみボタン -->
-        <button id="toolbar-toggle"
-                class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
-                       flex items-center justify-center transition-colors mb-2"
-                title="ツールバーを開く">
-            <i class="fas fa-chevron-left text-slate-600"></i>
-        </button>
-
-        <div id="toolbar-content" class="hidden flex-col gap-1">
-            <!-- ペンツール -->
-            <button id="pen-tool"
-                    class="tool-btn w-10 h-10 rounded-xl bg-primary-100 text-primary-600
-                           hover:bg-primary-200 flex items-center justify-center transition-colors"
-                    title="ペン (P)">
-                <i class="fas fa-pen"></i>
-            </button>
-
-            <!-- 消しゴムツール -->
-            <button id="eraser-tool"
-                    class="tool-btn w-10 h-10 rounded-xl bg-slate-100 text-slate-600
-                           hover:bg-slate-200 flex items-center justify-center transition-colors"
-                    title="消しゴム (E)">
-                <i class="fas fa-eraser"></i>
-            </button>
-
-            <!-- 区切り線 -->
-            <div class="h-px bg-slate-200 my-1"></div>
-
-            <!-- 色選択 -->
-            <div id="color-picker" class="flex flex-col gap-1">
-                <button class="color-btn w-10 h-10 rounded-xl border-2 border-red-400 bg-red-500
-                               hover:scale-110 transition-transform" data-color="#ef4444" title="赤"></button>
-                <button class="color-btn w-10 h-10 rounded-xl border-2 border-blue-400 bg-blue-500
-                               hover:scale-110 transition-transform" data-color="#3b82f6" title="青"></button>
-                <button class="color-btn w-10 h-10 rounded-xl border-2 border-slate-600 bg-slate-800
-                               hover:scale-110 transition-transform active-color" data-color="#1e293b" title="黒"></button>
-                <button class="color-btn w-10 h-10 rounded-xl border-2 border-emerald-400 bg-emerald-500
-                               hover:scale-110 transition-transform" data-color="#10b981" title="緑"></button>
-                <button class="color-btn w-10 h-10 rounded-xl border-2 border-amber-400 bg-amber-500
-                               hover:scale-110 transition-transform" data-color="#f59e0b" title="黄"></button>
-            </div>
-
-            <!-- 区切り線 -->
-            <div class="h-px bg-slate-200 my-1"></div>
-
-            <!-- 線の太さ -->
-            <div id="stroke-width" class="flex flex-col gap-1">
-                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
-                               flex items-center justify-center transition-colors" data-width="2" title="細い">
-                    <div class="w-4 h-0.5 bg-slate-600 rounded-full"></div>
-                </button>
-                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
-                               flex items-center justify-center transition-colors active-stroke" data-width="4" title="普通">
-                    <div class="w-4 h-1 bg-slate-600 rounded-full"></div>
-                </button>
-                <button class="stroke-btn w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200
-                               flex items-center justify-center transition-colors" data-width="8" title="太い">
-                    <div class="w-4 h-2 bg-slate-600 rounded-full"></div>
-                </button>
-            </div>
-
-            <!-- 区切り線 -->
-            <div class="h-px bg-slate-200 my-1"></div>
-
-            <!-- 元に戻す -->
-            <button id="undo-btn"
-                    class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600
-                           hover:bg-slate-200 flex items-center justify-center transition-colors
-                           disabled:opacity-40 disabled:cursor-not-allowed"
-                    title="元に戻す (Ctrl+Z)" disabled>
-                <i class="fas fa-undo"></i>
-            </button>
-
-            <!-- 全消去 -->
-            <button id="clear-btn"
-                    class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600
-                           hover:bg-rose-200 flex items-center justify-center transition-colors"
-                    title="全消去 (C)">
-                <i class="fas fa-trash-alt"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- JavaScript -->
-    <script>
-        // Highlight.js 初期化
-        hljs.highlightAll();
-
-        // Mermaid.js 初期化
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'default',
-            securityLevel: 'loose'
-        });
-
-        // モバイルメニュー制御
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebar-overlay');
-        const menuBtn = document.getElementById('mobile-menu-btn');
-
-        menuBtn?.addEventListener('click', () => {
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
-        });
-
-        overlay?.addEventListener('click', () => {
-            sidebar.classList.add('-translate-x-full');
-            overlay.classList.add('hidden');
-        });
-
-        // スクロールトップボタン表示制御
-        const scrollTopBtn = document.getElementById('scroll-top-btn');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                scrollTopBtn.classList.remove('opacity-0', 'invisible', 'translate-y-4');
-            } else {
-                scrollTopBtn.classList.add('opacity-0', 'invisible', 'translate-y-4');
-            }
-        });
-
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // コードコピー機能
-        function copyCode(btn) {
-            const code = btn.closest('.code-block-wrapper').querySelector('code').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                const icon = btn.querySelector('i');
-                icon.classList.remove('fa-copy');
-                icon.classList.add('fa-check');
-                setTimeout(() => {
-                    icon.classList.remove('fa-check');
-                    icon.classList.add('fa-copy');
-                }, 2000);
-            });
-        }
-
-        // サイドバーリサイズ機能
-        const resizeHandle = document.getElementById('sidebar-resize-handle');
-        let isResizing = false;
-        let startX, startWidth;
-
-        resizeHandle?.addEventListener('mousedown', (e) => {
-            isResizing = true;
-            startX = e.clientX;
-            startWidth = sidebar.offsetWidth;
-            resizeHandle.classList.add('resizing');
-            document.body.style.cursor = 'ew-resize';
-            document.body.style.userSelect = 'none';
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (!isResizing) return;
-            const diff = e.clientX - startX;
-            const newWidth = Math.min(Math.max(startWidth + diff, 240), 480);
-            sidebar.style.width = newWidth + 'px';
-        });
-
-        document.addEventListener('mouseup', () => {
-            if (isResizing) {
-                isResizing = false;
-                resizeHandle.classList.remove('resizing');
-                document.body.style.cursor = '';
-                document.body.style.userSelect = '';
-                // サイドバー幅をローカルストレージに保存
-                localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
-            }
-        });
-
-        // ページ読み込み時にサイドバー幅を復元
-        const savedWidth = localStorage.getItem('sidebarWidth');
-        if (savedWidth && window.innerWidth >= 768) {
-            sidebar.style.width = savedWidth + 'px';
-        }
-
-        // 描画ツールバー折りたたみ機能
-        const toolbarToggle = document.getElementById('toolbar-toggle');
-        const toolbarContent = document.getElementById('toolbar-content');
-        let isToolbarOpen = false;
-
-        toolbarToggle?.addEventListener('click', () => {
-            isToolbarOpen = !isToolbarOpen;
-            const icon = toolbarToggle.querySelector('i');
-
-            if (isToolbarOpen) {
-                toolbarContent.classList.remove('hidden');
-                toolbarContent.classList.add('flex');
-                icon.classList.remove('fa-chevron-left');
-                icon.classList.add('fa-chevron-right');
-                toolbarToggle.title = 'ツールバーを閉じる';
-            } else {
-                toolbarContent.classList.add('hidden');
-                toolbarContent.classList.remove('flex');
-                icon.classList.remove('fa-chevron-right');
-                icon.classList.add('fa-chevron-left');
-                toolbarToggle.title = 'ツールバーを開く';
-            }
-        });
-    </script>
-
-    <!-- 描画ツール -->
+    <script src="sidebar-content.js"></script>
+    <script src="main.js"></script>
     <script src="drawing-tool.js"></script>
 </body>
 </html>

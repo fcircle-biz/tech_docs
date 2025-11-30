@@ -1,93 +1,80 @@
-# JDBC基礎 学習ガイドライン
+# JDBC 学習ガイドライン
 
-このガイドラインでは、JDBC（Java Database Connectivity）の基礎をプログラミング初心者向けに段階的に学習するためのカリキュラムを提供しています。JDBCはJavaプログラムからデータベースに接続し、データを操作するための標準APIです。
+このガイドラインでは、JDBCの基礎をプログラム初心者向けに段階的に学習するためのカリキュラムを提供しています。JDBCとは「Java Database Connectivity」の略で、JavaプログラムからデータベースにアクセスするためのJava標準APIです。データベースの知識がなくても、基本から丁寧に解説します。
 
 ## 前提条件
-
 ### 必要な環境
-- **JDK（Java Development Kit）**: バージョン11以上を推奨
-- **IDE（統合開発環境）**: Eclipse、IntelliJ IDEA、VSCodeのいずれか
-- **データベース**: PostgreSQL（推奨）またはMySQL
-- **JDBCドライバ**: 使用するデータベースに対応したJDBCドライバ
+- Java Development Kit (JDK) 8以降
+- テキストエディタまたはIDE（Eclipse、IntelliJ IDEA、VS Codeなど）
+- データベース（MySQL、PostgreSQL、H2など。学習にはインストール不要のH2データベースを推奨）
+- JDBCドライバ（各データベースに対応したJARファイル）
 
 ### 参考リソース
-- [Oracle公式 JDBCドキュメント](https://docs.oracle.com/javase/tutorial/jdbc/index.html)
-- [PostgreSQL JDBCドライバ公式サイト](https://jdbc.postgresql.org/)
-- [MySQL Connector/J公式サイト](https://dev.mysql.com/downloads/connector/j/)
+- [Oracle公式 JDBC入門](https://docs.oracle.com/javase/tutorial/jdbc/basics/index.html)
+- [H2データベース公式サイト](https://www.h2database.com/)
+- [MySQL公式ドキュメント](https://dev.mysql.com/doc/)
+- [PostgreSQL公式ドキュメント](https://www.postgresql.jp/document/)
 
 ### 前提知識
-- **必須**: Java言語の基礎（変数、データ型、制御構文、クラスとオブジェクト、例外処理）
-- **必須**: SQLの基礎（SELECT、INSERT、UPDATE、DELETE文の理解）
-- **推奨**: リレーショナルデータベースの基本概念（テーブル、カラム、主キー、外部キー）
+- **必須**: Java基本文法（変数、条件分岐、繰り返し、メソッド、クラス、例外処理の基礎）
+- **推奨**: SQL基礎知識（SELECT、INSERT、UPDATE、DELETE文の基本）、オブジェクト指向プログラミングの基本概念
 
 ## 学習コンテンツ
+### [1. JDBCとは？ データベース接続の基本](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-01.html)
+JDBCの概要と役割、データベースとは何か、JDBCを使う利点について学びます。データベース接続の全体像を理解し、JDBCドライバの仕組みを把握します。
 
-### [1. JDBCの概要と環境構築](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-01.html)
-JDBCとは何か、なぜJDBCが必要なのかを理解し、開発環境のセットアップを行います。JDBCアーキテクチャの基本構造とドライバの役割についても解説します。
+### [2. 開発環境の準備と初めての接続](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-02.html)
+JDBCドライバのセットアップ方法、H2データベースのインストール、初めてのデータベース接続プログラムの作成を行います。Connection、DriverManager、接続URLの書き方を実践的に学びます。
 
-### [2. データベース接続の基本](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-02.html)
-DriverManagerを使用したデータベース接続方法を学びます。接続文字列（JDBC URL）の構成要素、Connection・Statement・ResultSetの3つの主要オブジェクトの役割と使い方を習得します。
+### [3. データの検索（SELECT文）をマスターする](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-03.html)
+Statement、PreparedStatementを使ったSELECT文の実行、ResultSetを使った検索結果の取得と処理方法を学びます。WHERE句を使った条件検索、複数件データの取得方法を実践します。
 
-### [3. データの取得（SELECT文）](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-03.html)
-SELECT文を使用したデータの取得方法を学びます。ResultSetからのデータ読み取り、様々なデータ型の取得方法、条件付きクエリの実行方法を習得します。
+### [4. データの登録・更新・削除（INSERT/UPDATE/DELETE文）](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-04.html)
+データベースへの新規データ登録（INSERT）、既存データの更新（UPDATE）、データの削除（DELETE）をJDBCで実行する方法を学びます。executeUpdate()メソッドの使い方と戻り値の意味を理解します。
 
-### [4. データの登録・更新・削除](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-04.html)
-INSERT、UPDATE、DELETE文を使用したデータ操作を学びます。executeUpdate()メソッドの使い方と、操作結果の確認方法を習得します。
+### [5. プリペアドステートメント（PreparedStatement）の活用](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-05.html)
+SQLインジェクション対策と処理速度向上のためのPreparedStatementの使い方を詳しく学びます。プレースホルダ（?）の使い方、パラメータのバインド方法、Statementとの違いを理解します。
 
-### [5. PreparedStatementの活用](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-05.html)
-パラメータ化されたクエリを実行するPreparedStatementの使い方を学びます。SQLインジェクション対策の重要性と、安全なデータベースアクセスの実現方法を理解します。
+### [6. トランザクション処理と例外処理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-06.html)
+データの整合性を保つためのトランザクション制御（commit、rollback）、自動コミットの設定、try-catch-finallyを使った適切な例外処理とリソース管理を学びます。
 
-### [6. 例外処理とリソース管理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-06.html)
-JDBCプログラミングにおける例外処理の重要性と実装方法を学びます。try-with-resources構文を使用した効率的なリソース管理と、SQLExceptionの適切な処理方法を習得します。
+### [7. 実践的なDAO（Data Access Object）パターン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-07.html)
+データベース操作を整理するDAOパターンの設計と実装を学びます。データベース処理とビジネスロジックの分離、再利用可能なDAOクラスの作成方法を実践します。
 
-### [7. トランザクション管理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-07.html)
-複数のデータベース操作を一つの単位として管理するトランザクションの概念を学びます。commit、rollbackの使い方と、データの整合性を保つ方法を習得します。
-
-### [8. DAOパターン入門](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-08.html)
-データアクセス処理を分離するDAOパターンの基本を学びます。保守性と再利用性の高いコード設計の考え方を習得します。
-
-### [9. 実践演習 - 商品管理システム](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-09.html)
-これまで学んだ知識を総合的に活用して、簡単な商品管理システムを構築します。設計から実装、テストまでの一連の流れを体験します。
-
-### [10. よくある問題と解決策](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-10.html)
-JDBC開発でよく遭遇するエラーとその解決方法、デバッグのコツ、パフォーマンス改善のヒントなど、実践的なトラブルシューティング手法を学びます。
+### [8. ベストプラクティスとトラブルシューティング](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/jdbc-learning-material-08.html)
+コネクションプーリングの導入、リソースの適切な解放（try-with-resources文）、よくあるエラーとその対処法、パフォーマンス向上のヒントを学びます。
 
 ## 学習の進め方
-
-1. **順番に学習する**: 1章から順番に進めることで、基礎から応用へと段階的に理解を深められます
-2. **コードを実際に書く**: 各章のサンプルコードは必ず自分で入力し、実行して動作を確認しましょう
-3. **練習問題に取り組む**: 各章末の練習問題で理解度を確認し、分からない部分は前の章に戻って復習しましょう
-4. **エラーを恐れない**: エラーが発生したら、エラーメッセージをよく読み、原因を考える習慣をつけましょう
+1. **章の順番通りに学習を進めてください**: 各章は前の章で学んだ内容を前提としています。特に第1章から第3章は基礎となる重要な内容です。
+2. **実際にコードを書いて動かすことが重要**: 説明を読むだけでなく、必ず自分の手でコードを入力し、実行してください。エラーが出たら、エラーメッセージをよく読んで原因を考える習慣をつけましょう。
+3. **データベースは実際に操作してみる**: SELECT、INSERT、UPDATE、DELETEを実行して、データがどのように変化するかを目で確認することで理解が深まります。
+4. **演習問題に取り組む**: 各章の演習問題で知識を定着させましょう。分からない場合は、前の章に戻って復習してください。
+5. **公式ドキュメントも参照する**: わからないメソッドやクラスがあれば、Oracle公式のJavadocを確認する習慣をつけましょう。
 
 ## 推奨学習期間
+- **基礎習得コース** (1-4章): 1-2週間
+  - データベース接続、基本的なCRUD操作（検索・登録・更新・削除）をマスター
+- **実践活用コース** (5-8章): 2-3週間
+  - セキュリティ対策、トランザクション制御、設計パターンの習得
 
-- **基礎習得コース** (1-6章): 2-3週間
-  - データベース接続、基本的なCRUD操作、例外処理までをカバー
-- **実践活用コース** (7-10章): 2-3週間
-  - トランザクション管理、DAOパターン、実践的なシステム開発を習得
+合計で3-5週間を目安に、無理のないペースで学習を進めてください。毎日1時間程度の学習を継続することをお勧めします。
 
 ## 関連リソース
-
-- [Java基礎チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/java-cheatsheet.html)
-- [JDBCチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/jdbc-cheatsheet.html)
-- [SQL基礎チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/sql-cheatsheet.html)
-- [Java学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/)
-- [SQL学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/)
+- [Java入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-01.html)
+- [SQL基礎チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/database/sql-basics-cheatsheet.html)（※将来的に作成予定）
+- [JSP/Servlet学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jsp/jsp-learning-material-01.html)
 
 ## 学習目標
-
 このガイドを完了すると、以下のスキルを身につけることができます：
-
-- JDBCを使用してJavaプログラムからデータベースに接続できる
-- SELECT、INSERT、UPDATE、DELETE文を使用したデータ操作ができる
-- PreparedStatementを使用して安全なデータベースアクセスを実装できる
-- 適切な例外処理とリソース管理を行えるコードを書ける
-- トランザクションを使用してデータの整合性を保つことができる
-- DAOパターンを使用した保守性の高いコード設計ができる
+- **JDBCを使ったデータベース接続とCRUD操作**: Javaプログラムからデータベースに接続し、データの検索・登録・更新・削除ができるようになります
+- **SQLインジェクション対策**: PreparedStatementを使った安全なSQL実行ができるようになります
+- **トランザクション制御**: データの整合性を保つためのcommit/rollbackが理解できます
+- **適切な例外処理とリソース管理**: try-with-resources文を使った安全なプログラムが書けるようになります
+- **DAOパターンの実装**: データベース処理を整理した保守性の高いコードが書けるようになります
+- **実務で使えるJDBCプログラミング**: Webアプリケーション開発やバッチ処理で必要なデータベース操作の基礎が身につきます
 
 ## 次のステップ
-
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
-
-- [Spring Framework学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/) - Spring Data JPAを使用した高度なデータアクセス
-- [JUnit学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/junit/) - JDBCプログラムの単体テスト手法
+- [JSP/Servlet学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jsp/jsp-learning-material-01.html) - WebアプリケーションでJDBCを活用
+- [Spring Framework学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/) - モダンなJavaフレームワークでのデータベース操作（Spring JDBC、Spring Data JPA）
+- [データベース設計・ER図学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/data-modeling/) - データベース設計の基礎を学ぶ
