@@ -1,25 +1,34 @@
 /**
  * サイドバーコンテンツ生成JavaScript
  * 各章のHTMLから共通のサイドバー部分を動的に生成
+ *
+ * 【使い方】
+ * 1. このファイルを各技術フォルダにコピー
+ * 2. chapters配列を実際の章構成に合わせて編集
+ * 3. HTMLファイルで <script src="sidebar-content.js"></script> を読み込む
  */
 
 (function() {
     'use strict';
 
-    // 章の定義データ
+    // ========================================
+    // Java学習ガイドの章定義
+    // ========================================
     const chapters = [
-        { number: 1, title: '第1章: 環境構築と最初の一歩', file: 'java-learning-material-01.html' },
-        { number: 2, title: '第2章: 変数とデータ型', file: 'java-learning-material-02.html' },
-        { number: 3, title: '第3章: 演算子と式', file: 'java-learning-material-03.html' },
-        { number: 4, title: '第4章: 条件分岐', file: 'java-learning-material-04.html' },
-        { number: 5, title: '第5章: 繰り返し処理', file: 'java-learning-material-05.html' },
-        { number: 6, title: '第6章: 配列', file: 'java-learning-material-06.html' },
-        { number: 7, title: '第7章: メソッド', file: 'java-learning-material-07.html' },
-        { number: 8, title: '第8章: クラスとオブジェクト', file: 'java-learning-material-08.html' },
-        { number: 9, title: '第9章: 継承とポリモーフィズム', file: 'java-learning-material-09.html' },
-        { number: 10, title: '第10章: 例外処理とJava API', file: 'java-learning-material-10.html' },
-        { number: 11, title: '第11章: コレクションフレームワーク', file: 'java-learning-material-11.html' },
-        { number: 12, title: '第12章: ラムダ式とStream API', file: 'java-learning-material-12.html' }
+        { number: 1, title: 'Javaとプログラミングの基本', file: 'java-learning-material-01.html' },
+        { number: 2, title: '変数とデータ型の基礎', file: 'java-learning-material-02.html' },
+        { number: 3, title: '演算子と式', file: 'java-learning-material-03.html' },
+        { number: 4, title: '条件分岐とプログラムの流れ', file: 'java-learning-material-04.html' },
+        { number: 5, title: '繰り返し処理（ループ）', file: 'java-learning-material-05.html' },
+        { number: 6, title: '配列とコレクション入門', file: 'java-learning-material-06.html' },
+        { number: 7, title: 'メソッドの基礎', file: 'java-learning-material-07.html' },
+        { number: 8, title: 'クラスとオブジェクトの基礎', file: 'java-learning-material-08.html' },
+        { number: 9, title: 'カプセル化とアクセス制御', file: 'java-learning-material-09.html' },
+        { number: 10, title: '継承とポリモーフィズム', file: 'java-learning-material-10.html' },
+        { number: 11, title: '抽象クラスとインターフェース', file: 'java-learning-material-11.html' },
+        { number: 12, title: '例外処理とデバッグ', file: 'java-learning-material-12.html' },
+        { number: 13, title: 'コレクションフレームワーク', file: 'java-learning-material-13.html' },
+        { number: 14, title: 'ラムダ式と関数型プログラミング', file: 'java-learning-material-14.html' }
     ];
 
     // 現在のページのファイル名を取得
@@ -69,10 +78,7 @@
         <!-- サイドバー -->
         <aside id="sidebar" class="fixed md:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
                                    bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
-                                   transform -translate-x-full md:translate-x-0 sidebar-transition sidebar-resizable"
-               style="--sidebar-width: 320px;">
-            <!-- リサイズハンドル -->
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle hidden md:block"></div>
+                                   transform -translate-x-full sidebar-transition">
             <div class="p-4">
                 <!-- 進捗インジケーター -->
                 <div class="mb-6 p-4 bg-primary-50 rounded-xl">
@@ -97,13 +103,6 @@ ${chapterListHTML}
             </div>
         </aside>
 
-        <!-- サイドバーオーバーレイ（モバイル用） -->
-        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
-
-        <!-- サイドバートグルボタン（PC用） -->
-        <button id="sidebar-toggle-btn" class="sidebar-toggle-btn hidden md:flex items-center justify-center w-10 h-10">
-            <i class="fas fa-chevron-left text-slate-600"></i>
-        </button>
         `;
 
         return sidebarHTML;

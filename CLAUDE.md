@@ -67,6 +67,20 @@ Available automation agents in `.claude/agents/`:
 | `illustration-creator-step1` | Analyze HTML guides and suggest illustrations | `@agent-illustration-creator-step1 [directory-path]` |
 | `illustration-creator-step2` | Generate placeholder JPGs, insert into HTML (parallel subagents for multi-chapter) | `@agent-illustration-creator-step2 [suggestions-md-path] [chapter?]` |
 
+### Agent Execution Rules (重要)
+
+**エージェント・サブエージェント実行時の必須ルール:**
+
+1. **提案禁止**: 処理中に最適化や代替アプローチの提案をしないこと
+2. **中断禁止**: ユーザー確認のために処理を停止しないこと
+3. **完遂必須**: エージェント定義ファイル（`.claude/agents/*.md`）の指示に従い、最後まで処理を完了すること
+4. **並列実行**: ワークフローで指定された並列処理は必ず並列で実行すること
+
+**禁止事項の例:**
+- 「時間がかかりますが、どちらの方法で進めますか？」→ 禁止
+- 「プレースホルダー版で素早く生成することを提案します」→ 禁止
+- 処理途中での確認ダイアログ → 禁止
+
 ## Template Standards
 
 HTML content must follow standards in `/templates/v2/`:
