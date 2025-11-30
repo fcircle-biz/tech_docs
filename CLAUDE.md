@@ -50,20 +50,28 @@ Available automation agents in `.claude/agents/`:
 | Agent | Purpose | Trigger |
 |-------|---------|---------|
 | `tech-guide-creator-step1` | Create guide README.md | `@agent-tech-guide-creator-step1 [tech-name]` |
-| `tech-guide-creator-step2` | Generate HTML chapters | `@agent-tech-guide-creator-step2 [readme-path] [chapter-num]` |
-| `tutorial-creator-step1/2` | Create practical tutorials | `@agent-tutorial-creator-step1 [tech] [env] [db]` |
+| `tech-guide-creator-step2` | Generate chapter 1 HTML + common files | `@agent-tech-guide-creator-step2 [readme-path]` |
+| `tech-guide-creator-step3` | Generate chapter 2+ HTML in parallel | `@agent-tech-guide-creator-step3 [readme-path] [chapter-range]` |
+| `tutorial-creator-step1` | Create tutorial README.md | `@agent-tutorial-creator-step1 [tech] [env] [db]` |
+| `tutorial-creator-step2` | Generate step 1 HTML + common files | `@agent-tutorial-creator-step2 [readme-path]` |
+| `tutorial-creator-step3` | Generate step 2+ HTML in parallel | `@agent-tutorial-creator-step3 [readme-path] [step-range]` |
 | `folder-structure-readme-updater` | Auto-generate folder READMEs | `@agent-folder-structure-readme-updater` |
 
 ## Template Standards
 
 HTML content must follow standards in `/templates/v2/`:
 
-### Template Files (`html/`)
+### Template Files (`html/`) - 学習教材用
 - **learning-material-template.html** - 学習教材用テンプレート
-- **tutorial-template.html** - チュートリアル用テンプレート
 - **sidebar-content.js** - サイドバー生成（学習教材用）
-- **sidebar-content-tutorial.js** - サイドバー生成（チュートリアル用）
 - **styles.css** - 共通カスタムスタイル
+- **main.js** - 共通機能
+- **drawing-tool.js** - 描画ツール機能
+
+### Template Files (`html_tutorial/`) - チュートリアル用
+- **tutorial-template.html** - チュートリアル用テンプレート
+- **sidebar-content.js** - サイドバー生成（チュートリアル用）
+- **styles.css** - 共通カスタムスタイル（ヘッダー緑色）
 - **main.js** - 共通機能
 - **drawing-tool.js** - 描画ツール機能
 
