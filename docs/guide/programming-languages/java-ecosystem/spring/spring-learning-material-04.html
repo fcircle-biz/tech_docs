@@ -2,637 +2,954 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spring学習教材 第4章 - Webアプリケーション開発の基礎（MVC）</title>
-    
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>Spring Framework学習教材 第4章 - Beanの管理とコンポーネントスキャン</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <!-- Google Fonts - Noto Sans JP -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- Highlight.js CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    
+
     <!-- Mermaid.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
-    
-    <!-- カスタムCSS -->
-    <style>
-        /* ベースレイアウト */
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            padding-top: 56px;
-        }
 
-        /* ナビゲーション */
-        .navbar {
-            background-color: #4caf50;
-        }
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        /* サイドバー */
-        .sidebar {
-            position: sticky;
-            top: 70px;
-            height: calc(100vh - 70px);
-            overflow-y: auto;
-        }
-
-        /* タイトル */
-        .chapter-title {
-            color: #4caf50;
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #4caf50;
-            padding-bottom: 0.5rem;
-        }
-
-        .section-title {
-            color: #66bb6a;
-            margin-top: 1.2rem;
-            margin-bottom: 0.8rem;
-        }
-
-        /* コンテンツボックス */
-        .quiz-container {
-            background-color: #e8f5e8;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #4caf50;
-        }
-
-        .exercise-container {
-            background-color: #f3e5f5;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #9c27b0;
-        }
-
-        .highlight {
-            background-color: #ffecb3;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #ffc107;
-        }
-
-        .warning {
-            background-color: #ffebee;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #f44336;
-        }
-
-        /* コードハイライト */
-        .code-block {
-            background-color: #1e1e1e;
-            border-radius: 5px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-
-        /* ナビゲーション */
-        .nav-link.active {
-            background-color: #4caf50 !important;
-            color: white !important;
-        }
-    </style>
+    <!-- カスタムスタイル -->
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <!-- ナビゲーションバー -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand">
-                <strong>Spring学習教材</strong>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
-    </nav>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fas fa-leaf text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
 
-    <div class="container-fluid">
-        <div class="row">
-            <!-- サイドバー -->
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        <span>学習章</span>
-                    </h6>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="spring-learning-material-01.html">
-                                第1章: JavaとWebの基礎理解
-                            </a>
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">Spring Framework学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                中級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>プログラミング言語 - Java Ecosystem</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 60分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/" class="hover:text-primary-600 transition-colors">Spring Framework</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第4章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第4章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Beanの管理とコンポーネントスキャン</h1>
+                    <p class="text-slate-600">Spring IoCコンテナでのBean管理を深く理解します。ステレオタイプアノテーション（@Component、@Service、@Repository、@Controller）の役割と使い分け、Beanのスコープ（singleton、prototype）、@Configurationと@Beanによる明示的なBean定義、コンポーネントスキャンの仕組みを学びます。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>ステレオタイプアノテーション（@Component、@Service、@Repository、@Controller）の役割と使い分けを理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>Beanのスコープ（singleton、prototype）の違いと適切な使い方を学ぶ</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>@Configurationと@Beanによる明示的なBean定義の方法を習得する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>コンポーネントスキャンの仕組みとbasePackagesの指定方法を理解する</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション1: Beanとは -->
+                <section class="prose prose-slate max-w-none">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.1 Beanとは何か
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed">
+                        第3章でDIコンテナを学びましたが、そこで管理される「Bean」とは一体何でしょうか。<strong class="text-primary-600">Bean（ビーン）</strong>とは、Spring IoCコンテナが管理するオブジェクトのことです。Springアプリケーションで使用するクラスをBeanとして登録することで、DIコンテナが自動的に生成・管理してくれます。
+                    </p>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">Beanの由来</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    Beanという名称は、JavaBeansという仕様に由来します。JavaBeansは再利用可能なJavaコンポーネントの規約で、SpringでもこのコンポーネントをBeanと呼んでいます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed">
+                        従来のJavaプログラミングでは、<code>new</code>演算子を使ってオブジェクトを生成し、開発者が手動で管理していました。しかしSpringでは、Beanとして登録されたクラスのインスタンス生成・ライフサイクル管理・依存性注入をすべてIoCコンテナが担当します。
+                    </p>
+
+                    <!-- Mermaid図: Bean管理の流れ -->
+                    <div class="my-6 bg-white p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4">Spring IoCコンテナのBean管理</h3>
+                        <div class="mermaid">
+graph LR
+    A[アプリケーション起動] --> B[コンポーネントスキャン]
+    B --> C[Bean定義を検出]
+    C --> D[IoCコンテナに登録]
+    D --> E[Bean生成・初期化]
+    E --> F[依存性注入]
+    F --> G[アプリケーション実行]
+                        </div>
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-star text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">重要ポイント</p>
+                                <p class="text-emerald-800 text-sm mt-1 break-words">
+                                    Springアプリケーションでは、ほぼすべてのクラスをBeanとして登録します。コントローラー、サービス、リポジトリなど、レイヤーごとに適切なアノテーションを付けることで、IoCコンテナが自動管理してくれます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション2: ステレオタイプアノテーション -->
+                <section class="prose prose-slate max-w-none mt-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.2 ステレオタイプアノテーション
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed">
+                        SpringでBeanを登録する方法の一つが、<strong>ステレオタイプアノテーション</strong>です。クラスに付けるアノテーションで、そのクラスの役割をSpringコンテナに伝えます。主なステレオタイプアノテーションは以下の4つです。
+                    </p>
+
+                    <!-- アノテーション比較表 -->
+                    <div class="my-6 overflow-x-auto">
+                        <table class="min-w-full bg-white border border-slate-200 rounded-lg">
+                            <thead class="bg-slate-100">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700 border-b">アノテーション</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700 border-b">役割</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700 border-b">使用場所</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200">
+                                <tr>
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-800">@Component</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600">汎用的なBeanを定義</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600">どのレイヤーにも属さないクラス</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-800">@Service</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600">ビジネスロジックを担当</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600">サービス層クラス</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-800">@Repository</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600">データアクセスを担当</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600">リポジトリ層クラス</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-800">@Controller</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600">HTTPリクエストを処理</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600">コントローラー層クラス</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">1. @Component - 汎用Bean</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        最も基本的なステレオタイプアノテーションです。どのレイヤーにも属さない汎用的なクラスに使用します。実は、他の3つのアノテーション（@Service、@Repository、@Controller）は、内部的に@Componentを継承しています。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">EmailSender.java（@Component例）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// 汎用的なメール送信クラス
+@Component
+public class EmailSender {
+    public void send(String to, String subject) {
+        // メール送信処理
+        System.out.println("送信先: " + to);
+        System.out.println("件名: " + subject);
+    }
+}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">2. @Service - ビジネスロジック層</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        ビジネスロジックを実装するクラスに使用します。コントローラーから呼び出され、リポジトリを使ってデータアクセスを行い、ビジネスルールを適用します。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">UserService.java（@Service例）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// ユーザー管理のビジネスロジック
+@Service
+public class UserService {
+    @Autowired
+    private UserRepository repository;
+
+    public User register(String name, int age) {
+        // ビジネスルール: 18歳未満は登録不可
+        if (age < 18) {
+            throw new IllegalArgumentException("18歳以上が必要");
+        }
+        User user = new User(name, age);
+        return repository.save(user);
+    }
+}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">3. @Repository - データアクセス層</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        データベースとの接続・操作を担当するクラスに使用します。@Repositoryを付けると、Spring Data JDBCがデータアクセス機能を自動提供してくれます（第8章で詳しく学習）。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">UserRepository.java（@Repository例）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// データアクセス層（Spring Data JDBCの例）
+@Repository
+public interface UserRepository extends CrudRepository<User, Long> {
+    // findById、save、deleteAllなどのメソッドが自動提供される
+    List<User> findByName(String name);
+}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">4. @Controller - プレゼンテーション層</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        HTTPリクエストを受け付け、ビジネスロジックを呼び出し、レスポンスを返すクラスに使用します。Spring MVCの中核となるアノテーションです（第5章で詳しく学習）。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">UserController.java（@Controller例）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// HTTPリクエストを処理
+@Controller
+public class UserController {
+    @Autowired
+    private UserService service;
+
+    @GetMapping("/users/{id}")
+    public String showUser(@PathVariable Long id, Model model) {
+        User user = service.findById(id);
+        model.addAttribute("user", user);
+        return "user-detail"; // ビューテンプレート名
+    }
+}</code></pre>
+                    </div>
+
+                    <!-- レイヤードアーキテクチャ図 -->
+                    <div class="my-6 bg-white p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4">レイヤードアーキテクチャとアノテーション</h3>
+                        <div class="mermaid">
+graph TD
+    Client[クライアント<br/>ブラウザ] -->|HTTPリクエスト| Controller[@Controller<br/>プレゼンテーション層]
+    Controller -->|ビジネスロジック呼び出し| Service[@Service<br/>ビジネスロジック層]
+    Service -->|データアクセス| Repository[@Repository<br/>データアクセス層]
+    Repository -->|SQL| DB[(データベース)]
+    Controller -->|レスポンス| Client
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション3: Beanのスコープ -->
+                <section class="prose prose-slate max-w-none mt-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.3 Beanのスコープ
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed">
+                        Beanには<strong>スコープ（Scope）</strong>という概念があります。スコープとは、Beanのインスタンスがいつ生成され、どのように共有されるかを定義するものです。主なスコープは以下の2つです。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">1. singleton（デフォルト）</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        <strong>singletonスコープ</strong>では、Beanのインスタンスがアプリケーション全体で1つだけ生成されます。すべての注入先で同じインスタンスが使い回されます。Springのデフォルトスコープです。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">SingletonBean.java（singleton例）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">// @Scopeを省略するとsingletonになる
+@Component
+public class CounterService {
+    private int count = 0;
+
+    public void increment() {
+        count++;
+    }
+
+    public int getCount() {
+        return count; // 全インスタンスで共有される
+    }
+}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">2. prototype</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        <strong>prototypeスコープ</strong>では、Beanが注入されるたびに新しいインスタンスが生成されます。状態を保持しないステートレスなBeanには不要ですが、リクエストごとに異なる状態を持つ必要がある場合に使用します。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">PrototypeBean.java（prototype例）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import org.springframework.context.annotation.Scope;
+
+// 注入のたびに新しいインスタンスを生成
+@Component
+@Scope("prototype")
+public class RequestContext {
+    private String requestId;
+    private LocalDateTime timestamp;
+
+    public RequestContext() {
+        this.timestamp = LocalDateTime.now();
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-red-900 font-medium break-words">注意事項</p>
+                                <p class="text-red-800 text-sm mt-1 break-words">
+                                    ほとんどの場合、singletonスコープで十分です。prototypeスコープを使うと、メモリ管理やパフォーマンスに影響する可能性があるため、本当に必要な場合のみ使用してください。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- スコープ比較図 -->
+                    <div class="my-6 bg-white p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4">singletonとprototypeの違い</h3>
+                        <div class="mermaid">
+graph LR
+    subgraph Singleton
+        Container1[IoCコンテナ] --> Bean1[Beanインスタンス]
+        Bean1 --> Service1[ServiceA]
+        Bean1 --> Service2[ServiceB]
+        Bean1 --> Service3[ServiceC]
+    end
+
+    subgraph Prototype
+        Container2[IoCコンテナ] --> Bean2[Beanインスタンス1]
+        Container2 --> Bean3[Beanインスタンス2]
+        Container2 --> Bean4[Beanインスタンス3]
+        Bean2 --> ServiceX[ServiceX]
+        Bean3 --> ServiceY[ServiceY]
+        Bean4 --> ServiceZ[ServiceZ]
+    end
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション4: @Configurationと@Bean -->
+                <section class="prose prose-slate max-w-none mt-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.4 @Configurationと@Beanによる明示的なBean定義
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed">
+                        ステレオタイプアノテーション（@Component、@Service等）以外にも、Beanを定義する方法があります。それが<strong>@Configuration</strong>と<strong>@Bean</strong>を使った明示的な定義です。
+                    </p>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">なぜ明示的な定義が必要なのか？</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    サードパーティのライブラリクラス（自分で@Componentを付けられない）や、複雑な初期化が必要なBeanを登録する場合に、@Configurationと@Beanを使用します。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">@Configuration - 設定クラスの定義</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        @Configurationを付けたクラスは、Bean定義を行う設定クラスとして扱われます。このクラス内で、@Beanアノテーションを付けたメソッドを定義することで、そのメソッドの戻り値がBeanとして登録されます。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">AppConfig.java（@Configuration例）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import java.time.format.DateTimeFormatter;
+
+// Bean定義を行う設定クラス
+@Configuration
+public class AppConfig {
+
+    // DateTimeFormatterをBeanとして登録
+    @Bean
+    public DateTimeFormatter dateFormatter() {
+        return DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    }
+
+    // カスタムサービスをBeanとして登録
+    @Bean
+    public ReportService reportService() {
+        return new ReportService("日次レポート");
+    }
+}</code></pre>
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed">
+                        上記の例では、<code>dateFormatter()</code>メソッドと<code>reportService()</code>メソッドの戻り値がBeanとして登録されます。他のクラスで@Autowiredすることで、これらのBeanを注入できます。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">LogService.java（Bean注入例）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+@Service
+public class LogService {
+    @Autowired
+    private DateTimeFormatter dateFormatter; // 設定クラスで定義したBean
+
+    public void log(String message) {
+        String timestamp = dateFormatter.format(LocalDateTime.now());
+        System.out.println("[" + timestamp + "] " + message);
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-star text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">使い分けのポイント</p>
+                                <p class="text-emerald-800 text-sm mt-1 break-words">
+                                    自分で作成するクラスには@Component系アノテーション、サードパーティライブラリや複雑な初期化が必要なクラスには@Configurationと@Beanを使います。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション5: コンポーネントスキャン -->
+                <section class="prose prose-slate max-w-none mt-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.5 コンポーネントスキャンの仕組み
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed">
+                        @Componentなどのステレオタイプアノテーションを付けただけでは、Springはそのクラスを見つけることができません。Springは<strong>コンポーネントスキャン（Component Scan）</strong>という機能で、指定されたパッケージ配下のクラスを自動検索し、Bean定義を見つけます。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">Spring Bootの自動スキャン</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        Spring Bootを使用している場合、<code>@SpringBootApplication</code>アノテーションが付いたメインクラスのパッケージとその配下のパッケージが自動的にスキャン対象になります。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">Application.java（メインクラス）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">package com.example.myapp; // このパッケージがスキャンのルート
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication // 内部で@ComponentScanを含む
+public class Application {
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+}</code></pre>
+                    </div>
+
+                    <!-- パッケージ構成例 -->
+                    <div class="bg-slate-100 p-4 my-6 rounded-lg overflow-x-auto">
+                        <pre class="text-sm text-slate-800 break-words whitespace-pre-wrap">com.example.myapp/               ← @SpringBootApplicationがあるパッケージ（スキャン対象）
+├── Application.java
+├── controller/                  ← スキャン対象
+│   └── UserController.java
+├── service/                     ← スキャン対象
+│   └── UserService.java
+└── repository/                  ← スキャン対象
+    └── UserRepository.java
+
+com.other.library/               ← スキャン対象外（別パッケージ）
+└── SomeClass.java</pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">@ComponentScanによる明示的な指定</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        別パッケージのクラスをスキャン対象に含めたい場合、<code>@ComponentScan</code>アノテーションでbasePackagesを明示的に指定できます。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">Application.java（@ComponentScan例）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">package com.example.myapp;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+
+@SpringBootApplication
+@ComponentScan(basePackages = {
+    "com.example.myapp",    // デフォルトのスキャン対象
+    "com.other.library"     // 追加でスキャン対象に含める
+})
+public class Application {
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+}</code></pre>
+                    </div>
+
+                    <!-- コンポーネントスキャン図 -->
+                    <div class="my-6 bg-white p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4">コンポーネントスキャンの流れ</h3>
+                        <div class="mermaid">
+graph TD
+    A[アプリケーション起動] --> B[@SpringBootApplication検出]
+    B --> C[basePackages決定]
+    C --> D[パッケージ配下をスキャン]
+    D --> E[@Component系アノテーション検出]
+    E --> F[Bean定義としてIoCコンテナに登録]
+    F --> G[依存性注入実行]
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">スキャン対象外のクラスは？</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    コンポーネントスキャンの対象外パッケージにあるクラスをBeanとして使いたい場合は、@Configurationクラスで@Beanアノテーションを使って明示的に登録します。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 実習カード -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                            rounded-xl p-5 my-8 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-laptop-code text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-4 break-words">ハンズオン実習: ステレオタイプアノテーションの使い分け</h3>
+                            <p class="text-purple-900 mb-4 break-words">
+                                レイヤードアーキテクチャを意識して、適切なステレオタイプアノテーションを付けたBean定義を作成しましょう。
+                            </p>
+
+                            <h4 class="font-semibold text-purple-800 mb-2 break-words">手順</h4>
+                            <ol class="space-y-2 text-purple-900 list-decimal list-inside">
+                                <li class="break-words">
+                                    <code>com.example.demo.model.Product</code>クラスを作成（id、name、priceフィールド）
+                                </li>
+                                <li class="break-words">
+                                    <code>com.example.demo.repository.ProductRepository</code>インターフェースを作成し、@Repositoryアノテーションを付ける
+                                </li>
+                                <li class="break-words">
+                                    <code>com.example.demo.service.ProductService</code>クラスを作成し、@Serviceアノテーションを付ける
+                                </li>
+                                <li class="break-words">
+                                    ProductServiceにProductRepositoryを@Autowiredで注入する
+                                </li>
+                                <li class="break-words">
+                                    <code>com.example.demo.controller.ProductController</code>クラスを作成し、@Controllerアノテーションを付ける
+                                </li>
+                                <li class="break-words">
+                                    ProductControllerにProductServiceを@Autowiredで注入する
+                                </li>
+                                <li class="break-words">
+                                    アプリケーションを起動し、DIコンテナが正しくBeanを注入していることを確認する
+                                </li>
+                            </ol>
+
+                            <details class="mt-4">
+                                <summary class="cursor-pointer text-purple-600 hover:text-purple-700 font-medium break-words">
+                                    実装例を表示
+                                </summary>
+                                <div class="mt-3 space-y-3">
+                                    <div class="code-block-wrapper">
+                                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                            <span class="text-slate-400 text-sm">Product.java</span>
+                                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                                    onclick="copyCode(this)">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">package com.example.demo.model;
+
+public class Product {
+    private Long id;
+    private String name;
+    private int price;
+
+    // コンストラクタ、ゲッター、セッター省略
+}</code></pre>
+                                    </div>
+
+                                    <div class="code-block-wrapper">
+                                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                            <span class="text-slate-400 text-sm">ProductRepository.java</span>
+                                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                                    onclick="copyCode(this)">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">package com.example.demo.repository;
+
+import org.springframework.stereotype.Repository;
+import com.example.demo.model.Product;
+
+@Repository // データアクセス層
+public interface ProductRepository {
+    Product findById(Long id);
+    void save(Product product);
+}</code></pre>
+                                    </div>
+
+                                    <div class="code-block-wrapper">
+                                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                            <span class="text-slate-400 text-sm">ProductService.java</span>
+                                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                                    onclick="copyCode(this)">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                        <pre class="!mt-0 !rounded-t-none"><code class="language-java">package com.example.demo.service;
+
+import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.repository.ProductRepository;
+import com.example.demo.model.Product;
+
+@Service // ビジネスロジック層
+public class ProductService {
+    @Autowired
+    private ProductRepository repository;
+
+    public Product getProduct(Long id) {
+        return repository.findById(id);
+    }
+}</code></pre>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-8 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q1. @Service、@Repository、@Controllerは内部的にどのアノテーションを継承していますか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            <strong>@Component</strong><br>
+                                            @Service、@Repository、@Controllerは、すべて@Componentを継承した特殊化されたアノテーションです。役割を明確にするために使い分けられます。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q2. Beanのデフォルトスコープは何ですか？また、そのスコープの特徴を説明してください。</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            <strong>singleton</strong><br>
+                                            singletonスコープでは、Beanのインスタンスがアプリケーション全体で1つだけ生成され、すべての注入先で同じインスタンスが共有されます。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q3. @Configurationと@Beanを使う場合と、@Componentを使う場合の使い分け基準を説明してください。</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            <strong>使い分け基準：</strong><br>
+                                            ・自分で作成するクラス → @Component系アノテーションを使用<br>
+                                            ・サードパーティのライブラリクラスや、複雑な初期化が必要なクラス → @Configurationと@Beanを使用<br>
+                                            @Componentは自分のソースコードに直接付けられますが、外部ライブラリには付けられないため、@Beanメソッドで定義します。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 章のまとめ -->
+                <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6 my-8">
+                    <h2 class="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-bookmark text-primary-500"></i>
+                        第4章のまとめ
+                    </h2>
+                    <ul class="space-y-3 text-slate-700">
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>BeanとはSpring IoCコンテナが管理するオブジェクトで、生成・ライフサイクル・依存性注入を自動化します。</span>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="spring-learning-material-02.html">
-                                第2章: Spring Bootの導入と開発環境構築
-                            </a>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>ステレオタイプアノテーション（@Component、@Service、@Repository、@Controller）でレイヤーごとの役割を明示します。</span>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="spring-learning-material-03.html">
-                                第3章: Spring Bootの基本構成とDI
-                            </a>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>Beanのスコープはsingletonがデフォルトで、アプリケーション全体で1つのインスタンスが共有されます。</span>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="spring-learning-material-04.html">
-                                第4章: Webアプリケーション開発の基礎（MVC）
-                            </a>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>@Configurationと@Beanで、サードパーティライブラリや複雑な初期化が必要なBeanを明示的に定義できます。</span>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="spring-learning-material-05.html">
-                                第5章: データベース連携（Spring Data JDBC）
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="spring-learning-material-06.html">
-                                第6章: 入力バリデーションとエラーハンドリング
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="spring-learning-material-07.html">
-                                第7章: Spring Securityによる認証・認可
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="spring-learning-material-08.html">
-                                第8章: Spring MVCのテスト
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="spring-learning-material-09.html">
-                                第9章: Todoアプリケーション開発
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="spring-learning-material-10.html">
-                                第10章: さらに一歩進んだSpring開発へ①
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="spring-learning-material-11.html">
-                                第11章: さらに一歩進んだSpring開発へ②
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="spring-learning-material-ex-01.html">
-                                補足①: Spring Data JPA入門
-                            </a>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>コンポーネントスキャンにより、@SpringBootApplicationのパッケージ配下が自動的にスキャンされ、Bean定義が検出されます。</span>
                         </li>
                     </ul>
                 </div>
-            </nav>
 
-            <!-- メインコンテンツ -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <!-- 章ヘッダー -->
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">第4章: Webアプリケーション開発の基礎（MVC）</h1>
-                </div>
-
-                <div id="chapter4">
-                    <!-- 章タイトル -->
-                    <h2 class="chapter-title">Spring MVCによるWebアプリケーション開発</h2>
-                    
-                    <!-- 学習目標 -->
-                    <div class="highlight">
-                        <h5>この章で学ぶこと</h5>
-                        <ul>
-                            <li>Spring MVCアーキテクチャの理解</li>
-                            <li>DispatcherServletの役割と動作原理</li>
-                            <li>コントローラーの作成とリクエストマッピング</li>
-                            <li>Thymeleafテンプレートエンジンの基本的な使い方</li>
-                            <li>フォームの送信と受け取りの実装方法</li>
-                            <li>URLパラメータとクエリパラメータの処理</li>
-                        </ul>
-                    </div>
-
-                    <!-- セクション4.1 -->
-                    <h3 class="section-title">4.1 Spring MVCアーキテクチャとは</h3>
-                    <p>
-                        Spring MVCは、Spring Frameworkが提供するWebアプリケーション開発のためのフレームワークです。MVCは<strong>Model（モデル）</strong>、<strong>View（ビュー）</strong>、<strong>Controller（コントローラー）</strong>の頭文字を取った設計パターンで、アプリケーションを機能ごとに分離することで、保守性と拡張性を高めます。
-                    </p>
-
-                    <div class="highlight">
-                        <h6>MVCパターンの各要素</h6>
-                        <ul>
-                            <li><strong>Model（モデル）</strong>: データとビジネスロジックを担当</li>
-                            <li><strong>View（ビュー）</strong>: ユーザーインターフェースとプレゼンテーション層を担当</li>
-                            <li><strong>Controller（コントローラー）</strong>: ユーザーの入力を処理し、ModelとViewを制御</li>
-                        </ul>
-                    </div>
-
-                    <div class="mermaid">
-                        flowchart TD
-                            A["ユーザー"] --> B["Controller<br/>(コントローラー)"]
-                            B --> C["Model<br/>(モデル)"]
-                            C --> D["View<br/>(ビュー)"]
-                            D --> A
-                            
-                            B -.-> E["ビジネスロジック<br/>処理"]
-                            C -.-> F["データベース<br/>アクセス"]
-                            D -.-> G["HTML生成<br/>レスポンス"]
-                    </div>
-
-                    <p>
-                        このような分離により、各層が独立して開発・テスト・保守できるようになります。例えば、データベースの構造を変更してもViewに影響しない、デザインを変更してもControllerに影響しないといったメリットがあります。
-                    </p>
-
-                    <!-- セクション4.2 -->
-                    <h3 class="section-title">4.2 DispatcherServletの役割</h3>
-                    <p>
-                        Spring MVCの中心となるのが<strong>DispatcherServlet</strong>です。これは「フロントコントローラー」と呼ばれるパターンを実装しており、すべてのHTTPリクエストを一箇所で受け取り、適切なコントローラーに振り分ける役割を担います。
-                    </p>
-
-                    <div class="highlight">
-                        <h6>DispatcherServletの主な処理フロー</h6>
-                        <ol>
-                            <li>HTTPリクエストを受信</li>
-                            <li>HandlerMappingを使用して適切なControllerを特定</li>
-                            <li>Controllerのメソッドを実行</li>
-                            <li>ViewResolverを使用してViewを特定</li>
-                            <li>Viewを使用してHTMLレスポンスを生成</li>
-                            <li>クライアントにレスポンスを送信</li>
-                        </ol>
-                    </div>
-
-                    <div class="mermaid">
-                        sequenceDiagram
-                            participant Client as クライアント
-                            participant DS as DispatcherServlet
-                            participant HM as HandlerMapping
-                            participant C as Controller
-                            participant VR as ViewResolver
-                            participant V as View
-
-                            Client->>DS: HTTPリクエスト
-                            DS->>HM: ハンドラー検索
-                            HM-->>DS: Controller情報
-                            DS->>C: メソッド実行
-                            C-->>DS: ModelAndView
-                            DS->>VR: View名解決
-                            VR-->>DS: View情報
-                            DS->>V: レンダリング
-                            V-->>DS: HTML
-                            DS-->>Client: HTTPレスポンス
-                    </div>
-
-                    <p>
-                        Spring Bootでは、このDispatcherServletの設定が自動で行われるため、開発者は複雑な設定を書く必要がありません。これにより、ビジネスロジックの実装に集中できます。
-                    </p>
-
-                    <!-- セクション4.3 -->
-                    <h3 class="section-title">4.3 コントローラーの作成とリクエストマッピング</h3>
-                    <p>
-                        Spring MVCでは、<code>@Controller</code>アノテーションを付けたクラスがコントローラーとして動作します。各メソッドには<code>@RequestMapping</code>やその派生アノテーション（<code>@GetMapping</code>、<code>@PostMapping</code>など）を付けて、どのURLパスとHTTPメソッドに対応するかを指定します。
-                    </p>
-
-                    <div class="highlight">
-                        <h6>主なリクエストマッピングアノテーション</h6>
-                        <ul>
-                            <li><code>@GetMapping</code>: GETリクエストに対応（データの取得に使用）</li>
-                            <li><code>@PostMapping</code>: POSTリクエストに対応（データの送信に使用）</li>
-                            <li><code>@PutMapping</code>: PUTリクエストに対応（データの更新に使用）</li>
-                            <li><code>@DeleteMapping</code>: DELETEリクエストに対応（データの削除に使用）</li>
-                        </ul>
-                    </div>
-
-                    <pre class="code-block"><code class="language-java">@Controller
-public class HomeController {
-    
-    // GET /hello にアクセスした時の処理
-    @GetMapping("/hello")
-    public String hello(Model model) {
-        model.addAttribute("message", "Hello, Spring MVC!");
-        return "hello"; // hello.htmlテンプレートを表示
-    }
-    
-    // GET / にアクセスした時の処理
-    @GetMapping("/")
-    public String index() {
-        return "index"; // index.htmlテンプレートを表示
-    }
-}</code></pre>
-
-                    <p>
-                        上記の例では、<code>Model</code>オブジェクトを使用してViewにデータを渡しています。<code>model.addAttribute()</code>でデータを設定し、戻り値でどのテンプレートを表示するかを指定します。
-                    </p>
-
-                    <!-- 実習4-1 -->
-                    <div class="exercise-container">
-                        <h5>実習 4-1: 基本的なコントローラーの作成</h5>
-                        <p>簡単な挨拶メッセージを表示するコントローラーを作成してみましょう。</p>
-                        
-                        <h6>手順</h6>
-                        <ol>
-                            <li>Spring Bootプロジェクトを作成または既存プロジェクトを使用</li>
-                            <li>以下のコントローラークラスを作成</li>
-                            <li>対応するThymeleafテンプレートを作成</li>
-                            <li>アプリケーションを起動してブラウザで確認</li>
-                        </ol>
-
-                        <h6>GreetingController.java</h6>
-                        <pre class="code-block"><code class="language-java">package com.example.demo.controller;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-
-@Controller
-public class GreetingController {
-    
-    @GetMapping("/greeting")
-    public String greeting(Model model) {
-        model.addAttribute("name", "Spring Boot");
-        model.addAttribute("message", "Spring MVCの学習を始めましょう！");
-        return "greeting";
-    }
-}</code></pre>
-
-                        <h6>templates/greeting.html</h6>
-                        <pre class="code-block"><code class="language-html">&lt;!DOCTYPE html&gt;
-&lt;html xmlns:th="http://www.thymeleaf.org"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;title&gt;挨拶ページ&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;h1&gt;Hello, &lt;span th:text="${name}"&gt;名前&lt;/span&gt;!&lt;/h1&gt;
-    &lt;p th:text="${message}"&gt;メッセージが表示されます&lt;/p&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-
-                        <h6>期待される結果</h6>
-                        <p>http://localhost:8080/greeting にアクセスすると、「Hello, Spring Boot!」と「Spring MVCの学習を始めましょう！」が表示されます。</p>
-                    </div>
-
-                    <!-- セクション4.4 -->
-                    <h3 class="section-title">4.4 Thymeleafテンプレートエンジン</h3>
-                    <p>
-                        <strong>Thymeleaf</strong>は、Spring Bootで標準的に使用されるテンプレートエンジンです。HTMLファイルにThymeleaf固有の属性を追加することで、動的なWebページを生成できます。Thymeleafの最大の特徴は、通常のHTMLファイルとしてブラウザで直接表示できることです。
-                    </p>
-
-                    <div class="highlight">
-                        <h6>Thymeleafの主要な属性</h6>
-                        <ul>
-                            <li><code>th:text</code>: テキスト内容を動的に設定</li>
-                            <li><code>th:if</code>: 条件に応じて要素を表示/非表示</li>
-                            <li><code>th:each</code>: リストやコレクションを繰り返し処理</li>
-                            <li><code>th:href</code>: リンクのURLを動的に設定</li>
-                            <li><code>th:src</code>: 画像のURLを動的に設定</li>
-                            <li><code>th:class</code>: CSSクラスを動的に設定</li>
-                        </ul>
-                    </div>
-
-                    <pre class="code-block"><code class="language-html">&lt;!-- 基本的なテキスト表示 --&gt;
-&lt;p th:text="${message}"&gt;デフォルトメッセージ&lt;/p&gt;
-
-&lt;!-- 条件分岐 --&gt;
-&lt;div th:if="${user != null}"&gt;
-    &lt;p&gt;ようこそ、&lt;span th:text="${user.name}"&gt;ユーザー名&lt;/span&gt;さん！&lt;/p&gt;
-&lt;/div&gt;
-&lt;div th:unless="${user != null}"&gt;
-    &lt;p&gt;ログインしてください。&lt;/p&gt;
-&lt;/div&gt;
-
-&lt;!-- リストの繰り返し --&gt;
-&lt;ul&gt;
-    &lt;li th:each="item : ${items}" th:text="${item.name}"&gt;アイテム名&lt;/li&gt;
-&lt;/ul&gt;</code></pre>
-
-                    <p>
-                        Thymeleafでは、<code>${}</code>という記法でControllerから渡されたデータにアクセスできます。また、Spring Expression Language（SpEL）を使用して、より複雑な式を記述することも可能です。
-                    </p>
-
-                    <!-- セクション4.5 -->
-                    <h3 class="section-title">4.5 フォームの送信と受け取り</h3>
-                    <p>
-                        Webアプリケーションでは、ユーザーからの入力を受け取る必要があります。Spring MVCでは、<code>@ModelAttribute</code>アノテーションを使用して、フォームデータを簡単に受け取ることができます。
-                    </p>
-
-                    <div class="mermaid">
-                        flowchart TD
-                            A["フォーム表示<br/>(GET)"] --> B["ユーザー入力"]
-                            B --> C["フォーム送信<br/>(POST)"]
-                            C --> D["Controller処理"]
-                            D --> E["結果表示<br/>またはリダイレクト"]
-                    </div>
-
-                    <pre class="code-block"><code class="language-java">@Controller
-public class UserController {
-    
-    // フォームを表示するためのGETリクエスト
-    @GetMapping("/user/new")
-    public String newUserForm(Model model) {
-        model.addAttribute("user", new User());
-        return "user/form";
-    }
-    
-    // フォームデータを受け取るPOSTリクエスト
-    @PostMapping("/user/create")
-    public String createUser(@ModelAttribute User user, Model model) {
-        // ユーザー作成処理（実際はサービスクラスに委譲）
-        System.out.println("名前: " + user.getName());
-        System.out.println("メール: " + user.getEmail());
-        
-        model.addAttribute("message", "ユーザーが正常に作成されました");
-        return "user/success";
-    }
-}</code></pre>
-
-                    <div class="highlight">
-                        <h6>@ModelAttributeの動作</h6>
-                        <p>
-                            <code>@ModelAttribute</code>を使用すると、Spring MVCがフォームの各フィールドを自動的にJavaオブジェクトのプロパティにマッピングします。これにより、手動でリクエストパラメータを取得する必要がありません。
-                        </p>
-                    </div>
-
-                    <!-- 実習4-2 -->
-                    <div class="exercise-container">
-                        <h5>実習 4-2: フォームの作成と送信処理</h5>
-                        <p>ユーザー情報を入力するフォームを作成し、送信処理を実装してみましょう。</p>
-                        
-                        <h6>手順</h6>
-                        <ol>
-                            <li>Userクラス（モデル）を作成</li>
-                            <li>フォームを処理するコントローラーを作成</li>
-                            <li>フォーム表示用のThymeleafテンプレートを作成</li>
-                            <li>結果表示用のテンプレートを作成</li>
-                        </ol>
-
-                        <h6>User.java（モデルクラス）</h6>
-                        <pre class="code-block"><code class="language-java">package com.example.demo.model;
-
-public class User {
-    private String name;
-    private String email;
-    private int age;
-    
-    // デフォルトコンストラクタ
-    public User() {}
-    
-    // getter/setter
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    
-    public int getAge() { return age; }
-    public void setAge(int age) { this.age = age; }
-}</code></pre>
-
-                        <h6>期待される結果</h6>
-                        <p>フォームに入力されたデータが正しくコントローラーで受け取られ、結果ページに表示されることを確認できます。</p>
-                    </div>
-
-                    <!-- セクション4.6 -->
-                    <h3 class="section-title">4.6 URLパラメータとクエリパラメータの処理</h3>
-                    <p>
-                        Spring MVCでは、URLの一部をパラメータとして取得する<strong>パスパラメータ</strong>と、クエリ文字列として渡される<strong>クエリパラメータ</strong>を簡単に処理できます。
-                    </p>
-
-                    <div class="highlight">
-                        <h6>パラメータの種類</h6>
-                        <ul>
-                            <li><strong>パスパラメータ</strong>: URL例 <code>/user/123</code> → IDが123</li>
-                            <li><strong>クエリパラメータ</strong>: URL例 <code>/search?keyword=spring&page=1</code></li>
-                        </ul>
-                    </div>
-
-                    <pre class="code-block"><code class="language-java">@Controller
-public class UserController {
-    
-    // パスパラメータの使用例
-    @GetMapping("/user/{id}")
-    public String getUser(@PathVariable Long id, Model model) {
-        // IDに基づいてユーザー情報を取得（実際はサービスから取得）
-        User user = userService.findById(id);
-        model.addAttribute("user", user);
-        return "user/detail";
-    }
-    
-    // 複数のパスパラメータ
-    @GetMapping("/user/{userId}/post/{postId}")
-    public String getUserPost(@PathVariable Long userId, 
-                             @PathVariable Long postId, 
-                             Model model) {
-        // ユーザーIDと投稿IDを使用して処理
-        return "user/post";
-    }
-    
-    // クエリパラメータの使用例
-    @GetMapping("/search")
-    public String search(@RequestParam String keyword,
-                        @RequestParam(required = false, defaultValue = "1") int page,
-                        Model model) {
-        // 検索処理
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("page", page);
-        return "search/result";
-    }
-}</code></pre>
-
-                    <div class="highlight">
-                        <h6>@RequestParamの属性</h6>
-                        <ul>
-                            <li><code>required = false</code>: パラメータを必須ではなくする</li>
-                            <li><code>defaultValue</code>: パラメータが指定されない場合のデフォルト値</li>
-                            <li><code>name</code>: パラメータ名とメソッド引数名が異なる場合に指定</li>
-                        </ul>
-                    </div>
-
-                    <!-- 実習4-3 -->
-                    <div class="exercise-container">
-                        <h5>実習 4-3: パラメータ処理の実装</h5>
-                        <p>パスパラメータとクエリパラメータを組み合わせた商品検索機能を作成してみましょう。</p>
-                        
-                        <h6>手順</h6>
-                        <ol>
-                            <li>商品カテゴリをパスパラメータで受け取る</li>
-                            <li>価格範囲と並び順をクエリパラメータで受け取る</li>
-                            <li>検索結果を表示するテンプレートを作成</li>
-                        </ol>
-
-                        <h6>ProductController.java</h6>
-                        <pre class="code-block"><code class="language-java">@Controller
-public class ProductController {
-    
-    @GetMapping("/products/{category}")
-    public String searchProducts(
-            @PathVariable String category,
-            @RequestParam(required = false) Integer minPrice,
-            @RequestParam(required = false) Integer maxPrice,
-            @RequestParam(defaultValue = "name") String sort,
-            Model model) {
-        
-        model.addAttribute("category", category);
-        model.addAttribute("minPrice", minPrice);
-        model.addAttribute("maxPrice", maxPrice);
-        model.addAttribute("sort", sort);
-        
-        // 実際の検索処理はここに実装
-        
-        return "products/search";
-    }
-}</code></pre>
-
-                        <h6>期待される結果</h6>
-                        <p>/products/electronics?minPrice=100&maxPrice=500&sort=price のようなURLでアクセスすると、各パラメータが正しく取得され表示されることを確認できます。</p>
-                    </div>
-
-                    <!-- 理解度確認クイズ -->
-                    <div class="quiz-container">
-                        <h5>理解度確認クイズ</h5>
-                        <ol>
-                            <li>Spring MVCのMVCパターンにおいて、それぞれの要素（Model、View、Controller）の役割を説明してください。</li>
-                            <li>DispatcherServletの主な処理フローを6つのステップで説明してください。</li>
-                            <li>@GetMappingと@PostMappingの使い分けについて、具体例を挙げて説明してください。</li>
-                            <li>Thymeleafのth:text、th:if、th:eachの違いと使用場面を説明してください。</li>
-                            <li>@PathVariableと@RequestParamの違いを、URL例を使って説明してください。</li>
-                            <li>@ModelAttributeを使用することの利点を3つ挙げてください。</li>
-                        </ol>
-                    </div>
-
-                    <!-- 章間ナビゲーション -->
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="spring-learning-material-03.html" class="btn btn-secondary">← 第3章: Spring Bootの基本構成とDI</a>
-                        <a href="spring-learning-material-05.html" class="btn btn-primary">第5章: データベース連携（Spring Data JDBC） →</a>
-                    </div>
-                </div>
-            </main>
-        </div>
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <a href="spring-learning-material-03.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+                        <i class="fas fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
+                        <div class="text-left">
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="font-medium">第3章: DI（依存性注入）とIoCコンテナ</span>
+                        </div>
+                    </a>
+                    <a href="spring-learning-material-05.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">第5章: Spring MVCの基礎</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
     </div>
-    
+
     <!-- フッター -->
-    <footer class="bg-dark text-white mt-5">
-        <div class="container-fluid py-3">
-            <div class="row">
-                <div class="col-12 text-center">
-                    <p class="mb-0">© 2025 F-Circle. All rights reserved.<br>
-本資料はAIツールを活用し、人間による編集・監修のもと作成されています。無断転載・再配布を禁じます。</p>
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </footer>
-    
-    <!-- Bootstrap JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Highlight.js 初期化 -->
-    <script>hljs.highlightAll();</script>
-    
-    <!-- Mermaid.js 初期化 -->
-    <script>
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'default'
-        });
-    </script>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- サイドバー生成 -->
+    <script src="sidebar-content.js"></script>
+
+    <!-- 共通JavaScript -->
+    <script src="main.js"></script>
+
+    <!-- 描画ツール -->
+    <script src="drawing-tool.js"></script>
 </body>
 </html>

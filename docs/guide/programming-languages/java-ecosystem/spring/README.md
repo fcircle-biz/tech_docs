@@ -1,67 +1,154 @@
-# Spring Framework学習ガイドライン
+# Spring Framework入門 学習ガイドライン
 
-このガイドラインでは、Spring Frameworkを初心者から中級者レベルまで段階的に学習するためのカリキュラムを提供しています。Spring FrameworkはJavaベースのアプリケーション開発を効率化するための包括的なフレームワークであり、エンタープライズアプリケーション開発でも広く使用されています。各トピックには詳細な解説へのリンクが含まれています。
-
-## 学習コンテンツ
-
-### [1. JavaとWebの基礎理解](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-01.html)
-Spring Frameworkを学ぶための前提知識として、Javaの基本文法（変数、条件分岐、ループ、クラスとメソッド）の復習、オブジェクト指向プログラミングの主要概念（カプセル化、継承、ポリモーフィズム）、HTTPの基礎（リクエスト・レスポンス、HTTPメソッド、ステータスコード、URL構造）、MVCモデルの基本（Model、View、Controllerの役割と関係）について学びます。これらの基礎知識は、Spring Frameworkの理解に不可欠な要素です。
-
-### [2. Spring Bootの導入と開発環境構築](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-02.html)
-Spring Boot開発環境の構築と初めてのアプリケーション実行までを学びます。Eclipse IDEのインストールとSpring Tool Suite（STS）の導入方法、Spring Initializrを使った効率的なプロジェクト生成（Webブラウザと Eclipse STS両方のアプローチ）、MavenとGradleのビルド設定ファイル（pom.xmlとbuild.gradle）の構造と役割、最初のSpring Bootアプリケーション（Hello World）の作成と実行方法について詳しく解説します。
-
-### [3. Spring Bootの基本構成とDI（依存性注入）](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-03.html)
-Spring Bootの基本構成と依存性注入（DI）の概念について学びます。Spring Bootの自動構成（Auto-configuration）の仕組み、コンポーネントスキャンとステレオタイプアノテーション（@Component、@Service、@Repository、@Controller）の使い方、DIの種類（コンストラクタ注入、セッター注入、フィールド注入）と実装方法、Javaコンフィグによる設定（@Configuration、@Bean）、application.ymlの使い方と設定方法について詳しく解説します。さまざまなアノテーションの基本的な使い方を理解し、Spring Bootアプリケーション開発の基礎を身につけることができます。
-
-### [4. Webアプリケーション開発の基礎（MVC）](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-04.html)
-Spring MVCを使ったWebアプリケーション開発の基礎について学びます。MVCアーキテクチャにおけるDispatcherServletの役割、コントローラーの作成と様々なリクエストマッピングアノテーション（@GetMapping、@PostMapping）の使い方、Thymeleafテンプレートエンジンの基本と主要な属性（th:text、th:each、th:if）の使用方法、フォームの送信と受け取り（@ModelAttribute）の実装、URLのパスパラメータとクエリパラメータの処理（@PathVariable、@RequestParam）を詳しく解説します。具体的な実装例を通じて、Web開発の基本的なスキルを習得できます。
-
-### [5. データベース連携（Spring Data JDBC）](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-05.html)
-Spring Data JDBCを使用したデータベース連携の方法を学びます。RDBと接続するための設定方法、Spring Data JDBCの概要と特徴、エンティティ定義（@Table、@Id）、リポジトリ（CrudRepository）の作成と活用方法、CRUD操作（保存・取得・更新・削除）の実装方法について詳しく解説します。PostgreSQLとの連携設定、接続プールの設定、カスタムクエリの作成方法、ページングとソーティング機能も含めて、データベースアクセスの基本を習得できます。
-
-### [6. 入力バリデーションとエラーハンドリング](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-06.html)
-Springにおける入力バリデーションとエラーハンドリングの手法について学びます。バリデーションアノテーション（@NotNull、@NotBlank、@Size、@Min、@Max、@Email、@Pattern）の使用方法、BindingResultを使ったエラーの検出と処理、Thymeleafでのエラーフィードバック表示、@ControllerAdviceと@ExceptionHandlerを使った共通エラー処理の実装方法を詳しく解説します。メッセージのカスタマイズ、クライアントサイドバリデーションとの併用、RESTful APIのエラーハンドリングなど、ユーザビリティを向上させるための実践的なテクニックも学びます。
-
-### [7. Spring Securityによる認証・認可](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-07.html)
-Spring Securityを用いた認証と認可の基本的な実装方法を学びます。Spring Securityの基本概念（認証と認可の違い）、Spring Securityの導入と基本設定（SecurityFilterChain、パスワードエンコーダの設定）、ログイン・ログアウト機能の実装方法、URLアクセス制御とロールベースの権限管理、ユーザー情報の定義とパスワードハッシュ化について詳しく解説します。フォームベースの認証設定、Remember Me機能の実装、メソッドレベルのセキュリティ（@PreAuthorize）、データベースユーザー管理の方法も学び、セキュアなWebアプリケーションの開発スキルを習得できます。
-
-### [8. Spring MVCのテスト](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-08.html)
-Spring MVCアプリケーションのテスト方法について学びます。JUnit 5を使ったテスト基盤、Spring Bootのテスト機能（@SpringBootTest）、MockMvcを使ったコントローラーテスト、サービスレイヤーのユニットテスト（Mockito）、インテグレーションテスト、テスト用データベースの設定（H2、テストプロファイル）について解説します。また、プロファイルによる環境別設定管理やJAR/WAR形式でのビルドと実行方法など、テストと運用準備に関する知識を身につけられます。
-
-### [9. Todoアプリケーション開発](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-09.html)
-これまで学んだ知識を統合して、実践的なTodo管理アプリケーションを開発します。Spring MVC、Spring Data JDBC、Spring Securityを組み合わせたCRUD操作の実装、フォームバリデーション、認証機能など、Webアプリケーション開発に必要な要素を統合的に学びます。プロジェクトセットアップからデータモデル作成、リポジトリ・サービス・コントローラの実装、ビュー層の作成まで一連の開発プロセスを体験することで、Spring Frameworkを使った実践的な開発スキルを身につけます。
-
-### [10. さらに一歩進んだSpring開発へ①](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-10.html)
-REST API開発とSpring WebClientを使った外部API連携について学習します。RESTfulなAPI設計原則と実装方法、@RestControllerを使ったAPIエンドポイントの作成、JSONデータの変換と取り扱い方法、@RequestBodyを使ったリクエストパラメータの処理、Spring WebClientの基本的な使い方、WebClientを使った外部APIとの連携方法などを学びます。実践的な例を通して、モダンなSpringアプリケーション開発の重要な側面を理解し、マイクロサービスやAPIベースのアプリケーション開発スキルを向上させることができます。
-
-### [11. さらに一歩進んだSpring開発へ②](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-11.html)
-Java RecordsとSpring Data JDBCを組み合わせた高度な開発手法と、集約ルート（Aggregate Root）を使った1対多の関連モデルの設計について学びます。Java Recordsの基本概念と利点、Spring Data JDBCとJava Recordsの連携方法、ドメイン駆動設計（DDD）の考え方に基づいた集約ルートの概念と実装、1対多の関連を持つデータモデルの設計と実装方法などを学習します。プロジェクト管理システムの実装例を通じて、より効率的で保守性の高いSpringアプリケーションの開発手法を習得できます。
-
-### [補足①：Spring Data JPA入門](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-ex-01.html)
-Spring Data JPAの基本から応用まで学習します。JPAの基本概念と設定方法、エンティティの定義と主要アノテーションの使い方、エンティティ間のリレーションシップ（@OneToMany、@ManyToOne、@ManyToManyなど）、遅延読み込み（Lazy Loading）とN+1問題への対処法、HibernateとJPAのメリットと注意点、Spring Data JDBCとJPAの使い分け基準などを詳しく解説します。実際のコード例を通じて、Spring Data JPAを効果的に活用する方法を習得できます。
-
-## 学習の進め方
-
-1. 初めてSpring Frameworkを学ぶ方は、必ず「1. JavaとWebの基礎理解」から順番に学習を進めてください。
-2. 各章の実習課題に取り組み、実際にコードを書いて動作確認することで理解を深めましょう。
-3. 各章末の理解度確認テストで、学習内容の定着を確認してください。
-4. 応用力を身につけるために、最終章の総合プロジェクトにもチャレンジしてみましょう。
-5. Spring BootはDIコンテナなどSpring Coreの概念の上に構築されているため、Spring Bootだけでなく、Spring Coreの基本概念もしっかり理解することが重要です。
+このガイドラインでは、Spring Frameworkの基礎を段階的に学習するためのカリキュラムを提供しています。Java、JDBC、JSP/サーブレット、SQLの基礎知識を持つ方を対象に、Spring Boot、Spring Core、Spring Data JDBC、Spring MVCの4つの主要コンポーネントを体系的に習得できる構成となっています。
 
 ## 前提条件
 
-このガイドを効果的に学ぶためには、以下の知識・環境が必要です：
+### 必要な環境
+- **JDK 17以上** - Java Development Kit（LTS版推奨）
+- **Eclipse IDE** - Spring Tool Suite（STS）プラグイン導入済み、またはIntelliJ IDEA
+- **Maven または Gradle** - ビルドツール（本ガイドではMavenを主に使用）
+- **PostgreSQL** - データベース（バージョン12以上推奨）
+- **Webブラウザ** - 動作確認用（Chrome、Firefox、Edgeなど）
 
-- Java言語の基本的な知識（Java 8以降の文法、オブジェクト指向の概念）
-- HTMLとCSSの基礎知識
-- リレーショナルデータベースとSQLの基礎知識
-- 開発環境：JDK 17以上、Eclipse（Spring Tool Suiteプラグイン推奨）、Maven/Gradle、PostgreSQLなどのデータベース
+### 参考リソース
+- [Spring公式ドキュメント](https://spring.io/docs)
+- [Spring Boot公式リファレンス](https://docs.spring.io/spring-boot/docs/current/reference/html/)
+- [Spring Data JDBC公式ドキュメント](https://docs.spring.io/spring-data/jdbc/docs/current/reference/html/)
+- [Thymeleafドキュメント](https://www.thymeleaf.org/documentation.html)
+- [Spring Initializr](https://start.spring.io/)
+
+### 前提知識
+- **必須**: Java言語の基礎（変数、制御構文、クラス、オブジェクト指向の基本概念）
+- **必須**: JDBCによるデータベース接続の基礎（Connection、PreparedStatement、ResultSet）
+- **必須**: JSP/サーブレットの基礎（リクエスト/レスポンス、セッション管理、MVCパターン）
+- **必須**: SQLの基礎（SELECT、INSERT、UPDATE、DELETE、JOIN）
+- **推奨**: HTMLとCSSの基礎知識
+- **推奨**: HTTPプロトコルの基礎理解
+
+## 学習コンテンツ
+
+### [1. Spring Frameworkの全体像](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-01.html)
+Spring Frameworkとは何か、なぜ多くの企業で採用されているのかを学びます。Spring Core、Spring Boot、Spring MVC、Spring Data JDBCの4つの主要コンポーネントの役割と関係性、従来のJava EE開発（サーブレット/JDBC）との違いを理解し、Springを学ぶ意義を明確にします。
+
+### [2. 開発環境の構築とSpring Boot入門](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-02.html)
+Spring Boot開発環境を構築し、最初のアプリケーションを動かします。Spring Tool Suite（STS）のセットアップ、Spring Initializrを使ったプロジェクト生成、pom.xmlの構造理解、Hello Worldアプリケーションの作成と実行までを体験します。
+
+### [3. DI（依存性注入）とIoCコンテナ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-03.html)
+Spring Coreの中核概念であるDI（Dependency Injection）とIoC（Inversion of Control）コンテナを学びます。なぜDIが必要なのか、従来のnewによるオブジェクト生成との違い、@Component、@Autowiredアノテーションの使い方、コンストラクタインジェクションの実装方法を理解します。
+
+### [4. Beanの管理とコンポーネントスキャン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-04.html)
+Spring IoCコンテナでのBean管理を深く理解します。ステレオタイプアノテーション（@Component、@Service、@Repository、@Controller）の役割と使い分け、Beanのスコープ（singleton、prototype）、@Configurationと@Beanによる明示的なBean定義、コンポーネントスキャンの仕組みを学びます。
+
+### [5. Spring MVCの基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-05.html)
+Spring MVCを使ったWebアプリケーション開発の基礎を学びます。DispatcherServletの役割、@Controllerと@RequestMappingによるルーティング、@GetMappingと@PostMappingの使い分け、Modelオブジェクトを使ったビューへのデータ渡しを理解し、JSP/サーブレットとの違いを実感します。
+
+### [6. Thymeleafテンプレートエンジン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-06.html)
+モダンなビューテンプレートエンジンであるThymeleafの使い方を学びます。th:text、th:each、th:if、th:hrefなど主要な属性の使い方、フォームの作成とデータバインディング（th:object、th:field）、レイアウトの共通化、JSPとの比較を通じてThymeleafの利点を理解します。
+
+### [7. フォーム処理とバリデーション](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-07.html)
+フォームからのデータ受け取りと入力検証を学びます。@ModelAttributeによるフォームデータの受け取り、Bean Validationアノテーション（@NotBlank、@Size、@Email、@Min、@Max）、BindingResultを使ったエラー処理、Thymeleafでのエラーメッセージ表示を実装します。
+
+### [8. Spring Data JDBC入門](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-08.html)
+Spring Data JDBCを使ったデータアクセス層の実装を学びます。従来のJDBCコードとの比較、application.ymlでのデータソース設定、エンティティクラスの定義（@Table、@Id）、CrudRepositoryを継承したリポジトリの作成、基本的なCRUD操作の実装方法を理解します。
+
+### [9. Spring Data JDBCの実践](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-09.html)
+Spring Data JDBCをより実践的に活用する方法を学びます。カスタムクエリ（@Query）の作成、ページングとソート機能、1対多リレーションの実装（集約ルート）、トランザクション管理（@Transactional）、従来のJDBCTemplateとの使い分けを理解します。
+
+### [10. サービス層の設計](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-10.html)
+適切なレイヤードアーキテクチャの設計方法を学びます。Controller、Service、Repositoryの責務分離、@Serviceアノテーションの役割、ビジネスロジックのサービス層への集約、例外処理の設計、DTOパターンによるレイヤー間のデータ受け渡しを実装します。
+
+### [11. エラーハンドリングと例外処理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-11.html)
+Springアプリケーションでの適切なエラーハンドリングを学びます。カスタム例外クラスの作成、@ControllerAdviceと@ExceptionHandlerによる共通エラー処理、エラーページのカスタマイズ、ログ出力の設定（SLF4J/Logback）を実装します。
+
+### [12. Spring Securityによる認証・認可](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-12.html)
+Spring Securityを使ったセキュリティ実装の基礎を学びます。認証と認可の概念、SecurityFilterChainの設定、フォームベース認証の実装、パスワードのハッシュ化（BCrypt）、URLベースのアクセス制御、ログイン・ログアウト機能の実装を行います。
+
+### [13. ユーザー管理とロールベースアクセス制御](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-13.html)
+データベースと連携したユーザー認証とロールベースの認可を実装します。UserDetailsServiceの実装、データベースからのユーザー情報取得、ロールによるアクセス制御（ROLE_USER、ROLE_ADMIN）、Thymeleafでの認証情報表示（sec:authorize）を学びます。
+
+### [14. テストの基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-14.html)
+Spring Bootアプリケーションのテスト方法を学びます。JUnit 5の基礎、@SpringBootTestによる統合テスト、MockMvcを使ったコントローラーテスト、Mockitoによるモック化、サービス層の単体テスト、テスト用データベース（H2）の設定を実装します。
+
+### [15. REST API開発入門](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-15.html)
+RESTful APIの開発方法を学びます。@RestControllerの使い方、@RequestBodyと@ResponseBodyによるJSON処理、HTTPステータスコードの適切な返却、REST APIのテスト方法、Postmanを使った動作確認を実装します。
+
+### [16. 設定管理とプロファイル](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-16.html)
+Spring Bootの設定管理機能を学びます。application.yml/propertiesの使い方、@Valueと@ConfigurationPropertiesによる設定値の注入、プロファイル（dev、prod）による環境別設定、外部設定ファイルの読み込みを理解します。
+
+### [17. 総合演習 - タスク管理アプリケーション開発](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-17.html)
+これまで学んだ知識を総合して、実践的なタスク管理アプリケーションを開発します。要件定義からDB設計、実装、テストまでの一連の開発プロセスを体験し、Spring Boot、Spring MVC、Spring Data JDBC、Spring Securityを統合したアプリケーションを完成させます。
+
+### [18. デプロイと運用準備](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/spring/spring-learning-material-18.html)
+アプリケーションの本番環境へのデプロイ準備を学びます。実行可能JARの作成、環境変数による設定の外部化、ログ設定の本番対応、Actuatorによるヘルスチェック、本番環境でのセキュリティ考慮事項を理解します。
+
+## 学習の進め方
+
+1. **順番通りに進める** - 各章は前の章の知識を前提としています。必ず第1章から順番に学習してください
+2. **手を動かす** - サンプルコードは必ず自分で入力し、実行して動作を確認してください
+3. **従来技術と比較する** - JDBC、JSP/サーブレットで同じことをする場合と比較し、Springの利点を実感してください
+4. **エラーを恐れない** - エラーメッセージはSpringからの重要なフィードバックです。内容をよく読んで原因を理解しましょう
+5. **総合演習で定着** - 第17章の総合演習で、学んだ知識を実践的に組み合わせる力を身につけてください
+
+## 推奨学習期間
+
+- **Spring基礎コース**（第1章〜第6章）: 2〜3週間
+  - Spring Boot、DI、Spring MVCの基礎を習得します
+- **データアクセスコース**（第7章〜第11章）: 2〜3週間
+  - フォーム処理、Spring Data JDBC、サービス層設計を習得します
+- **セキュリティ・テストコース**（第12章〜第16章）: 2〜3週間
+  - Spring Security、テスト、REST API、設定管理を習得します
+- **実践コース**（第17章〜第18章）: 1〜2週間
+  - 総合演習とデプロイ準備を行います
+
+※1日1〜2時間程度の学習を想定しています。Java/JDBC/JSP・サーブレットの経験があれば、よりスムーズに進められます。
 
 ## 関連リソース
 
-- [Spring公式ドキュメント](https://spring.io/guides)
-- [Spring Boot公式リファレンス](https://docs.spring.io/spring-boot/docs/current/reference/html/)
-- [Thymeleafドキュメント](https://www.thymeleaf.org/documentation.html)
-- [Java初心者向けのチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/java-cheatsheet.html)
+### チートシート
+- [Java初心者向けチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/java-cheatsheet.html)
 - [SQL基礎チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/sql-cheatsheet.html)
-- [SpringBoot入門チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/springboot-cheatsheet.html)
+- [Spring Boot入門チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/fundamentals/springboot-cheatsheet.html)
+
+### 前提知識の学習ガイドライン
+- [Java入門ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/)
+- [JDBC入門ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jdbc/)
+- [JSP/サーブレット入門ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/jsp/)
+- [SQL基礎ガイド](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/)
+
+## 学習目標
+
+このガイドを完了すると、以下のスキルを身につけることができます：
+
+- **Spring Frameworkの理解** - DI/IoCの概念を理解し、なぜSpringが必要なのかを説明できる
+- **Spring Boot開発** - Spring Bootプロジェクトを作成し、Webアプリケーションを開発できる
+- **Spring MVCの実装** - コントローラー、ビュー、フォーム処理を適切に実装できる
+- **Spring Data JDBCの活用** - データベースとの連携をSpring Data JDBCで効率的に実装できる
+- **レイヤードアーキテクチャ** - Controller/Service/Repositoryの責務を理解し、適切に設計できる
+- **セキュリティ実装** - Spring Securityを使った認証・認可機能を実装できる
+- **テストコード作成** - JUnit 5とMockMvcを使ったテストコードが書ける
+- **REST API開発** - RESTful APIを設計・実装できる
+
+## 次のステップ
+
+このガイドライン完了後は、以下の学習に進むことをお勧めします：
+
+- **Spring Data JPA** - より高度なORM機能を学び、複雑なデータモデルに対応する
+- **マイクロサービス開発** - Spring Cloudを使った分散システム開発を学ぶ
+- **React/Vue.js + Spring Boot** - フロントエンドフレームワークとの連携を学ぶ
+- **Docker + Spring Boot** - コンテナ化とクラウドデプロイを学ぶ
+- **CI/CD** - GitHub ActionsやJenkinsを使った継続的インテグレーションを学ぶ
+
+## よくある質問
+
+### Q: Spring Data JPAとSpring Data JDBCの違いは何ですか？
+A: Spring Data JDBCはJDBCの薄いラッパーで、SQLを意識した直接的なデータアクセスを行います。Spring Data JPAはORMとして動作し、オブジェクトとテーブルのマッピングを自動化しますが、学習コストが高くなります。本ガイドでは、JDBCの知識を活かせるSpring Data JDBCを採用しています。
+
+### Q: なぜサーブレット/JSPではなくSpringを使うのですか？
+A: Springは、DIによる疎結合設計、設定の自動化、セキュリティ機能の統合、テストの容易さなど、エンタープライズ開発に必要な機能を包括的に提供します。サーブレット/JSPの知識があれば、Springへの移行はスムーズです。
+
+### Q: EclipseとIntelliJ IDEAどちらを使うべきですか？
+A: どちらでも問題ありません。本ガイドではEclipse + STSを使用していますが、IntelliJ IDEA（Community Editionでも可）でも同様に学習できます。使い慣れたIDEを選択してください。
+
+### Q: Mavenの代わりにGradleを使えますか？
+A: はい、GradleでもSpring Bootプロジェクトを構築できます。本ガイドではMavenを主に使用していますが、Gradleでの設定例も随時紹介します。
