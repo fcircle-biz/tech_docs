@@ -101,6 +101,32 @@ step2により以下が作成されている必要があります：
 - `<footer>`の構造
 - スクリプト読み込み部分
 
+#### ヘッダー構造の禁止事項（重要）
+
+⚠️ **以下の変更は絶対に行わないでください：**
+
+1. **ダークモードボタンをHTMLに追加しない**
+   - ダークモードボタンは`main.js`が動的に生成します
+   - HTMLにボタンを書くと2つ表示されてしまいます
+
+2. **ヘッダー右側のボタンエリア構造を変更しない**
+
+   正しい構造（テンプレートのまま）：
+   ```html
+   <!-- 右側: サイドバートグルボタン -->
+   <button id="sidebar-toggle-btn" class="...">
+       <i class="fas fa-bars text-lg"></i>
+   </button>
+   ```
+
+   ❌ 間違い（これをやらない）：
+   ```html
+   <div class="flex items-center gap-2">
+       <button id="dark-mode-toggle">...</button>  <!-- 追加禁止 -->
+       <button id="sidebar-toggle-btn">...</button>
+   </div>
+   ```
+
 ### 5. 完了報告
 HTMLファイル生成が完了したら、生成されたファイルを報告
 
