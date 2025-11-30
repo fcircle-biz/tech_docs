@@ -26,7 +26,9 @@
         { number: 9, title: 'カプセル化とアクセス制御', file: 'java-learning-material-09.html' },
         { number: 10, title: '継承とポリモーフィズム', file: 'java-learning-material-10.html' },
         { number: 11, title: '抽象クラスとインターフェース', file: 'java-learning-material-11.html' },
-        { number: 12, title: '例外処理とデバッグ', file: 'java-learning-material-12.html' }
+        { number: 12, title: '例外処理とデバッグ', file: 'java-learning-material-12.html' },
+        { number: 13, title: 'コレクションフレームワーク', file: 'java-learning-material-13.html' },
+        { number: 14, title: 'ラムダ式と関数型プログラミング', file: 'java-learning-material-14.html' }
     ];
 
     // 現在のページのファイル名を取得

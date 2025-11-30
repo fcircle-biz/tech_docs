@@ -54,6 +54,12 @@ Javaの中核概念であるクラスとオブジェクトについて学びま�
 ### [12. 例外処理とデバッグ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-12.html)
 プログラムのエラーに対処するための例外処理について学びます。try-catch-finally構文、例外の種類、カスタム例外の作成、そして効果的なデバッグ手法を理解します。
 
+### [13. コレクションフレームワーク](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-13.html)
+Javaの強力なデータ構造であるコレクションフレームワークについて学びます。List（ArrayList、LinkedList）、Set（HashSet、TreeSet）、Map（HashMap、TreeMap）の使い方と使い分け、イテレータによる走査方法を理解します。
+
+### [14. ラムダ式と関数型プログラミング](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/java/java-learning-material-14.html)
+Java 8で導入されたラムダ式について学びます。関数型インターフェース、メソッド参照、Stream APIの基本的な使い方を理解し、より簡潔で読みやすいコードの書き方を習得します。
+
 ## 学習の進め方
 1. **環境構築から始める**: 第1章でJDKとIDEをインストールし、開発環境を整えます。
 2. **実際にコードを書く**: 各章のサンプルコードを必ず自分で入力し、実行して動作を確認します。
@@ -64,7 +70,8 @@ Javaの中核概念であるクラスとオブジェクトについて学びま�
 ## 推奨学習期間
 - **プログラミング基礎コース** (1-7章): 4-6週間（週3-4回、1回2-3時間）
 - **オブジェクト指向マスターコース** (8-12章): 4-6週間（週3-4回、1回2-3時間）
-- **全体を通した完全習得**: 2-3ヶ月（週3-4回、1回2-3時間）
+- **モダンJavaコース** (13-14章): 2-3週間（週3-4回、1回2-3時間）
+- **全体を通した完全習得**: 3-4ヶ月（週3-4回、1回2-3時間）
 
 ## 関連リソース
 - [Java チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/java-ecosystem/java/java-cheatsheet.html)
@@ -79,6 +86,8 @@ Javaの中核概念であるクラスとオブジェクトについて学びま�
 - **問題解決能力**: エラーに対処し、デバッグして問題を解決できる
 - **コード読解力**: 他人が書いたJavaコードを読んで理解できる
 - **実装力**: 仕様から簡単なプログラムを設計・実装できる
+- **コレクション活用力**: List、Set、Mapなどのコレクションを適切に選択・活用できる
+- **モダンJavaの理解**: ラムダ式やStream APIを使った簡潔なコードが書ける
 
 ## 次のステップ
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
