@@ -74,10 +74,7 @@
         <!-- サイドバー -->
         <aside id="sidebar" class="fixed md:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
                                    bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
-                                   transform -translate-x-full md:translate-x-0 sidebar-transition sidebar-resizable"
-               style="--sidebar-width: 320px;">
-            <!-- リサイズハンドル -->
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle hidden md:block"></div>
+                                   transform -translate-x-full md:translate-x-0 sidebar-transition">
             <div class="p-4">
                 <!-- 進捗インジケーター -->
                 <div class="mb-6 p-4 bg-primary-50 rounded-xl">
