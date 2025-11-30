@@ -70,16 +70,36 @@ color: blue
 
 **注意**: この変数がヘッダーの背景色に直接影響します。設定を忘れると青色のままになります。
 
-### 3. sidebar-content.jsの編集
-README.mdの全章情報から`chapters`配列を生成して編集：
+### 3. sidebar-content.jsの編集（重要）
+
+**テンプレートからコピーしたsidebar-content.jsの`chapters`配列部分のみを編集します。**
+
+⚠️ **絶対に守ること**：
+- テンプレートファイルには`chapters`配列の他に、`createSidebar()`関数、`insertSidebar()`関数、即時実行関数（IIFE）が含まれています
+- **これらの関数部分は絶対に削除・変更しないでください**
+- 編集するのは`chapters`配列の中身だけです
 
 ```javascript
+// ========================================
+// TODO: 章の定義データをカスタマイズ
+// ========================================
 const chapters = [
     { number: 1, title: '第1章: Dockerとは', file: 'docker-learning-material-01.html' },
     { number: 2, title: '第2章: インストールと環境構築', file: 'docker-learning-material-02.html' },
-    // ... 全章分を定義
+    // ... 全章分を定義（README.mdの章構成に合わせる）
 ];
+
+// ↓↓↓ 以下の関数部分はテンプレートのまま維持すること ↓↓↓
+// - currentFile, currentChapter, progressPercentage の計算
+// - createSidebar() 関数
+// - insertSidebar() 関数
+// - DOMContentLoaded イベントリスナー
 ```
+
+**正しい手順**：
+1. テンプレートの`sidebar-content.js`を技術フォルダにコピー
+2. コピーしたファイルを開き、`chapters`配列の中身だけをREADME.mdの章構成に合わせて書き換え
+3. 他の部分（約100行の関数コード）はそのまま維持
 
 ### 4. 第1章のHTML生成
 @templates/v2/html/learning-material-template.html をベースに第1章を生成
@@ -116,6 +136,32 @@ const chapters = [
 - **カラーテーマ**: `tailwind.config` 内の `primary` カラー（color-themes.md参照）
 - **アイコン**: 適切なFont Awesomeアイコン
 - **コンテンツ**: 学習目標、説明文、コード例、クイズ
+
+### ヘッダー構造の禁止事項（重要）
+
+⚠️ **以下の変更は絶対に行わないでください：**
+
+1. **ダークモードボタンをHTMLに追加しない**
+   - ダークモードボタンは`main.js`が動的に生成します
+   - HTMLにボタンを書くと2つ表示されてしまいます
+
+2. **ヘッダー右側のボタンエリア構造を変更しない**
+
+   テンプレートの正しい構造：
+   ```html
+   <!-- 右側: サイドバートグルボタン -->
+   <button id="sidebar-toggle-btn" class="...">
+       <i class="fas fa-bars text-lg"></i>
+   </button>
+   ```
+
+   ❌ 間違い（これをやらない）：
+   ```html
+   <div class="flex items-center gap-2">
+       <button id="dark-mode-toggle">...</button>  <!-- 追加禁止 -->
+       <button id="sidebar-toggle-btn">...</button>
+   </div>
+   ```
 
 ### スクリプト読み込み順序（重要）
 HTMLファイルでは以下の順序を守ること：

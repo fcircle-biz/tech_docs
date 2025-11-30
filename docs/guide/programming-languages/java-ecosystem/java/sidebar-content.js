@@ -12,23 +12,23 @@
     'use strict';
 
     // ========================================
-    // Java学習ガイドの章定義
+    // Java入門 章の定義データ
     // ========================================
     const chapters = [
-        { number: 1, title: 'Javaとプログラミングの基本', file: 'java-learning-material-01.html' },
-        { number: 2, title: '変数とデータ型の基礎', file: 'java-learning-material-02.html' },
-        { number: 3, title: '演算子と式', file: 'java-learning-material-03.html' },
-        { number: 4, title: '条件分岐とプログラムの流れ', file: 'java-learning-material-04.html' },
-        { number: 5, title: '繰り返し処理（ループ）', file: 'java-learning-material-05.html' },
-        { number: 6, title: '配列とコレクション入門', file: 'java-learning-material-06.html' },
-        { number: 7, title: 'メソッドの基礎', file: 'java-learning-material-07.html' },
-        { number: 8, title: 'クラスとオブジェクトの基礎', file: 'java-learning-material-08.html' },
-        { number: 9, title: 'カプセル化とアクセス制御', file: 'java-learning-material-09.html' },
-        { number: 10, title: '継承とポリモーフィズム', file: 'java-learning-material-10.html' },
-        { number: 11, title: '抽象クラスとインターフェース', file: 'java-learning-material-11.html' },
-        { number: 12, title: '例外処理とデバッグ', file: 'java-learning-material-12.html' },
-        { number: 13, title: 'コレクションフレームワーク', file: 'java-learning-material-13.html' },
-        { number: 14, title: 'ラムダ式と関数型プログラミング', file: 'java-learning-material-14.html' }
+        { number: 1, title: '第1章: Javaプログラミングの世界へようこそ', file: 'java-learning-material-01.html' },
+        { number: 2, title: '第2章: データを扱う - 変数と型', file: 'java-learning-material-02.html' },
+        { number: 3, title: '第3章: プログラムに判断させる - 条件分岐', file: 'java-learning-material-03.html' },
+        { number: 4, title: '第4章: 繰り返し処理 - ループ', file: 'java-learning-material-04.html' },
+        { number: 5, title: '第5章: データをまとめて管理する - 配列', file: 'java-learning-material-05.html' },
+        { number: 6, title: '第6章: 処理をまとめる - メソッド', file: 'java-learning-material-06.html' },
+        { number: 7, title: '第7章: 設計図からモノを作る - クラスとオブジェクトの基本', file: 'java-learning-material-07.html' },
+        { number: 8, title: '第8章: オブジェクトの中身を理解する - フィールドとメソッド', file: 'java-learning-material-08.html' },
+        { number: 9, title: '第9章: データを守る - カプセル化とアクセス制御', file: 'java-learning-material-09.html' },
+        { number: 10, title: '第10章: クラスの親子関係 - 継承', file: 'java-learning-material-10.html' },
+        { number: 11, title: '第11章: 同じ名前で違う動き - ポリモーフィズム', file: 'java-learning-material-11.html' },
+        { number: 12, title: '第12章: エラーに対処する - 例外処理', file: 'java-learning-material-12.html' },
+        { number: 13, title: '第13章: 便利な道具を使いこなす - Java標準ライブラリ', file: 'java-learning-material-13.html' },
+        { number: 14, title: '第14章: データをまとめて操作する - コレクション入門', file: 'java-learning-material-14.html' }
     ];
 
     // 現在のページのファイル名を取得
@@ -76,7 +76,7 @@
 
         const sidebarHTML = `
         <!-- サイドバー -->
-        <aside id="sidebar" class="fixed md:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
+        <aside id="sidebar" class="fixed lg:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
                                    bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
                                    transform -translate-x-full sidebar-transition">
             <div class="p-4">
