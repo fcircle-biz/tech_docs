@@ -104,8 +104,6 @@ ${chapterListHTML}
             </div>
         </aside>
 
-        <!-- サイドバーオーバーレイ（モバイル用） -->
-        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
         `;
 
         return sidebarHTML;

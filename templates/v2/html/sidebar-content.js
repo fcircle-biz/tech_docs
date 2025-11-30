@@ -102,13 +102,6 @@ ${chapterListHTML}
             </div>
         </aside>
 
-        <!-- サイドバーオーバーレイ（モバイル用） -->
-        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
-
-        <!-- サイドバートグルボタン（PC用） -->
-        <button id="sidebar-toggle-btn" class="sidebar-toggle-btn hidden md:flex items-center justify-center w-10 h-10">
-            <i class="fas fa-chevron-left text-slate-600"></i>
-        </button>
         `;
 
         return sidebarHTML;
