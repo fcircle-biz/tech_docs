@@ -2,807 +2,790 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JUnit学習教材 第2章 - 基本的なテストケースの作成</title>
-    
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>JUnit学習教材 第2章 - はじめてのJUnitテスト</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Java/JUnit - Orange
+                        primary: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            200: '#fed7aa',
+                            300: '#fdba74',
+                            400: '#fb923c',
+                            500: '#f97316',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                            800: '#9a3412',
+                            900: '#7c2d12',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <!-- Google Fonts - Noto Sans JP -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- Highlight.js CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    
+
     <!-- Mermaid.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
-    
-    <style>
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            padding-top: 56px;
-        }
-        
-        .navbar {
-            background-color: #f57c00;
-        }
-        
-        .sidebar {
-            position: sticky;
-            top: 70px;
-            height: calc(100vh - 70px);
-            overflow-y: auto;
-        }
-        
-        .chapter-title {
-            color: #f57c00;
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #f57c00;
-            padding-bottom: 0.5rem;
-        }
-        
-        .section-title {
-            color: #ff9800;
-            margin-top: 1.2rem;
-            margin-bottom: 0.8rem;
-        }
-        
-        .quiz-container {
-            background-color: #fff3e0;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #f57c00;
-        }
-        
-        .exercise-container {
-            background-color: #f3e5f5;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #9c27b0;
-        }
-        
-        .highlight {
-            background-color: #ffecb3;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #ffc107;
-        }
-        
-        .warning {
-            background-color: #ffebee;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #f44336;
-        }
-        
-        .code-block {
-            background-color: #1e1e1e;
-            border-radius: 5px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-        
-        .nav-link.active {
-            background-color: #f57c00 !important;
-            color: white !important;
-        }
-    </style>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <!-- Navigation bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand">
-                <strong>JUnit学習教材</strong>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
-    </nav>
-
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        <span>学習章</span>
-                    </h6>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="junit-learning-material-01.html">
-                                第1章: JUnit基礎とセットアップ
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="junit-learning-material-02.html">
-                                第2章: 基本的なテストケースの作成
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="junit-learning-material-03.html">
-                                第3章: アサーションとマッチャー
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="junit-learning-material-04.html">
-                                第4章: テストライフサイクルとアノテーション
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="junit-learning-material-05.html">
-                                第5章: パラメータ化テストと動的テスト
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="junit-learning-material-06.html">
-                                第6章: 例外テストとタイムアウト
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="junit-learning-material-07.html">
-                                第7章: テストの組織化とベストプラクティス
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-
-            <!-- Main content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">第2章: 基本的なテストケースの作成</h1>
-                </div>
-
-                <div id="chapter2">
-                    <h2 class="chapter-title">効果的なテストメソッドの書き方</h2>
-                    
-                    <div class="highlight">
-                        <h5>この章で学ぶこと</h5>
-                        <ul>
-                            <li>テストメソッドの基本的な構造を理解する</li>
-                            <li>assertEquals、assertTrue、assertFalseなどの基本的なアサーションを使い分ける</li>
-                            <li>意味のあるテスト名の付け方を学ぶ</li>
-                            <li>成功するテストと失敗するテストの両方を作成する</li>
-                            <li>テストコードの可読性を向上させるコツを習得する</li>
-                        </ul>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fas fa-vial text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
                     </div>
 
-                    <h3 class="section-title">2.1 テストメソッドの基本構造</h3>
-                    
-                    <p>良いテストメソッドには、明確な構造があります。前章で学んだAAAパターンを詳しく見てみましょう。</p>
-
-                    <div class="mermaid">
-                        flowchart TD
-                            A["テストメソッド開始"] --> B["Arrange（準備）"]
-                            B --> C["Act（実行）"]
-                            C --> D["Assert（検証）"]
-                            B --> E["テストデータ用意"]
-                            B --> F["オブジェクト初期化"]
-                            C --> G["メソッド呼び出し"]
-                            D --> H["期待値と実際値の比較"]
-                            D --> I["テスト完了"]
-                    </div>
-
-                    <h4>2.1.1 Arrange（準備）段階</h4>
-                    <p>テストに必要なデータやオブジェクトを準備します：</p>
-                    
-                    <pre class="code-block"><code class="language-java">@Test
-void 商品の税込み価格計算テスト() {
-    // Arrange（準備）
-    double basePrice = 1000.0;
-    double taxRate = 0.10;
-    PriceCalculator calculator = new PriceCalculator();
-    
-    // Act（実行）
-    double result = calculator.calculateTaxIncludedPrice(basePrice, taxRate);
-    
-    // Assert（検証）
-    assertEquals(1100.0, result);
-}</code></pre>
-
-                    <h4>2.1.2 Act（実行）段階</h4>
-                    <p>テスト対象のメソッドを実際に呼び出します。この段階は通常1行で済みます：</p>
-
-                    <pre class="code-block"><code class="language-java">// 良い例：Actは1つの処理
-double result = calculator.calculateTaxIncludedPrice(basePrice, taxRate);
-
-// 避けるべき例：複数の処理が混在
-double result = calculator.calculateTaxIncludedPrice(basePrice, taxRate);
-calculator.setDiscount(0.05);  // これは別のテストにすべき</code></pre>
-
-                    <h4>2.1.3 Assert（検証）段階</h4>
-                    <p>実行結果が期待通りかを検証します。複数のアサーションがあっても構いません：</p>
-
-                    <pre class="code-block"><code class="language-java">// 複数のアサーションの例
-@Test
-void ユーザー情報登録テスト() {
-    User user = userService.registerUser("田中太郎", "tanaka@example.com");
-    
-    // 複数の検証を行う
-    assertNotNull(user);
-    assertEquals("田中太郎", user.getName());
-    assertEquals("tanaka@example.com", user.getEmail());
-    assertTrue(user.getId() > 0);
-}</code></pre>
-
-                    <h3 class="section-title">2.2 基本的なアサーションメソッド</h3>
-                    
-                    <p>JUnit 5では、様々なアサーションメソッドが用意されています。それぞれの特徴と使い分けを理解しましょう。</p>
-
-                    <h4>2.2.1 assertEquals - 値の等価性テスト</h4>
-                    <p>最も基本的なアサーションで、期待値と実際の値が等しいかを検証します：</p>
-
-                    <pre class="code-block"><code class="language-java">@Test
-void 等価性テストの例() {
-    // 数値の比較
-    assertEquals(10, 5 + 5);
-    
-    // 文字列の比較
-    assertEquals("Hello", "Hell" + "o");
-    
-    // オブジェクトの比較（equalsメソッドが使用される）
-    Person expected = new Person("田中", 30);
-    Person actual = personService.findById(1);
-    assertEquals(expected, actual);
-}</code></pre>
-
-                    <div class="highlight">
-                        <h6><strong>assertEquals の引数順序</strong></h6>
-                        <p><code>assertEquals(expected, actual)</code> の順序で書きます：</p>
-                        <ul>
-                            <li><strong>第1引数</strong>：期待値（expected）</li>
-                            <li><strong>第2引数</strong>：実際の値（actual）</li>
-                        </ul>
-                        <p>この順序を守ることで、エラーメッセージが理解しやすくなります。</p>
-                    </div>
-
-                    <h4>2.2.2 assertTrue / assertFalse - boolean値のテスト</h4>
-                    <p>条件が真または偽であることを検証します：</p>
-
-                    <pre class="code-block"><code class="language-java">@Test
-void boolean値のテスト例() {
-    String email = "test@example.com";
-    
-    // 条件が真であることを検証
-    assertTrue(email.contains("@"));
-    assertTrue(email.length() > 5);
-    
-    // 条件が偽であることを検証
-    assertFalse(email.isEmpty());
-    assertFalse(email.startsWith("invalid"));
-}</code></pre>
-
-                    <h4>2.2.3 assertNull / assertNotNull - null値のテスト</h4>
-                    <p>オブジェクトがnullかどうかを検証します：</p>
-
-                    <pre class="code-block"><code class="language-java">@Test
-void null値のテスト例() {
-    // オブジェクトが存在することを確認
-    User user = userService.findById(1);
-    assertNotNull(user);
-    
-    // 存在しないユーザーはnullが返されることを確認
-    User nonExistentUser = userService.findById(999);
-    assertNull(nonExistentUser);
-}</code></pre>
-
-                    <h4>2.2.4 assertSame / assertNotSame - 参照の同一性テスト</h4>
-                    <p>オブジェクトの参照が同じかどうかを検証します：</p>
-
-                    <pre class="code-block"><code class="language-java">@Test
-void 参照の同一性テスト例() {
-    // シングルトンパターンのテスト
-    DatabaseConnection conn1 = DatabaseConnection.getInstance();
-    DatabaseConnection conn2 = DatabaseConnection.getInstance();
-    assertSame(conn1, conn2);  // 同じインスタンスを参照
-    
-    // 異なるインスタンスであることの確認
-    List&lt;String&gt; list1 = new ArrayList&lt;&gt;();
-    List&lt;String&gt; list2 = new ArrayList&lt;&gt;();
-    assertNotSame(list1, list2);  // 異なるインスタンス
-}</code></pre>
-
-                    <div class="exercise-container">
-                        <h5>実習 2-1: 文字列操作クラスのテスト作成</h5>
-                        <p>文字列を操作する<code>StringUtils</code>クラスを作成し、様々なアサーションを使ってテストしてみましょう。</p>
-                        
-                        <h6>手順1: テスト対象クラスの作成</h6>
-                        <p><code>StringUtils.java</code>を作成します：</p>
-                        
-                        <pre class="code-block"><code class="language-java">public class StringUtils {
-    
-    public String reverse(String input) {
-        if (input == null) return null;
-        return new StringBuilder(input).reverse().toString();
-    }
-    
-    public boolean isPalindrome(String input) {
-        if (input == null) return false;
-        String normalized = input.toLowerCase().replaceAll("\\s", "");
-        return normalized.equals(reverse(normalized));
-    }
-    
-    public String capitalize(String input) {
-        if (input == null || input.isEmpty()) return input;
-        return input.substring(0, 1).toUpperCase() + 
-               input.substring(1).toLowerCase();
-    }
-    
-    public int countWords(String input) {
-        if (input == null || input.trim().isEmpty()) return 0;
-        return input.trim().split("\\s+").length;
-    }
-}</code></pre>
-
-                        <h6>手順2: テストクラスの作成</h6>
-                        <p><code>StringUtilsTest.java</code>を作成します：</p>
-                        
-                        <pre class="code-block"><code class="language-java">import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-
-class StringUtilsTest {
-    
-    @Test
-    void reverse文字列を反転するテスト() {
-        StringUtils utils = new StringUtils();
-        
-        assertEquals("olleh", utils.reverse("hello"));
-        assertEquals("4321", utils.reverse("1234"));
-        assertEquals("", utils.reverse(""));
-    }
-    
-    @Test
-    void reverseでnullを渡した場合のテスト() {
-        StringUtils utils = new StringUtils();
-        
-        assertNull(utils.reverse(null));
-    }
-    
-    @Test
-    void isPalindromeで回文判定のテスト() {
-        StringUtils utils = new StringUtils();
-        
-        assertTrue(utils.isPalindrome("racecar"));
-        assertTrue(utils.isPalindrome("A man a plan a canal Panama"));
-        assertFalse(utils.isPalindrome("hello"));
-        assertFalse(utils.isPalindrome(null));
-    }
-    
-    @Test
-    void capitalizeで先頭文字大文字化のテスト() {
-        StringUtils utils = new StringUtils();
-        
-        assertEquals("Hello", utils.capitalize("hello"));
-        assertEquals("Java", utils.capitalize("JAVA"));
-        assertEquals("", utils.capitalize(""));
-        assertNull(utils.capitalize(null));
-    }
-    
-    @Test
-    void countWordsで単語数カウントのテスト() {
-        StringUtils utils = new StringUtils();
-        
-        assertEquals(3, utils.countWords("Hello World Java"));
-        assertEquals(1, utils.countWords("Hello"));
-        assertEquals(0, utils.countWords(""));
-        assertEquals(0, utils.countWords("   "));
-        assertEquals(0, utils.countWords(null));
-    }
-}</code></pre>
-
-                        <h6>期待される結果</h6>
-                        <p>すべてのテストが成功することを確認してください。各テストが異なるアサーションメソッドを使用していることに注目してください。</p>
-                    </div>
-
-                    <h3 class="section-title">2.3 意味のあるテスト名の付け方</h3>
-                    
-                    <p>テスト名は、そのテストが何を検証するのかを明確に表現する必要があります。日本語でも英語でも構いませんが、一貫性を保ちましょう。</p>
-
-                    <h4>2.3.1 良いテスト名の例</h4>
-                    
-                    <div class="mermaid">
-                        flowchart TD
-                            A["良いテスト名の条件"] --> B["何をテストするかが明確"]
-                            A --> C["どんな条件でテストするかが分かる"]
-                            A --> D["期待される結果が推測できる"]
-                            B --> E["addメソッドのテスト → ×"]
-                            B --> F["正の数の加算で正しい結果が返されること → ○"]
-                            C --> G["境界値での動作"]
-                            C --> H["異常系での動作"]
-                            D --> I["成功ケース"]
-                            D --> J["失敗ケース"]
-                    </div>
-
-                    <pre class="code-block"><code class="language-java">// 良いテスト名の例
-@Test
-void 正の整数2つを加算すると正しい合計が返される() { }
-
-@Test
-void ゼロで除算すると例外が発生する() { }
-
-@Test
-void 空の文字列を渡すと空の文字列が返される() { }
-
-@Test
-void nullを渡すとNullPointerExceptionが発生する() { }
-
-// 英語の場合
-@Test
-void shouldReturnCorrectSumWhenAddingTwoPositiveIntegers() { }
-
-@Test
-void shouldThrowExceptionWhenDividingByZero() { }
-
-// 悪いテスト名の例（避けるべき）
-@Test
-void test1() { }  // 何をテストするか不明
-
-@Test
-void addTest() { }  // 曖昧すぎる
-
-@Test
-void testCalculator() { }  // 具体的でない</code></pre>
-
-                    <h4>2.3.2 テスト名の命名パターン</h4>
-                    
-                    <p>以下のようなパターンを使うと、一貫性のあるテスト名を作成できます：</p>
-                    
-                    <ul>
-                        <li><strong>[メソッド名]で[条件]の場合[期待される結果]</strong></li>
-                        <li><strong>[機能]のテスト_[条件]_[結果]</strong></li>
-                        <li><strong>should[期待される動作]When[条件]</strong>（英語の場合）</li>
-                    </ul>
-
-                    <h3 class="section-title">2.4 成功テストと失敗テストの作成</h3>
-                    
-                    <p>包括的なテストスイートには、正常系（成功ケース）と異常系（失敗ケース）の両方のテストが必要です。</p>
-
-                    <h4>2.4.1 正常系テスト（Happy Path）</h4>
-                    <p>期待される正常な動作を検証するテストです：</p>
-
-                    <pre class="code-block"><code class="language-java">@Test
-void 有効なメールアドレスで登録が成功する() {
-    // Arrange
-    UserService service = new UserService();
-    String validEmail = "user@example.com";
-    String password = "password123";
-    
-    // Act
-    User user = service.register(validEmail, password);
-    
-    // Assert
-    assertNotNull(user);
-    assertEquals(validEmail, user.getEmail());
-    assertTrue(user.isActive());
-}</code></pre>
-
-                    <h4>2.4.2 異常系テスト（Edge Cases）</h4>
-                    <p>エラー条件や境界値での動作を検証するテストです：</p>
-
-                    <pre class="code-block"><code class="language-java">@Test
-void 無効なメールアドレスで登録が失敗する() {
-    UserService service = new UserService();
-    String invalidEmail = "invalid-email";
-    
-    // assertThrowsについては第6章で詳しく学習します
-    assertThrows(IllegalArgumentException.class, () -> {
-        service.register(invalidEmail, "password123");
-    });
-}
-
-@Test
-void 空のパスワードで登録が失敗する() {
-    UserService service = new UserService();
-    
-    assertThrows(IllegalArgumentException.class, () -> {
-        service.register("user@example.com", "");
-    });
-}</code></pre>
-
-                    <h4>2.4.3 境界値テスト</h4>
-                    <p>境界条件での動作を検証するテストです：</p>
-
-                    <pre class="code-block"><code class="language-java">@Test
-void 年齢制限の境界値テスト() {
-    AgeValidator validator = new AgeValidator();
-    
-    // 境界値での検証
-    assertTrue(validator.isValid(18));   // 最小値
-    assertTrue(validator.isValid(65));   // 最大値
-    assertFalse(validator.isValid(17));  // 最小値未満
-    assertFalse(validator.isValid(66));  // 最大値超過
-}</code></pre>
-
-                    <div class="exercise-container">
-                        <h5>実習 2-2: バンキングシステムのテスト作成</h5>
-                        <p>銀行口座の基本的な機能（入金、出金、残高照会）をテストしてみましょう。</p>
-                        
-                        <h6>手順1: テスト対象クラスの作成</h6>
-                        <p><code>BankAccount.java</code>を作成します：</p>
-                        
-                        <pre class="code-block"><code class="language-java">public class BankAccount {
-    private double balance;
-    private final String accountNumber;
-    
-    public BankAccount(String accountNumber, double initialBalance) {
-        if (initialBalance < 0) {
-            throw new IllegalArgumentException("初期残高は0以上である必要があります");
-        }
-        this.accountNumber = accountNumber;
-        this.balance = initialBalance;
-    }
-    
-    public void deposit(double amount) {
-        if (amount <= 0) {
-            throw new IllegalArgumentException("入金額は正の数である必要があります");
-        }
-        balance += amount;
-    }
-    
-    public void withdraw(double amount) {
-        if (amount <= 0) {
-            throw new IllegalArgumentException("出金額は正の数である必要があります");
-        }
-        if (amount > balance) {
-            throw new IllegalArgumentException("残高不足です");
-        }
-        balance -= amount;
-    }
-    
-    public double getBalance() {
-        return balance;
-    }
-    
-    public String getAccountNumber() {
-        return accountNumber;
-    }
-}</code></pre>
-
-                        <h6>手順2: 包括的なテストの作成</h6>
-                        <p>正常系と異常系の両方をテストする<code>BankAccountTest.java</code>を作成します：</p>
-                        
-                        <pre class="code-block"><code class="language-java">import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-
-class BankAccountTest {
-    
-    // 正常系テスト
-    @Test
-    void 有効な初期残高で口座が作成できる() {
-        BankAccount account = new BankAccount("12345", 1000.0);
-        
-        assertEquals("12345", account.getAccountNumber());
-        assertEquals(1000.0, account.getBalance());
-    }
-    
-    @Test
-    void 正の金額で入金が成功する() {
-        BankAccount account = new BankAccount("12345", 1000.0);
-        
-        account.deposit(500.0);
-        
-        assertEquals(1500.0, account.getBalance());
-    }
-    
-    @Test
-    void 残高の範囲内で出金が成功する() {
-        BankAccount account = new BankAccount("12345", 1000.0);
-        
-        account.withdraw(300.0);
-        
-        assertEquals(700.0, account.getBalance());
-    }
-    
-    // 異常系テスト
-    @Test
-    void 負の初期残高で口座作成が失敗する() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new BankAccount("12345", -100.0);
-        });
-    }
-    
-    @Test
-    void 負の金額で入金が失敗する() {
-        BankAccount account = new BankAccount("12345", 1000.0);
-        
-        assertThrows(IllegalArgumentException.class, () -> {
-            account.deposit(-100.0);
-        });
-    }
-    
-    @Test
-    void 残高を超える出金が失敗する() {
-        BankAccount account = new BankAccount("12345", 1000.0);
-        
-        assertThrows(IllegalArgumentException.class, () -> {
-            account.withdraw(1500.0);
-        });
-    }
-    
-    // 境界値テスト
-    @Test
-    void ゼロ初期残高で口座作成が成功する() {
-        BankAccount account = new BankAccount("12345", 0.0);
-        
-        assertEquals(0.0, account.getBalance());
-    }
-    
-    @Test
-    void 残高ちょうどの金額で出金が成功する() {
-        BankAccount account = new BankAccount("12345", 1000.0);
-        
-        account.withdraw(1000.0);
-        
-        assertEquals(0.0, account.getBalance());
-    }
-}</code></pre>
-
-                        <h6>期待される結果</h6>
-                        <p>すべてのテストが成功し、正常系・異常系・境界値の各パターンが適切にカバーされていることを確認してください。</p>
-                    </div>
-
-                    <h3 class="section-title">2.5 テストコードの可読性向上</h3>
-                    
-                    <p>テストコードは、本番コードと同様に保守しやすく、理解しやすい必要があります。</p>
-
-                    <h4>2.5.1 わかりやすい変数名の使用</h4>
-                    
-                    <pre class="code-block"><code class="language-java">// 良い例：意図が明確な変数名
-@Test
-void 消費税計算のテスト() {
-    double basePrice = 1000.0;
-    double taxRate = 0.10;
-    double expectedTotalPrice = 1100.0;
-    
-    PriceCalculator calculator = new PriceCalculator();
-    double actualTotalPrice = calculator.calculateTaxIncludedPrice(basePrice, taxRate);
-    
-    assertEquals(expectedTotalPrice, actualTotalPrice);
-}
-
-// 悪い例：意図が不明瞭
-@Test
-void test() {
-    double a = 1000.0;
-    double b = 0.10;
-    double c = 1100.0;
-    
-    PriceCalculator calc = new PriceCalculator();
-    double result = calc.calculateTaxIncludedPrice(a, b);
-    
-    assertEquals(c, result);
-}</code></pre>
-
-                    <h4>2.5.2 テストデータの明確な準備</h4>
-                    
-                    <pre class="code-block"><code class="language-java">@Test
-void 商品検索のテスト() {
-    // テストデータの準備を明確に分離
-    Product laptop = new Product("ノートパソコン", 80000, "電子機器");
-    Product mouse = new Product("マウス", 2000, "電子機器");
-    Product book = new Product("Java入門書", 3000, "書籍");
-    
-    ProductService service = new ProductService();
-    service.addProduct(laptop);
-    service.addProduct(mouse);
-    service.addProduct(book);
-    
-    // 実行
-    List&lt;Product&gt; electronicsProducts = service.findByCategory("電子機器");
-    
-    // 検証
-    assertEquals(2, electronicsProducts.size());
-    assertTrue(electronicsProducts.contains(laptop));
-    assertTrue(electronicsProducts.contains(mouse));
-    assertFalse(electronicsProducts.contains(book));
-}</code></pre>
-
-                    <h4>2.5.3 エラーメッセージの追加</h4>
-                    
-                    <p>テストが失敗した時により詳細な情報を提供するため、カスタムメッセージを追加できます：</p>
-
-                    <pre class="code-block"><code class="language-java">@Test
-void 割引適用後の価格計算テスト() {
-    double originalPrice = 1000.0;
-    double discountRate = 0.20;
-    
-    PriceCalculator calculator = new PriceCalculator();
-    double discountedPrice = calculator.applyDiscount(originalPrice, discountRate);
-    
-    assertEquals(800.0, discountedPrice, 
-        "20%割引で1000円は800円になるはずです");
-}</code></pre>
-
-                    <div class="quiz-container">
-                        <h5>理解度確認クイズ</h5>
-                        <ol>
-                            <li><strong>AAAパターンの「Assert」段階では何を行いますか？</strong>
-                                <ul>
-                                    <li>a) テストデータの準備</li>
-                                    <li>b) メソッドの実行</li>
-                                    <li>c) 期待値と実際値の比較</li>
-                                    <li>d) オブジェクトの初期化</li>
-                                </ul>
-                            </li>
-                            <li><strong>assertEquals(expected, actual)の引数順序で正しいのはどれですか？</strong>
-                                <ul>
-                                    <li>a) assertEquals(actual, expected)</li>
-                                    <li>b) assertEquals(expected, actual)</li>
-                                    <li>c) どちらでも構わない</li>
-                                    <li>d) 型によって変わる</li>
-                                </ul>
-                            </li>
-                            <li><strong>null値をテストする際に使用するアサーションメソッドはどれですか？</strong>
-                                <ul>
-                                    <li>a) assertEquals(null, object)</li>
-                                    <li>b) assertTrue(object == null)</li>
-                                    <li>c) assertNull(object)</li>
-                                    <li>d) すべて正しい</li>
-                                </ul>
-                            </li>
-                            <li><strong>良いテスト名の条件として正しいものはどれですか？</strong>
-                                <ul>
-                                    <li>a) 短くて覚えやすい</li>
-                                    <li>b) test1, test2のように連番を使う</li>
-                                    <li>c) 何をテストするかが明確</li>
-                                    <li>d) 英語でなければならない</li>
-                                </ul>
-                            </li>
-                        </ol>
-                        
-                        <details style="margin-top: 1rem;">
-                            <summary><strong>解答を見る</strong></summary>
-                            <div style="margin-top: 0.5rem;">
-                                <p><strong>1.</strong> c) 期待値と実際値の比較</p>
-                                <p><strong>2.</strong> b) assertEquals(expected, actual)</p>
-                                <p><strong>3.</strong> c) assertNull(object) が最も適切（他も動作はします）</p>
-                                <p><strong>4.</strong> c) 何をテストするかが明確</p>
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">JUnit学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>Javaエコシステム</span>
                             </div>
-                        </details>
-                    </div>
-
-                    <!-- Chapter navigation -->
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="junit-learning-material-01.html" class="btn btn-secondary">← 前の章：JUnit基礎とセットアップ</a>
-                        <a href="junit-learning-material-03.html" class="btn btn-primary">次の章：アサーションとマッチャー →</a>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 45分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </main>
-        </div>
+
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="../README.html" class="hover:text-primary-600 transition-colors">JUnit</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第2章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第2章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">はじめてのJUnitテスト - 環境構築と最初の一歩</h1>
+                    <p class="text-slate-600">JUnitを使うための環境を整え、人生で初めてのテストコードを書いて実行します。Mavenプロジェクトの作成方法、JUnitの導入、テストの実行方法を画面を見ながら一つ一つ丁寧に解説します。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>VSCodeでMavenプロジェクトを作成する方法を習得する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>JUnit 5をプロジェクトに導入する方法を理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>はじめてのテストコードを書いて実行する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>テスト結果の見方を理解する</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション1: 環境構築の準備 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        2.1 環境構築の準備
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        JUnitを使うには、まず開発環境を整える必要があります。この章では、<strong>VSCode</strong>と<strong>Maven</strong>を使ってJUnitプロジェクトを作ります。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">必要なツールの確認</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        以下のツールがインストールされていることを確認してください。
+                    </p>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3 bg-slate-50 p-3 rounded-lg">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <div>
+                                <p class="font-medium text-slate-800 text-sm">Visual Studio Code（VSCode）</p>
+                                <p class="text-slate-600 text-sm">無料のコードエディタ。プログラムを書くための専用ソフトです。</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 bg-slate-50 p-3 rounded-lg">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <div>
+                                <p class="font-medium text-slate-800 text-sm">Extension Pack for Java</p>
+                                <p class="text-slate-600 text-sm">VSCodeでJava開発をするための拡張機能パックです。</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 bg-slate-50 p-3 rounded-lg">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <div>
+                                <p class="font-medium text-slate-800 text-sm">JDK 17以上</p>
+                                <p class="text-slate-600 text-sm">Javaでプログラムを作るために必要な道具一式です。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">Mavenとは？</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    <strong>Maven（メイヴン）</strong>は、Javaプロジェクトを管理するためのツールです。
+                                    必要なライブラリ（JUnitなど）を自動でダウンロードしてくれる便利な道具だと考えてください。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション2: Mavenプロジェクトの作成 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        2.2 Mavenプロジェクトの作成
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        VSCodeでMavenプロジェクトを作成しましょう。
+                    </p>
+
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                                rounded-xl p-5 my-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                        flex items-center justify-center">
+                                <i class="fas fa-laptop-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習：Mavenプロジェクトを作成しよう</h3>
+                                <ol class="space-y-3 text-purple-900">
+                                    <li class="break-words">
+                                        <strong>1. VSCodeを起動</strong>
+                                        <p class="text-sm text-purple-800 mt-1">VSCodeを開きます。</p>
+                                    </li>
+                                    <li class="break-words">
+                                        <strong>2. コマンドパレットを開く</strong>
+                                        <p class="text-sm text-purple-800 mt-1">
+                                            <kbd class="px-2 py-1 bg-purple-100 rounded">Ctrl+Shift+P</kbd>（Mac: <kbd class="px-2 py-1 bg-purple-100 rounded">Cmd+Shift+P</kbd>）を押します。
+                                        </p>
+                                    </li>
+                                    <li class="break-words">
+                                        <strong>3. Mavenプロジェクト作成</strong>
+                                        <p class="text-sm text-purple-800 mt-1">
+                                            「Java: Create Java Project」と入力して選択します。
+                                        </p>
+                                    </li>
+                                    <li class="break-words">
+                                        <strong>4. Maven を選択</strong>
+                                        <p class="text-sm text-purple-800 mt-1">
+                                            プロジェクトタイプから「Maven」を選びます。
+                                        </p>
+                                    </li>
+                                    <li class="break-words">
+                                        <strong>5. テンプレートを選択</strong>
+                                        <p class="text-sm text-purple-800 mt-1">
+                                            「maven-archetype-quickstart」を選びます。
+                                        </p>
+                                    </li>
+                                    <li class="break-words">
+                                        <strong>6. バージョンを選択</strong>
+                                        <p class="text-sm text-purple-800 mt-1">
+                                            最新バージョン（例: 1.4）を選びます。
+                                        </p>
+                                    </li>
+                                    <li class="break-words">
+                                        <strong>7. Group ID を入力</strong>
+                                        <p class="text-sm text-purple-800 mt-1">
+                                            「com.example」と入力します（プロジェクトの分類名のようなものです）。
+                                        </p>
+                                    </li>
+                                    <li class="break-words">
+                                        <strong>8. Artifact ID を入力</strong>
+                                        <p class="text-sm text-purple-800 mt-1">
+                                            「junit-demo」と入力します（プロジェクト名です）。
+                                        </p>
+                                    </li>
+                                    <li class="break-words">
+                                        <strong>9. 保存場所を選択</strong>
+                                        <p class="text-sm text-purple-800 mt-1">
+                                            プロジェクトを保存する場所を選びます。
+                                        </p>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">プロジェクト構造の確認</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        プロジェクトが作成されると、以下のような構造になっています。
+                    </p>
+                    <div class="bg-slate-100 rounded-lg p-4 my-4">
+                        <pre class="text-sm text-slate-700 overflow-x-auto"><code>junit-demo/
+├── pom.xml              ← プロジェクト設定ファイル
+└── src/
+    ├── main/
+    │   └── java/        ← プログラム本体を置く場所
+    │       └── com/
+    │           └── example/
+    │               └── App.java
+    └── test/
+        └── java/        ← テストコードを置く場所
+            └── com/
+                └── example/
+                    └── AppTest.java</code></pre>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">ポイント</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    Mavenプロジェクトでは、<strong>プログラム本体（src/main/java）</strong>と<strong>テストコード（src/test/java）</strong>を分けて管理します。
+                                    これにより、コードが整理されて分かりやすくなります。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション3: JUnit 5の導入 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        2.3 JUnit 5の導入
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        プロジェクトにJUnit 5を追加しましょう。<strong>pom.xml</strong>というファイルを編集します。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">pom.xmlの編集</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        プロジェクトのルートにある<code class="px-2 py-1 bg-slate-100 rounded text-sm">pom.xml</code>を開き、以下の内容に更新します。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="code-block-header">
+                            <span>pom.xml</span>
+                            <button class="copy-btn" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;groupId&gt;com.example&lt;/groupId&gt;
+    &lt;artifactId&gt;junit-demo&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+
+    &lt;properties&gt;
+        &lt;maven.compiler.source&gt;17&lt;/maven.compiler.source&gt;
+        &lt;maven.compiler.target&gt;17&lt;/maven.compiler.target&gt;
+    &lt;/properties&gt;
+
+    &lt;dependencies&gt;
+        &lt;!-- JUnit 5 --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.junit.jupiter&lt;/groupId&gt;
+            &lt;artifactId&gt;junit-jupiter&lt;/artifactId&gt;
+            &lt;version&gt;5.10.0&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+&lt;/project&gt;</code></pre>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">pom.xmlの役割</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    <strong>pom.xml</strong>は、プロジェクトで使うライブラリを定義するファイルです。
+                                    ここに「JUnit 5を使います」と書くと、Mavenが自動的にダウンロードしてくれます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">依存関係の解決</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        pom.xmlを保存すると、VSCodeが自動的にJUnit 5をダウンロードします。少し待ちましょう。
+                    </p>
+                </section>
+
+                <!-- セクション4: 最初のテストコードを書く -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        2.4 最初のテストコードを書く
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        いよいよ、人生で初めてのテストコードを書いてみましょう！
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">シンプルな計算クラスを作る</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        まず、テスト対象となる簡単な計算クラスを作ります。
+                        <code class="px-2 py-1 bg-slate-100 rounded text-sm">src/main/java/com/example/Calculator.java</code>を作成します。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="code-block-header">
+                            <span>Calculator.java</span>
+                            <button class="copy-btn" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre><code class="language-java">package com.example;
+
+/**
+ * 簡単な計算機クラス
+ */
+public class Calculator {
+    /**
+     * 2つの数を足す
+     */
+    public int add(int a, int b) {
+        return a + b;
+    }
+
+    /**
+     * 2つの数を引く
+     */
+    public int subtract(int a, int b) {
+        return a - b;
+    }
+}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">テストクラスを作る</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        次に、このCalculatorクラスをテストするコードを書きます。
+                        <code class="px-2 py-1 bg-slate-100 rounded text-sm">src/test/java/com/example/CalculatorTest.java</code>を作成します。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="code-block-header">
+                            <span>CalculatorTest.java</span>
+                            <button class="copy-btn" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre><code class="language-java">package com.example;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Calculatorクラスのテスト
+ */
+public class CalculatorTest {
+
+    @Test
+    public void testAdd() {
+        // テスト対象のクラスを作る
+        Calculator calculator = new Calculator();
+
+        // 実際に計算してみる
+        int result = calculator.add(2, 3);
+
+        // 結果が期待通りか確認する
+        assertEquals(5, result);
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-star text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">コードの解説</p>
+                                <ul class="text-emerald-800 text-sm mt-2 space-y-2">
+                                    <li><strong>@Test</strong> - 「これはテストメソッドです」という印（アノテーション）</li>
+                                    <li><strong>assertEquals(期待値, 実際の値)</strong> - 2つの値が等しいか確認する</li>
+                                    <li>テストメソッド名は<strong>test</strong>で始めるのが慣例です</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mermaid bg-white p-6 rounded-lg shadow-sm my-6">
+flowchart LR
+    A[Calculatorクラス] -->|add 2, 3| B[計算実行]
+    B --> C[結果: 5]
+    C --> D{assertEquals}
+    D -->|期待値5と一致| E[テスト成功]
+    D -->|一致しない| F[テスト失敗]
+                    </div>
+                </section>
+
+                <!-- セクション5: テストを実行する -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        2.5 テストを実行する
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        テストコードを書いたら、実際に実行してみましょう。
+                    </p>
+
+                    <!-- 動作確認カード -->
+                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200
+                                rounded-xl p-5 my-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg
+                                        flex items-center justify-center">
+                                <i class="fas fa-play text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-emerald-800 mb-3 break-words">動作確認：テストを実行しよう</h3>
+                                <ol class="space-y-3 text-emerald-900">
+                                    <li class="break-words">
+                                        <strong>方法1: VSCodeのテストエクスプローラーを使う</strong>
+                                        <p class="text-sm text-emerald-800 mt-1">
+                                            左側のサイドバーから「テスト」アイコンをクリックし、「Run Test」ボタンを押します。
+                                        </p>
+                                    </li>
+                                    <li class="break-words">
+                                        <strong>方法2: コードエディタから直接実行</strong>
+                                        <p class="text-sm text-emerald-800 mt-1">
+                                            テストメソッドの上に表示される「Run Test」リンクをクリックします。
+                                        </p>
+                                    </li>
+                                    <li class="break-words">
+                                        <strong>方法3: コマンドで実行</strong>
+                                        <p class="text-sm text-emerald-800 mt-1">
+                                            ターミナルで以下のコマンドを実行します。
+                                        </p>
+                                        <div class="bg-emerald-100 rounded p-2 mt-2">
+                                            <code class="text-sm">mvn test</code>
+                                        </div>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">テスト結果の見方</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        テストが成功すると、緑色のチェックマークが表示されます。
+                    </p>
+
+                    <div class="bg-slate-100 rounded-lg p-4 my-4">
+                        <p class="text-slate-700 text-sm mb-2"><strong>成功時の表示例</strong></p>
+                        <pre class="text-sm text-slate-700"><code>✓ testAdd (12 ms)
+
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0</code></pre>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">おめでとうございます！</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    これであなたは人生で初めてのJUnitテストを書いて実行することができました。
+                                    テストが成功したということは、Calculatorクラスのaddメソッドが正しく動いていることを確認できたということです。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">失敗するテストを試してみる</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        わざと間違った期待値を指定して、テストが失敗する様子も見てみましょう。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="code-block-header">
+                            <span>わざと失敗させる例</span>
+                            <button class="copy-btn" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre><code class="language-java">@Test
+public void testAddWrongExpectation() {
+    Calculator calculator = new Calculator();
+    int result = calculator.add(2, 3);
+
+    // わざと間違った期待値を指定
+    assertEquals(6, result); // 実際は5だが、6を期待している
+}</code></pre>
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        このテストを実行すると、以下のようなエラーメッセージが表示されます。
+                    </p>
+
+                    <div class="bg-red-50 rounded-lg p-4 my-4 border border-red-200">
+                        <p class="text-red-700 text-sm mb-2"><strong>失敗時の表示例</strong></p>
+                        <pre class="text-sm text-red-700"><code>✗ testAddWrongExpectation (5 ms)
+  expected: &lt;6&gt; but was: &lt;5&gt;</code></pre>
+                    </div>
+
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-red-900 font-medium break-words">エラーメッセージの読み方</p>
+                                <p class="text-red-800 text-sm mt-1 break-words">
+                                    「expected: &lt;6&gt; but was: &lt;5&gt;」は、「期待していたのは6だけど、実際は5だった」という意味です。
+                                    このようにJUnitは、何が間違っていたのかを教えてくれます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 章のまとめ -->
+                <section class="my-8">
+                    <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6">
+                        <h2 class="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-check-circle text-primary-500"></i>
+                            この章のまとめ
+                        </h2>
+                        <ul class="space-y-3 text-slate-700">
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-circle text-xs text-primary-500 mt-2"></i>
+                                <span>VSCodeとMavenを使ってJUnitプロジェクトを作成できる</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-circle text-xs text-primary-500 mt-2"></i>
+                                <span><strong>pom.xml</strong>にJUnit 5の依存関係を追加することで、JUnitを使えるようになる</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-circle text-xs text-primary-500 mt-2"></i>
+                                <span><strong>@Test</strong>アノテーションを付けたメソッドがテストとして実行される</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-circle text-xs text-primary-500 mt-2"></i>
+                                <span><strong>assertEquals(期待値, 実際の値)</strong>で結果を検証できる</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-circle text-xs text-primary-500 mt-2"></i>
+                                <span>テストが成功すると緑色、失敗すると赤色で表示される</span>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q1. Mavenプロジェクトで、プログラム本体とテストコードはそれぞれどこに配置しますか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <div class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            <ul class="space-y-1">
+                                                <li><strong>プログラム本体：</strong> src/main/java</li>
+                                                <li><strong>テストコード：</strong> src/test/java</li>
+                                            </ul>
+                                        </div>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q2. pom.xmlファイルの役割は何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <div class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            pom.xmlは、プロジェクトで使うライブラリ（依存関係）を定義するファイルです。
+                                            ここに使いたいライブラリを記述すると、Mavenが自動的にダウンロードしてくれます。
+                                        </div>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q3. @Testアノテーションの役割は何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <div class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            @Testアノテーションは、「このメソッドはテストメソッドです」とJUnitに伝えるための印です。
+                                            @Testが付いているメソッドは、JUnitが自動的に見つけて実行してくれます。
+                                        </div>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q4. assertEquals(5, result) の意味を説明してください。</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <div class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            「resultの値が5と等しいことを確認する」という意味です。
+                                            第1引数が期待値、第2引数が実際の値です。両者が一致すればテスト成功、一致しなければ失敗となります。
+                                        </div>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <a href="junit-learning-material-01.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
+                                  transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">第1章: テストって何だろう？</span>
+                        </div>
+                    </a>
+                    <a href="junit-learning-material-03.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">第3章: 期待通りか確かめよう</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
     </div>
-    
+
     <!-- フッター -->
-    <footer class="bg-dark text-white mt-5">
-        <div class="container-fluid py-3">
-            <div class="row">
-                <div class="col-12 text-center">
-                    <p class="mb-0">© 2025 F-Circle. All rights reserved.<br>
-本資料はAIツールを活用し、人間による編集・監修のもと作成されています。無断転載・再配布を禁じます。</p>
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </footer>
-    
-    <!-- Bootstrap JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Highlight.js initialization -->
-    <script>hljs.highlightAll();</script>
-    
-    <!-- Mermaid.js initialization -->
-    <script>
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'default'
-        });
-    </script>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- サイドバー生成 -->
+    <script src="sidebar-content.js"></script>
+
+    <!-- 共通JavaScript -->
+    <script src="main.js"></script>
+
+    <!-- 描画ツール -->
+    <script src="drawing-tool.js"></script>
 </body>
 </html>
