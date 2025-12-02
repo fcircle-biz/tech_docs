@@ -2,946 +2,814 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JUnit学習教材 第5章 - パラメータ化テストと動的テスト</title>
-    
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>JUnit学習教材 第5章 - テストの準備と後片付け</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Java/JUnit - Orange
+                        primary: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            200: '#fed7aa',
+                            300: '#fdba74',
+                            400: '#fb923c',
+                            500: '#f97316',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                            800: '#9a3412',
+                            900: '#7c2d12',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <!-- Google Fonts - Noto Sans JP -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- Highlight.js CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    
+
     <!-- Mermaid.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
-    
-    <style>
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            padding-top: 56px;
-        }
-        
-        .navbar {
-            background-color: #f57c00;
-        }
-        
-        .sidebar {
-            position: sticky;
-            top: 70px;
-            height: calc(100vh - 70px);
-            overflow-y: auto;
-        }
-        
-        .chapter-title {
-            color: #f57c00;
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #f57c00;
-            padding-bottom: 0.5rem;
-        }
-        
-        .section-title {
-            color: #ff9800;
-            margin-top: 1.2rem;
-            margin-bottom: 0.8rem;
-        }
-        
-        .quiz-container {
-            background-color: #fff3e0;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #f57c00;
-        }
-        
-        .exercise-container {
-            background-color: #f3e5f5;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #9c27b0;
-        }
-        
-        .highlight {
-            background-color: #ffecb3;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #ffc107;
-        }
-        
-        .warning {
-            background-color: #ffebee;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #f44336;
-        }
-        
-        .code-block {
-            background-color: #1e1e1e;
-            border-radius: 5px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-        
-        .nav-link.active {
-            background-color: #f57c00 !important;
-            color: white !important;
-        }
-    </style>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <!-- Navigation bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand">
-                <strong>JUnit学習教材</strong>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
-    </nav>
-
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        <span>学習章</span>
-                    </h6>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="junit-learning-material-01.html">
-                                第1章: JUnit基礎とセットアップ
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="junit-learning-material-02.html">
-                                第2章: 基本的なテストケースの作成
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="junit-learning-material-03.html">
-                                第3章: アサーションとマッチャー
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="junit-learning-material-04.html">
-                                第4章: テストライフサイクルとアノテーション
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="junit-learning-material-05.html">
-                                第5章: パラメータ化テストと動的テスト
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="junit-learning-material-06.html">
-                                第6章: 例外テストとタイムアウト
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="junit-learning-material-07.html">
-                                第7章: テストの組織化とベストプラクティス
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-
-            <!-- Main content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">第5章: パラメータ化テストと動的テスト</h1>
-                </div>
-
-                <div id="chapter5">
-                    <h2 class="chapter-title">効率的なテストケース生成と実行</h2>
-                    
-                    <div class="highlight">
-                        <h5>この章で学ぶこと</h5>
-                        <ul>
-                            <li>パラメータ化テストの基本概念と利点を理解する</li>
-                            <li>@ValueSource、@CsvSource、@CsvFileSourceの使い方を習得する</li>
-                            <li>@MethodSourceを使用した複雑なテストデータの提供</li>
-                            <li>@DynamicTestを使った実行時テスト生成</li>
-                            <li>効率的なテストデータ管理のベストプラクティス</li>
-                        </ul>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fas fa-vial text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
                     </div>
 
-                    <h3 class="section-title">5.1 パラメータ化テストとは</h3>
-                    
-                    <p>パラメータ化テストは、同じテストロジックを異なるデータセットで複数回実行する仕組みです。従来のテストメソッドをコピーして値だけを変更する必要がなくなり、テストコードがよりDRY（Don't Repeat Yourself）になります。</p>
-
-                    <div class="mermaid">
-                        flowchart TD
-                            A["従来のテスト"] --> B["テストメソッド1"]
-                            A --> C["テストメソッド2"]
-                            A --> D["テストメソッド3"]
-                            B --> E["同じロジック、異なるデータ"]
-                            C --> E
-                            D --> E
-                            
-                            F["パラメータ化テスト"] --> G["1つのテストメソッド"]
-                            G --> H["複数のデータセット"]
-                            H --> I["自動的に複数回実行"]
-                    </div>
-
-                    <h4>5.1.1 パラメータ化テストの利点</h4>
-                    <ul>
-                        <li><strong>コードの重複削減</strong>：同じテストロジックを何度も書く必要がない</li>
-                        <li><strong>保守性向上</strong>：テストロジックを1箇所で管理できる</li>
-                        <li><strong>網羅性向上</strong>：多くのテストケースを効率的に作成できる</li>
-                        <li><strong>可読性向上</strong>：テストデータとロジックが分離される</li>
-                    </ul>
-
-                    <h3 class="section-title">5.2 @ValueSourceを使ったシンプルなパラメータ化</h3>
-                    
-                    <p>最もシンプルなパラメータ化テストは、@ValueSourceアノテーションを使用します。</p>
-
-                    <h4>5.2.1 基本的な使用方法</h4>
-                    
-                    <pre class="code-block"><code class="language-java">import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import static org.junit.jupiter.api.Assertions.*;
-
-class MathUtilsTest {
-    
-    @ParameterizedTest
-    @ValueSource(ints = {1, 2, 3, 5, 8, 13, 21})
-    void 正の数値で絶対値テスト(int number) {
-        MathUtils mathUtils = new MathUtils();
-        
-        int result = mathUtils.abs(number);
-        
-        assertEquals(number, result);
-    }
-    
-    @ParameterizedTest
-    @ValueSource(ints = {-1, -2, -5, -10, -100})
-    void 負の数値で絶対値テスト(int number) {
-        MathUtils mathUtils = new MathUtils();
-        
-        int result = mathUtils.abs(number);
-        
-        assertEquals(-number, result);  // 負の数の絶対値は正の数
-    }
-    
-    @ParameterizedTest
-    @ValueSource(strings = {"hello", "world", "junit", "testing"})
-    void 文字列の大文字変換テスト(String input) {
-        StringProcessor processor = new StringProcessor();
-        
-        String result = processor.toUpperCase(input);
-        
-        assertEquals(input.toUpperCase(), result);
-        assertFalse(result.isEmpty());
-    }
-}</code></pre>
-
-                    <h4>5.2.2 様々なデータ型での@ValueSource</h4>
-                    
-                    <pre class="code-block"><code class="language-java">class ValueSourceExamplesTest {
-    
-    @ParameterizedTest
-    @ValueSource(strings = {"", "  ", "\t", "\n"})
-    void 空または空白文字列のテスト(String input) {
-        assertTrue(input.trim().isEmpty());
-    }
-    
-    @ParameterizedTest
-    @ValueSource(doubles = {0.1, 0.5, 1.0, 2.5, 10.0})
-    void 正の浮動小数点数のテスト(double number) {
-        assertTrue(number > 0);
-        assertFalse(Double.isNaN(number));
-    }
-    
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void ブール値のテスト(boolean value) {
-        assertEquals(value, Boolean.valueOf(value));
-    }
-    
-    @ParameterizedTest
-    @ValueSource(longs = {1L, 100L, 1000L, 1000000L})
-    void 大きな数値のテスト(long number) {
-        assertTrue(number > 0);
-        assertTrue(Long.toString(number).length() > 0);
-    }
-}</code></pre>
-
-                    <div class="highlight">
-                        <h6><strong>@ValueSourceで使用できるデータ型</strong></h6>
-                        <ul>
-                            <li><strong>strings</strong>：文字列の配列</li>
-                            <li><strong>ints</strong>：整数の配列</li>
-                            <li><strong>longs</strong>：長整数の配列</li>
-                            <li><strong>doubles</strong>：浮動小数点数の配列</li>
-                            <li><strong>floats</strong>：単精度浮動小数点数の配列</li>
-                            <li><strong>booleans</strong>：真偽値の配列</li>
-                            <li><strong>chars</strong>：文字の配列</li>
-                            <li><strong>shorts</strong>：短整数の配列</li>
-                            <li><strong>bytes</strong>：バイトの配列</li>
-                        </ul>
-                    </div>
-
-                    <h3 class="section-title">5.3 @CsvSourceによる複数パラメータのテスト</h3>
-                    
-                    <p>複数のパラメータを組み合わせてテストする場合は、@CsvSourceを使用します。</p>
-
-                    <h4>5.3.1 基本的なCSVパラメータ</h4>
-                    
-                    <pre class="code-block"><code class="language-java">class CalculatorParameterizedTest {
-    
-    @ParameterizedTest
-    @CsvSource({
-        "1, 1, 2",
-        "2, 3, 5", 
-        "10, 15, 25",
-        "-1, 1, 0",
-        "0, 0, 0"
-    })
-    void 加算テスト(int a, int b, int expected) {
-        Calculator calculator = new Calculator();
-        
-        int result = calculator.add(a, b);
-        
-        assertEquals(expected, result);
-    }
-    
-    @ParameterizedTest
-    @CsvSource({
-        "10, 2, 5",
-        "15, 3, 5",
-        "20, 4, 5",
-        "100, 10, 10"
-    })
-    void 除算テスト(int dividend, int divisor, int expected) {
-        Calculator calculator = new Calculator();
-        
-        int result = calculator.divide(dividend, divisor);
-        
-        assertEquals(expected, result);
-    }
-    
-    @ParameterizedTest
-    @CsvSource({
-        "hello, 5",
-        "world, 5",
-        "junit, 5",
-        "testing, 7",
-        "parameterized, 12"
-    })
-    void 文字列長さテスト(String input, int expectedLength) {
-        assertEquals(expectedLength, input.length());
-    }
-}</code></pre>
-
-                    <h4>5.3.2 文字列を含むCSVデータ</h4>
-                    
-                    <pre class="code-block"><code class="language-java">class UserValidationTest {
-    
-    @ParameterizedTest
-    @CsvSource({
-        "'田中太郎', 'tanaka@example.com', true",
-        "'', 'test@example.com', false",
-        "'山田花子', '', false",
-        "'鈴木一郎', 'invalid-email', false",
-        "'佐藤次郎', 'sato@test.co.jp', true"
-    })
-    void ユーザー検証テスト(String name, String email, boolean expectedValid) {
-        UserValidator validator = new UserValidator();
-        User user = new User(name, email);
-        
-        boolean isValid = validator.isValid(user);
-        
-        assertEquals(expectedValid, isValid);
-    }
-    
-    @ParameterizedTest
-    @CsvSource(value = {
-        "強力なパスワード123!:true",
-        "weak:false", 
-        "12345678:false",
-        "StrongPass123!:true",
-        "password:false"
-    }, delimiter = ':')
-    void パスワード強度テスト(String password, boolean expectedStrong) {
-        PasswordValidator validator = new PasswordValidator();
-        
-        boolean isStrong = validator.isStrong(password);
-        
-        assertEquals(expectedStrong, isStrong);
-    }
-}</code></pre>
-
-                    <div class="exercise-container">
-                        <h5>実習 5-1: 成績評価システムのパラメータ化テスト</h5>
-                        <p>学生の成績を評価するシステムで、様々なパラメータ化テストを作成してみましょう。</p>
-                        
-                        <h6>手順1: テスト対象クラスの作成</h6>
-                        <p><code>GradeEvaluator.java</code>を作成します：</p>
-                        
-                        <pre class="code-block"><code class="language-java">public class GradeEvaluator {
-    
-    public String getLetterGrade(int score) {
-        if (score < 0 || score > 100) {
-            throw new IllegalArgumentException("スコアは0-100の範囲で入力してください");
-        }
-        
-        if (score >= 90) return "A";
-        if (score >= 80) return "B";
-        if (score >= 70) return "C";
-        if (score >= 60) return "D";
-        return "F";
-    }
-    
-    public boolean isPassingGrade(String letterGrade) {
-        return !"F".equals(letterGrade);
-    }
-    
-    public double calculateGPA(String letterGrade) {
-        switch (letterGrade) {
-            case "A": return 4.0;
-            case "B": return 3.0;
-            case "C": return 2.0;
-            case "D": return 1.0;
-            case "F": return 0.0;
-            default: throw new IllegalArgumentException("無効な成績: " + letterGrade);
-        }
-    }
-    
-    public String getGradeComment(int score) {
-        String grade = getLetterGrade(score);
-        switch (grade) {
-            case "A": return "優秀";
-            case "B": return "良好";
-            case "C": return "普通";
-            case "D": return "要努力";
-            case "F": return "不合格";
-            default: return "不明";
-        }
-    }
-}</code></pre>
-
-                        <h6>手順2: パラメータ化テストクラスの作成</h6>
-                        <p><code>GradeEvaluatorTest.java</code>を作成します：</p>
-                        
-                        <pre class="code-block"><code class="language-java">import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.junit.jupiter.params.provider.CsvSource;
-import static org.junit.jupiter.api.Assertions.*;
-
-class GradeEvaluatorTest {
-    private final GradeEvaluator evaluator = new GradeEvaluator();
-    
-    @ParameterizedTest
-    @ValueSource(ints = {90, 95, 100})
-    void A評価のテスト(int score) {
-        String grade = evaluator.getLetterGrade(score);
-        assertEquals("A", grade);
-        assertTrue(evaluator.isPassingGrade(grade));
-    }
-    
-    @ParameterizedTest
-    @ValueSource(ints = {80, 85, 89})
-    void B評価のテスト(int score) {
-        String grade = evaluator.getLetterGrade(score);
-        assertEquals("B", grade);
-        assertTrue(evaluator.isPassingGrade(grade));
-    }
-    
-    @ParameterizedTest
-    @ValueSource(ints = {0, 30, 59})
-    void F評価のテスト(int score) {
-        String grade = evaluator.getLetterGrade(score);
-        assertEquals("F", grade);
-        assertFalse(evaluator.isPassingGrade(grade));
-    }
-    
-    @ParameterizedTest
-    @CsvSource({
-        "95, A, 4.0, 優秀",
-        "85, B, 3.0, 良好",
-        "75, C, 2.0, 普通", 
-        "65, D, 1.0, 要努力",
-        "55, F, 0.0, 不合格"
-    })
-    void 総合成績評価テスト(int score, String expectedGrade, double expectedGPA, String expectedComment) {
-        String actualGrade = evaluator.getLetterGrade(score);
-        double actualGPA = evaluator.calculateGPA(actualGrade);
-        String actualComment = evaluator.getGradeComment(score);
-        
-        assertEquals(expectedGrade, actualGrade);
-        assertEquals(expectedGPA, actualGPA, 0.01);
-        assertEquals(expectedComment, actualComment);
-    }
-    
-    @ParameterizedTest
-    @ValueSource(ints = {-1, -10, 101, 150})
-    void 無効なスコアでの例外テスト(int invalidScore) {
-        assertThrows(IllegalArgumentException.class, () -> {
-            evaluator.getLetterGrade(invalidScore);
-        });
-    }
-    
-    @ParameterizedTest
-    @ValueSource(strings = {"A", "B", "C", "D"})
-    void 合格評価のテスト(String grade) {
-        assertTrue(evaluator.isPassingGrade(grade));
-        assertTrue(evaluator.calculateGPA(grade) > 0);
-    }
-    
-    @ParameterizedTest
-    @CsvSource({
-        "90, 90, true",  // 境界値（下限）
-        "89, 80, false", // 境界値テスト
-        "80, 80, true",  // 境界値（下限）
-        "79, 70, false", // 境界値テスト
-        "60, 60, true",  // 境界値（下限）
-        "59, 0, false"   // 境界値テスト
-    })
-    void 境界値テスト(int score, int threshold, boolean shouldPassThreshold) {
-        String grade = evaluator.getLetterGrade(score);
-        boolean actualPass = !grade.equals("F") || score >= 60;
-        
-        // より複雑な境界値検証ロジック
-        assertTrue(true); // この例では簡略化
-    }
-}</code></pre>
-
-                        <h6>期待される結果</h6>
-                        <p>各パラメータ化テストが複数のデータセットで実行され、以下のテストパターンが確認できます：</p>
-                        <ul>
-                            <li>@ValueSourceによる単一パラメータの複数値テスト</li>
-                            <li>@CsvSourceによる複数パラメータの組み合わせテスト</li>
-                            <li>境界値を含む包括的なテストカバレッジ</li>
-                        </ul>
-                    </div>
-
-                    <h3 class="section-title">5.4 @MethodSourceによる高度なデータ提供</h3>
-                    
-                    <p>複雑なテストデータやオブジェクトを提供する場合は、@MethodSourceを使用します。</p>
-
-                    <h4>5.4.1 基本的な@MethodSourceの使用</h4>
-                    
-                    <pre class="code-block"><code class="language-java">import org.junit.jupiter.params.provider.MethodSource;
-import java.util.stream.Stream;
-
-class AdvancedParameterizedTest {
-    
-    @ParameterizedTest
-    @MethodSource("provideNumbersForSquareTest")
-    void 数値の二乗テスト(int number, int expectedSquare) {
-        MathUtils mathUtils = new MathUtils();
-        
-        int result = mathUtils.square(number);
-        
-        assertEquals(expectedSquare, result);
-    }
-    
-    // テストデータを提供するstaticメソッド
-    static Stream&lt;org.junit.jupiter.params.provider.Arguments&gt; provideNumbersForSquareTest() {
-        return Stream.of(
-            org.junit.jupiter.params.provider.Arguments.of(0, 0),
-            org.junit.jupiter.params.provider.Arguments.of(1, 1),
-            org.junit.jupiter.params.provider.Arguments.of(2, 4),
-            org.junit.jupiter.params.provider.Arguments.of(3, 9),
-            org.junit.jupiter.params.provider.Arguments.of(-2, 4),
-            org.junit.jupiter.params.provider.Arguments.of(10, 100)
-        );
-    }
-    
-    @ParameterizedTest
-    @MethodSource("provideUsersForValidation")
-    void ユーザー検証の高度なテスト(User user, boolean expectedValid, String expectedReason) {
-        UserValidator validator = new UserValidator();
-        
-        ValidationResult result = validator.validate(user);
-        
-        assertEquals(expectedValid, result.isValid());
-        if (!expectedValid) {
-            assertEquals(expectedReason, result.getReason());
-        }
-    }
-    
-    static Stream&lt;org.junit.jupiter.params.provider.Arguments&gt; provideUsersForValidation() {
-        return Stream.of(
-            org.junit.jupiter.params.provider.Arguments.of(
-                new User("田中太郎", "tanaka@example.com", 25), 
-                true, 
-                null
-            ),
-            org.junit.jupiter.params.provider.Arguments.of(
-                new User("", "test@example.com", 20), 
-                false, 
-                "名前が空です"
-            ),
-            org.junit.jupiter.params.provider.Arguments.of(
-                new User("山田花子", "invalid-email", 30), 
-                false, 
-                "メールアドレスが不正です"
-            ),
-            org.junit.jupiter.params.provider.Arguments.of(
-                new User("佐藤次郎", "sato@test.com", 17), 
-                false, 
-                "年齢が18歳未満です"
-            )
-        );
-    }
-}</code></pre>
-
-                    <h4>5.4.2 外部ファイルからのデータ提供</h4>
-                    
-                    <pre class="code-block"><code class="language-java">class FileBasedParameterizedTest {
-    
-    @ParameterizedTest
-    @MethodSource("loadTestDataFromFile")
-    void ファイルからのテストデータ(String productName, double price, String category, boolean expectedValid) {
-        Product product = new Product(productName, price, category);
-        ProductValidator validator = new ProductValidator();
-        
-        boolean isValid = validator.isValid(product);
-        
-        assertEquals(expectedValid, isValid);
-    }
-    
-    static Stream&lt;org.junit.jupiter.params.provider.Arguments&gt; loadTestDataFromFile() {
-        // 実際の実装では、CSVファイルやJSONファイルから読み込み
-        return Stream.of(
-            org.junit.jupiter.params.provider.Arguments.of("ノートパソコン", 89800.0, "電子機器", true),
-            org.junit.jupiter.params.provider.Arguments.of("", 1000.0, "雑貨", false),
-            org.junit.jupiter.params.provider.Arguments.of("マウス", -100.0, "電子機器", false),
-            org.junit.jupiter.params.provider.Arguments.of("キーボード", 15000.0, "", false)
-        );
-    }
-}</code></pre>
-
-                    <h3 class="section-title">5.5 @DynamicTestによる動的テスト生成</h3>
-                    
-                    <p>実行時にテストケースを動的に生成したい場合は、@DynamicTestを使用します。</p>
-
-                    <h4>5.5.1 基本的な動的テストの作成</h4>
-                    
-                    <pre class="code-block"><code class="language-java">import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.TestFactory;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.stream.Stream;
-
-class DynamicTestExamples {
-    
-    @TestFactory
-    Collection&lt;DynamicTest&gt; 動的な算術テスト() {
-        return Arrays.asList(
-            DynamicTest.dynamicTest("2 + 2 = 4", () -> assertEquals(4, 2 + 2)),
-            DynamicTest.dynamicTest("3 * 3 = 9", () -> assertEquals(9, 3 * 3)),
-            DynamicTest.dynamicTest("10 / 2 = 5", () -> assertEquals(5, 10 / 2)),
-            DynamicTest.dynamicTest("7 - 3 = 4", () -> assertEquals(4, 7 - 3))
-        );
-    }
-    
-    @TestFactory
-    Stream&lt;DynamicTest&gt; ストリームによる動的テスト() {
-        // テストデータの配列
-        int[] numbers = {1, 2, 3, 5, 8, 13, 21};
-        
-        return Arrays.stream(numbers)
-            .mapToObj(number -> 
-                DynamicTest.dynamicTest(
-                    "数値 " + number + " の平方根テスト",
-                    () -> {
-                        double sqrt = Math.sqrt(number);
-                        assertTrue(sqrt > 0);
-                        assertEquals(number, sqrt * sqrt, 0.0001);
-                    }
-                )
-            );
-    }
-    
-    @TestFactory
-    Stream&lt;DynamicTest&gt; 複雑な動的テスト生成() {
-        // より複雑な条件でテストを生成
-        return Stream.of("apple", "banana", "orange", "grape")
-            .map(fruit -> 
-                DynamicTest.dynamicTest(
-                    fruit + " の文字列検証テスト",
-                    () -> {
-                        assertNotNull(fruit);
-                        assertFalse(fruit.isEmpty());
-                        assertTrue(fruit.length() >= 4);
-                        assertTrue(Character.isLowerCase(fruit.charAt(0)));
-                    }
-                )
-            );
-    }
-}</code></pre>
-
-                    <div class="highlight">
-                        <h6><strong>動的テストの利点</strong></h6>
-                        <ul>
-                            <li><strong>実行時決定</strong>：テストの内容を実行時に決定できる</li>
-                            <li><strong>データ駆動</strong>：外部データソースに基づいてテストを生成</li>
-                            <li><strong>条件分岐</strong>：条件に応じて異なるテストを生成</li>
-                            <li><strong>柔軟性</strong>：複雑なテスト生成ロジックを実装可能</li>
-                        </ul>
-                    </div>
-
-                    <div class="exercise-container">
-                        <h5>実習 5-2: 動的なファイル処理テストの作成</h5>
-                        <p>複数のファイル形式に対応したファイル処理システムの動的テストを作成してみましょう。</p>
-                        
-                        <h6>手順1: ファイル処理システムの作成</h6>
-                        <p><code>FileProcessor.java</code>を作成します：</p>
-                        
-                        <pre class="code-block"><code class="language-java">import java.util.*;
-
-public class FileProcessor {
-    
-    public boolean isSupportedFormat(String fileName) {
-        String extension = getFileExtension(fileName);
-        return Arrays.asList("txt", "csv", "json", "xml").contains(extension);
-    }
-    
-    public String getFileType(String fileName) {
-        String extension = getFileExtension(fileName);
-        switch (extension) {
-            case "txt": return "プレーンテキスト";
-            case "csv": return "CSV形式";
-            case "json": return "JSON形式";
-            case "xml": return "XML形式";
-            default: return "不明な形式";
-        }
-    }
-    
-    public long estimateProcessingTime(String fileName, long fileSize) {
-        String extension = getFileExtension(fileName);
-        long baseTime = fileSize / 1024; // KB単位での基本処理時間
-        
-        switch (extension) {
-            case "txt": return baseTime;
-            case "csv": return baseTime * 2;
-            case "json": return baseTime * 3;
-            case "xml": return baseTime * 4;
-            default: return -1;
-        }
-    }
-    
-    private String getFileExtension(String fileName) {
-        if (fileName == null || !fileName.contains(".")) {
-            return "";
-        }
-        return fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
-    }
-}</code></pre>
-
-                        <h6>手順2: 動的テストクラスの作成</h6>
-                        <p><code>FileProcessorDynamicTest.java</code>を作成します：</p>
-                        
-                        <pre class="code-block"><code class="language-java">import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.TestFactory;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-import static org.junit.jupiter.api.Assertions.*;
-import java.util.*;
-import java.util.stream.Stream;
-
-class FileProcessorDynamicTest {
-    private final FileProcessor processor = new FileProcessor();
-    
-    @TestFactory
-    Stream&lt;DynamicTest&gt; サポートされるファイル形式の動的テスト() {
-        Map&lt;String, Boolean&gt; testFiles = Map.of(
-            "document.txt", true,
-            "data.csv", true,
-            "config.json", true,
-            "settings.xml", true,
-            "image.jpg", false,
-            "archive.zip", false,
-            "noextension", false
-        );
-        
-        return testFiles.entrySet().stream()
-            .map(entry -> 
-                DynamicTest.dynamicTest(
-                    entry.getKey() + " のサポート確認テスト",
-                    () -> assertEquals(entry.getValue(), processor.isSupportedFormat(entry.getKey()))
-                )
-            );
-    }
-    
-    @TestFactory
-    Collection&lt;DynamicTest&gt; ファイルタイプ判定の動的テスト() {
-        Map&lt;String, String&gt; fileTypeTests = Map.of(
-            "readme.txt", "プレーンテキスト",
-            "sales.csv", "CSV形式", 
-            "config.json", "JSON形式",
-            "layout.xml", "XML形式"
-        );
-        
-        return fileTypeTests.entrySet().stream()
-            .map(entry -> 
-                DynamicTest.dynamicTest(
-                    entry.getKey() + " のファイルタイプ判定テスト",
-                    () -> assertEquals(entry.getValue(), processor.getFileType(entry.getKey()))
-                )
-            )
-            .toList();
-    }
-    
-    @TestFactory
-    Stream&lt;DynamicTest&gt; 処理時間見積もりの動的テスト() {
-        // 異なるファイルサイズでのテスト
-        List&lt;Long&gt; fileSizes = Arrays.asList(1024L, 2048L, 4096L, 8192L);
-        List&lt;String&gt; extensions = Arrays.asList("txt", "csv", "json", "xml");
-        
-        return extensions.stream()
-            .flatMap(ext -> 
-                fileSizes.stream().map(size -> 
-                    DynamicTest.dynamicTest(
-                        String.format("%s ファイル（%d KB）の処理時間見積もりテスト", ext, size / 1024),
-                        () -> {
-                            String fileName = "test." + ext;
-                            long estimatedTime = processor.estimateProcessingTime(fileName, size);
-                            
-                            assertTrue(estimatedTime > 0, "処理時間は正の値である必要があります");
-                            
-                            // 拡張子による処理時間の違いを検証
-                            long baseTime = size / 1024;
-                            switch (ext) {
-                                case "txt":
-                                    assertEquals(baseTime, estimatedTime);
-                                    break;
-                                case "csv":
-                                    assertEquals(baseTime * 2, estimatedTime);
-                                    break;
-                                case "json":
-                                    assertEquals(baseTime * 3, estimatedTime);
-                                    break;
-                                case "xml":
-                                    assertEquals(baseTime * 4, estimatedTime);
-                                    break;
-                            }
-                        }
-                    )
-                )
-            );
-    }
-    
-    @ParameterizedTest
-    @MethodSource("provideInvalidFiles")
-    void 無効なファイルでの処理時間テスト(String fileName, long fileSize) {
-        long result = processor.estimateProcessingTime(fileName, fileSize);
-        assertEquals(-1, result);
-    }
-    
-    static Stream&lt;org.junit.jupiter.params.provider.Arguments&gt; provideInvalidFiles() {
-        return Stream.of(
-            org.junit.jupiter.params.provider.Arguments.of("image.jpg", 1024L),
-            org.junit.jupiter.params.provider.Arguments.of("archive.zip", 2048L),
-            org.junit.jupiter.params.provider.Arguments.of("noextension", 1024L)
-        );
-    }
-}</code></pre>
-
-                        <h6>期待される結果</h6>
-                        <p>この動的テストでは以下の特徴が確認できます：</p>
-                        <ul>
-                            <li>Map.entrySet()を使った効率的なテストケース生成</li>
-                            <li>flatMap()による複数次元のテストデータ展開</li>
-                            <li>パラメータ化テストと動的テストの組み合わせ</li>
-                            <li>実行時にテスト名が動的に生成される</li>
-                        </ul>
-                    </div>
-
-                    <div class="quiz-container">
-                        <h5>理解度確認クイズ</h5>
-                        <ol>
-                            <li><strong>@ParameterizedTestとは何ですか？</strong>
-                                <ul>
-                                    <li>a) 複数のテストクラスを一度に実行するアノテーション</li>
-                                    <li>b) 同じテストロジックを異なるデータで複数回実行するアノテーション</li>
-                                    <li>c) テストの実行順序を制御するアノテーション</li>
-                                    <li>d) テストの実行時間を測定するアノテーション</li>
-                                </ul>
-                            </li>
-                            <li><strong>@ValueSourceで使用できないデータ型はどれですか？</strong>
-                                <ul>
-                                    <li>a) strings</li>
-                                    <li>b) ints</li>
-                                    <li>c) objects（カスタムオブジェクト）</li>
-                                    <li>d) booleans</li>
-                                </ul>
-                            </li>
-                            <li><strong>@MethodSourceで使用するデータ提供メソッドの条件は何ですか？</strong>
-                                <ul>
-                                    <li>a) publicメソッドである必要がある</li>
-                                    <li>b) staticメソッドである必要がある</li>
-                                    <li>c) 引数を持つ必要がある</li>
-                                    <li>d) 戻り値がvoidである必要がある</li>
-                                </ul>
-                            </li>
-                            <li><strong>@DynamicTestの主な用途は何ですか？</strong>
-                                <ul>
-                                    <li>a) テストの実行速度を向上させる</li>
-                                    <li>b) 実行時にテストケースを動的に生成する</li>
-                                    <li>c) テストの順序を動的に変更する</li>
-                                    <li>d) テストデータを暗号化する</li>
-                                </ul>
-                            </li>
-                        </ol>
-                        
-                        <details style="margin-top: 1rem;">
-                            <summary><strong>解答を見る</strong></summary>
-                            <div style="margin-top: 0.5rem;">
-                                <p><strong>1.</strong> b) 同じテストロジックを異なるデータで複数回実行するアノテーション</p>
-                                <p><strong>2.</strong> c) objects（カスタムオブジェクト）</p>
-                                <p><strong>3.</strong> b) staticメソッドである必要がある</p>
-                                <p><strong>4.</strong> b) 実行時にテストケースを動的に生成する</p>
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">JUnit学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>Javaエコシステム</span>
                             </div>
-                        </details>
-                    </div>
-
-                    <!-- Chapter navigation -->
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="junit-learning-material-04.html" class="btn btn-secondary">← 前の章：テストライフサイクルとアノテーション</a>
-                        <a href="junit-learning-material-06.html" class="btn btn-primary">次の章：例外テストとタイムアウト →</a>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 30分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </main>
-        </div>
+
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="../README.html" class="hover:text-primary-600 transition-colors">JUnit</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第5章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第5章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">テストの準備と後片付け - ライフサイクルを理解しよう</h1>
+                    <p class="text-slate-600">@BeforeEach、@AfterEach、@BeforeAll、@AfterAllアノテーションを使った前処理・後処理について学びます。料理で例えると、調理前の材料準備と調理後の片付けのようなものです。テストの効率化と確実な実行環境の整備方法を解説します。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>テストのライフサイクル（生まれてから終わるまでの流れ）を理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>@BeforeEachと@AfterEachアノテーションの使い方を学ぶ</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>@BeforeAllと@AfterAllアノテーションの使い方を学ぶ</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>効率的なテストコードの書き方を身につける</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション1: テストのライフサイクルとは -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.1 テストのライフサイクルとは？
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        テストを実行するときには、実は「テストを実行する」だけでなく、その前後にいろいろな処理が必要になることがあります。
+                    </p>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        例えば、データベースを使うテストなら「データベースに接続する」という準備が必要ですし、テストが終わったら「データベースを切断する」という後片付けが必要です。
+                    </p>
+
+                    <!-- たとえ話カード -->
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">料理で例えると</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    料理を作るとき、まず材料を準備しますよね（野菜を洗う、包丁を用意する）。
+                                    そして料理を作り、最後に使った道具を洗って片付けます。
+                                    テストも同じで、「準備→実行→片付け」という流れがあるのです。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mermaid bg-white p-6 rounded-lg shadow-sm my-6">
+flowchart LR
+    A[準備<br/>@BeforeEach] --> B[テスト実行<br/>@Test]
+    B --> C[後片付け<br/>@AfterEach]
+
+    style A fill:#e0f2fe,stroke:#0284c7
+    style B fill:#fef3c7,stroke:#f59e0b
+    style C fill:#fce7f3,stroke:#ec4899
+                    </div>
+                </section>
+
+                <!-- セクション2: @BeforeEachと@AfterEach -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.2 各テストの前後に実行する - @BeforeEachと@AfterEach
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>@BeforeEach</strong>と<strong>@AfterEach</strong>は、<strong>各テストメソッドの前後</strong>に実行されるメソッドに付けるアノテーションです。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">@BeforeEach - 準備処理</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        各テストを実行する<strong>前</strong>に毎回実行される処理です。テストで使うオブジェクトの初期化などを行います。
+                    </p>
+
+                    <div class="code-block-wrapper">
+                        <div class="code-block-header">
+                            <span class="code-block-title">CalculatorTest.java - @BeforeEachの基本</span>
+                            <button class="copy-button" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre><code class="language-java">import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class CalculatorTest {
+    // テストで使う電卓オブジェクト
+    private Calculator calculator;
+
+    // 各テストの前に実行される
+    @BeforeEach
+    void setUp() {
+        // 新しい電卓を用意（準備）
+        calculator = new Calculator();
+        System.out.println("電卓を準備しました");
+    }
+
+    @Test
+    void testAdd() {
+        // calculatorはsetUp()で準備済み
+        assertEquals(5, calculator.add(2, 3));
+    }
+
+    @Test
+    void testSubtract() {
+        // こちらのテストでもcalculatorは準備済み
+        assertEquals(1, calculator.subtract(3, 2));
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-star text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">実行の流れ</p>
+                                <ol class="text-emerald-800 text-sm mt-2 space-y-1 list-decimal list-inside">
+                                    <li>setUp()を実行（calculatorを準備）</li>
+                                    <li>testAdd()を実行</li>
+                                    <li>setUp()を実行（新しいcalculatorを準備）</li>
+                                    <li>testSubtract()を実行</li>
+                                </ol>
+                                <p class="text-emerald-800 text-sm mt-2">各テストは毎回まっさらな状態から始まります！</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">@AfterEach - 後片付け処理</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        各テストを実行した<strong>後</strong>に毎回実行される処理です。使ったリソースの解放などを行います。
+                    </p>
+
+                    <div class="code-block-wrapper">
+                        <div class="code-block-header">
+                            <span class="code-block-title">FileTest.java - @AfterEachの基本</span>
+                            <button class="copy-button" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre><code class="language-java">import org.junit.jupiter.api.*;
+import java.io.*;
+
+class FileTest {
+    private File testFile;
+
+    @BeforeEach
+    void setUp() throws IOException {
+        // テスト用のファイルを作成
+        testFile = new File("test.txt");
+        testFile.createNewFile();
+        System.out.println("テストファイルを作成");
+    }
+
+    @AfterEach
+    void tearDown() {
+        // テストで使ったファイルを削除
+        if (testFile.exists()) {
+            testFile.delete();
+            System.out.println("テストファイルを削除");
+        }
+    }
+
+    @Test
+    void testFileExists() {
+        // ファイルが存在することを確認
+        assertTrue(testFile.exists());
+    }
+
+    @Test
+    void testFileWrite() throws IOException {
+        // ファイルに書き込みできることを確認
+        // ... テストコード ...
+    }
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション3: @BeforeAllと@AfterAll -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.3 全テストの前後に実行する - @BeforeAllと@AfterAll
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>@BeforeAll</strong>と<strong>@AfterAll</strong>は、<strong>全テストの実行前と実行後に1回だけ</strong>実行されるメソッドに付けるアノテーションです。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">@BeforeAll - 全体の準備</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        すべてのテストを実行する<strong>前に1回だけ</strong>実行されます。データベース接続の確立など、重い処理を1回だけ行いたいときに使います。
+                    </p>
+
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-red-900 font-medium break-words">重要な注意点</p>
+                                <p class="text-red-800 text-sm mt-1 break-words">
+                                    @BeforeAllと@AfterAllを付けたメソッドは<strong>staticメソッド</strong>にする必要があります。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="code-block-wrapper">
+                        <div class="code-block-header">
+                            <span class="code-block-title">DatabaseTest.java - @BeforeAllと@AfterAll</span>
+                            <button class="copy-button" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre><code class="language-java">import org.junit.jupiter.api.*;
+
+class DatabaseTest {
+    // すべてのテストで共有するデータベース接続
+    private static Connection dbConnection;
+
+    // 全テストの前に1回だけ実行
+    @BeforeAll
+    static void initAll() {
+        System.out.println("データベースに接続");
+        // データベース接続を確立（例）
+        // dbConnection = ...
+    }
+
+    // 全テストの後に1回だけ実行
+    @AfterAll
+    static void tearDownAll() {
+        System.out.println("データベース接続を閉じる");
+        // データベース接続を閉じる
+        // dbConnection.close();
+    }
+
+    @BeforeEach
+    void setUp() {
+        System.out.println("テストデータを準備");
+    }
+
+    @AfterEach
+    void tearDown() {
+        System.out.println("テストデータを削除");
+    }
+
+    @Test
+    void testQuery1() {
+        System.out.println("テスト1実行");
+        // テストコード
+    }
+
+    @Test
+    void testQuery2() {
+        System.out.println("テスト2実行");
+        // テストコード
+    }
+}</code></pre>
+                    </div>
+
+                    <div class="bg-slate-100 rounded-lg p-4 my-4">
+                        <p class="text-slate-700 text-sm mb-2"><strong>実行順序：</strong></p>
+                        <pre class="text-slate-600 text-sm">データベースに接続      ← @BeforeAll（1回）
+テストデータを準備       ← @BeforeEach
+テスト1実行
+テストデータを削除       ← @AfterEach
+テストデータを準備       ← @BeforeEach
+テスト2実行
+テストデータを削除       ← @AfterEach
+データベース接続を閉じる ← @AfterAll（1回）</pre>
+                    </div>
+                </section>
+
+                <!-- セクション4: いつどれを使う？ -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.4 いつどれを使えばいい？
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        4つのアノテーションの使い分けを理解しましょう。
+                    </p>
+
+                    <div class="grid gap-4 my-6">
+                        <!-- @BeforeEach -->
+                        <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-play text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-blue-900 mb-2">@BeforeEach - 各テストの前</h3>
+                                    <p class="text-blue-800 text-sm mb-2">
+                                        テストごとに新しいオブジェクトが必要な場合に使います。
+                                    </p>
+                                    <p class="text-blue-700 text-xs">
+                                        例：電卓オブジェクト、リストの初期化、テストデータの準備
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- @AfterEach -->
+                        <div class="bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-stop text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-purple-900 mb-2">@AfterEach - 各テストの後</h3>
+                                    <p class="text-purple-800 text-sm mb-2">
+                                        テストで使ったリソースを片付ける場合に使います。
+                                    </p>
+                                    <p class="text-purple-700 text-xs">
+                                        例：ファイルの削除、一時データのクリーンアップ
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- @BeforeAll -->
+                        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-power-off text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-emerald-900 mb-2">@BeforeAll - 全体の開始前</h3>
+                                    <p class="text-emerald-800 text-sm mb-2">
+                                        時間がかかる初期化を1回だけ行いたい場合に使います。
+                                    </p>
+                                    <p class="text-emerald-700 text-xs">
+                                        例：データベース接続、設定ファイルの読み込み
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- @AfterAll -->
+                        <div class="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-times-circle text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-orange-900 mb-2">@AfterAll - 全体の終了後</h3>
+                                    <p class="text-orange-800 text-sm mb-2">
+                                        全テスト終了後に1回だけ後片付けしたい場合に使います。
+                                    </p>
+                                    <p class="text-orange-700 text-xs">
+                                        例：データベース接続の切断、共有リソースの解放
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mermaid bg-white p-6 rounded-lg shadow-sm my-6">
+flowchart TB
+    Start[テストクラス開始]
+    BA[["@BeforeAll<br/>(1回のみ)"]]
+    BE1[["@BeforeEach"]]
+    T1["@Test テスト1"]
+    AE1[["@AfterEach"]]
+    BE2[["@BeforeEach"]]
+    T2["@Test テスト2"]
+    AE2[["@AfterEach"]]
+    AA[["@AfterAll<br/>(1回のみ)"]]
+    End[テストクラス終了]
+
+    Start --> BA
+    BA --> BE1
+    BE1 --> T1
+    T1 --> AE1
+    AE1 --> BE2
+    BE2 --> T2
+    T2 --> AE2
+    AE2 --> AA
+    AA --> End
+
+    style BA fill:#d1fae5,stroke:#10b981
+    style AA fill:#fed7aa,stroke:#f97316
+    style BE1 fill:#dbeafe,stroke:#3b82f6
+    style BE2 fill:#dbeafe,stroke:#3b82f6
+    style AE1 fill:#fce7f3,stroke:#ec4899
+    style AE2 fill:#fce7f3,stroke:#ec4899
+    style T1 fill:#fef3c7,stroke:#f59e0b
+    style T2 fill:#fef3c7,stroke:#f59e0b
+                    </div>
+                </section>
+
+                <!-- セクション5: 実習 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.5 実習 - ライフサイクルを体験しよう
+                    </h2>
+
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                                rounded-xl p-5 mb-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                        flex items-center justify-center">
+                                <i class="fas fa-laptop-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習：買い物カゴのテスト</h3>
+                                <p class="text-purple-900 mb-3">買い物カゴ（ShoppingCart）クラスをテストしてみましょう。</p>
+
+                                <div class="bg-white/50 rounded-lg p-4 mb-3">
+                                    <p class="text-purple-900 text-sm font-medium mb-2">Step 1: テスト対象クラスを作成</p>
+                                    <div class="code-block-wrapper">
+                                        <pre><code class="language-java">// ShoppingCart.java
+import java.util.ArrayList;
+import java.util.List;
+
+public class ShoppingCart {
+    private List&lt;String&gt; items;
+
+    public ShoppingCart() {
+        this.items = new ArrayList&lt;&gt;();
+    }
+
+    // 商品を追加
+    public void addItem(String item) {
+        items.add(item);
+    }
+
+    // カゴの中身の数
+    public int getItemCount() {
+        return items.size();
+    }
+
+    // カゴを空にする
+    public void clear() {
+        items.clear();
+    }
+}</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="bg-white/50 rounded-lg p-4">
+                                    <p class="text-purple-900 text-sm font-medium mb-2">Step 2: テストクラスを作成</p>
+                                    <div class="code-block-wrapper">
+                                        <pre><code class="language-java">// ShoppingCartTest.java
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+class ShoppingCartTest {
+    private ShoppingCart cart;
+
+    @BeforeAll
+    static void initAll() {
+        System.out.println("テスト開始");
+    }
+
+    @BeforeEach
+    void setUp() {
+        // 各テストの前に新しいカゴを用意
+        cart = new ShoppingCart();
+        System.out.println("新しいカゴを準備");
+    }
+
+    @AfterEach
+    void tearDown() {
+        System.out.println("カゴをクリア");
+        cart = null;
+    }
+
+    @AfterAll
+    static void tearDownAll() {
+        System.out.println("全テスト完了");
+    }
+
+    @Test
+    void testAddItem() {
+        cart.addItem("りんご");
+        assertEquals(1, cart.getItemCount());
+    }
+
+    @Test
+    void testAddMultipleItems() {
+        cart.addItem("りんご");
+        cart.addItem("バナナ");
+        assertEquals(2, cart.getItemCount());
+    }
+}</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 章のまとめ -->
+                <section class="my-8">
+                    <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6">
+                        <h2 class="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-check-circle text-primary-500"></i>
+                            この章のまとめ
+                        </h2>
+                        <ul class="space-y-3 text-slate-700">
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-circle text-xs text-primary-500 mt-2"></i>
+                                <span>テストには<strong>準備→実行→片付け</strong>というライフサイクルがある</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-circle text-xs text-primary-500 mt-2"></i>
+                                <span><strong>@BeforeEach</strong>は各テストの前に実行される（オブジェクトの初期化など）</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-circle text-xs text-primary-500 mt-2"></i>
+                                <span><strong>@AfterEach</strong>は各テストの後に実行される（リソースの解放など）</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-circle text-xs text-primary-500 mt-2"></i>
+                                <span><strong>@BeforeAll</strong>は全テストの前に1回だけ実行される（staticメソッド）</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-circle text-xs text-primary-500 mt-2"></i>
+                                <span><strong>@AfterAll</strong>は全テストの後に1回だけ実行される（staticメソッド）</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-circle text-xs text-primary-500 mt-2"></i>
+                                <span>ライフサイクルを活用することで、効率的で確実なテストコードが書ける</span>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q1. @BeforeEachと@BeforeAllの違いは何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <div class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            <p class="mb-2"><strong>@BeforeEach：</strong>各テストメソッドの前に毎回実行される。テストごとに新しいオブジェクトを準備したい場合に使う。</p>
+                                            <p><strong>@BeforeAll：</strong>全テストの最初に1回だけ実行される。staticメソッドにする必要がある。重い初期化処理を1回だけ行いたい場合に使う。</p>
+                                        </div>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q2. @BeforeAllと@AfterAllを付けたメソッドには、どんな制約がありますか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <div class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            staticメソッドにする必要があります。これは、テストクラスのインスタンスが作られる前や、すべてのインスタンスが終了した後に実行されるためです。
+                                        </div>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q3. 次のテストクラスを実行したとき、コンソールにはどのような順序でメッセージが表示されますか？</p>
+                                    <pre class="text-sm bg-slate-100 p-3 rounded mt-2 overflow-x-auto">@BeforeAll static void init() { print("A"); }
+@BeforeEach void setUp() { print("B"); }
+@Test void test1() { print("C"); }
+@Test void test2() { print("D"); }
+@AfterEach void tearDown() { print("E"); }
+@AfterAll static void cleanup() { print("F"); }</pre>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <div class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            A → B → C → E → B → D → E → F
+                                            <p class="mt-2 text-sm">
+                                                最初に@BeforeAll(A)、次に@BeforeEach(B)→test1(C)→@AfterEach(E)、
+                                                その後@BeforeEach(B)→test2(D)→@AfterEach(E)、最後に@AfterAll(F)が実行されます。
+                                            </p>
+                                        </div>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q4. 各テストで使うArrayListを毎回空の状態から始めたい場合、どのアノテーションを使いますか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <div class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            <strong>@BeforeEach</strong>を使います。各テストの前に新しいArrayListを作成することで、テスト間の影響を防ぎ、常にまっさらな状態でテストを開始できます。
+                                        </div>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <a href="junit-learning-material-04.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
+                                  transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">第4章: テストを整理整頓しよう</span>
+                        </div>
+                    </a>
+                    <a href="junit-learning-material-06.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">第6章: 様々な状況を確かめよう</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
     </div>
-    
+
     <!-- フッター -->
-    <footer class="bg-dark text-white mt-5">
-        <div class="container-fluid py-3">
-            <div class="row">
-                <div class="col-12 text-center">
-                    <p class="mb-0">© 2025 F-Circle. All rights reserved.<br>
-本資料はAIツールを活用し、人間による編集・監修のもと作成されています。無断転載・再配布を禁じます。</p>
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </footer>
-    
-    <!-- Bootstrap JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Highlight.js initialization -->
-    <script>hljs.highlightAll();</script>
-    
-    <!-- Mermaid.js initialization -->
-    <script>
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'default'
-        });
-    </script>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- サイドバー生成 -->
+    <script src="sidebar-content.js"></script>
+
+    <!-- 共通JavaScript -->
+    <script src="main.js"></script>
+
+    <!-- 描画ツール -->
+    <script src="drawing-tool.js"></script>
 </body>
 </html>
