@@ -2,675 +2,778 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SQL学習教材 第4章 - SELECT文の詳細とデータの絞り込み</title>
-    
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>SQL学習教材 第4章 - データを入れてみよう（INSERT文）</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // SQL/PostgreSQL - Blue
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <!-- Google Fonts - Noto Sans JP -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- Highlight.js CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    
+
     <!-- Mermaid.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
-    
-    <style>
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            padding-top: 56px;
-        }
-        
-        .navbar {
-            background-color: #1976d2;
-        }
-        
-        .sidebar {
-            position: sticky;
-            top: 70px;
-            height: calc(100vh - 70px);
-            overflow-y: auto;
-        }
-        
-        .chapter-title {
-            color: #1976d2;
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #1976d2;
-            padding-bottom: 0.5rem;
-        }
-        
-        .section-title {
-            color: #42a5f5;
-            margin-top: 1.2rem;
-            margin-bottom: 0.8rem;
-        }
-        
-        .quiz-container {
-            background-color: #e1f5fe;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #1976d2;
-        }
-        
-        .exercise-container {
-            background-color: #f3e5f5;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #9c27b0;
-        }
-        
-        .highlight {
-            background-color: #ffecb3;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #ffc107;
-        }
-        
-        .warning {
-            background-color: #ffebee;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #f44336;
-        }
-        
-        .code-block {
-            background-color: #1e1e1e;
-            border-radius: 5px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-        
-        .nav-link.active {
-            background-color: #1976d2 !important;
-            color: white !important;
-        }
-        
-        .operator-table th {
-            background-color: #1976d2;
-            color: white;
-        }
-    </style>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <!-- ナビゲーションバー -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">SQL学習教材</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="../../README.md">ガイドTOP</a>
-                    </li>
-                </ul>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="w-full px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-blue-400/30 to-cyan-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fas fa-database text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
+
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">SQL入門学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>データベース</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 30分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
-    <div class="container-fluid">
-        <div class="row">
-            <!-- サイドバー -->
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="sql-learning-material-01.html">第1章: 基礎概念</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="sql-learning-material-02.html">第2章: データ型</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="sql-learning-material-03.html">第3章: CRUD操作</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="sql-learning-material-04.html">第4章: SELECT文の詳細</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="sql-learning-material-05.html">第5章: 結合（JOIN）</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="sql-learning-material-06.html">第6章: 集計とグループ化</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="sql-learning-material-07.html">第7章: サブクエリ</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="sql-learning-material-08.html">第8章: パフォーマンス</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="sql-learning-material-09.html">第9章: トランザクション</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="sql-learning-material-10.html">第10章: DB設計</a>
-                        </li>
-                    </ul>
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="../README.html" class="hover:text-primary-600 transition-colors">データベース</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第4章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第4章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">データを入れてみよう（INSERT文）</h1>
+                    <p class="text-slate-600">INSERT文を使って、テーブルに実際にデータを追加する方法を学習します。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>INSERT文の基本的な書き方を理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>1件ずつデータを追加する方法を習得する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>複数のデータをまとめて追加する方法を学ぶ</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>INSERT文のよくあるエラーと対処法を知る</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-            </nav>
 
-            <!-- メインコンテンツ -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">第4章: SELECT文の詳細とデータの絞り込み</h1>
-                </div>
+                <!-- セクション1: INSERT文とは？ -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.1 INSERT文とは？
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed">
+                        <strong class="text-slate-800">INSERT文</strong>は、テーブルに新しいデータ（行）を追加するためのSQL文です。第3章で作成した「連絡先」テーブルに、実際に名前や電話番号などのデータを入れていきます。
+                    </p>
+                    <p class="text-slate-600 leading-relaxed">
+                        例えば、紙のノートに新しい友達の連絡先を書き込むように、データベースにもINSERT文を使って情報を登録します。
+                    </p>
 
-                <div id="chapter4">
-                    <h2 class="chapter-title">SELECT文の詳細とデータの絞り込み</h2>
-                    
-                    <div class="highlight">
-                        <h5>この章で学ぶこと</h5>
-                        <ul>
-                            <li>WHERE句による条件指定の詳細</li>
-                            <li>比較演算子と論理演算子の活用</li>
-                            <li>LIKE演算子によるパターン検索</li>
-                            <li>ORDER BY句によるソート機能</li>
-                            <li>LIMIT句とOFFSET句による結果の制限</li>
-                            <li>複合条件での効率的なデータ検索</li>
+                    <!-- INSERT文のイメージ図 -->
+                    <div class="my-6 bg-white rounded-xl p-6 border border-slate-200">
+                        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-plus-circle text-primary-500"></i>
+                            INSERT文の役割
+                        </h3>
+                        <div class="mermaid">
+flowchart LR
+    A[INSERT文を実行] --> B[テーブルに新しい行を追加]
+    B --> C[データが保存される]
+
+    style A fill:#dbeafe
+    style B fill:#bfdbfe
+    style C fill:#93c5fd
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div>
+                                <p class="text-blue-900 font-medium">ポイント</p>
+                                <p class="text-blue-800 text-sm mt-1">
+                                    INSERT文は「追加（挿入）」専用のSQL文です。データの追加が成功すると、テーブルに新しい行が1つ（または複数）増えます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション2: 基本的なINSERT文の書き方 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.2 基本的なINSERT文の書き方
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed">
+                        INSERT文の基本的な構文は以下の通りです。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">INSERT文の基本構文</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-sql">INSERT INTO テーブル名 (列名1, 列名2, 列名3, ...)
+VALUES (値1, 値2, 値3, ...);</code></pre>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 rounded-xl p-5 my-6">
+                        <h3 class="font-semibold text-slate-800 mb-3">各部分の意味</h3>
+                        <ul class="space-y-3 text-slate-600">
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-chevron-right text-primary-500 mt-1 flex-shrink-0"></i>
+                                <span><strong class="text-slate-800">INSERT INTO テーブル名</strong>：どのテーブルにデータを追加するかを指定</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-chevron-right text-primary-500 mt-1 flex-shrink-0"></i>
+                                <span><strong class="text-slate-800">(列名1, 列名2, ...)</strong>：どの列にデータを入れるかを指定</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-chevron-right text-primary-500 mt-1 flex-shrink-0"></i>
+                                <span><strong class="text-slate-800">VALUES (値1, 値2, ...)</strong>：実際に入れるデータを指定</span>
+                            </li>
                         </ul>
                     </div>
 
-                    <h3 class="section-title">4.1 WHERE句による条件指定</h3>
-                    <p>
-                        WHERE句は、テーブルから必要なレコードだけを選択するために使用します。
-                        効率的なクエリを作成するために最も重要な要素の一つです。
-                    </p>
-
-                    <div class="mermaid">
-                        flowchart TD
-                            A[SELECT文] --> B[SELECT 列名]
-                            A --> C[FROM テーブル名]
-                            A --> D[WHERE 条件]
-                            A --> E[ORDER BY]
-                            A --> F[LIMIT]
-                            
-                            D --> G[比較演算子]
-                            D --> H[論理演算子]
-                            D --> I[LIKE検索]
-                            D --> J[NULL検査]
-                    </div>
-
-                    <h4>基本的な比較演算子</h4>
-                    <div class="table-responsive">
-                        <table class="table operator-table">
-                            <thead>
-                                <tr>
-                                    <th>演算子</th>
-                                    <th>意味</th>
-                                    <th>例</th>
-                                    <th>説明</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>=</td>
-                                    <td>等しい</td>
-                                    <td>price = 1000</td>
-                                    <td>価格が1000と等しい</td>
-                                </tr>
-                                <tr>
-                                    <td>&lt;&gt; または !=</td>
-                                    <td>等しくない</td>
-                                    <td>status &lt;&gt; 'deleted'</td>
-                                    <td>ステータスが'deleted'ではない</td>
-                                </tr>
-                                <tr>
-                                    <td>&lt;</td>
-                                    <td>より小さい</td>
-                                    <td>age &lt; 30</td>
-                                    <td>年齢が30未満</td>
-                                </tr>
-                                <tr>
-                                    <td>&gt;</td>
-                                    <td>より大きい</td>
-                                    <td>salary &gt; 300000</td>
-                                    <td>給与が300000より多い</td>
-                                </tr>
-                                <tr>
-                                    <td>&lt;=</td>
-                                    <td>以下</td>
-                                    <td>stock_quantity &lt;= 10</td>
-                                    <td>在庫数が10以下</td>
-                                </tr>
-                                <tr>
-                                    <td>&gt;=</td>
-                                    <td>以上</td>
-                                    <td>created_at &gt;= '2024-01-01'</td>
-                                    <td>2024年1月1日以降に作成</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="exercise-container">
-                        <h5>実習 4-1: 比較演算子を使った条件指定</h5>
-                        <p>様々な比較演算子を使ってデータを絞り込んでみます。</p>
-                        <h6>実行例</h6>
-                        <pre class="code-block"><code class="language-sql">-- 価格が3000円以上の商品
-SELECT product_name, price FROM products 
-WHERE price >= 3000;
-
--- 在庫数が20未満の商品
-SELECT product_name, stock_quantity FROM products 
-WHERE stock_quantity < 20;
-
--- 特定のカテゴリではない商品
-SELECT product_name, category_id FROM products 
-WHERE category_id <> 1;
-
--- 日付範囲での検索（2024年以降に作成された顧客）
-SELECT name, created_at FROM customers 
-WHERE created_at >= '2024-01-01';
-
--- NULL値の検索
-SELECT * FROM customers WHERE phone IS NULL;
-SELECT * FROM customers WHERE phone IS NOT NULL;</code></pre>
-                    </div>
-
-                    <h3 class="section-title">4.2 論理演算子による複合条件</h3>
-                    <p>
-                        複数の条件を組み合わせる場合は、論理演算子を使用します。
-                        AND、OR、NOTを適切に使い分けることで、複雑な条件も表現できます。
-                    </p>
-
-                    <h4>論理演算子の種類</h4>
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <div class="card">
-                                <div class="card-header bg-success text-white">
-                                    <h6>AND演算子</h6>
-                                </div>
-                                <div class="card-body">
-                                    <p>全ての条件が真の場合のみ真</p>
-                                    <small>条件1 AND 条件2</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="card">
-                                <div class="card-header bg-info text-white">
-                                    <h6>OR演算子</h6>
-                                </div>
-                                <div class="card-body">
-                                    <p>いずれかの条件が真の場合に真</p>
-                                    <small>条件1 OR 条件2</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="card">
-                                <div class="card-header bg-warning text-white">
-                                    <h6>NOT演算子</h6>
-                                </div>
-                                <div class="card-body">
-                                    <p>条件の真偽を反転</p>
-                                    <small>NOT 条件1</small>
-                                </div>
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-star text-emerald-600 mt-1"></i>
+                            <div>
+                                <p class="text-emerald-900 font-medium">重要ポイント</p>
+                                <p class="text-emerald-800 text-sm mt-1">
+                                    列名の順序と値の順序は必ず一致させてください。1番目の列名には1番目の値、2番目の列名には2番目の値が対応します。
+                                </p>
                             </div>
                         </div>
                     </div>
+                </section>
 
-                    <div class="exercise-container">
-                        <h5>実習 4-2: 論理演算子による複合条件</h5>
-                        <p>複数の条件を組み合わせた検索を実行します。</p>
-                        <h6>実行例</h6>
-                        <pre class="code-block"><code class="language-sql">-- AND演算子：価格が1000円以上かつ3000円以下の商品
-SELECT product_name, price FROM products 
-WHERE price >= 1000 AND price <= 3000;
-
--- OR演算子：カテゴリ1または2の商品
-SELECT product_name, category_id FROM products 
-WHERE category_id = 1 OR category_id = 2;
-
--- NOT演算子：削除されていない商品
-SELECT product_name, is_active FROM products 
-WHERE NOT (is_active = false);
-
--- 複合条件：価格が2000円以上で、かつ在庫が10個以上の商品
-SELECT product_name, price, stock_quantity FROM products 
-WHERE price >= 2000 AND stock_quantity >= 10;
-
--- 括弧を使った条件の優先順位制御
-SELECT product_name, price, category_id FROM products 
-WHERE (category_id = 1 OR category_id = 2) AND price > 2000;</code></pre>
-                    </div>
-
-                    <h3 class="section-title">4.3 BETWEEN、IN演算子</h3>
-                    <p>
-                        範囲指定や複数値との比較では、専用の演算子を使用すると
-                        より読みやすいクエリを作成できます。
+                <!-- セクション3: 1件ずつデータを追加してみよう -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.3 1件ずつデータを追加してみよう
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed">
+                        前章で作成した「contacts」（連絡先）テーブルに、実際にデータを追加してみましょう。
                     </p>
 
-                    <div class="exercise-container">
-                        <h5>実習 4-3: BETWEEN、IN演算子の活用</h5>
-                        <p>範囲指定や複数値検索の効率的な記述方法を学習します。</p>
-                        <h6>実行例</h6>
-                        <pre class="code-block"><code class="language-sql">-- BETWEEN演算子：価格が1000円から3000円の範囲
-SELECT product_name, price FROM products 
-WHERE price BETWEEN 1000 AND 3000;
--- これは以下と同じ意味
--- WHERE price >= 1000 AND price <= 3000
-
--- IN演算子：特定の値のいずれかに一致
-SELECT product_name, category_id FROM products 
-WHERE category_id IN (1, 2, 3);
--- これは以下と同じ意味
--- WHERE category_id = 1 OR category_id = 2 OR category_id = 3
-
--- NOT IN演算子：特定の値以外
-SELECT product_name, category_id FROM products 
-WHERE category_id NOT IN (1, 4);
-
--- 日付の範囲指定
-SELECT name, created_at FROM customers 
-WHERE created_at BETWEEN '2024-01-01' AND '2024-12-31';
-
--- 文字列での範囲指定（辞書順）
-SELECT product_name FROM products 
-WHERE product_name BETWEEN 'A' AND 'P';</code></pre>
-                    </div>
-
-                    <h3 class="section-title">4.4 LIKE演算子によるパターン検索</h3>
-                    <p>
-                        LIKE演算子は文字列の部分一致検索に使用します。
-                        ワイルドカード文字と組み合わせて柔軟な検索が可能です。
-                    </p>
-
-                    <h4>ワイルドカード文字</h4>
-                    <div class="table-responsive">
-                        <table class="table operator-table">
-                            <thead>
-                                <tr>
-                                    <th>記号</th>
-                                    <th>意味</th>
-                                    <th>例</th>
-                                    <th>マッチする例</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>%</td>
-                                    <td>0文字以上の任意文字列</td>
-                                    <td>'田%'</td>
-                                    <td>田中、田村、田</td>
-                                </tr>
-                                <tr>
-                                    <td>_</td>
-                                    <td>任意の1文字</td>
-                                    <td>'田_'</td>
-                                    <td>田中、田村（2文字のみ）</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="exercise-container">
-                        <h5>実習 4-4: LIKE演算子によるパターン検索</h5>
-                        <p>様々なパターンマッチングを実行してみます。</p>
-                        <h6>実行例</h6>
-                        <pre class="code-block"><code class="language-sql">-- 前方一致：「ノート」で始まる商品名
-SELECT product_name FROM products 
-WHERE product_name LIKE 'ノート%';
-
--- 後方一致：「書」で終わる商品名
-SELECT product_name FROM products 
-WHERE product_name LIKE '%書';
-
--- 部分一致：「コーヒー」を含む商品名
-SELECT product_name FROM products 
-WHERE product_name LIKE '%コーヒー%';
-
--- メールアドレスのドメイン検索
-SELECT name, email FROM customers 
-WHERE email LIKE '%@example.com';
-
--- 特定パターン：商品コードが「PRD」で始まり、数字が続く
-SELECT product_code, product_name FROM products 
-WHERE product_code LIKE 'PRD%';
-
--- NOT LIKE：特定パターンを除外
-SELECT product_name FROM products 
-WHERE product_name NOT LIKE '%書%';
-
--- 大文字小文字を区別しない検索（PostgreSQL）
-SELECT product_name FROM products 
-WHERE product_name ILIKE '%coffee%';</code></pre>
-                    </div>
-
-                    <h3 class="section-title">4.5 ORDER BY句による結果のソート</h3>
-                    <p>
-                        ORDER BY句を使用して、クエリ結果を指定した列で並び替えることができます。
-                        昇順（ASC）または降順（DESC）を選択可能です。
-                    </p>
-
-                    <div class="exercise-container">
-                        <h5>実習 4-5: ORDER BY句によるソート</h5>
-                        <p>様々なソート方法を実行してみます。</p>
-                        <h6>実行例</h6>
-                        <pre class="code-block"><code class="language-sql">-- 価格の昇順（安い順）
-SELECT product_name, price FROM products 
-ORDER BY price ASC;  -- ASCは省略可能
-
--- 価格の降順（高い順）
-SELECT product_name, price FROM products 
-ORDER BY price DESC;
-
--- 複数列でのソート：カテゴリ昇順、その中で価格降順
-SELECT product_name, category_id, price FROM products 
-ORDER BY category_id ASC, price DESC;
-
--- 文字列のソート（五十音順）
-SELECT name FROM customers 
-ORDER BY name;
-
--- 日付のソート（新しい順）
-SELECT name, created_at FROM customers 
-ORDER BY created_at DESC;
-
--- NULLの扱い（PostgreSQLではNULLは最後に表示）
-SELECT name, phone FROM customers 
-ORDER BY phone NULLS FIRST;  -- NULLを最初に表示
-
--- 列番号でのソート（あまり推奨されない）
-SELECT product_name, price FROM products 
-ORDER BY 2 DESC;  -- 2番目の列（price）で降順</code></pre>
-                    </div>
-
-                    <h3 class="section-title">4.6 LIMIT句とOFFSET句によるページング</h3>
-                    <p>
-                        大量のデータを扱う際は、LIMIT句で取得件数を制限し、
-                        OFFSET句でページング機能を実現できます。
-                    </p>
-
-                    <div class="exercise-container">
-                        <h5>実習 4-6: LIMIT句とOFFSET句の活用</h5>
-                        <p>結果の制限とページング機能を実装します。</p>
-                        <h6>実行例</h6>
-                        <pre class="code-block"><code class="language-sql">-- 最初の3件のみを取得
-SELECT product_name, price FROM products 
-ORDER BY price 
-LIMIT 3;
-
--- 4件目から3件を取得（2ページ目の表示）
-SELECT product_name, price FROM products 
-ORDER BY price 
-LIMIT 3 OFFSET 3;
-
--- 価格の高い商品TOP5
-SELECT product_name, price FROM products 
-ORDER BY price DESC 
-LIMIT 5;
-
--- ページング処理の例
--- 1ページ目（1-10件目）
-SELECT product_name, price FROM products 
-ORDER BY product_id 
-LIMIT 10 OFFSET 0;
-
--- 2ページ目（11-20件目）
-SELECT product_name, price FROM products 
-ORDER BY product_id 
-LIMIT 10 OFFSET 10;
-
--- 3ページ目（21-30件目）
-SELECT product_name, price FROM products 
-ORDER BY product_id 
-LIMIT 10 OFFSET 20;</code></pre>
-                    </div>
-
-                    <h3 class="section-title">4.7 複合条件の実践例</h3>
-                    <p>
-                        実際のビジネスシナリオを想定した複雑な検索条件を作成してみましょう。
-                    </p>
-
-                    <div class="exercise-container">
-                        <h5>実習 4-7: 複合条件による高度な検索</h5>
-                        <p>実践的な検索クエリを作成します。</p>
-                        <h6>実行例</h6>
-                        <pre class="code-block"><code class="language-sql">-- ビジネス要件：在庫が少ない高価格商品を優先的にチェック
-SELECT 
-    product_name,
-    price,
-    stock_quantity,
-    category_id
-FROM products 
-WHERE price >= 5000 
-  AND stock_quantity <= 15 
-  AND is_active = true
-ORDER BY stock_quantity ASC, price DESC;
-
--- 顧客検索：メールアドレスが設定済みで、今年登録された顧客
-SELECT 
-    name,
-    email,
-    created_at
-FROM customers 
-WHERE email IS NOT NULL 
-  AND email <> ''
-  AND created_at >= '2024-01-01'
-ORDER BY created_at DESC;
-
--- 商品検索：特定カテゴリで、名前に特定キーワードを含む商品
-SELECT 
-    product_code,
-    product_name,
-    price,
-    stock_quantity
-FROM products 
-WHERE category_id IN (1, 2) 
-  AND (product_name LIKE '%パソコン%' OR product_name LIKE '%書籍%')
-  AND price BETWEEN 1000 AND 50000
-ORDER BY category_id, price;
-
--- 月別売上分析用：特定期間の注文データ
-SELECT 
-    o.order_id,
-    c.name AS customer_name,
-    p.product_name,
-    p.price,
-    o.quantity,
-    (p.price * o.quantity) AS total_amount,
-    o.order_date
-FROM orders o
-JOIN customers c ON o.customer_id = c.customer_id
-JOIN products p ON o.product_id = p.product_id
-WHERE o.order_date BETWEEN '2024-01-01' AND '2024-12-31'
-  AND o.status IN ('confirmed', 'completed')
-ORDER BY o.order_date DESC, total_amount DESC;</code></pre>
-                    </div>
-
-                    <div class="warning">
-                        <h6>SELECT文の最適化のポイント</h6>
-                        <ul>
-                            <li><strong>必要な列のみ選択</strong>: SELECT * は避け、必要な列を明示的に指定</li>
-                            <li><strong>WHERE句の最適化</strong>: インデックスが使われる条件を優先的に配置</li>
-                            <li><strong>LIMIT句の活用</strong>: 大量データの場合は必ず件数制限を設定</li>
-                            <li><strong>ORDER BYの考慮</strong>: ソートは処理コストが高いため、必要な場合のみ使用</li>
-                        </ul>
-                    </div>
-
-                    <!-- 理解度確認 -->
-                    <div class="quiz-container">
-                        <h5>理解度確認クイズ</h5>
-                        <ol>
-                            <li>
-                                <strong>問題1:</strong> 価格が1000円以上3000円以下の商品を検索するSQL文として、正しいのはどれですか？
-                                <br>a) WHERE price > 1000 AND price < 3000
-                                <br>b) WHERE price BETWEEN 1000 AND 3000
-                                <br>c) WHERE price >= 1000 AND price <= 3000
-                                <br>d) b) と c) の両方
-                            </li>
-                            <li>
-                                <strong>問題2:</strong> 名前が「田」で始まる顧客を検索するLIKE演算子の正しい使用法は？
-                                <br>a) WHERE name LIKE '田%'
-                                <br>b) WHERE name LIKE '%田'
-                                <br>c) WHERE name LIKE '%田%'
-                                <br>d) WHERE name LIKE '田_'
-                            </li>
-                            <li>
-                                <strong>問題3:</strong> 以下のSQL文の実行結果は何件になりますか？
-                                <pre class="code-block"><code class="language-sql">SELECT * FROM products 
-WHERE category_id IN (1, 2) 
-LIMIT 5 OFFSET 3;</code></pre>
-                                <small>ヒント: カテゴリ1, 2に10件のレコードがあるとして</small>
-                            </li>
-                            <li>
-                                <strong>問題4:</strong> NULL値を検索する正しいSQL文は？
-                                <br>a) WHERE phone = NULL
-                                <br>b) WHERE phone IS NULL  
-                                <br>c) WHERE phone == NULL
-                                <br>d) WHERE phone LIKE NULL
-                            </li>
-                            <li>
-                                <strong>問題5:</strong> ORDER BY句を使わずに結果の順序は保証されますか？理由も含めて答えてください。
-                            </li>
-                        </ol>
-                        
-                        <details class="mt-3">
-                            <summary>解答を表示</summary>
-                            <div class="mt-2">
-                                <strong>解答:</strong>
-                                <ol>
-                                    <li>d) b) と c) の両方（BETWEENは境界値を含む、ANDを使った条件も同じ結果）</li>
-                                    <li>a) WHERE name LIKE '田%'（前方一致検索）</li>
-                                    <li>5件（OFFSET 3で4件目から始まり、LIMIT 5で最大5件まで取得）</li>
-                                    <li>b) WHERE phone IS NULL（NULLの比較にはIS/IS NOTを使用）</li>
-                                    <li>いいえ、保証されません。リレーショナルデータベースでは、ORDER BY句がない限り結果の順序は不定です</li>
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 mb-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 4-1: 1件のデータを追加する</h3>
+                                <p class="text-purple-900 mb-4 break-words">contactsテーブルに、1人分の連絡先データを追加してみましょう。</p>
+                                <h4 class="font-medium text-purple-800 mb-2 break-words">手順</h4>
+                                <ol class="space-y-3 mb-4">
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
+                                        <span class="flex-1 min-w-0 break-words">pgAdminまたはpsqlを開いて、学習用データベースに接続します</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
+                                        <span class="flex-1 min-w-0 break-words">以下のINSERT文を入力して実行します</span>
+                                    </li>
                                 </ol>
                             </div>
-                        </details>
+                        </div>
                     </div>
 
-                    <!-- 章間ナビゲーション -->
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="sql-learning-material-03.html" class="btn btn-secondary">← 前の章: CRUD操作</a>
-                        <a href="sql-learning-material-05.html" class="btn btn-primary">次の章: 結合（JOIN） →</a>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">1件のデータを追加</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-sql">-- 田中太郎さんの連絡先を追加
+INSERT INTO contacts (name, email, phone)
+VALUES ('田中太郎', 'tanaka@example.com', '090-1234-5678');</code></pre>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 rounded-xl p-5 my-6">
+                        <h3 class="font-semibold text-slate-800 mb-3">このINSERT文の解説</h3>
+                        <ul class="space-y-3 text-slate-600">
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-arrow-right text-primary-500 mt-1 flex-shrink-0"></i>
+                                <span><code class="bg-slate-100 px-2 py-0.5 rounded">contacts</code>：データを追加するテーブル名</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-arrow-right text-primary-500 mt-1 flex-shrink-0"></i>
+                                <span><code class="bg-slate-100 px-2 py-0.5 rounded">(name, email, phone)</code>：データを入れる列名を指定</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-arrow-right text-primary-500 mt-1 flex-shrink-0"></i>
+                                <span><code class="bg-slate-100 px-2 py-0.5 rounded">VALUES (...)</code>：実際のデータ（文字列はシングルクォート ' で囲む）</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 動作確認カード -->
+                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5 mb-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-play text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-emerald-800 mb-3 break-words">動作確認</h3>
+                                <p class="text-emerald-900 mb-4 break-words">データが正しく追加されたか確認してみましょう。</p>
+                                <div class="code-block-wrapper mb-4">
+                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                        <span class="text-slate-400 text-sm">確認用SELECT文</span>
+                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                                onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre class="!mt-0 !rounded-t-none"><code class="language-sql">-- テーブルの全データを表示
+SELECT * FROM contacts;</code></pre>
+                                </div>
+                                <h4 class="font-medium text-emerald-800 mb-2 break-words">
+                                    <i class="fas fa-check-circle mr-2"></i>期待される結果
+                                </h4>
+                                <div class="bg-white/60 rounded-lg p-4 border border-emerald-200 overflow-x-auto">
+                                    <table class="min-w-full text-sm">
+                                        <thead class="bg-slate-100">
+                                            <tr>
+                                                <th class="px-3 py-2 text-left">id</th>
+                                                <th class="px-3 py-2 text-left">name</th>
+                                                <th class="px-3 py-2 text-left">email</th>
+                                                <th class="px-3 py-2 text-left">phone</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="px-3 py-2">1</td>
+                                                <td class="px-3 py-2">田中太郎</td>
+                                                <td class="px-3 py-2">tanaka@example.com</td>
+                                                <td class="px-3 py-2">090-1234-5678</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div>
+                                <p class="text-blue-900 font-medium">ヒント</p>
+                                <p class="text-blue-800 text-sm mt-1">
+                                    id列には値を指定していませんが、自動で連番（1, 2, 3...）が振られます。これは第3章でテーブル作成時に<code class="bg-blue-100 px-1 rounded">SERIAL</code>型を指定したためです。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション4: 複数のデータをまとめて追加 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.4 複数のデータをまとめて追加してみよう
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed">
+                        1つのINSERT文で、複数のデータを一度に追加することもできます。VALUESの後に、カンマ区切りで複数のデータセットを並べます。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">複数行を一度に追加</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-sql">-- 3人分の連絡先をまとめて追加
+INSERT INTO contacts (name, email, phone)
+VALUES
+    ('佐藤花子', 'sato@example.com', '090-2345-6789'),
+    ('鈴木一郎', 'suzuki@example.com', '080-3456-7890'),
+    ('高橋美咲', 'takahashi@example.com', '070-4567-8901');</code></pre>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 rounded-xl p-5 my-6">
+                        <h3 class="font-semibold text-slate-800 mb-3">書き方のポイント</h3>
+                        <ul class="space-y-3 text-slate-600">
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
+                                <span>各データセットは<code class="bg-slate-100 px-2 py-0.5 rounded">(...)</code>で囲む</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
+                                <span>データセット同士はカンマ<code class="bg-slate-100 px-2 py-0.5 rounded">,</code>で区切る</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
+                                <span>最後のデータセットの後ろはセミコロン<code class="bg-slate-100 px-2 py-0.5 rounded">;</code>で終わる</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
+                                <span>見やすくするために改行やインデントを入れても問題ありません</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 mb-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 4-2: 複数のデータを追加する</h3>
+                                <p class="text-purple-900 mb-4 break-words">上記のSQL文を実行して、3人分のデータを一度に追加してみましょう。</p>
+                                <h4 class="font-medium text-purple-800 mb-2 break-words">確認</h4>
+                                <p class="text-purple-900 break-words">実行後、<code class="bg-purple-100 px-2 py-0.5 rounded">SELECT * FROM contacts;</code>で全データを表示して、4件のデータが登録されていることを確認してください。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-star text-emerald-600 mt-1"></i>
+                            <div>
+                                <p class="text-emerald-900 font-medium">まとめて追加のメリット</p>
+                                <p class="text-emerald-800 text-sm mt-1">
+                                    1つのINSERT文で複数のデータを追加すると、1件ずつ実行するよりも処理が速くなります。大量のデータを登録するときに便利です。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション5: NULLと列の省略 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.5 NULLと列の省略
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed">
+                        すべての列にデータがあるとは限りません。例えば、メールアドレスがわからない人や、電話番号を登録したくない場合があります。そんなときは、その列を<strong class="text-slate-800">NULL（ヌル）</strong>にするか、列自体を省略します。
+                    </p>
+
+                    <div class="bg-white border border-slate-200 rounded-xl p-5 my-6">
+                        <h3 class="font-semibold text-slate-800 mb-3">NULLとは？</h3>
+                        <p class="text-slate-600 text-sm">
+                            NULL（ヌル）は「データが存在しない」「不明」を表す特別な値です。0（ゼロ）や空文字（''）とは異なります。
+                        </p>
+                    </div>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">電話番号がわからない場合</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-sql">-- 方法1: 明示的にNULLを指定
+INSERT INTO contacts (name, email, phone)
+VALUES ('山田次郎', 'yamada@example.com', NULL);
+
+-- 方法2: phone列を省略（自動的にNULLになる）
+INSERT INTO contacts (name, email)
+VALUES ('伊藤三郎', 'ito@example.com');</code></pre>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div>
+                                <p class="text-blue-900 font-medium">ポイント</p>
+                                <p class="text-blue-800 text-sm mt-1">
+                                    ただし、テーブル作成時に<code class="bg-blue-100 px-1 rounded">NOT NULL</code>制約を付けた列は、必ず値を指定する必要があります。省略やNULLを指定するとエラーになります。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション6: よくあるエラーと対処法 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.6 よくあるエラーと対処法
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed">
+                        INSERT文を実行する際に、よく遭遇するエラーとその対処法を紹介します。
+                    </p>
+
+                    <!-- トラブルシューティング -->
+                    <div class="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-xl overflow-hidden mb-6">
+                        <div class="bg-orange-100 px-6 py-3 border-b border-orange-200">
+                            <h3 class="font-semibold text-orange-800 flex items-center gap-2">
+                                <i class="fas fa-tools"></i>
+                                トラブルシューティング
+                            </h3>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <details class="group">
+                                <summary class="flex items-center gap-3 cursor-pointer list-none p-3 rounded-lg bg-white border border-orange-200 hover:bg-orange-50 transition-colors">
+                                    <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                    <span class="font-medium text-orange-800">エラー: 列の数と値の数が一致しない</span>
+                                    <i class="fas fa-chevron-down ml-auto text-orange-400 transition-transform group-open:rotate-180"></i>
+                                </summary>
+                                <div class="mt-3 pl-10 text-orange-900 space-y-2">
+                                    <p class="mb-2"><strong>エラーメッセージ例:</strong></p>
+                                    <pre class="bg-white/60 p-3 rounded text-sm">ERROR: INSERT has more expressions than target columns</pre>
+                                    <p class="mb-2"><strong>原因:</strong> 列名の数と値の数が合っていません。</p>
+                                    <p><strong>解決方法:</strong> 列名と値の数を揃えます。列名が3つなら、値も3つ指定してください。</p>
+                                </div>
+                            </details>
+
+                            <details class="group">
+                                <summary class="flex items-center gap-3 cursor-pointer list-none p-3 rounded-lg bg-white border border-orange-200 hover:bg-orange-50 transition-colors">
+                                    <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                    <span class="font-medium text-orange-800">エラー: データ型が一致しない</span>
+                                    <i class="fas fa-chevron-down ml-auto text-orange-400 transition-transform group-open:rotate-180"></i>
+                                </summary>
+                                <div class="mt-3 pl-10 text-orange-900 space-y-2">
+                                    <p class="mb-2"><strong>エラーメッセージ例:</strong></p>
+                                    <pre class="bg-white/60 p-3 rounded text-sm">ERROR: invalid input syntax for type integer</pre>
+                                    <p class="mb-2"><strong>原因:</strong> 数値型の列に文字列を入れようとしたなど、データ型が合っていません。</p>
+                                    <p><strong>解決方法:</strong> 列のデータ型に合った値を指定します。文字列はシングルクォートで囲み、数値はそのまま書きます。</p>
+                                </div>
+                            </details>
+
+                            <details class="group">
+                                <summary class="flex items-center gap-3 cursor-pointer list-none p-3 rounded-lg bg-white border border-orange-200 hover:bg-orange-50 transition-colors">
+                                    <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                    <span class="font-medium text-orange-800">エラー: シングルクォートの閉じ忘れ</span>
+                                    <i class="fas fa-chevron-down ml-auto text-orange-400 transition-transform group-open:rotate-180"></i>
+                                </summary>
+                                <div class="mt-3 pl-10 text-orange-900 space-y-2">
+                                    <p class="mb-2"><strong>エラーメッセージ例:</strong></p>
+                                    <pre class="bg-white/60 p-3 rounded text-sm">ERROR: unterminated quoted string</pre>
+                                    <p class="mb-2"><strong>原因:</strong> 文字列を囲むシングルクォート<code class="bg-orange-100 px-1 rounded">'</code>を閉じ忘れています。</p>
+                                    <p><strong>解決方法:</strong> 文字列は必ず<code class="bg-orange-100 px-1 rounded">'</code>で開始し、<code class="bg-orange-100 px-1 rounded">'</code>で閉じてください。</p>
+                                </div>
+                            </details>
+
+                            <details class="group">
+                                <summary class="flex items-center gap-3 cursor-pointer list-none p-3 rounded-lg bg-white border border-orange-200 hover:bg-orange-50 transition-colors">
+                                    <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                    <span class="font-medium text-orange-800">エラー: 存在しないテーブルや列名</span>
+                                    <i class="fas fa-chevron-down ml-auto text-orange-400 transition-transform group-open:rotate-180"></i>
+                                </summary>
+                                <div class="mt-3 pl-10 text-orange-900 space-y-2">
+                                    <p class="mb-2"><strong>エラーメッセージ例:</strong></p>
+                                    <pre class="bg-white/60 p-3 rounded text-sm">ERROR: relation "contact" does not exist</pre>
+                                    <p class="mb-2"><strong>原因:</strong> テーブル名や列名のスペルミスです。</p>
+                                    <p><strong>解決方法:</strong> テーブル名・列名を正しく入力します。大文字小文字やスペルを確認してください。</p>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                            <div>
+                                <p class="text-red-900 font-medium">つまずきポイント</p>
+                                <p class="text-red-800 text-sm mt-1">
+                                    エラーメッセージが英語で表示されると焦るかもしれませんが、落ち着いて読んでみましょう。エラーメッセージには「どこで」「何が」問題なのかが書かれています。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション7: この章のまとめ -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.7 この章のまとめ
+                    </h2>
+
+                    <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-check-circle text-primary-500"></i>
+                            第4章で学んだこと
+                        </h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-3 text-slate-700">
+                                <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                                <span><strong>INSERT文</strong>は、テーブルに新しいデータを追加するためのSQL文</span>
+                            </li>
+                            <li class="flex items-start gap-3 text-slate-700">
+                                <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                                <span>基本構文は<code class="bg-slate-200 px-1 rounded">INSERT INTO テーブル名 (列名...) VALUES (値...);</code></span>
+                            </li>
+                            <li class="flex items-start gap-3 text-slate-700">
+                                <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                                <span>1つのINSERT文で<strong>複数のデータをまとめて追加</strong>できる</span>
+                            </li>
+                            <li class="flex items-start gap-3 text-slate-700">
+                                <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                                <span>データがない列は<strong>NULL</strong>にするか、列を省略できる</span>
+                            </li>
+                            <li class="flex items-start gap-3 text-slate-700">
+                                <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                                <span>エラーメッセージを読んで、問題箇所を特定する習慣が大切</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-arrow-right text-emerald-600 mt-1"></i>
+                            <div>
+                                <p class="text-emerald-900 font-medium">次の章では</p>
+                                <p class="text-emerald-800 text-sm mt-1">
+                                    データを「見る」ための<strong>SELECT文</strong>を学習します。テーブルに登録したデータをどのように取り出すのか、基本的な検索方法を習得しましょう。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q1. INSERT文の役割は何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            INSERT文は、テーブルに新しいデータ（行）を追加するためのSQL文です。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q2. 以下のINSERT文の誤りを指摘してください。<br><code class="bg-blue-100 px-1 rounded">INSERT INTO users (id, name) VALUES ('山田太郎');</code></p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            列名が2つ（id, name）なのに、値が1つしかありません。列の数と値の数を一致させる必要があります。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q3. 1つのINSERT文で3件のデータを追加する場合、どのように書きますか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            VALUES句の後に、カンマ区切りで3つのデータセットを並べます。<br>
+                                            例: <code class="bg-blue-100 px-1 rounded">VALUES (値1, 値2), (値3, 値4), (値5, 値6);</code>
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q4. NULLとは何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
+                                            NULL（ヌル）は「データが存在しない」「不明」を表す特別な値です。0（ゼロ）や空文字（''）とは異なります。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
                     </div>
                 </div>
-            </main>
-        </div>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <a href="sql-learning-material-03.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600 transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">第3章: はじめてのテーブル作成</span>
+                        </div>
+                    </a>
+                    <a href="sql-learning-material-05.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">第5章: データを見てみよう（SELECT文の基礎）</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
     </div>
 
-    <!-- Bootstrap JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Highlight.js 初期化 -->
-    <script>hljs.highlightAll();</script>
-    
-    <!-- Mermaid.js 初期化 -->
-    <script>
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'default'
-        });
-    </script>
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- サイドバー生成 -->
+    <script src="sidebar-content.js"></script>
+
+    <!-- 共通JavaScript -->
+    <script src="main.js"></script>
+
+    <!-- 描画ツール -->
+    <script src="drawing-tool.js"></script>
 </body>
 </html>
