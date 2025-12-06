@@ -8,7 +8,7 @@ tech-knowledge-map.mdに基づく技術分野別の学習教材インデック�
 エコシステム全体を網羅した包括的な学習教材
 
 #### Python Ecosystem
-- [Python](./programming-languages/python-ecosystem/python/) - Python基礎、データ型、制御構文、関数、オブジェクト指向
+- [Python Beginner](./programming-languages/python-ecosystem/python-beginner/) - Python入門、基本文法、データ型、制御構文、関数、オブジェクト指向
 - [Django](./programming-languages/python-ecosystem/django/) - Djangoフレームワーク、MTV、ORM、認証
 - [FastAPI](./programming-languages/python-ecosystem/fastapi/) - FastAPI、非同期API、Pydantic、自動ドキュメント
 - [Streamlit](./programming-languages/python-ecosystem/streamlit/) - Streamlit、データアプリ、可視化、ダッシュボード
@@ -149,7 +149,7 @@ IT系資格試験の学習教材
 ```
 docs/guide/
 ├── programming-languages/           # プログラミング言語エコシステム
-│   ├── python-ecosystem/           # Python, Django, FastAPI, Streamlit, SQLAlchemy, SQLModel
+│   ├── python-ecosystem/           # Python Beginner, Django, FastAPI, Streamlit, SQLAlchemy, SQLModel
 │   ├── java-ecosystem/             # Java, Spring, JSP, JDBC, Struts1, JUnit
 │   ├── javascript-ecosystem/       # JavaScript (初級・中級), React, Next.js
 │   ├── dotnet-ecosystem/           # VB.NET, ASP.NET, ASP.NET Core

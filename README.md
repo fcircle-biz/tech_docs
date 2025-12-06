@@ -55,7 +55,7 @@
 - **[PHP学習ガイド](docs/guide/programming-languages/php-ecosystem/php/README.md)** - PHP基礎から実践的なWebアプリケーション開発まで10章完成カリキュラム
 
 #### Python
-- **[Python学習ガイド](docs/guide/programming-languages/python-ecosystem/python/README.md)** - Python基礎から高度なプログラミング技術まで10章完成カリキュラム
+- **[Python入門学習ガイド](docs/guide/programming-languages/python-ecosystem/python-beginner/README.md)** - プログラミング完全未経験者向けPython入門12章構成カリキュラム。変数、条件分岐、繰り返し、関数、ファイル操作など、プログラミングの基礎を段階的に学習
 - **[Django学習ガイド](docs/guide/programming-languages/python-ecosystem/django/README.md)** - Djangoフレームワークを使用したWebアプリケーション開発の基礎から実践まで10章完成カリキュラム
 - **[FastAPI学習ガイド](docs/guide/programming-languages/python-ecosystem/fastapi/README.md)** - FastAPIを使用した高性能WebAPI開発の基礎から実践まで10章完成カリキュラム
 - **[SQLAlchemy学習ガイド](docs/guide/programming-languages/python-ecosystem/sqlalchemy/README.md)** - SQLAlchemyを使用したPythonデータベースプログラミングの基礎から実践まで8章完成カリキュラム
