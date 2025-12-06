@@ -36,10 +36,38 @@ color: blue
 
 ### 2. 共通ファイルのコピーと設定
 @templates/v2/html_tutorial/ から以下4ファイルを技術フォルダにコピー：
-- `styles.css` - 共通カスタムスタイル（ヘッダー色が緑に設定済み）
+- `styles.css` - 共通カスタムスタイル（**コピー後に修正が必要**）
 - `main.js` - 共通機能
 - `drawing-tool.js` - 描画ツール機能
 - `sidebar-content.js` - サイドバー動的生成（後で編集）
+
+#### styles.css のプレースホルダー置換（必須）
+
+⚠️ **テンプレートのstyles.cssにはプレースホルダー `{{PRIMARY_XXX}}` が含まれています。**
+**コピー後、必ず実際の値に置換してください。置換しないとCSSが壊れます。**
+
+```css
+/* テンプレートのプレースホルダー */
+--primary-400: {{PRIMARY_400}};
+--primary-500: {{PRIMARY_500}};
+--primary-700: {{PRIMARY_700}};
+--primary-rgb: {{PRIMARY_RGB}};
+
+/* ↓ チュートリアルはEmerald推奨 */
+--primary-400: #34d399;
+--primary-500: #10b981;
+--primary-700: #047857;
+--primary-rgb: 16, 185, 129;
+```
+
+**技術別カラー設定一覧** (color-themes.md参照):
+
+| 技術 | {{PRIMARY_400}} | {{PRIMARY_500}} | {{PRIMARY_700}} | {{PRIMARY_RGB}} |
+|------|-----------------|-----------------|-----------------|-----------------|
+| **チュートリアル推奨 (emerald)** | `#34d399` | `#10b981` | `#047857` | `16, 185, 129` |
+| Python/PostgreSQL (blue) | `#60a5fa` | `#3b82f6` | `#1d4ed8` | `59, 130, 246` |
+| Java/AWS (orange) | `#fb923c` | `#f97316` | `#c2410c` | `249, 115, 22` |
+| SQL/Docker (sky) | `#38bdf8` | `#0ea5e9` | `#0369a1` | `14, 165, 233` |
 
 ### 3. sidebar-content.jsの編集
 README.mdの全ステップ情報から`steps`配列と`projectInfo`を生成して編集：
