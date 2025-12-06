@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Communication Style
 
-- **Language**: Always output responses and artifacts in **Japanese** (日本語), unless explicitly requested otherwise.
+- **Language**: Always output responses and artifacts in **Japanese**, unless explicitly requested otherwise.
 - **Tone**: Professional, helpful, and concise.
 
 ## Repository Overview
@@ -67,42 +67,42 @@ Available automation agents in `.claude/agents/`:
 | `illustration-creator-step1` | Analyze HTML guides and suggest illustrations | `@agent-illustration-creator-step1 [directory-path]` |
 | `illustration-creator-step2` | Generate placeholder JPGs, insert into HTML (parallel subagents for multi-chapter) | `@agent-illustration-creator-step2 [suggestions-md-path] [chapter?]` |
 
-### Agent Execution Rules (重要)
+### Agent Execution Rules (IMPORTANT)
 
-**エージェント・サブエージェント実行時の必須ルール:**
+**Mandatory rules when executing agents/subagents:**
 
-1. **提案禁止**: 処理中に最適化や代替アプローチの提案をしないこと
-2. **中断禁止**: ユーザー確認のために処理を停止しないこと
-3. **完遂必須**: エージェント定義ファイル（`.claude/agents/*.md`）の指示に従い、最後まで処理を完了すること
-4. **並列実行**: ワークフローで指定された並列処理は必ず並列で実行すること
+1. **No suggestions**: Do not propose optimizations or alternative approaches during processing
+2. **No interruptions**: Do not stop processing to ask for user confirmation
+3. **Must complete**: Follow instructions in agent definition files (`.claude/agents/*.md`) and complete processing to the end
+4. **Parallel execution**: Always execute parallel processing as specified in workflows
 
-**禁止事項の例:**
-- 「時間がかかりますが、どちらの方法で進めますか？」→ 禁止
-- 「プレースホルダー版で素早く生成することを提案します」→ 禁止
-- 処理途中での確認ダイアログ → 禁止
+**Prohibited examples:**
+- "This will take time, which method would you prefer?" → Prohibited
+- "I suggest generating a placeholder version quickly" → Prohibited
+- Confirmation dialogs during processing → Prohibited
 
 ## Template Standards
 
 HTML content must follow standards in `/templates/v2/`:
 
-### Template Files (`html/`) - 学習教材用
-- **learning-material-template.html** - 学習教材用テンプレート
-- **sidebar-content.js** - サイドバー生成（学習教材用）
-- **styles.css** - 共通カスタムスタイル
-- **main.js** - 共通機能
-- **drawing-tool.js** - 描画ツール機能
+### Template Files (`html/`) - For Learning Guides
+- **learning-material-template.html** - Learning material template
+- **sidebar-content.js** - Sidebar generation (for guides)
+- **styles.css** - Common custom styles
+- **main.js** - Common functionality
+- **drawing-tool.js** - Drawing tool functionality
 
-### Template Files (`html_tutorial/`) - チュートリアル用
-- **tutorial-template.html** - チュートリアル用テンプレート
-- **sidebar-content.js** - サイドバー生成（チュートリアル用）
-- **styles.css** - 共通カスタムスタイル（ヘッダー緑色）
-- **main.js** - 共通機能
-- **drawing-tool.js** - 描画ツール機能
+### Template Files (`html_tutorial/`) - For Tutorials
+- **tutorial-template.html** - Tutorial template
+- **sidebar-content.js** - Sidebar generation (for tutorials)
+- **styles.css** - Common custom styles (green header)
+- **main.js** - Common functionality
+- **drawing-tool.js** - Drawing tool functionality
 
 ### Reference Documents (`reference/`)
-- **css-styles.md** - Tailwind CSSスタイルガイド
-- **color-themes.md** - 技術別カラーテーマ一覧
-- **mermaid-patterns.md** - Mermaid図パターン集
+- **css-styles.md** - Tailwind CSS style guide
+- **color-themes.md** - Technology-specific color themes
+- **mermaid-patterns.md** - Mermaid diagram patterns
 
 ### Key Requirements
 - Tailwind CSS CDN
@@ -111,6 +111,45 @@ HTML content must follow standards in `/templates/v2/`:
 - Google Fonts (Noto Sans JP)
 - Font Awesome for icons
 - Responsive design (PC/tablet/mobile)
+
+### Mermaid.js Syntax Rules (IMPORTANT)
+
+When writing Mermaid diagrams, always follow these rules:
+
+1. **No HTML entities**: `&#40;` `&#41;` `&#38;` and other HTML entities are not parsed correctly by Mermaid
+2. **Parentheses handling**:
+   - Half-width parentheses `()` are recognized as special characters in Mermaid, so use full-width parentheses
+   - Or wrap the entire node text in double quotes: `A["Text (with parentheses)"]`
+3. **Ampersand**: Use full-width `＆` instead of `&`
+4. **Line breaks**: When using `<br/>` inside nodes, wrap in double quotes: `A["Line1<br/>Line2"]`
+
+**Correct example:**
+```
+flowchart TD
+    A["Chapter 1: Overview (current)"] --> B{OS}
+    B -->|Windows| C["Windows Environment Setup"]
+```
+
+**Incorrect example (causes syntax error):**
+```
+flowchart TD
+    A[Chapter 1: Overview<br/>&#40;current&#41;] --> B{OS}
+    B -->|Windows| C[Windows Environment<br/>Setup]
+```
+
+### Text Visibility Rules (IMPORTANT)
+
+Follow these rules to ensure text inside cards remains readable:
+
+1. **No semi-transparent backgrounds**: Do not use `bg-white/70`, `bg-white/60`, `bg-white/50`, etc.
+2. **Use opaque same-color backgrounds**: When placing inner boxes inside cards, use `-100` shade of the same color family
+
+| Parent Card Color | Inner Box Background | Text Color |
+|------------------|---------------------|------------|
+| Purple | `bg-purple-100` | `text-purple-900` |
+| Blue | `bg-blue-100` | `text-blue-900` |
+| Green | `bg-emerald-100` | `text-emerald-900` |
+| Orange | `bg-orange-100` | `text-orange-900` |
 
 ### Usage
 1. Copy template to target folder

@@ -463,6 +463,46 @@ if (savedWidth && window.innerWidth >= 768) {
 </button>
 ```
 
+## テキスト視認性ルール（重要）
+
+カード内部のテキストが見えにくくならないよう、以下のルールを必ず守ってください。
+
+### 禁止事項
+
+1. **半透明背景の使用禁止**: `bg-white/70`、`bg-white/60`、`bg-white/50` などの半透明白背景は使用しない
+   - ダークモードやグラデーション背景と組み合わせるとテキストが読めなくなる
+
+2. **薄い色のテキストの使用禁止**: カード内で `text-[color]-600` より薄い色をテキストに使用しない
+   - 例: `text-slate-400`、`text-gray-300` は禁止
+
+### 推奨パターン
+
+カード内に内部ボックスを配置する場合は、親カードと同系色の不透明な背景色を使用：
+
+| 親カードの色系 | 内部ボックスの背景 | テキスト色 |
+|--------------|------------------|----------|
+| 紫系 (`from-purple-50`) | `bg-purple-100` | `text-purple-900` |
+| 青系 (`from-blue-50`) | `bg-blue-100` | `text-blue-900` |
+| 緑系 (`from-emerald-50`) | `bg-emerald-100` | `text-emerald-900` |
+| オレンジ系 (`from-orange-50`) | `bg-orange-100` | `text-orange-900` |
+| 黄色系 (`from-amber-50`) | `bg-amber-100` | `text-amber-900` |
+
+### 実習カード内のステップボックス例
+
+```html
+<!-- 正しい例 -->
+<div class="bg-purple-100 rounded-lg p-4 mb-4">
+    <h4 class="font-semibold text-purple-900 mb-2">ステップ1: タイトル</h4>
+    <p class="text-purple-800">説明文...</p>
+</div>
+
+<!-- 間違った例（使用禁止） -->
+<div class="bg-white/70 rounded-lg p-4 mb-4">
+    <h4 class="font-semibold text-purple-800 mb-2">ステップ1: タイトル</h4>
+    <p class="text-purple-700">説明文...</p>
+</div>
+```
+
 ## レスポンシブユーティリティ
 
 Tailwind CSSの標準ブレークポイント：
