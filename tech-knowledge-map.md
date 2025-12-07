@@ -41,7 +41,7 @@ IT技術、業務知識、資格試験を網羅した包括的な学習ドメイ
 |                      | **統計学**              | statsmodels・SciPy・Stata                                                               | 記述統計・推測統計・仮説検定の基礎                           |
 |                      | **機械学習**             | scikit-learn・XGBoost・LightGBM・CatBoost                                                | 古典的ML手法の実装、勾配ブースティング                        |
 |                      | **SAS**                | Viya・SAS Studio・Visual Analytics                                                      | 高信頼の統計解析／ML、Python・R 連携                     |
-| **業務 SaaS／プラットフォーム** | **SAP**                | ABAP・HANA・Fiori                                                                       | 大企業 ERP のデファクト                              |
+| **SaaS／PaaS／アプリケーション** | **SAP**                | ABAP・HANA・Fiori                                                                       | 大企業 ERP のデファクト                              |
 |                      | **Salesforce**         | Apex・Lightning・AppExchange                                                            | CRM 中心にノーコード拡張                              |
 |                      | **Power Platform**     | Power Apps・Power Automate・Dataverse                                                   | Microsoft 365 連携、市民開発                       |
 |                      | **Microsoft Office**   | Excel／Word／Access・VBA・Office Scripts・Power Automate Desktop                           | 業務マクロからクラウド化まで一気通貫                          |
