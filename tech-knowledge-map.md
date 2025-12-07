@@ -30,7 +30,8 @@ IT技術、業務知識、資格試験を網羅した包括的な学習ドメイ
 |                      | **Google Cloud (GCP)** | GKE・BigQuery・Cloud Run                                                                | データ分析・AI が強み                                |
 |                      | **Kubernetes**         | Helm・Operator・CNCF プロジェクト                                                             | コンテナ運用の事実上標準                                |
 |                      | **Docker**             | Docker Engine・Docker Desktop・Docker Compose・BuildKit・Docker Hub／Registry・Docker Swarm | コンテナの作成〜共有を一気通貫。開発から本番まで同一イメージを持ち運べるデファクト標準 |
-| **OS／デバイス**          | **Linux**              | 各種ディストリ・OCI コンテナ                                                                      | サーバ／組込みで幅広い                                 |
+| **OS／デバイス**          | **Windows**            | Windows 11・PowerShell・WSL・Windows Server・グループポリシー                                     | デスクトップOS最大シェア、企業クライアントの標準                   |
+|                      | **Linux**              | Ubuntu・RHEL・Debian等ディストリ・シェルスクリプト・OCI コンテナ                                            | サーバ／組込みで幅広い                                 |
 |                      | **Android**            | AOSP・Google Play                                                                      | スマホ最大シェア、OEM 多様                             |
 |                      | **Apple (iOS/macOS)**  | App Store・SwiftUI・Xcode                                                               | ハード／ソフト一体設計                                 |
 | **データ／AI**           | **Hadoop／Spark**       | HDFS・Hive・Flink                                                                       | 大規模バッチ／ストリーム処理                              |
