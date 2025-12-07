@@ -43,6 +43,7 @@ IT技術、業務知識、資格試験を網羅した包括的な学習ドメイ
 |                      | **Salesforce**         | Apex・Lightning・AppExchange                                                            | CRM 中心にノーコード拡張                              |
 |                      | **Power Platform**     | Power Apps・Power Automate・Dataverse                                                   | Microsoft 365 連携、市民開発                       |
 |                      | **Microsoft Office**   | Excel／Word／Access・VBA・Office Scripts・Power Automate Desktop                           | 業務マクロからクラウド化まで一気通貫                          |
+|                      | **OutSystems**         | Service Studio・Integration Studio・LifeTime・ODC (OutSystems Developer Cloud)           | ローコード開発プラットフォーム、エンタープライズ向け高速開発               |
 | **資格・認定試験**          | **ITパスポート試験**         | ストラテジ系・マネジメント系・テクノロジ系                                                                 | IT基礎知識の国家試験、社会人向け入門                         |
 |                      | **情報処理技術者試験**        | 基本情報・応用情報・高度試験（SC・DB・NW・PM等）                                                          | 経済産業省認定の国家試験、IT技術者の標準資格                     |
 | **業務知識・ドメイン**        | **会計・財務**             | 簿記・財務諸表・管理会計・税務・IFRS／US GAAP                                                            | 企業の経営数値を扱う必須知識、ERP連携                        |
