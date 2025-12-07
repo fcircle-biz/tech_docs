@@ -46,7 +46,7 @@
 - **[Struts 1.x学習ガイド](docs/guide/programming-languages/java-ecosystem/struts1/README.md)** - Apache Struts 1.x基礎からデプロイメントまで10章完成カリキュラム
 
 #### JavaScript
-- **[JavaScript完全初心者向け学習ガイド](docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/README.md)** - プログラミング未経験者向けJavaScript入門12章構成カリキュラム
+- **[JavaScript学習ガイド](docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/README.md)** - プログラミング未経験者向けJavaScript入門12章構成カリキュラム
 - **[JavaScript中級学習ガイド](docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/README.md)** - JavaScript基礎知識から実践的なSPA開発まで9週間完成カリキュラム
 - **[Next.js学習ガイド](docs/guide/programming-languages/javascript-ecosystem/nextjs/README.md)** - Next.jsフレームワークを使用したモダンなReactアプリケーション開発の基礎を入門者向けに段階的に学習するためのカリキュラム（10章構成）
 - **[React学習ガイド](docs/guide/programming-languages/javascript-ecosystem/react/README.md)** - Reactライブラリを使用したモダンなWebアプリケーション開発の基礎を入門者向けに段階的に学習するためのカリキュラム（10章構成）
