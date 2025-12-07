@@ -1,355 +1,90 @@
-# JavaScript完全初心者向け学習ガイド
-
-## 🎯 このガイドについて
-
-このガイドは、**プログラミング完全初心者**の方がJavaScriptを基礎から学習できるよう設計されたカリキュラムです。
-
-### 対象者
-- プログラミング経験が全くない方
-- JavaScriptを基礎から学びたい方
-- 他のプログラミング言語の経験はあるが、JavaScriptは初めての方
-
-### 特徴
-- 🏃‍♂️ **段階的学習**: 一つずつ確実に理解してから次へ
-- 🎮 **実践重視**: 毎週楽しい小さなプロジェクトを作成
-- 📝 **シンプル**: 複雑なツールは使わず、ブラウザとテキストエディタだけで開始
-- 🔍 **初心者配慮**: 専門用語を最小限に、身近な例で説明
-
----
-
-## 📚 学習コンテンツ（8章構成）
-
-### [第1章：プログラミングって何？](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter01.html)
-**実践プロジェクト**: 自己紹介プログラム
-
-プログラミングの基本概念を理解し、最初のJavaScriptプログラムを書きます。
-
-**学習内容**:
-- プログラミングとは何か
-- JavaScriptの基本
-- 最初のプログラムを書く
-- console.logとalert()の使い方
-
-**できるようになること**:
-- 基本的なメッセージの表示
-- ブラウザでのJavaScript実行
-
----
-
-### [第2章：数字と文字を扱おう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter02.html)
-**実践プロジェクト**: 簡単な計算機
-
-変数の概念を学び、数値と文字列を扱えるようになります。
-
-**学習内容**:
-- 変数の概念（箱の考え方）
-- 数値の扱い方
-- 文字列の扱い方
-- 基本的な四則演算
-
-**できるようになること**:
-- データの保存と操作
-- 基本的な計算処理
-
----
-
-### [第3章：条件によって処理を変えよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter03.html)
-**実践プロジェクト**: じゃんけんゲーム
-
-if文を使った条件分岐を学びます。
-
-**学習内容**:
-- if文の基本
-- 比較演算子
-- else、else if文
-- 条件の組み合わせ
-
-**できるようになること**:
-- 条件によって処理を分岐
-- 判定ロジックの作成
-
----
-
-### [第4章：繰り返し処理をマスターしよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter04.html)
-**実践プロジェクト**: 数当てゲーム
-
-ループ処理と配列の基本を学びます。
-
-**学習内容**:
-- for文とwhile文
-- 配列の基本
-- 繰り返し処理の活用
-- ランダム数値の生成
-
-**できるようになること**:
-- 同じ処理の繰り返し
-- 複数のデータの管理
-
----
-
-### [第5章：関数で処理をまとめよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter05.html)
-**実践プロジェクト**: 電卓機能
-
-関数を使って処理をまとめる方法を学びます。
-
-**学習内容**:
-- 関数の概念
-- 関数の定義と呼び出し
-- 引数と戻り値
-- 処理の再利用
-
-**できるようになること**:
-- 処理の整理とまとめ
-- 再利用可能なコードの作成
-
----
-
-### [第6章：Webページを操作しよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter06.html)
-**実践プロジェクト**: インタラクティブなクイズアプリ
-
-HTMLとJavaScriptを連携させて、動的なWebページを作ります。
-
-**学習内容**:
-- HTMLとJavaScriptの連携
-- 要素の取得と変更
-- クリックイベントの処理
-- フォームの操作
-
-**できるようになること**:
-- 動的なWebページの作成
-- ユーザーとのインタラクション
-
----
-
-### [第7章：課題1 - ToDoリストアプリを作ろう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter07.html)
-**実践プロジェクト**: 本格的なToDoリストアプリ
-
-これまでの知識を総動員して、実用的なToDoリストアプリケーションを作ります。
-
-**学習内容**:
-- DOM操作の応用
-- 動的な要素の追加・削除
-- ローカルストレージでのデータ保存
-- リスト操作の実践
-- 完了・未完了の状態管理
-
-**できるようになること**:
-- 実用的なWebアプリケーションの作成
-- データの永続化
-- 複雑なユーザーインターフェースの実装
-
----
-
-### [第8章：課題2 - 電卓アプリを作ろう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter08.html)
-**実践プロジェクト**: 本格的な電卓アプリ
-
-美しいUIとしっかりとした計算機能を持つ電卓アプリを作ります。
-
-**学習内容**:
-- 電卓のUI設計とCSS連携
-- 複雑なイベント処理
-- 計算ロジックの実装
-- エラーハンドリング
-- 履歴機能の実装
-
-**できるようになること**:
-- プロフェッショナルなアプリの作成
-- 複雑なロジックの実装
-- 美しいユーザーインターフェースの構築
-
----
-
-## 🚀 学習の進め方
-
-### 📋 学習ロードマップ
-
-#### レベル0: 学習準備（所要時間：30分）
-**前提知識**: なし
-- [ ] コンピュータの基本操作ができる
-- [ ] Webブラウザでインターネットが使える
-- [ ] ファイルの保存・編集ができる
-
-#### レベル1: 基礎習得（第1-3章、所要時間：3-4週間）
-**前提知識**: レベル0完了
-- [ ] プログラミングの基本概念理解
-- [ ] 変数と条件分岐の習得
-- [ ] 自己紹介プログラム、計算機、じゃんけんゲーム作成
-
-#### レベル2: 応用技術（第4-6章、所要時間：3-4週間）
-**前提知識**: レベル1完了
-- [ ] ループ処理と配列操作
-- [ ] 関数による処理の整理
-- [ ] HTML/JavaScriptの連携技術
-
-#### レベル3: 実践開発（第7-8章、所要時間：2-3週間）
-**前提知識**: レベル2完了
-- [ ] 本格的なWebアプリケーション開発
-- [ ] データの永続化技術
-- [ ] UI/UXデザインの基礎
-
-#### レベル4: 中級への準備（所要時間：1週間）
-**前提知識**: レベル3完了
-- [ ] Git/GitHubの基本操作
-- [ ] 開発者ツールの活用
-- [ ] JavaScriptエラーの読み方・対処法
-
-### 成功のための3つのポイント
-1. **毎日少しずつ**: 1日10分でも継続することが大切
-2. **手を動かす**: 読むだけでなく、実際にコードを書く
-3. **楽しむ**: 分からないことがあっても、楽しみながら学習
-
----
-
-## 💡 学習環境の準備
-
-### 必要なもの
-- **コンピュータ**: Windows、Mac、Linuxどれでも可
-- **Webブラウザ**: Chrome、Firefox、Safari、Edgeなど
-- **テキストエディタ**: メモ帳、VSCode、Sublime Textなど
-
-### 推奨環境
-- **Visual Studio Code**: 無料で高機能なエディタ
-- **Google Chrome**: 開発者ツールが充実
-
----
-
-## 📝 各章の評価基準
-
-### 第1章クリア条件
-- [ ] console.logでメッセージを表示できる
-- [ ] alert()でダイアログを表示できる
-- [ ] 自己紹介プログラムが完成している
-
-### 第2章クリア条件
-- [ ] 変数を使って値を保存できる
-- [ ] 四則演算ができる
-- [ ] 計算機プログラムが完成している
-
-### 第3章クリア条件
-- [ ] if文を使った条件分岐ができる
-- [ ] 比較演算子を正しく使える
-- [ ] じゃんけんゲームが完成している
-
-### 第4章クリア条件
-- [ ] for文を使ったループができる
-- [ ] 配列を作成・操作できる
-- [ ] 数当てゲームが完成している
-
-### 第5章クリア条件
-- [ ] 関数を定義・呼び出しできる
-- [ ] 引数を使った関数が書ける
-- [ ] 電卓機能が完成している
-
-### 第6章クリア条件
-- [ ] HTML要素を取得できる
-- [ ] 要素の内容を変更できる
-- [ ] クリックイベントを処理できる
-- [ ] クイズアプリが完成している
-
-### 第7章クリア条件
-- [ ] ToDoの追加・削除ができる
-- [ ] ローカルストレージにデータを保存できる
-- [ ] 完了・未完了の状態を切り替えられる
-- [ ] ToDoリストアプリが完成している
-
-### 第8章クリア条件
-- [ ] 電卓の基本計算（+、-、×、÷）ができる
-- [ ] 美しいUI デザインが実装されている
-- [ ] エラー処理が適切に行われている
-- [ ] 電卓アプリが完成している
-
----
-
-## 🎯 学習完了後の目標
-
-このカリキュラムを完了すると、以下のことができるようになります：
-
-### 基本スキル
-- JavaScriptの基本文法の理解
-- 変数、条件分岐、ループ、関数の活用
-- 配列を使ったデータ管理
-- 基本的なエラーの読み方と対処
-
-### 実践スキル
-- 簡単な計算機アプリの作成
-- じゃんけんゲームの作成
-- 数当てゲームの作成
-- インタラクティブなクイズアプリの作成
-- 本格的なToDoリストアプリケーションの開発
-- プロフェッショナルな電卓アプリの開発
-
-### 次のステップ
-このガイドを完了した後は：
-- より高度なJavaScriptの学習（ES6+の機能）
-- フレームワーク（React、Vue.js）の学習
-- バックエンド開発（Node.js）の学習
-- 本格的なWebアプリケーション開発
-
-#### 中級レベルへの移行準備
-**中級ガイドに進む前の確認事項**：
-- [ ] 第1〜8章のすべてのクリア条件を満たしている
-- [ ] ToDoリストアプリと電卓アプリが完全に動作する
-- [ ] HTML、CSS、JavaScriptの連携について理解している
-- [ ] コンソールでのデバッグができる
-- [ ] 基本的なGitの操作（add、commit）ができる
-
-**中級ガイドで学べること**：
-- Node.js、npm、VS Codeを使ったモダンな開発環境
-- ES6+の高度な構文（アロー関数、分割代入、モジュール等）
-- 非同期処理（Promise、async/await）
-- Reactを使った本格的なWebアプリ開発
-- 実際の開発現場で使われる技術とワークフロー
-
----
-
-## 🤝 学習サポート
-
-### 質問・相談について
-- 各章に「よくある質問」セクションを用意
-- エラーメッセージの読み方を詳しく解説
-- つまずきやすいポイントを事前に説明
-
-### 継続のためのヒント
-- 学習記録をつけて進捗を可視化
-- 作成したプロジェクトを友人や家族に見せる
-- オンラインコミュニティに参加する
-
----
-
-## 🎉 始めてみよう！
-
-準備ができたら、さっそく[第1章：プログラミングって何？](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/chapter01.html)から始めてみましょう！
-
-**最初の一歩**: ブラウザを開いて、F12キーを押してみてください。これが開発者ツールです。ここであなたの最初のJavaScriptプログラムを書くことになります。
-
-### まずは体験してみよう
-開発者ツールのコンソールに以下を入力して、Enterキーを押してみてください：
-
-```javascript
-console.log("Hello, JavaScript!");
-```
-
-メッセージが表示されましたか？これがあなたの最初のJavaScriptプログラムです！
-
----
-
-*このガイドがあなたのプログラミング学習の第一歩として、楽しく充実した学習体験になることを願っています。*
-
-**学習開始日**: _______________
-
-**学習の動機**: _______________
-
----
-
-## 📖 関連リソース
-
-### 参考リンク
-- [JavaScript基礎チートシート](../../cheatsheet/fundamentals/js-cheatsheet.html)
-- [HTML/CSS基礎チートシート](../../cheatsheet/fundamentals/html-css-cheatsheet.html)
-- [JavaScript AIアシスタント](../../prompt/js-assistant-prompt.html)
-
-### 次のステップ
-このガイドを完了した後は、以下のより高度なガイドに進むことをお勧めします：
-- [JavaScript中級ガイド](../javascript-intermediate/README.md)
-- [React学習ガイド](../react/README.md)
-- [Vue.js学習ガイド](../vue/README.md)
+# JavaScript 学習ガイドライン
+
+このガイドラインでは、JavaScriptの基礎をプログラミング未経験者向けに段階的に学習するためのカリキュラムを提供しています。専門用語を極力避け、実際に手を動かしながら楽しくプログラミングを学べるように設計されています。
+
+## 前提条件
+### 必要な環境
+- **Webブラウザ**: Google Chrome、Firefox、Microsoft Edge、Safariのいずれか（最新版推奨）
+- **テキストエディタ**: Visual Studio Code（無料、初心者向けの機能が豊富）
+- **インターネット接続**: 学習リソースへのアクセスに必要
+
+### 参考リソース
+- [MDN Web Docs - JavaScript入門](https://developer.mozilla.org/ja/docs/Web/JavaScript/Guide)
+- [Visual Studio Code公式サイト](https://code.visualstudio.com/)
+- [JavaScript.info（英語）](https://javascript.info/)
+
+### 前提知識
+- **必須**: パソコンの基本操作（ファイルの作成、保存、フォルダの操作）ができること
+- **推奨**: HTMLの基礎知識があるとより理解しやすいですが、必要に応じて説明します
+
+## 学習コンテンツ
+### [1. プログラミングとJavaScriptを知ろう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript/javascript-learning-material-01.html)
+プログラミングとは何か、JavaScriptで何ができるのかを、身近な例を使って分かりやすく説明します。コンピュータと対話する第一歩を踏み出しましょう。
+
+### [2. 開発環境を準備しよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript/javascript-learning-material-02.html)
+プログラムを書くための道具（エディタ）の準備と、ブラウザの開発者ツールの使い方を画像付きで丁寧に解説します。
+
+### [3. はじめてのプログラムを書こう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript/javascript-learning-material-03.html)
+「Hello World!」という文字を画面に表示する最初のプログラムを作成し、プログラムの基本的な書き方と実行方法を学びます。
+
+### [4. 変数で情報を記憶しよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript/javascript-learning-material-04.html)
+変数という「箱」を使って、数値や文字などの情報を記憶・管理する方法を、買い物リストなどの身近な例で学びます。
+
+### [5. 条件によって処理を変えよう（if文）](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript/javascript-learning-material-05.html)
+「もし〜なら」という条件分岐を使って、状況に応じて異なる処理を行う方法を、日常生活の判断に例えながら学習します。
+
+### [6. 同じ処理を繰り返そう（for文・while文）](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript/javascript-learning-material-06.html)
+繰り返し処理を使って効率的にプログラムを書く方法を、カウントダウンや九九の表などを作りながら実践的に学びます。
+
+### [7. 処理をまとめよう（関数の基礎）](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript/javascript-learning-material-07.html)
+よく使う処理を「関数」としてまとめ、必要な時に呼び出して使う方法を、料理のレシピに例えながら理解します。
+
+### [8. 複数のデータを扱おう（配列とオブジェクト）](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript/javascript-learning-material-08.html)
+たくさんのデータを効率的に管理する配列と、関連する情報をまとめるオブジェクトの使い方を、実例を通じて学習します。
+
+### [9. Webページを動かそう（DOM操作の基礎）](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript/javascript-learning-material-09.html)
+JavaScriptでWebページの要素を取得・変更・追加する方法を学び、動的なWebページを作る基礎を身につけます。
+
+### [10. ユーザーの操作に反応しよう（イベント処理）](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript/javascript-learning-material-10.html)
+ボタンクリックやキー入力などのユーザー操作に反応するインタラクティブなプログラムの作り方を実践します。
+
+### [11. 時間差で処理しよう（非同期処理入門）](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript/javascript-learning-material-11.html)
+タイマー機能やアニメーションなど、時間を制御する処理の基本を、実例を作りながら理解します。
+
+### [12. ToDoアプリを作ろう（総合演習）](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript/javascript-learning-material-12.html)
+これまで学んだ知識を総動員して、実用的なToDoリスト管理アプリを段階的に作成します。完成品は実際に日常で使えるレベルのアプリです。
+
+## 学習の進め方
+1. **まずは写経から始める**: 最初はサンプルコードを見ながらそのまま入力し、動作を確認することから始めましょう。
+2. **エラーを恐れない**: プログラミングではエラーが出るのが当たり前です。エラーメッセージを読んで原因を理解する練習をしましょう。
+3. **小さな改造を試す**: サンプルコードが動いたら、数値や文字を変えたり、処理を追加したりして、どう変わるか実験しましょう。
+4. **分からないことは調べる**: 疑問に思ったことは積極的に検索して調べる習慣をつけましょう。
+5. **定期的に復習する**: 前の章の内容を忘れないよう、定期的に振り返りながら進めましょう。
+
+## 推奨学習期間
+- **基礎習得コース** (1-8章): 4-6週間（週3-4時間の学習想定）
+  - プログラミングの基本的な考え方とJavaScriptの基礎文法を習得
+- **実践活用コース** (9-12章): 4-6週間（週4-5時間の学習想定）
+  - Webページ操作とアプリケーション開発の実践スキルを習得
+
+## 関連リソース
+- [JavaScript チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/javascript/)
+- [HTML/CSS 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/)
+- [React 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/)
+- [Node.js 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nodejs/)
+
+## 学習目標
+このガイドを完了すると、以下のスキルを身につけることができます：
+- プログラミングの基本的な考え方（順次処理、条件分岐、繰り返し）を理解し、簡単なプログラムが書ける
+- JavaScriptの基本文法（変数、データ型、演算子、関数、配列、オブジェクト）を使いこなせる
+- Webページの要素を操作して、動的なコンテンツを作成できる
+- ユーザーの操作に反応するインタラクティブなWebアプリケーションを開発できる
+- エラーメッセージを読んで問題を解決する基本的なデバッグスキルが身につく
+- 簡単なWebアプリケーション（ToDoリストなど）を独力で作成できる
+
+## 次のステップ
+このガイドライン完了後は、以下の学習に進むことをお勧めします：
+- [React 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/) - モダンなWebアプリケーション開発
+- [Node.js 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nodejs/) - サーバーサイドJavaScript
+- [TypeScript 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/) - 型安全なJavaScript開発
+- [Vue.js 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/vuejs/) - 段階的に導入可能なフレームワーク
