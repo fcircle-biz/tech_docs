@@ -20,49 +20,49 @@
 - **推奨**: パソコンの基本操作（ファイルの作成、保存、フォルダの操作）ができること
 
 ## 学習コンテンツ
-### [1. プログラミングとTypeScriptの世界へようこそ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/typescript-ecosystem/typescript/typescript-learning-material-01.html)
+### [1. プログラミングとTypeScriptの世界へようこそ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/typescript-learning-material-01.html)
 プログラミングとは何か、TypeScriptがどのように「安全」なプログラムを書く手助けをしてくれるのか、身近な例を使って分かりやすく説明します。料理のレシピに例えながら、コンピュータと対話する第一歩を踏み出しましょう。
 
-### [2. 開発環境を整えよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/typescript-ecosystem/typescript/typescript-learning-material-02.html)
+### [2. 開発環境を整えよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/typescript-learning-material-02.html)
 TypeScriptでプログラムを書くための道具（Node.js、Visual Studio Code）の準備を画像付きで丁寧に解説します。最も簡単な方法で環境を整え、すぐにプログラミングを始められるようにします。
 
-### [3. はじめてのTypeScriptプログラム](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/typescript-ecosystem/typescript/typescript-learning-material-03.html)
+### [3. はじめてのTypeScriptプログラム](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/typescript-learning-material-03.html)
 「Hello, TypeScript!」という文字を表示する最初のプログラムを作成し、TypeScriptファイルの作り方、実行方法、そして「型」という概念の初歩を体験します。
 
-### [4. 変数と型：情報に名前と種類をつけよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/typescript-ecosystem/typescript/typescript-learning-material-04.html)
+### [4. 変数と型：情報に名前と種類をつけよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/typescript-learning-material-04.html)
 変数という「ラベル付きの箱」と、その箱に入れるものの「種類（型）」を指定する方法を学びます。数字専用の箱、文字専用の箱など、整理整頓されたプログラムの書き方を身につけます。
 
-### [5. 基本的な型を使いこなそう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/typescript-ecosystem/typescript/typescript-learning-material-05.html)
+### [5. 基本的な型を使いこなそう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/typescript-learning-material-05.html)
 数値(number)、文字列(string)、真偽値(boolean)などの基本的な型と、それらを使った計算や文字の操作方法を、実例を通じて学習します。型があることで間違いを防げることを実感します。
 
-### [6. 条件分岐：場合に応じて処理を変えよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/typescript-ecosystem/typescript/typescript-learning-material-06.html)
+### [6. 条件分岐：場合に応じて処理を変えよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/typescript-learning-material-06.html)
 「もし〜なら」という条件分岐（if文）を使って、状況に応じて異なる処理を行う方法を学びます。型チェックと組み合わせることで、より安全な条件分岐が書けることを理解します。
 
-### [7. 繰り返し処理：同じことを効率的にやろう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/typescript-ecosystem/typescript/typescript-learning-material-07.html)
+### [7. 繰り返し処理：同じことを効率的にやろう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/typescript-learning-material-07.html)
 for文やwhile文を使った繰り返し処理の方法を学びます。型を使って配列の要素を安全に処理する方法や、カウンター変数の適切な使い方を実践的に習得します。
 
-### [8. 関数：処理をパッケージ化しよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/typescript-ecosystem/typescript/typescript-learning-material-08.html)
+### [8. 関数：処理をパッケージ化しよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/typescript-learning-material-08.html)
 よく使う処理を「関数」としてまとめ、引数と返り値に型をつける方法を学びます。型があることで、関数の使い方が明確になり、間違った使い方を防げることを体験します。
 
-### [9. 配列とタプル：複数のデータを扱おう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/typescript-ecosystem/typescript/typescript-learning-material-09.html)
+### [9. 配列とタプル：複数のデータを扱おう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/typescript-learning-material-09.html)
 同じ種類のデータをまとめて扱う配列と、決まった構成のデータを扱うタプルの使い方を学びます。型を使って配列の中身を保証する方法を理解します。
 
-### [10. オブジェクトとインターフェース：データを構造化しよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/typescript-ecosystem/typescript/typescript-learning-material-10.html)
+### [10. オブジェクトとインターフェース：データを構造化しよう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/typescript-learning-material-10.html)
 関連する情報をまとめるオブジェクトと、その構造を定義するインターフェースの作り方を学びます。型で構造を定義することで、チーム開発でも安心してコードが書けることを理解します。
 
-### [11. クラス：設計図から実体を作ろう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/typescript-ecosystem/typescript/typescript-learning-material-11.html)
+### [11. クラス：設計図から実体を作ろう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/typescript-learning-material-11.html)
 オブジェクト指向プログラミングの基礎となるクラスの概念を学びます。プロパティとメソッドに型をつけて、より構造的なプログラムを作る方法を実践します。
 
-### [12. 型の応用：ユニオン型と型ガード](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/typescript-ecosystem/typescript/typescript-learning-material-12.html)
+### [12. 型の応用：ユニオン型と型ガード](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/typescript-learning-material-12.html)
 複数の型を扱えるユニオン型と、実行時に型を判定する型ガードの使い方を学びます。柔軟性と安全性を両立させる TypeScript の強力な機能を理解します。
 
-### [13. ジェネリクス：汎用的な型を作ろう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/typescript-ecosystem/typescript/typescript-learning-material-13.html)
+### [13. ジェネリクス：汎用的な型を作ろう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/typescript-learning-material-13.html)
 さまざまな型で使い回せる汎用的な関数やクラスを作るジェネリクスの基礎を学びます。型の再利用性を高める方法を実例を通じて理解します。
 
-### [14. 非同期処理：時間のかかる処理を扱おう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/typescript-ecosystem/typescript/typescript-learning-material-14.html)
+### [14. 非同期処理：時間のかかる処理を扱おう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/typescript-learning-material-14.html)
 Promise と async/await を使った非同期処理の基礎を学びます。型を使って非同期処理の結果を安全に扱う方法を実践的に習得します。
 
-### [15. 実践：タスク管理アプリを作ろう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/typescript-ecosystem/typescript/typescript-learning-material-15.html)
+### [15. 実践：タスク管理アプリを作ろう](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/typescript-learning-material-15.html)
 これまで学んだ知識を総動員して、型安全なタスク管理アプリケーションを段階的に作成します。インターフェース定義から始めて、実装、エラー処理まで、実践的な開発の流れを体験します。
 
 ## 学習の進め方
