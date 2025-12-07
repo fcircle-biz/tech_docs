@@ -65,9 +65,6 @@
 #### R
 - **[R言語学習ガイド](docs/guide/programming-languages/r-ecosystem/r/README.md)** - R言語基礎から統計解析・データビジュアライゼーションまで10章完成カリキュラム
 
-#### SAS
-- **[SAS学習ガイド](docs/guide/programming-languages/sas-ecosystem/sas/README.md)** - SASによるデータ分析と統計処理の基礎から実践的な応用まで10章完成カリキュラム
-
 ### Web技術
 
 - **[HTML/CSS学習ガイド](docs/guide/web-technologies/html-css/README.md)** - HTML/CSSの基礎から実践的なWebページ制作まで段階的に学習するためのカリキュラム。8つのHTML教材でWebデザインの基本をマスター
@@ -103,6 +100,7 @@
 
 #### データ分析・AI
 - **[機械学習学習ガイド](docs/guide/data-ai-category/data-ai/machine-learning/README.md)** - 機械学習の基礎から実践的なモデル構築まで10章完成カリキュラム
+- **[SAS学習ガイド](docs/guide/data-ai-category/data-ai/sas/README.md)** - SASによるデータ分析と統計処理の基礎から実践的な応用まで13章完成カリキュラム
 
 #### 統計解析
 - **[統計解析学習ガイド](docs/guide/data-ai-category/statistical-analysis/README.md)** - 統計学基礎から推測統計・仮説検定まで10章完成カリキュラム

@@ -180,6 +180,39 @@ HTMLファイルでは以下の順序を守ること：
 <script src="drawing-tool.js"></script>
 ```
 
+### Highlight.js 追加言語の読み込み（重要）
+
+CDNのデフォルトビルド（`highlight.min.js`）には約40の人気言語のみ含まれています。
+**SAS、Kotlin、Groovy、Haskell**などの言語はデフォルトに含まれないため、追加で読み込む必要があります。
+
+**追加言語が必要な場合、HTMLの`<head>`内で以下のように記述：**
+
+```html
+<!-- Highlight.js CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<!-- 追加言語（デフォルトに含まれない言語の場合） -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/sas.min.js"></script>
+```
+
+**デフォルトに含まれない主な言語と追加スクリプト：**
+
+| 言語 | 追加スクリプト |
+|------|---------------|
+| SAS | `languages/sas.min.js` |
+| Kotlin | `languages/kotlin.min.js` |
+| Groovy | `languages/groovy.min.js` |
+| Haskell | `languages/haskell.min.js` |
+| Clojure | `languages/clojure.min.js` |
+| Scala | `languages/scala.min.js` |
+| COBOL | `languages/cobol.min.js` |
+| Fortran | `languages/fortran.min.js` |
+
+**デフォルトに含まれる主な言語（追加不要）：**
+JavaScript, TypeScript, Python, Java, C, C++, C#, PHP, Ruby, Go, Rust, Swift, SQL, HTML, CSS, JSON, YAML, Bash, Markdown
+
+言語がデフォルトに含まれるか不明な場合は、[Highlight.js Supported Languages](https://highlightjs.readthedocs.io/en/latest/supported-languages.html) を確認してください。
+
 ### コンテンツ要素（components.html参照）
 - 学習目標カード: `bg-gradient-to-r from-amber-50 to-yellow-50`
 - セクションタイトル: `border-l-4 border-primary-500 pl-4`

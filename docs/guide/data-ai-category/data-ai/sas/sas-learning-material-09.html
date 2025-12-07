@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
-    <title>SAS学習教材 第9章 - 統計プロシジャの基礎</title>
+    <title>SAS学習教材 第9章 - PROC SQLによるデータ操作</title>
 
     <!-- ダークモード早期適用（フラッシュ防止） -->
     <script>
@@ -52,6 +52,7 @@
     <!-- Highlight.js CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/sas.min.js"></script>
 
     <!-- Mermaid.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
@@ -135,8 +136,8 @@
                             第9章
                         </span>
                     </div>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">統計プロシジャの基礎</h1>
-                    <p class="text-slate-600">PROC MEANSやPROC FREQを使った基本統計量の算出、データの要約と集計方法を習得します。</p>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">PROC SQLによるデータ操作</h1>
+                    <p class="text-slate-600">SQLを使ったデータ抽出・結合・集計の方法を学びます。データステップとの使い分けや、複雑なクエリの書き方を習得します。</p>
                 </header>
 
                 <!-- 学習目標カード -->
@@ -152,484 +153,503 @@
                             <ul class="space-y-2">
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>PROC MEANSで基本統計量（平均、標準偏差など）を算出する</span>
+                                    <span>PROC SQLの基本構文とデータステップとの違いを理解する</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>PROC FREQで度数分布表とクロス集計表を作成する</span>
+                                    <span>SELECT文によるデータ抽出と条件指定を習得する</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>CLASS文を使ってグループ別に統計量を算出する</span>
+                                    <span>JOIN句を使った複数テーブルの結合を学ぶ</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>統計結果をデータセットに出力して再利用する</span>
+                                    <span>GROUP BYによる集計とHAVING句による絞り込みを理解する</span>
                                 </li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
-                <!-- セクション1: 統計プロシジャとは -->
+                <!-- セクション1: PROC SQLとは -->
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        9.1 統計プロシジャとは
+                        9.1 PROC SQLとは
                     </h2>
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        <strong>統計プロシジャ（Statistical Procedure）</strong>は、データの集計や統計分析を行うための特別なプロシジャです。データステップでデータを加工した後、統計プロシジャで分析結果を出力することで、データの特性を理解し、意思決定に役立てることができます。
+                        <strong>PROC SQL</strong>は、SAS内でSQL（Structured Query Language）を使用するプロシジャです。データベースで標準的なSQLの構文を使って、データの抽出・結合・集計ができます。
                     </p>
 
                     <div class="mermaid my-6" data-mermaid-code="flowchart LR
-    A[生データ] --> B[データステップで加工]
-    B --> C[PROC MEANS<br/>基本統計量]
-    B --> D[PROC FREQ<br/>度数分布]
-    C --> E[分析レポート]
-    D --> E">
+    A[データステップ] -->|逐次処理| B[データセット]
+    C[PROC SQL] -->|SQL構文| B
+    D[選択のポイント] --> E[複雑な結合はPROC SQL]
+    D --> F[行単位処理はデータステップ]">
 flowchart LR
-    A[生データ] --> B[データステップで加工]
-    B --> C[PROC MEANS<br/>基本統計量]
-    B --> D[PROC FREQ<br/>度数分布]
-    C --> E[分析レポート]
-    D --> E
+    A[データステップ] -->|逐次処理| B[データセット]
+    C[PROC SQL] -->|SQL構文| B
+    D[選択のポイント] --> E[複雑な結合はPROC SQL]
+    D --> F[行単位処理はデータステップ]
 </div>
 
                     <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
                         <div class="flex items-start gap-3">
                             <i class="fas fa-info-circle text-blue-600 mt-1"></i>
                             <div class="flex-1 min-w-0">
-                                <p class="text-blue-900 font-medium break-words">統計プロシジャの特徴</p>
+                                <p class="text-blue-900 font-medium break-words">PROC SQLの特徴</p>
                                 <p class="text-blue-800 text-sm mt-1 break-words">
-                                    統計プロシジャはデータを読み込んで処理しますが、元のデータを変更することはありません。集計結果や統計量は、画面に表示されるか、OUTPUTオプションで別のデータセットに保存されます。
+                                    PROC SQLは事前のソートが不要で、複数テーブルの結合が1文で記述できます。RDBMSの経験がある方には馴染みやすい構文です。
                                 </p>
                             </div>
                         </div>
                     </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">データステップとPROC SQLの比較</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border border-slate-200 rounded-lg overflow-hidden">
+                            <thead class="bg-primary-500 text-white">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold">項目</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold">データステップ</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold">PROC SQL</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200">
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-800">結合前のソート</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600">必須（BY変数でソート）</td>
+                                    <td class="px-4 py-3 text-sm text-emerald-600 font-semibold">不要</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-800">処理スタイル</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600">逐次（行単位）</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600">セット指向（まとめて処理）</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-800">複数テーブル結合</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600">複数回のMERGE</td>
+                                    <td class="px-4 py-3 text-sm text-emerald-600 font-semibold">1文で記述可能</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-800">集計処理</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600">PROC MEANS等と組み合わせ</td>
+                                    <td class="px-4 py-3 text-sm text-emerald-600 font-semibold">GROUP BY句で簡単</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </section>
 
-                <!-- セクション2: PROC MEANSの基本 -->
+                <!-- セクション2: 基本構文 -->
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        9.2 PROC MEANSの基本
+                        9.2 PROC SQLの基本構文
                     </h2>
 
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        <strong>PROC MEANS</strong>は、数値データの基本統計量（平均、標準偏差、最小値、最大値など）を計算するプロシジャです。データの全体像を把握するために最もよく使われます。
+                        PROC SQLは<code class="bg-slate-100 px-2 py-1 rounded text-sm">PROC SQL;</code>で始まり、<code class="bg-slate-100 px-2 py-1 rounded text-sm">QUIT;</code>で終了します。
                     </p>
 
-                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">基本構文</h3>
-                    <div class="code-block-wrapper mb-4">
+                    <div class="code-block-wrapper">
                         <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">基本構文</span>
+                            <span class="text-slate-400 text-sm">SAS</span>
                             <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-plaintext">PROC MEANS DATA=データセット名 統計量オプション;
-    VAR 変数名リスト;  /* 分析対象の数値変数 */
-RUN;</code></pre>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-sas">/* PROC SQLの基本構文 */
+PROC SQL;
+    SELECT 列1, 列2, ...
+    FROM テーブル名
+    WHERE 条件
+    ORDER BY ソート列;
+QUIT;</code></pre>
                     </div>
 
                     <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
-                                rounded-xl p-5 mb-6 overflow-hidden">
+                                rounded-xl p-5 my-6 overflow-hidden">
                         <div class="flex items-start gap-4">
                             <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
                                         flex items-center justify-center">
                                 <i class="fas fa-code text-white"></i>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 9-1: 基本統計量の算出</h3>
-                                <p class="text-purple-900 mb-4 break-words">売上データの基本統計量を計算してみましょう。</p>
-
-                                <h4 class="font-medium text-purple-800 mb-2 break-words">手順</h4>
-                                <ol class="space-y-3 mb-4">
-                                    <li class="flex items-start gap-3 text-purple-900">
-                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                     flex items-center justify-center text-sm font-medium">1</span>
-                                        <span class="flex-1 min-w-0 break-words">サンプルの売上データを作成します</span>
-                                    </li>
-                                </ol>
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 9-1: 基本的なSELECT文</h3>
+                                <p class="text-purple-900 mb-4 break-words">サンプルデータを作成し、PROC SQLでデータを抽出してみましょう。</p>
 
                                 <div class="code-block-wrapper mb-4">
                                     <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                                        <span class="text-slate-400 text-sm">sales_data.sas</span>
+                                        <span class="text-slate-400 text-sm">basic_select.sas</span>
                                         <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
                                             <i class="fas fa-copy"></i>
                                         </button>
                                     </div>
-                                    <pre class="!mt-0 !rounded-t-none"><code class="language-plaintext">/* サンプルデータ作成 */
-DATA sales;
-    INPUT product $ sales;
+                                    <pre class="!mt-0 !rounded-t-none"><code class="language-sas">/* サンプルデータの作成 */
+DATA employees;
+    INPUT emp_id name $ 9-20 dept $ salary;
     DATALINES;
-A 150
-A 180
-A 160
-B 200
-B 220
-B 210
-C 100
-C 120
-C 110
-;
-RUN;</code></pre>
-                                </div>
-
-                                <ol class="space-y-3 mb-4" start="2">
-                                    <li class="flex items-start gap-3 text-purple-900">
-                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                     flex items-center justify-center text-sm font-medium">2</span>
-                                        <span class="flex-1 min-w-0 break-words">PROC MEANSで基本統計量を計算します</span>
-                                    </li>
-                                </ol>
-
-                                <div class="code-block-wrapper mb-4">
-                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                                        <span class="text-slate-400 text-sm">means_basic.sas</span>
-                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
-                                            <i class="fas fa-copy"></i>
-                                        </button>
-                                    </div>
-                                    <pre class="!mt-0 !rounded-t-none"><code class="language-plaintext">/* 基本統計量を計算 */
-PROC MEANS DATA=sales;
-    VAR sales;  /* salesカラムを分析 */
-RUN;</code></pre>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200
-                                rounded-xl p-5 mb-6 overflow-hidden">
-                        <div class="flex items-start gap-4">
-                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg
-                                        flex items-center justify-center">
-                                <i class="fas fa-play text-white"></i>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h3 class="text-lg font-semibold text-emerald-800 mb-3 break-words">期待される出力</h3>
-                                <p class="text-emerald-900 mb-4 break-words">
-                                    結果ウィンドウに以下のような統計量が表示されます：
-                                </p>
-                                <div class="bg-white/60 rounded-lg p-4 border border-emerald-200">
-                                    <pre class="text-emerald-900 text-sm whitespace-pre-wrap">The MEANS Procedure
-
-Analysis Variable : sales
-
-N          Mean      Std Dev      Minimum      Maximum
-9      161.11       41.60         100.00       220.00</pre>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-4">
-                        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                            <i class="fas fa-book text-slate-500"></i>
-                            デフォルト統計量の説明
-                        </h3>
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full bg-white border border-slate-200 rounded-lg overflow-hidden">
-                                <thead class="bg-slate-100">
-                                    <tr>
-                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">統計量</th>
-                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">意味</th>
-                                        <th class="px-4 py-3 text-left text-sm font-semibold text-slate-700">説明</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-200">
-                                    <tr>
-                                        <td class="px-4 py-3 text-sm font-medium text-slate-800">N</td>
-                                        <td class="px-4 py-3 text-sm text-slate-600">度数</td>
-                                        <td class="px-4 py-3 text-sm text-slate-600">欠損値を除いたデータ件数</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-4 py-3 text-sm font-medium text-slate-800">Mean</td>
-                                        <td class="px-4 py-3 text-sm text-slate-600">平均値</td>
-                                        <td class="px-4 py-3 text-sm text-slate-600">データの合計÷件数</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-4 py-3 text-sm font-medium text-slate-800">Std Dev</td>
-                                        <td class="px-4 py-3 text-sm text-slate-600">標準偏差</td>
-                                        <td class="px-4 py-3 text-sm text-slate-600">データのばらつきの度合い</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-4 py-3 text-sm font-medium text-slate-800">Minimum</td>
-                                        <td class="px-4 py-3 text-sm text-slate-600">最小値</td>
-                                        <td class="px-4 py-3 text-sm text-slate-600">データの最小値</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-4 py-3 text-sm font-medium text-slate-800">Maximum</td>
-                                        <td class="px-4 py-3 text-sm text-slate-600">最大値</td>
-                                        <td class="px-4 py-3 text-sm text-slate-600">データの最大値</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- セクション3: PROC MEANSのオプション -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        9.3 PROC MEANSのオプション
-                    </h2>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        PROC MEANSでは、必要な統計量だけを指定して出力することができます。主な統計量オプションを紹介します。
-                    </p>
-
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-4">
-                        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                            <i class="fas fa-list text-slate-500"></i>
-                            主な統計量オプション
-                        </h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="bg-white rounded-lg p-4 border border-slate-200">
-                                <code class="text-sm text-primary-600 font-mono">N</code>
-                                <p class="text-sm text-slate-600 mt-1">データ件数</p>
-                            </div>
-                            <div class="bg-white rounded-lg p-4 border border-slate-200">
-                                <code class="text-sm text-primary-600 font-mono">MEAN</code>
-                                <p class="text-sm text-slate-600 mt-1">平均値</p>
-                            </div>
-                            <div class="bg-white rounded-lg p-4 border border-slate-200">
-                                <code class="text-sm text-primary-600 font-mono">MEDIAN</code>
-                                <p class="text-sm text-slate-600 mt-1">中央値</p>
-                            </div>
-                            <div class="bg-white rounded-lg p-4 border border-slate-200">
-                                <code class="text-sm text-primary-600 font-mono">STD</code>
-                                <p class="text-sm text-slate-600 mt-1">標準偏差</p>
-                            </div>
-                            <div class="bg-white rounded-lg p-4 border border-slate-200">
-                                <code class="text-sm text-primary-600 font-mono">SUM</code>
-                                <p class="text-sm text-slate-600 mt-1">合計値</p>
-                            </div>
-                            <div class="bg-white rounded-lg p-4 border border-slate-200">
-                                <code class="text-sm text-primary-600 font-mono">MIN MAX</code>
-                                <p class="text-sm text-slate-600 mt-1">最小値・最大値</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="code-block-wrapper mb-4">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">means_options.sas</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-plaintext">/* 必要な統計量だけを指定 */
-PROC MEANS DATA=sales N MEAN MEDIAN SUM;
-    VAR sales;
-RUN;</code></pre>
-                    </div>
-                </section>
-
-                <!-- セクション4: グループ別集計（CLASS文） -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        9.4 グループ別集計（CLASS文）
-                    </h2>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        <strong>CLASS文</strong>を使うと、カテゴリ変数ごとにグループ分けして統計量を計算できます。商品別売上、地域別売上など、グループ別の比較に便利です。
-                    </p>
-
-                    <div class="code-block-wrapper mb-4">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">means_class.sas</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-plaintext">/* 商品別に統計量を計算 */
-PROC MEANS DATA=sales N MEAN MIN MAX;
-    CLASS product;  /* product変数でグループ化 */
-    VAR sales;
-RUN;</code></pre>
-                    </div>
-
-                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-star text-emerald-600 mt-1"></i>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-emerald-900 font-medium break-words">CLASS文のポイント</p>
-                                <p class="text-emerald-800 text-sm mt-1 break-words">
-                                    CLASS文を使うと、自動的にグループごとの統計量と全体の統計量の両方が出力されます。複数の変数を指定して多段階のグループ化も可能です（例：CLASS region product;）。
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- セクション5: PROC FREQの基本 -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        9.5 PROC FREQの基本
-                    </h2>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        <strong>PROC FREQ</strong>は、カテゴリデータの度数分布表（頻度表）を作成するプロシジャです。各カテゴリが何回出現したか、全体に占める割合は何%かを確認できます。
-                    </p>
-
-                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">基本構文</h3>
-                    <div class="code-block-wrapper mb-4">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">基本構文</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-plaintext">PROC FREQ DATA=データセット名;
-    TABLES 変数名;  /* 度数分布表を作成する変数 */
-RUN;</code></pre>
-                    </div>
-
-                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
-                                rounded-xl p-5 mb-6 overflow-hidden">
-                        <div class="flex items-start gap-4">
-                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
-                                        flex items-center justify-center">
-                                <i class="fas fa-code text-white"></i>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 9-2: 度数分布表の作成</h3>
-                                <p class="text-purple-900 mb-4 break-words">商品ごとの販売回数を集計してみましょう。</p>
-
-                                <div class="code-block-wrapper mb-4">
-                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                                        <span class="text-slate-400 text-sm">freq_basic.sas</span>
-                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
-                                            <i class="fas fa-copy"></i>
-                                        </button>
-                                    </div>
-                                    <pre class="!mt-0 !rounded-t-none"><code class="language-plaintext">/* 商品の度数分布表を作成 */
-PROC FREQ DATA=sales;
-    TABLES product;  /* product変数の度数分布 */
-RUN;</code></pre>
-                                </div>
-
-                                <div class="bg-white/60 rounded-lg p-4 border border-purple-200 mt-4">
-                                    <p class="text-purple-900 text-sm font-medium mb-2">出力例：</p>
-                                    <pre class="text-purple-900 text-sm whitespace-pre-wrap">product    Frequency    Percent    Cumulative    Cumulative
-                                    Frequency     Percent
-A              3          33.33          3           33.33
-B              3          33.33          6           66.67
-C              3          33.33          9          100.00</pre>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-blue-900 font-medium break-words">出力の見方</p>
-                                <p class="text-blue-800 text-sm mt-1 break-words">
-                                    Frequency（度数）は各カテゴリの出現回数、Percent（パーセント）は全体に占める割合です。Cumulative（累積）は、その行までの合計を示します。
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- セクション6: クロス集計表 -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        9.6 クロス集計表の作成
-                    </h2>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        PROC FREQでは、2つの変数を掛け合わせたクロス集計表（2×2表など）を作成できます。2つの変数の関連性を調べるときに使います。
-                    </p>
-
-                    <div class="code-block-wrapper mb-4">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">crosstab_data.sas</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-plaintext">/* クロス集計用サンプルデータ */
-DATA survey;
-    INPUT gender $ satisfaction $;
-    DATALINES;
-Male Good
-Male Good
-Male Average
-Female Good
-Female Excellent
-Female Excellent
-Male Average
-Female Good
+101 山田太郎 営業部 350000
+102 佐藤花子 総務部 320000
+103 鈴木一郎 開発部 380000
+104 田中健二 営業部 360000
+105 高橋美咲 開発部 400000
 ;
 RUN;
 
-/* クロス集計表を作成 */
-PROC FREQ DATA=survey;
-    TABLES gender * satisfaction;  /* * で2変数をクロス集計 */
-RUN;</code></pre>
-                    </div>
+/* PROC SQLでデータ抽出 */
+PROC SQL;
+    SELECT emp_id, name, salary
+    FROM employees
+    WHERE salary >= 360000
+    ORDER BY salary DESC;
+QUIT;</code></pre>
+                                </div>
 
-                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-star text-emerald-600 mt-1"></i>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-emerald-900 font-medium break-words">クロス集計のポイント</p>
-                                <p class="text-emerald-800 text-sm mt-1 break-words">
-                                    「変数A * 変数B」の形式で指定します。出力には各セルの度数、行パーセント、列パーセント、全体パーセントが表示されます。NOPCTオプションで不要なパーセント表示を省略できます。
-                                </p>
+                                <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-4 rounded-r-lg">
+                                    <div class="flex items-start gap-3">
+                                        <i class="fas fa-play text-emerald-600 mt-1"></i>
+                                        <div>
+                                            <p class="text-emerald-900 font-medium">実行結果</p>
+                                            <p class="text-emerald-800 text-sm mt-1">
+                                                給与36万円以上の社員が、給与の高い順に表示されます（高橋、田中、鈴木の3名）。
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- セクション7: 統計量のデータセット出力 -->
+                <!-- セクション3: テーブル作成とデータ操作 -->
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        9.7 統計量のデータセット出力
+                        9.3 CREATE TABLEとデータ操作
                     </h2>
 
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        PROC MEANSやPROC FREQの結果は、画面表示だけでなくデータセットに保存して再利用できます。これにより、統計結果を別のプログラムで使ったり、グラフ化したりできます。
+                        <strong>CREATE TABLE</strong>を使うと、SELECT結果を新しいデータセットとして保存できます。
                     </p>
 
-                    <div class="code-block-wrapper mb-4">
+                    <div class="code-block-wrapper">
                         <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">output_dataset.sas</span>
+                            <span class="text-slate-400 text-sm">SAS</span>
                             <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-plaintext">/* PROC MEANSの結果をデータセットに保存 */
-PROC MEANS DATA=sales NOPRINT;
-    CLASS product;
-    VAR sales;
-    OUTPUT OUT=sales_summary  /* 出力先データセット */
-           MEAN=avg_sales     /* 平均値をavg_salesに */
-           N=count;           /* 件数をcountに */
-RUN;
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-sas">/* CREATE TABLEでデータセット作成 */
+PROC SQL;
+    CREATE TABLE high_salary AS
+    SELECT emp_id, name, dept, salary
+    FROM employees
+    WHERE salary >= 360000;
+QUIT;
 
 /* 結果を確認 */
-PROC PRINT DATA=sales_summary;
-RUN;</code></pre>
+PROC PRINT DATA=high_salary; RUN;</code></pre>
                     </div>
 
-                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">計算列の追加</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        SELECT句で計算式を使い、新しい列を作成できます。
+                    </p>
+
+                    <div class="code-block-wrapper">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">SAS</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-sas">/* 計算列と別名（AS）の使用 */
+PROC SQL;
+    SELECT emp_id,
+           name,
+           salary,
+           salary * 12 AS annual_salary, /* 年収を計算 */
+           salary * 0.1 AS bonus          /* ボーナスを計算 */
+    FROM employees;
+QUIT;</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション4: JOIN句 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        9.4 JOIN句による複数テーブルの結合
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        PROC SQLでは、JOIN句を使って複数のテーブルを結合できます。<strong>事前のソートは不要</strong>です。
+                    </p>
+
+                    <div class="mermaid my-6" data-mermaid-code="graph TD
+    A[INNER JOIN] --> B[両テーブルに存在するキーのみ]
+    C[LEFT JOIN] --> D[左テーブル全件 + 右の一致分]
+    E[RIGHT JOIN] --> F[右テーブル全件 + 左の一致分]
+    G[FULL JOIN] --> H[両テーブル全件]">
+graph TD
+    A[INNER JOIN] --> B[両テーブルに存在するキーのみ]
+    C[LEFT JOIN] --> D[左テーブル全件 + 右の一致分]
+    E[RIGHT JOIN] --> F[右テーブル全件 + 左の一致分]
+    G[FULL JOIN] --> H[両テーブル全件]
+</div>
+
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                                rounded-xl p-5 my-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                        flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-blue-900 font-medium break-words">NOPRINTオプション</p>
-                                <p class="text-blue-800 text-sm mt-1 break-words">
-                                    NOPRINTオプションを指定すると、画面への出力が抑制され、OUTPUTオプションで指定したデータセットだけが作成されます。大量データの処理時に出力を省略したい場合に便利です。
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 9-2: テーブル結合</h3>
+                                <p class="text-purple-900 mb-4 break-words">社員データと部門データを結合してみましょう。</p>
+
+                                <div class="code-block-wrapper mb-4">
+                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                        <span class="text-slate-400 text-sm">join_example.sas</span>
+                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre class="!mt-0 !rounded-t-none"><code class="language-sas">/* 部門マスタの作成 */
+DATA departments;
+    INPUT dept $ dept_name $ 11-25 location $;
+    DATALINES;
+営業部 セールス部門 東京
+総務部 管理部門 東京
+開発部 技術部門 大阪
+;
+RUN;
+
+/* INNER JOINで結合 */
+PROC SQL;
+    SELECT e.emp_id,
+           e.name,
+           e.dept,
+           d.dept_name,
+           d.location,
+           e.salary
+    FROM employees AS e
+    INNER JOIN departments AS d
+    ON e.dept = d.dept;
+QUIT;</code></pre>
+                                </div>
+
+                                <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-4 rounded-r-lg">
+                                    <div class="flex items-start gap-3">
+                                        <i class="fas fa-lightbulb text-emerald-600 mt-1"></i>
+                                        <div>
+                                            <p class="text-emerald-900 font-medium">ポイント</p>
+                                            <p class="text-emerald-800 text-sm mt-1">
+                                                ASでテーブルに別名（e、d）を付けると、列名の参照が簡潔になります。ON句で結合条件を指定します。
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">LEFT JOINの例</h3>
+                    <div class="code-block-wrapper">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">SAS</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-sas">/* LEFT JOIN：左テーブル（employees）の全件を残す */
+PROC SQL;
+    SELECT e.emp_id,
+           e.name,
+           e.dept,
+           d.dept_name
+    FROM employees AS e
+    LEFT JOIN departments AS d
+    ON e.dept = d.dept;
+QUIT;</code></pre>
+                    </div>
+
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-red-900 font-medium break-words">注意</p>
+                                <p class="text-red-800 text-sm mt-1 break-words">
+                                    LEFT JOINで右テーブルに一致するデータがない場合、その列は欠損値（NULL）になります。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション5: 集計関数とGROUP BY -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        9.5 集計関数とGROUP BY句
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        PROC SQLでは、集計関数を使ってデータを集計できます。GROUP BY句と組み合わせると、グループごとの集計が可能です。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">主な集計関数</h3>
+                    <div class="overflow-x-auto mb-6">
+                        <table class="min-w-full bg-white border border-slate-200 rounded-lg overflow-hidden">
+                            <thead class="bg-primary-500 text-white">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold">関数</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold">説明</th>
+                                    <th class="px-4 py-3 text-left text-sm font-semibold">使用例</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200">
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-800">COUNT(*)</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600">行数をカウント</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600 font-mono">COUNT(*) AS cnt</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-800">SUM()</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600">合計を計算</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600 font-mono">SUM(salary) AS total</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-800">AVG()</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600">平均を計算</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600 font-mono">AVG(salary) AS avg_sal</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50">
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-800">MAX() / MIN()</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600">最大値 / 最小値</td>
+                                    <td class="px-4 py-3 text-sm text-slate-600 font-mono">MAX(salary) AS max_sal</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                                rounded-xl p-5 my-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                        flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 9-3: GROUP BYによる集計</h3>
+                                <p class="text-purple-900 mb-4 break-words">部門別の給与集計を行ってみましょう。</p>
+
+                                <div class="code-block-wrapper mb-4">
+                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                        <span class="text-slate-400 text-sm">group_by_example.sas</span>
+                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre class="!mt-0 !rounded-t-none"><code class="language-sas">/* 部門別の給与統計 */
+PROC SQL;
+    SELECT dept,
+           COUNT(*) AS emp_count,
+           SUM(salary) AS total_salary,
+           AVG(salary) AS avg_salary FORMAT=comma10.,
+           MAX(salary) AS max_salary,
+           MIN(salary) AS min_salary
+    FROM employees
+    GROUP BY dept
+    ORDER BY avg_salary DESC;
+QUIT;</code></pre>
+                                </div>
+
+                                <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5 my-4">
+                                    <h4 class="font-medium text-emerald-800 mb-2">
+                                        <i class="fas fa-check-circle mr-2"></i>期待される結果
+                                    </h4>
+                                    <div class="bg-white/60 rounded-lg p-4 border border-emerald-200">
+                                        <pre class="text-emerald-900 text-sm whitespace-pre-wrap">dept       emp_count  total_salary  avg_salary    max_salary  min_salary
+--------   ---------  -----------   ----------    ----------  ----------
+開発部         2         780000       390,000       400000      380000
+営業部         2         710000       355,000       360000      350000
+総務部         1         320000       320,000       320000      320000</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">HAVING句による集計結果のフィルタリング</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        WHERE句は集計前のフィルタリング、<strong>HAVING句</strong>は集計後のフィルタリングに使います。
+                    </p>
+
+                    <div class="code-block-wrapper">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">SAS</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-sas">/* HAVING句：平均給与35万円以上の部門のみ表示 */
+PROC SQL;
+    SELECT dept,
+           COUNT(*) AS emp_count,
+           AVG(salary) AS avg_salary FORMAT=comma10.
+    FROM employees
+    GROUP BY dept
+    HAVING AVG(salary) >= 350000
+    ORDER BY avg_salary DESC;
+QUIT;</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション6: サブクエリ -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        9.6 サブクエリの活用
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>サブクエリ（副問合せ）</strong>は、クエリの中にクエリを入れ子にする手法です。複雑な条件指定に便利です。
+                    </p>
+
+                    <div class="code-block-wrapper">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">SAS</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-sas">/* 平均給与以上の社員を抽出 */
+PROC SQL;
+    SELECT emp_id, name, dept, salary
+    FROM employees
+    WHERE salary >= (SELECT AVG(salary) FROM employees);
+QUIT;
+
+/* 特定部門の社員のみ抽出（IN句） */
+PROC SQL;
+    SELECT emp_id, name, dept, salary
+    FROM employees
+    WHERE dept IN (SELECT dept FROM departments WHERE location = '東京');
+QUIT;</code></pre>
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">サブクエリのポイント</p>
+                                <p class="text-emerald-800 text-sm mt-1 break-words">
+                                    サブクエリは括弧で囲み、外側のクエリより先に実行されます。単一値を返すサブクエリは比較演算子（=, >=等）で、複数値を返すサブクエリはIN句で使います。
                                 </p>
                             </div>
                         </div>
@@ -648,35 +668,35 @@ RUN;</code></pre>
                             <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
                             <ol class="space-y-4">
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2 break-words">Q1. PROC MEANSがデフォルトで出力する統計量を3つ挙げてください。</p>
+                                    <p class="font-medium mb-2 break-words">Q1. PROC SQLを終了するステートメントは何ですか？</p>
                                     <details class="mt-2">
                                         <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
                                         <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
-                                            <strong>N（度数）、Mean（平均値）、Std Dev（標準偏差）、Minimum（最小値）、Maximum（最大値）</strong>の5つです。この中から任意の3つを答えてください。
+                                            <strong>QUIT;</strong>です。PROC SQLはQUIT;で終了し、RUN;ではありません。
                                         </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2 break-words">Q2. グループ別に統計量を計算するときに使う文は何ですか？</p>
+                                    <p class="font-medium mb-2 break-words">Q2. LEFT JOINとINNER JOINの違いは何ですか？</p>
                                     <details class="mt-2">
                                         <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
                                         <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
-                                            <strong>CLASS文</strong>です。例えば「CLASS product;」と記述すると、product変数の各カテゴリごとに統計量が計算されます。
+                                            <strong>INNER JOIN</strong>は両テーブルに存在するキーのみを結合します。<strong>LEFT JOIN</strong>は左テーブルの全レコードを残し、右テーブルで一致するものを結合します（一致しない場合は欠損値）。
                                         </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2 break-words">Q3. PROC FREQで2つの変数のクロス集計表を作成するにはどう書きますか？</p>
+                                    <p class="font-medium mb-2 break-words">Q3. 集計結果に対してフィルタリングする句は何ですか？</p>
                                     <details class="mt-2">
                                         <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
                                         <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
-                                            <strong>TABLES 変数A * 変数B;</strong> のように、アスタリスク（*）で2つの変数を繋げます。例：「TABLES gender * age_group;」
+                                            <strong>HAVING句</strong>です。WHERE句は集計前のフィルタリング、HAVING句は集計後のフィルタリングに使います。
                                         </p>
                                     </details>
                                 </li>
@@ -694,23 +714,23 @@ RUN;</code></pre>
                     <ul class="space-y-2 text-slate-700">
                         <li class="flex items-start gap-2">
                             <i class="fas fa-check-circle text-primary-500 mt-1 flex-shrink-0"></i>
-                            <span>PROC MEANSで基本統計量（平均、標準偏差、最小値、最大値など）を計算できる</span>
+                            <span>PROC SQLはSQLの標準構文でデータ操作ができる（事前ソート不要）</span>
                         </li>
                         <li class="flex items-start gap-2">
                             <i class="fas fa-check-circle text-primary-500 mt-1 flex-shrink-0"></i>
-                            <span>統計量オプションで必要な統計量だけを指定できる（N MEAN MEDIAN SUMなど）</span>
+                            <span>SELECT文でデータ抽出、CREATE TABLE ASで結果をデータセットに保存</span>
                         </li>
                         <li class="flex items-start gap-2">
                             <i class="fas fa-check-circle text-primary-500 mt-1 flex-shrink-0"></i>
-                            <span>CLASS文を使うとグループ別に統計量を算出できる</span>
+                            <span>JOIN句（INNER/LEFT/RIGHT/FULL）で複数テーブルを結合</span>
                         </li>
                         <li class="flex items-start gap-2">
                             <i class="fas fa-check-circle text-primary-500 mt-1 flex-shrink-0"></i>
-                            <span>PROC FREQで度数分布表とクロス集計表を作成できる</span>
+                            <span>GROUP BY句と集計関数（COUNT, SUM, AVG等）でグループ集計</span>
                         </li>
                         <li class="flex items-start gap-2">
                             <i class="fas fa-check-circle text-primary-500 mt-1 flex-shrink-0"></i>
-                            <span>OUTPUTオプションで統計結果をデータセットに保存して再利用できる</span>
+                            <span>HAVING句は集計後のフィルタリング、サブクエリで複雑な条件指定</span>
                         </li>
                     </ul>
                 </div>
@@ -732,7 +752,7 @@ RUN;</code></pre>
                               bg-primary-500 hover:bg-primary-600 text-white transition-colors">
                         <div class="text-right">
                             <span class="text-xs text-primary-100 block">次の章</span>
-                            <span class="font-medium">第10章: データの可視化（グラフ作成）</span>
+                            <span class="font-medium">第10章: 統計プロシジャの基礎</span>
                         </div>
                         <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
                     </a>

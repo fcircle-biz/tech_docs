@@ -52,18 +52,21 @@ IF-THEN文による条件分岐、WHERE句によるデータ抽出、サブセ�
 DOループによる繰り返し処理、配列を使った効率的なデータ処理を理解します。大量データの一括処理方法を習得します。
 
 ### [8. データの結合と変換](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/sas/sas-learning-material-08.html)
-複数のデータセットの結合（マージ、セット、SQL結合）、データの転置と形式変換を学びます。
+複数のデータセットの結合（マージ、セット）、データの転置と形式変換を学びます。
 
-### [9. 統計プロシジャの基礎](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/sas/sas-learning-material-09.html)
+### [9. PROC SQLによるデータ操作](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/sas/sas-learning-material-09.html)
+SQLを使ったデータ抽出・結合・集計の方法を学びます。データステップとの使い分けや、複雑なクエリの書き方を習得します。
+
+### [10. 統計プロシジャの基礎](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/sas/sas-learning-material-10.html)
 PROC MEANSやPROC FREQを使った基本統計量の算出、データの要約と集計方法を習得します。
 
-### [10. データの可視化（グラフ作成）](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/sas/sas-learning-material-10.html)
+### [11. データの可視化（グラフ作成）](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/sas/sas-learning-material-11.html)
 PROC SGPLOTを使った各種グラフ（棒グラフ、折れ線グラフ、散布図）の作成方法を学びます。見やすいグラフ作成のポイントも解説します。
 
-### [11. レポート作成の基本](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/sas/sas-learning-material-11.html)
+### [12. レポート作成の基本](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/sas/sas-learning-material-12.html)
 PROC PRINTやPROC REPORTを使った表形式レポートの作成、ODS（Output Delivery System）によるExcel/PDF出力を学習します。
 
-### [12. SASマクロの基礎](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/sas/sas-learning-material-12.html)
+### [13. SASマクロの基礎](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/data-ai/sas/sas-learning-material-13.html)
 マクロ変数の使い方、簡単なマクロプログラムの作成方法を学び、プログラムの再利用性を高めます。
 
 ## 学習の進め方
@@ -94,9 +97,9 @@ PROC PRINTやPROC REPORTを使った表形式レポートの作成、ODS（Outpu
   - 週3-4時間の学習ペースで、SASプログラミングの基礎を習得
   - データの入力、基本的な処理、条件分岐までマスター
 
-- **実践活用コース** (7-12章): 4-5週間
+- **実践活用コース** (7-13章): 5-6週間
   - 週4-5時間の学習ペースで、実務で使える技術を習得
-  - データ結合、統計処理、レポート作成まで網羅
+  - データ結合、PROC SQL、統計処理、レポート作成まで網羅
 
 - **全体習得期間**: 約2-3か月
   - 毎日30分～1時間の学習で、SASの基本から応用まで習得可能

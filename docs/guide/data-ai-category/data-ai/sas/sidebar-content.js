@@ -12,7 +12,7 @@
     'use strict';
 
     // ========================================
-    // 章の定義データ（SAS入門 全12章）
+    // 章の定義データ（SAS入門 全13章）
     // ========================================
     const chapters = [
         { number: 1, title: '第1章: SASの基本概念と環境構築', file: 'sas-learning-material-01.html' },
@@ -23,10 +23,11 @@
         { number: 6, title: '第6章: 条件処理とデータの抽出', file: 'sas-learning-material-06.html' },
         { number: 7, title: '第7章: ループ処理と配列', file: 'sas-learning-material-07.html' },
         { number: 8, title: '第8章: データの結合と変換', file: 'sas-learning-material-08.html' },
-        { number: 9, title: '第9章: 統計プロシジャの基礎', file: 'sas-learning-material-09.html' },
-        { number: 10, title: '第10章: データの可視化（グラフ作成）', file: 'sas-learning-material-10.html' },
-        { number: 11, title: '第11章: レポート作成の基本', file: 'sas-learning-material-11.html' },
-        { number: 12, title: '第12章: SASマクロの基礎', file: 'sas-learning-material-12.html' }
+        { number: 9, title: '第9章: PROC SQLによるデータ操作', file: 'sas-learning-material-09.html' },
+        { number: 10, title: '第10章: 統計プロシジャの基礎', file: 'sas-learning-material-10.html' },
+        { number: 11, title: '第11章: データの可視化（グラフ作成）', file: 'sas-learning-material-11.html' },
+        { number: 12, title: '第12章: レポート作成の基本', file: 'sas-learning-material-12.html' },
+        { number: 13, title: '第13章: SASマクロの基礎', file: 'sas-learning-material-13.html' }
     ];
 
     // 現在のページのファイル名を取得
