@@ -47,6 +47,7 @@
 
 #### JavaScript
 - **[JavaScript学習ガイド](docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/README.md)** - プログラミング未経験者向けJavaScript入門12章構成カリキュラム
+- **[TypeScript学習ガイド](docs/guide/programming-languages/javascript-ecosystem/typescript/README.md)** - TypeScriptの基礎をプログラミング完全未経験者向けに段階的に学習するためのカリキュラム。型システムを活用した安全なコード作成を15章で完全習得
 - **[Next.js学習ガイド](docs/guide/programming-languages/javascript-ecosystem/nextjs/README.md)** - Next.jsフレームワークを使用したモダンなReactアプリケーション開発の基礎を入門者向けに段階的に学習するためのカリキュラム（10章構成）
 - **[React学習ガイド](docs/guide/programming-languages/javascript-ecosystem/react/README.md)** - Reactライブラリを使用したモダンなWebアプリケーション開発の基礎を入門者向けに段階的に学習するためのカリキュラム（10章構成）
 
