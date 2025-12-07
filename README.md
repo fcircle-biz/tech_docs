@@ -32,7 +32,7 @@
 #### .NET
 - **[VB.NET学習ガイド](docs/guide/programming-languages/dotnet-ecosystem/vbnet/README.md)** - VB.NET言語基礎からオブジェクト指向プログラミングまで10章完成カリキュラム
 - **[ASP.NET(VB.NET)学習ガイド](docs/guide/programming-languages/dotnet-ecosystem/aspnet-vb/README.md)** - ASP.NET Web Forms基礎から実践的なユーザー管理システム開発まで10章完成カリキュラム
-- **[ASP.NET Core(VB.NET)学習ガイド](docs/guide/programming-languages/dotnet-ecosystem/aspnetcore-vb/README.md)** - ASP.NET Core MVCとEntity Framework Coreを使用したモダンWebアプリケーション開発10章完成カリキュラム
+- **[ASP.NET Core(VB.NET)学習ガイド](docs/guide/programming-languages/dotnet-ecosystem/aspnetcore-vb/README.md)** - ASP.NET Core MVCとEntity Framework Coreを使用したモダンWebアプリケーション開発11章完成カリキュラム
 
 #### COBOL
 - **[COBOL学習ガイド](docs/guide/programming-languages/cobol-ecosystem/cobol/README.md)** - COBOL基礎から実践的なビジネスロジックまで10章完成カリキュラム
@@ -92,8 +92,8 @@
 ### データ・AI
 
 #### データベース
-- **[SQL学習ガイド](docs/guide/data-ai-category/database/sql/README.md)** - SQL基本概念からPostgreSQL高度機能まで10章完成カリキュラム
-- **[Oracle学習ガイド](docs/guide/data-ai-category/database/oracle/README.md)** - Oracle Database入門から基本的な運用まで8章完成カリキュラム
+- **[SQL学習ガイド](docs/guide/data-ai-category/database/sql/README.md)** - SQL基本概念からPostgreSQL高度機能まで12章完成カリキュラム
+- **[Oracle学習ガイド](docs/guide/data-ai-category/database/oracle/README.md)** - Oracle Database入門から基本的な運用まで10章完成カリキュラム
 - **[PL/SQL学習ガイド](docs/guide/data-ai-category/database/plsql/README.md)** - Oracle PL/SQLの基礎から応用まで10章完成カリキュラム
 - **[DB2学習ガイド](docs/guide/data-ai-category/database/db2/README.md)** - IBM DB2データベース入門からDocker環境での運用管理まで8章完成カリキュラム
 
@@ -104,10 +104,11 @@
 #### 統計解析
 - **[統計解析学習ガイド](docs/guide/data-ai-category/statistical-analysis/README.md)** - 統計学基礎から推測統計・仮説検定まで10章完成カリキュラム
 
-### 業務SaaS
+### SaaS／PaaS／アプリケーション
 
 - **[Excel基本操作学習ガイド](docs/guide/business-saas/excel-basic/README.md)** - Excel基本操作から関数、VBA入門まで8章完成カリキュラム
 - **[VBA学習ガイド](docs/guide/business-saas/vba/README.md)** - VBA基礎からExcel自動化まで10章完成カリキュラム
+- **[OutSystems学習ガイド](docs/guide/business-saas/outsystems/README.md)** - OutSystemsローコード開発プラットフォームの基礎から実践的なアプリケーション開発まで14章完成カリキュラム
 - **[SAP学習ガイド](docs/guide/business-saas/sap/README.md)** - SAP ERP基礎から実践的な業務プロセスまで10章完成カリキュラム。SAP S/4HANA、ABAP、Fiori、SAP HANA等のモダンなSAP技術を体系的に習得
 
 ### 資格試験
