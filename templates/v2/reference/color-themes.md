@@ -378,6 +378,196 @@ primary: {
 
 ---
 
+## Webテクノロジ系
+
+### HTML / CSS
+```javascript
+primary: {
+    50: '#fff7ed',
+    100: '#ffedd5',
+    200: '#fed7aa',
+    300: '#fdba74',
+    400: '#fb923c',
+    500: '#f97316',  // HTML5 Orange
+    600: '#ea580c',
+    700: '#c2410c',
+    800: '#9a3412',
+    900: '#7c2d12',
+}
+```
+- **アイコン**: `fab fa-html5` または `fab fa-css3-alt`
+- **用途**: HTML, CSS, Webデザイン基礎
+
+### Tailwind CSS
+```javascript
+primary: {
+    50: '#ecfeff',
+    100: '#cffafe',
+    200: '#a5f3fc',
+    300: '#67e8f9',
+    400: '#22d3ee',
+    500: '#06b6d4',  // Tailwind Cyan
+    600: '#0891b2',
+    700: '#0e7490',
+    800: '#155e75',
+    900: '#164e63',
+}
+```
+- **アイコン**: `fas fa-wind`
+- **用途**: Tailwind CSS, ユーティリティファーストCSS
+
+### Bootstrap
+```javascript
+primary: {
+    50: '#f5f3ff',
+    100: '#ede9fe',
+    200: '#ddd6fe',
+    300: '#c4b5fd',
+    400: '#a78bfa',
+    500: '#8b5cf6',  // Bootstrap Purple
+    600: '#7c3aed',
+    700: '#6d28d9',
+    800: '#5b21b6',
+    900: '#4c1d95',
+}
+```
+- **アイコン**: `fab fa-bootstrap`
+- **用途**: Bootstrap, レスポンシブUI
+
+---
+
+## セキュリティ系
+
+### 情報セキュリティ
+```javascript
+primary: {
+    50: '#fef2f2',
+    100: '#fee2e2',
+    200: '#fecaca',
+    300: '#fca5a5',
+    400: '#f87171',
+    500: '#ef4444',  // Security Red
+    600: '#dc2626',
+    700: '#b91c1c',
+    800: '#991b1b',
+    900: '#7f1d1d',
+}
+```
+- **アイコン**: `fas fa-shield-alt`
+- **用途**: 情報セキュリティ, 脆弱性診断, SOC
+
+---
+
+## ネットワーク系
+
+### ネットワーク / 通信
+```javascript
+primary: {
+    50: '#f0fdfa',
+    100: '#ccfbf1',
+    200: '#99f6e4',
+    300: '#5eead4',
+    400: '#2dd4bf',
+    500: '#14b8a6',  // Teal
+    600: '#0d9488',
+    700: '#0f766e',
+    800: '#115e59',
+    900: '#134e4a',
+}
+```
+- **アイコン**: `fas fa-network-wired`
+- **用途**: ネットワーク基礎, TCP/IP, Cisco
+
+---
+
+## テスト・品質管理系
+
+### テスト / QA
+```javascript
+primary: {
+    50: '#ecfdf5',
+    100: '#d1fae5',
+    200: '#a7f3d0',
+    300: '#6ee7b7',
+    400: '#34d399',
+    500: '#10b981',  // QA Green
+    600: '#059669',
+    700: '#047857',
+    800: '#065f46',
+    900: '#064e3b',
+}
+```
+- **アイコン**: `fas fa-vial` または `fas fa-check-circle`
+- **用途**: ソフトウェアテスト, 品質管理, CI/CD
+
+---
+
+## プロジェクト管理系
+
+### PM / ガバナンス
+```javascript
+primary: {
+    50: '#faf5ff',
+    100: '#f3e8ff',
+    200: '#e9d5ff',
+    300: '#d8b4fe',
+    400: '#c084fc',
+    500: '#a855f7',  // PM Purple
+    600: '#9333ea',
+    700: '#7e22ce',
+    800: '#6b21a8',
+    900: '#581c87',
+}
+```
+- **アイコン**: `fas fa-project-diagram` または `fas fa-tasks`
+- **用途**: プロジェクト管理, PMBOK, ITガバナンス
+
+---
+
+## 生成AI / LLM系
+
+### 生成AI / LLM
+```javascript
+primary: {
+    50: '#fdf4ff',
+    100: '#fae8ff',
+    200: '#f5d0fe',
+    300: '#f0abfc',
+    400: '#e879f9',
+    500: '#d946ef',  // AI Fuchsia
+    600: '#c026d3',
+    700: '#a21caf',
+    800: '#86198f',
+    900: '#701a75',
+}
+```
+- **アイコン**: `fas fa-robot` または `fas fa-magic`
+- **用途**: LLM, RAG, LangChain, OpenAI
+
+---
+
+## IoT / エッジ系
+
+### IoT / エッジコンピューティング
+```javascript
+primary: {
+    50: '#f0fdf4',
+    100: '#dcfce7',
+    200: '#bbf7d0',
+    300: '#86efac',
+    400: '#4ade80',
+    500: '#22c55e',  // IoT Green
+    600: '#16a34a',
+    700: '#15803d',
+    800: '#166534',
+    900: '#14532d',
+}
+```
+- **アイコン**: `fas fa-microchip` または `fas fa-broadcast-tower`
+- **用途**: IoT, エッジデバイス, Raspberry Pi, FA/製造IoT
+
+---
+
 ## カラーテーマ早見表
 
 | 技術分野 | メインカラー (500) | アイコン | 用途 |
@@ -398,6 +588,15 @@ primary: {
 | R言語 | `#3b82f6` (blue) | `fab fa-r-project` | R, 統計 |
 | AI/ML | `#a855f7` (purple) | `fas fa-brain` | 機械学習 |
 | Excel | `#10b981` (emerald) | `fas fa-file-excel` | Excel, VBA |
+| HTML/CSS | `#f97316` (orange) | `fab fa-html5` | HTML, CSS |
+| Tailwind | `#06b6d4` (cyan) | `fas fa-wind` | Tailwind CSS |
+| Bootstrap | `#8b5cf6` (violet) | `fab fa-bootstrap` | Bootstrap |
+| セキュリティ | `#ef4444` (red) | `fas fa-shield-alt` | 情報セキュリティ |
+| ネットワーク | `#14b8a6` (teal) | `fas fa-network-wired` | TCP/IP, Cisco |
+| テスト/QA | `#10b981` (emerald) | `fas fa-vial` | テスト, 品質管理 |
+| PM/ガバナンス | `#a855f7` (purple) | `fas fa-tasks` | PMBOK, ITIL |
+| 生成AI/LLM | `#d946ef` (fuchsia) | `fas fa-robot` | LLM, RAG |
+| IoT/エッジ | `#22c55e` (green) | `fas fa-microchip` | IoT, Raspberry Pi |
 
 ---
 
