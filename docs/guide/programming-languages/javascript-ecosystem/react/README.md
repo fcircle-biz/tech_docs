@@ -1,100 +1,104 @@
 # React 学習ガイドライン
 
-このガイドラインでは、Reactライブラリを使用したモダンなWebアプリケーション開発の基礎を入門者向けに段階的に学習するためのカリキュラムを提供しています。
+このガイドラインでは、Reactを使用したモダンなWebアプリケーション開発の基礎を、JavaScript/TypeScriptの基礎知識がある方向けに段階的に学習するためのカリキュラムを提供しています。関数コンポーネントとReact Hooksを中心に、実践的なコード例を通じて効率的にReactを習得できます。
 
 ## 前提条件
 ### 必要な環境
-- Node.js 16.0以降（推奨：最新のLTSバージョン）
+- Node.js 18.0以降（推奨：最新のLTSバージョン）
 - npm、yarn、またはpnpm（パッケージマネージャー）
-- テキストエディタまたは統合開発環境（VS Code推奨）
-- Webブラウザ（Chrome、Firefox、Safari、Edge等）
-- コマンドライン/ターミナルの基本操作知識
-- Git（バージョン管理用、推奨）
+- Visual Studio Code（推奨）またはお好みのコードエディタ
+- 最新のWebブラウザ（Chrome、Firefox、Safari、Edge等）
+- Git（バージョン管理用）
+- React Developer Tools（ブラウザ拡張機能）
 
 ### 参考リソース
-- [React公式ドキュメント](https://react.dev/)
+- [React公式ドキュメント（最新版）](https://react.dev/)
 - [React日本語ドキュメント](https://ja.react.dev/)
-- [Create React App公式ドキュメント](https://create-react-app.dev/)
 - [Vite公式ドキュメント](https://vitejs.dev/)
-- [React Router公式ドキュメント](https://reactrouter.com/)
-- [MDN Web Docs - JavaScript](https://developer.mozilla.org/ja/docs/Web/JavaScript)
+- [React TypeScript Cheatsheet](https://react-typescript-cheatsheet.netlify.app/)
+- [React Hook Form公式ドキュメント](https://react-hook-form.com/)
+- [React Query/TanStack Query](https://tanstack.com/query/latest)
 
 ### 前提知識
-- **必須**: JavaScript基礎文法（変数、関数、配列、オブジェクト）
-- **必須**: HTML/CSSの基礎知識
-- **推奨**: ES6+の構文（アロー関数、分割代入、スプレッド構文、Promise、async/await）
-- **推奨**: DOMの基本概念とDOM操作の理解
-- **推奨**: JSONデータ形式の理解
-- **推奨**: HTTPプロトコルの基礎知識（GET、POST、REST API）
+- **必須**: JavaScript入門履修済み（ES6+の基本構文、非同期処理、モジュールシステム）
+- **必須**: TypeScript入門履修済み（型定義、インターフェース、ジェネリクス）
+- **必須**: HTML/CSSの基礎知識（セマンティックHTML、レスポンシブデザイン）
+- **推奨**: npm/yarnの基本的な使い方
+- **推奨**: REST APIの基本概念
+- **推奨**: Gitの基本操作
 
 ## 学習コンテンツ
-### [1. React入門と環境構築](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-01.html)
-Reactとは何か、Reactの特徴と利点、仮想DOMの概念、開発環境のセットアップ（Node.js、npm）、Create React AppとViteを使用したプロジェクト作成、開発サーバーの起動、プロジェクト構造の理解、React Developer Toolsの導入について学びます。
+### [1. React入門 - なぜReactを学ぶのか](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-01.html)
+Reactの思想と設計哲学、コンポーネントベース開発の利点、仮想DOMとReactファイバー、宣言的UIの概念、Reactエコシステムの全体像、SPAとMPAの違い、ReactとNext.jsの関係、開発環境のセットアップ（Vite + React + TypeScript）について学びます。
 
-### [2. JSXとコンポーネントの基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-02.html)
-JSX構文の基礎、JavaScriptとの違い、式の埋め込み、関数コンポーネントの作成、コンポーネントの命名規則、コンポーネントのネスト、importとexport、フラグメント（<>...</>）の使用、条件付きレンダリング（三項演算子、&&演算子）について学習します。
+### [2. JSXとTypeScriptでのReact開発](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-02.html)
+JSX/TSX構文の詳細、TypeScriptでのコンポーネント型定義、ReactのFC型とその使い方、children propの型定義、ジェネリクスを使った汎用コンポーネント、型安全なprops設計、React.ReactElement vs JSX.Element、strictモードでの開発について実践的に学習します。
 
-### [3. PropsとState - データの管理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-03.html)
-Propsの概念と使い方、親から子へのデータ渡し、Propsのデフォルト値、Props型チェック（PropTypes）、Stateの概念、useStateフックの基本、Stateの更新、複数のState管理、イミュータブルなState更新、PropsとStateの違いについて学びます。
+### [3. 関数コンポーネントとProps - データフロー設計](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-03.html)
+関数コンポーネントの設計原則、Propsの詳細な型定義、オプショナルプロパティとデフォルト値、コンポーネントの合成パターン、レンダープロップスパターン、Higher-Order Components（HOC）、カスタムフックへの移行タイミング、再利用可能なコンポーネント設計について学びます。
 
-### [4. イベント処理とユーザーインタラクション](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-04.html)
-Reactのイベントハンドリング、onClick、onChange、onSubmitイベント、イベントハンドラーの定義方法、イベントオブジェクト、合成イベント（SyntheticEvent）、フォーム要素の制御（制御されたコンポーネント）、複数の入力フィールドの管理、イベントの委譲について学習します。
+### [4. useState - 状態管理の基礎](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-04.html)
+useStateの内部動作、状態の初期化パターン、遅延初期化、関数型更新、複雑なオブジェクトの状態管理、配列の状態管理、イミュータブル更新の重要性、状態のバッチング、React18の自動バッチング機能、パフォーマンス最適化について詳しく解説します。
 
-### [5. リストとキー - 繰り返し要素のレンダリング](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-05.html)
-mapメソッドを使用したリストのレンダリング、keyプロパティの重要性、一意なkeyの設定方法、keyの使用に関するベストプラクティス、リストアイテムの追加・削除・更新、フィルタリングとソート、動的なリストの管理、パフォーマンスの考慮事項について学びます。
+### [5. useEffect - 副作用とライフサイクル](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-05.html)
+useEffectの正しい使い方、依存配列の完全理解、クリーンアップ関数の実装、データフェッチングのベストプラクティス、競合状態の回避、AbortControllerの使用、カスタムフックでの副作用の抽象化、useLayoutEffectとの使い分け、React18のStrictModeでの二重実行について学習します。
 
-### [6. React Hooks - useEffectとライフサイクル](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-06.html)
-useEffectフックの基本概念、副作用（Side Effects）とは、コンポーネントのマウント・更新・アンマウント、依存配列の理解、クリーンアップ関数、データフェッチング、タイマーやイベントリスナーの管理、useEffectの実行タイミング、無限ループの回避方法について学習します。
+### [6. イベント処理とフォーム - インタラクティブUI](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-06.html)
+Reactのイベントシステム、合成イベントの仕組み、イベントハンドラーの型定義、制御/非制御コンポーネント、フォームバリデーション戦略、React Hook Formの実装、Zodを使ったスキーマバリデーション、リアルタイムバリデーション、複雑なフォームの状態管理について実践的に学びます。
 
-### [7. フォームとバリデーション](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-07.html)
-制御されたコンポーネントと非制御コンポーネント、フォームの送信処理、複数の入力フィールドの管理、バリデーション（入力検証）の実装、エラーメッセージの表示、カスタムフックを使用したフォーム管理、React Hook Form等のライブラリ導入、フォームの状態管理について学びます。
+### [7. useReducer と Context API - 高度な状態管理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-07.html)
+useReducerの設計パターン、アクションとリデューサーの型定義、Context APIの効果的な使用、Provider パターン、複数コンテキストの組み合わせ、パフォーマンスの最適化、再レンダリングの制御、状態管理ライブラリ（Zustand、Jotai）との比較について学習します。
 
-### [8. APIとの連携 - 外部データの取得と更新](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-08.html)
-fetch APIを使用したデータ取得、axiosライブラリの導入と使用、GETリクエストとPOSTリクエスト、ローディング状態の管理、エラーハンドリング、async/awaitパターン、データのCRUD操作、JSON Server等のモックAPIの使用、環境変数の管理について学習します。
+### [8. カスタムフック - ロジックの再利用](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-08.html)
+カスタムフックの設計原則、命名規則、実装パターン、テスタビリティ、useDebounce、useThrottle、useFetch、useLocalStorage、useMediaQuery等の実用的なカスタムフック実装、フックのテスト方法、パッケージ化と共有について実践的に学びます。
 
-### [9. React Routerとナビゲーション](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-09.html)
-シングルページアプリケーション（SPA）の概念、React Routerのインストールと設定、BrowserRouterとRoute、Linkコンポーネントによるナビゲーション、動的ルーティング（URLパラメータ）、ネストされたルート、リダイレクト、404ページの実装、プログラマティックナビゲーション（useNavigate）について学びます。
+### [9. パフォーマンス最適化 - メモ化とコード分割](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-09.html)
+React.memo、useMemo、useCallbackの正しい使い方、レンダリング最適化戦略、React DevToolsプロファイラー、仮想化（react-window）、コード分割とlazy loading、Suspenseの活用、バンドルサイズの削減、Web Vitalsの改善について詳しく解説します。
 
-### [10. 高度なトピック - Context API、パフォーマンス最適化、テスト](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-10.html)
-Context APIを使用したグローバル状態管理、useContextフック、カスタムフックの作成、React.memoによるメモ化、useMemoとuseCallbackフック、コード分割（lazy、Suspense）、React Testing Library基礎、ユニットテストとコンポーネントテスト、デプロイの準備とビルド最適化について学習します。
+### [10. React Router - ルーティングとナビゲーション](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-10.html)
+React Router v6の基本と応用、ルート定義とネスト、動的ルーティング、パラメータとクエリ文字列、プログラマティックナビゲーション、ルートガード、遅延読み込み、エラーバウンダリ、データローダー、アクション、フォーム統合について学習します。
+
+### [11. データフェッチングと状態同期](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-11.html)
+モダンなデータフェッチング戦略、TanStack Query（React Query）の実装、キャッシュ管理、楽観的更新、無限スクロール、リアルタイム同期（WebSocket）、エラーハンドリング、リトライ戦略、バックグラウンド再フェッチ、データの正規化について実践的に学びます。
+
+### [12. テストとデプロイメント](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-12.html)
+React Testing Libraryでのコンポーネントテスト、Jestでのユニットテスト、カスタムフックのテスト、E2Eテスト（Playwright）、CI/CDパイプライン構築、Vercel/Netlifyへのデプロイ、環境変数の管理、パフォーマンス監視、エラートラッキングについて学習します。
 
 ## 学習の進め方
-1. **実践的なプロジェクトを構築しながら学習**: 各章で実際に動作するコンポーネントやアプリケーションを作成しながら学習を進めます
-2. **公式ドキュメントを参照する**: React公式ドキュメント（react.dev）は非常に充実しているため、各章と並行して読み進めることを推奨します
-3. **コードを書いて試す**: 説明を読むだけでなく、必ず自分でコードを書いて動作を確認しましょう
-4. **小さなプロジェクトから始める**: シンプルなToDoリストやカウンターアプリから始めて、徐々に複雑な機能を追加していきます
-5. **エラーメッセージを理解する**: エラーが出たら恐れずにメッセージを読み、問題解決のスキルを身につけます
+1. **基礎理解フェーズ（1-3章）**: Reactの基本概念とTypeScriptでの開発環境を理解し、シンプルなコンポーネントが作成できるようになる
+2. **状態管理フェーズ（4-7章）**: useState、useEffect、useReducerを使いこなし、複雑な状態管理ができるようになる
+3. **実践応用フェーズ（8-10章）**: カスタムフック作成、パフォーマンス最適化、ルーティングを実装できるようになる
+4. **プロダクション準備フェーズ（11-12章）**: 実務で必要なデータフェッチング、テスト、デプロイができるようになる
 
 ## 推奨学習期間
-- **基礎習得コース** (1-5章): 3-5週間
-- **実践活用コース** (6-8章): 3-4週間
-- **応用・最適化コース** (9-10章): 2-3週間
-- **合計学習期間**: 8-12週間（週5-8時間の学習を想定）
+- **基礎習得コース** (1-4章): 2-3週間
+- **実践活用コース** (5-8章): 3-4週間
+- **応用開発コース** (9-12章): 3-4週間
+- **総合演習プロジェクト**: 2週間
+
+合計: 10-13週間（週15-20時間の学習時間を想定）
 
 ## 関連リソース
-- [JavaScript初級学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/README.html)
-- [JavaScript中級学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-intermediate/README.html)
-- [Next.js学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nextjs/README.html)
-- [JavaScript基礎チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/javascript/javascript-cheatsheet.html)
-- [React Hooksチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/javascript/react-hooks-cheatsheet.html)
-- [ES6+チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/javascript/es6-cheatsheet.html)
+- [React チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/react/)
+- [TypeScript 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/)
+- [Next.js 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nextjs/)
+- [JavaScript 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript/)
 
 ## 学習目標
 このガイドを完了すると、以下のスキルを身につけることができます：
-- Reactの基本概念と仮想DOMの仕組みを理解できる
-- JSX構文を使用してコンポーネントを作成できる
-- PropsとStateを使ってデータを管理し、動的なUIを実装できる
-- useStateとuseEffectを含む基本的なHooksを使いこなせる
-- ユーザーのイベントに応答するインタラクティブなコンポーネントを作成できる
-- リストデータを効率的にレンダリングできる
-- フォームの作成と入力検証を実装できる
-- 外部APIからデータを取得し、アプリケーションに統合できる
-- React Routerを使用してシングルページアプリケーションを構築できる
-- Context APIを使用したグローバル状態管理ができる
-- パフォーマンス最適化の基本テクニックを適用できる
-- React Testing Libraryを使用したコンポーネントテストが書ける
-- 本番環境にReactアプリケーションをデプロイできる
+- Reactの設計思想を理解し、コンポーネントベースの開発ができる
+- TypeScriptを使った型安全なReactアプリケーションが開発できる
+- React Hooksを使いこなし、複雑な状態管理を実装できる
+- カスタムフックを作成し、ロジックを効率的に再利用できる
+- パフォーマンスを意識した最適化されたアプリケーションが構築できる
+- React Routerを使ったSPAのルーティングが実装できる
+- TanStack Queryを使った効率的なデータフェッチングができる
+- テスト駆動開発（TDD）でReactコンポーネントを開発できる
+- CI/CDパイプラインを構築し、プロダクションへデプロイできる
 
 ## 次のステップ
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
-- [Next.js学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nextjs/README.html) - ReactベースのフルスタックフレームワークでSEOとパフォーマンスを最適化
+- [Next.js 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nextjs/) - サーバーサイドレンダリング、静的サイト生成
+- [React Native 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react-native/) - モバイルアプリ開発
+- [Redux Toolkit 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/redux-toolkit/) - 大規模アプリケーションの状態管理
+- [GraphQL 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/graphql/) - モダンなAPIクライアント開発
