@@ -2,490 +2,834 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Next.js学習教材 第4章 - サーバーコンポーネントとクライアントコンポーネント</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>Next.js学習教材 第4章 - データフェッチングとキャッシュ戦略</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#ecfeff',
+                            100: '#cffafe',
+                            200: '#a5f3fc',
+                            300: '#67e8f9',
+                            400: '#22d3ee',
+                            500: '#06b6d4',
+                            600: '#0891b2',
+                            700: '#0e7490',
+                            800: '#155e75',
+                            900: '#164e63',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
-    
-    <style>
-        body { font-family: 'Noto Sans JP', sans-serif; padding-top: 56px; }
-        .navbar { background-color: #667eea; }
-        .sidebar { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; }
-        .chapter-title { color: #667eea; margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem; }
-        .section-title { color: #764ba2; margin-top: 1.2rem; margin-bottom: 0.8rem; }
-        .quiz-container { background-color: rgba(102, 126, 234, 0.1); border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #667eea; }
-        .exercise-container { background-color: #f3e5f5; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #764ba2; }
-        .highlight { background-color: #ffecb3; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #667eea; }
-        .warning { background-color: #ffebee; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #f44336; }
-        .code-block { background-color: #1e1e1e; border-radius: 5px; padding: 1rem; margin: 1rem 0; }
-        .nav-link.active { background-color: #667eea !important; color: white !important; }
-    </style>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand"><strong>Next.js学習教材</strong></a>
-        </div>
-    </nav>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="w-full px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fab fa-react text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
 
-    <div class="container-fluid">
-        <div class="row">
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <ul class="nav flex-column">
-                        <li class="nav-item"><a class="nav-link" href="nextjs-learning-material-01.html">第1章: Next.js入門と環境構築</a></li>
-                        <li class="nav-item"><a class="nav-link" href="nextjs-learning-material-02.html">第2章: Reactの基礎とコンポーネント設計</a></li>
-                        <li class="nav-item"><a class="nav-link" href="nextjs-learning-material-03.html">第3章: ページとルーティング（App Router）</a></li>
-                        <li class="nav-item"><a class="nav-link active" href="nextjs-learning-material-04.html">第4章: サーバーコンポーネントとクライアントコンポーネント</a></li>
-                        <li class="nav-item"><a class="nav-link" href="nextjs-learning-material-05.html">第5章: データフェッチングとレンダリング戦略</a></li>
-                        <li class="nav-item"><a class="nav-link" href="nextjs-learning-material-06.html">第6章: APIルートとサーバーアクション</a></li>
-                        <li class="nav-item"><a class="nav-link" href="nextjs-learning-material-07.html">第7章: スタイリングと画像最適化</a></li>
-                        <li class="nav-item"><a class="nav-link" href="nextjs-learning-material-08.html">第8章: 認証とミドルウェア</a></li>
-                        <li class="nav-item"><a class="nav-link" href="nextjs-learning-material-09.html">第9章: パフォーマンス最適化とベストプラクティス</a></li>
-                        <li class="nav-item"><a class="nav-link" href="nextjs-learning-material-10.html">第10章: デプロイメントと本番環境設定</a></li>
-                    </ul>
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">Next.js学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                中級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>Webフレームワーク</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 45分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </nav>
 
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">第4章: サーバーコンポーネントとクライアントコンポーネント</h1>
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="#" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="#" class="hover:text-primary-600 transition-colors">Next.js</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第4章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第4章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">データフェッチングとキャッシュ戦略</h1>
+                    <p class="text-slate-600">Next.jsの拡張されたfetch API、サーバーコンポーネントでのデータ取得パターン、キャッシュメカニズム、そしてローディング・ストリーミングUIの実装方法を学びます。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>Next.jsが提供するfetch APIの拡張機能とキャッシュオプション</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>サーバーコンポーネントでの並列・順次データフェッチングパターン</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>Data CacheとFull Route Cacheの仕組みとrevalidate戦略</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>動的関数（cookies、headers）の使用とローディング・ストリーミングUI</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
 
-                <div id="chapter4">
-                    <h2 class="chapter-title">React Server Componentsの革新</h2>
-
-                    <div class="highlight">
-                        <h5>この章で学ぶこと</h5>
-                        <ul>
-                            <li>React Server Components（RSC）の概念と利点を理解する</li>
-                            <li>サーバーコンポーネントとクライアントコンポーネントの違いを把握する</li>
-                            <li>"use client"ディレクティブの使い方を習得する</li>
-                            <li>適切なコンポーネントの使い分けを学ぶ</li>
-                            <li>パフォーマンス最適化の基本を理解する</li>
-                        </ul>
-                    </div>
-
-                    <h3 class="section-title">4.1 React Server Componentsとは</h3>
-
-                    <h4>4.1.1 従来のReactとの違い</h4>
-                    <p>
-                        従来のReactアプリケーションでは、すべてのコンポーネントが<strong>ブラウザ（クライアント）</strong>で実行されていました。Next.js 13のApp Routerでは、デフォルトで<strong>サーバー側</strong>で実行されるコンポーネントが導入されました。
+                <!-- セクション1: Next.jsのfetch拡張機能 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.1 Next.jsのfetch拡張機能
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Next.jsは標準の<code class="bg-slate-100 px-1 rounded text-sm">fetch</code> APIを拡張し、強力なキャッシュ制御とデータ再検証の仕組みを提供しています。サーバーコンポーネント内で使用すると、自動的にリクエストがキャッシュされ、パフォーマンスが向上します。
                     </p>
 
-                    <div class="mermaid">
-                        flowchart LR
-                            subgraph 従来["従来のReact"]
-                                A1["すべてのコンポーネント<br/>がクライアントで実行"]
-                                A1 --> A2["JavaScriptバンドルが大きい"]
-                            end
-                            
-                            subgraph NextJS["Next.js App Router"]
-                                B1["サーバーコンポーネント<br/>（デフォルト）"]
-                                B2["クライアントコンポーネント<br/>（'use client'指定）"]
-                                B1 --> B3["軽量なバンドル"]
-                                B2 --> B3
-                            end
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-500 text-lg mt-0.5"></i>
+                            <div>
+                                <h3 class="font-semibold text-blue-800 mb-2">fetch拡張のキャッシュオプション</h3>
+                                <ul class="text-blue-900 text-sm space-y-1">
+                                    <li><strong>cache: 'force-cache'（デフォルト）：</strong>リクエストを永続的にキャッシュ</li>
+                                    <li><strong>cache: 'no-store'：</strong>常に新しいデータを取得（キャッシュなし）</li>
+                                    <li><strong>next.revalidate：</strong>指定秒数後にキャッシュを再検証</li>
+                                    <li><strong>next.tags：</strong>キャッシュをタグ付けして選択的に無効化</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
 
-                    <h4>4.1.2 サーバーコンポーネントの利点</h4>
-                    <ul>
-                        <li><strong>バンドルサイズの削減</strong>：サーバーコンポーネントのコードはブラウザに送られない</li>
-                        <li><strong>直接データアクセス</strong>：データベースやファイルシステムに直接アクセス可能</li>
-                        <li><strong>セキュリティ向上</strong>：APIキーや機密情報をサーバー側で安全に扱える</li>
-                        <li><strong>初回表示の高速化</strong>：サーバーでHTMLを生成してから送信</li>
-                        <li><strong>SEO最適化</strong>：検索エンジンが完全なHTMLを取得できる</li>
-                    </ul>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">app/products/page.tsx</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">// デフォルト: 永続キャッシュ
+async function getProducts() {
+  const res = await fetch('https://api.example.com/products');
+  return res.json();
+}
 
-                    <h3 class="section-title">4.2 サーバーコンポーネントの基本</h3>
+// キャッシュなし（常に最新データ）
+async function getDynamicData() {
+  const res = await fetch('https://api.example.com/live', {
+    cache: 'no-store'
+  });
+  return res.json();
+}
 
-                    <h4>4.2.1 デフォルトはサーバーコンポーネント</h4>
-                    <p>
-                        App Routerでは、特に指定しない限り、すべてのコンポーネントがサーバーコンポーネントです：
+// 60秒ごとに再検証
+async function getRevalidatedData() {
+  const res = await fetch('https://api.example.com/posts', {
+    next: { revalidate: 60 }
+  });
+  return res.json();
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション2: サーバーコンポーネントでのデータ取得 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.2 サーバーコンポーネントでのデータ取得
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        App Routerでは、<strong>サーバーコンポーネントがデフォルト</strong>です。サーバーコンポーネント内で直接データフェッチを行うことで、クライアントサイドでの状態管理が不要になり、コードがシンプルになります。
                     </p>
 
-                    <pre class="code-block"><code class="language-javascript">// app/components/ServerComponent.js
-// デフォルトでサーバーコンポーネント
-
-export default function ServerComponent() {
-  // サーバー側で実行される
-  const serverTime = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
-  
-  return (
-    &lt;div&gt;
-      &lt;h2&gt;サーバーコンポーネント&lt;/h2&gt;
-      &lt;p&gt;サーバー時刻: {serverTime}&lt;/p&gt;
-    &lt;/div&gt;
-  );
-}</code></pre>
-
-                    <h4>4.2.2 サーバーコンポーネントでできること</h4>
-
-                    <pre class="code-block"><code class="language-javascript">// app/page.js
-import fs from 'fs/promises';  // Node.jsのfsモジュールを直接使用可能
-
-export default async function HomePage() {
-  // ファイルシステムに直接アクセス
-  const data = await fs.readFile('data.txt', 'utf-8');
-  
-  // 環境変数を直接使用（クライアントに送信されない）
-  const apiKey = process.env.SECRET_API_KEY;
-  
-  // データベースクエリ（例）
-  // const users = await db.users.findMany();
-  
-  return (
-    &lt;div&gt;
-      &lt;h1&gt;サーバーで取得したデータ&lt;/h1&gt;
-      &lt;p&gt;{data}&lt;/p&gt;
-    &lt;/div&gt;
-  );
-}</code></pre>
-
-                    <h4>4.2.3 サーバーコンポーネントでできないこと</h4>
-
-                    <div class="warning">
-                        <h6>サーバーコンポーネントの制限</h6>
-                        <ul>
-                            <li>useState、useEffect などのReact Hooksは使用不可</li>
-                            <li>イベントハンドラ（onClick等）は使用不可</li>
-                            <li>ブラウザAPI（window、document等）は使用不可</li>
-                            <li>クライアント側のライブラリは使用不可</li>
-                        </ul>
+                    <div class="my-6">
+                        <div class="mermaid">
+flowchart LR
+    A[ユーザーリクエスト] --> B[サーバー<br/>コンポーネント]
+    B --> C{データフェッチ}
+    C --> D[API呼び出し]
+    C --> E[DB クエリ]
+    C --> F[ファイル読み込み]
+    D --> G[データをHTMLに埋め込み]
+    E --> G
+    F --> G
+    G --> H[クライアントに<br/>完成したHTMLを送信]
+                        </div>
                     </div>
 
-                    <h3 class="section-title">4.3 クライアントコンポーネント</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">app/blog/page.tsx</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">// サーバーコンポーネント内で直接データ取得
+export default async function BlogPage() {
+  // async関数としてコンポーネントを定義
+  const posts = await fetch('https://api.example.com/posts', {
+    next: { revalidate: 3600 } // 1時間ごとに再検証
+  }).then(res => res.json());
 
-                    <h4>4.3.1 "use client"ディレクティブ</h4>
-                    <p>
-                        クライアントコンポーネントとして扱うには、ファイルの先頭に<code>'use client'</code>を記述します：
-                    </p>
-
-                    <pre class="code-block"><code class="language-javascript">// app/components/Counter.js
-'use client';  // クライアントコンポーネントとして指定
-
-import { useState } from 'react';
-
-export default function Counter() {
-  const [count, setCount] = useState(0);
-  
-  return (
-    &lt;div&gt;
-      &lt;p&gt;カウント: {count}&lt;/p&gt;
-      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
-        +1
-      &lt;/button&gt;
-    &lt;/div&gt;
-  );
-}</code></pre>
-
-                    <h4>4.3.2 クライアントコンポーネントが必要な場合</h4>
-                    <p>以下の機能を使う場合は、クライアントコンポーネントにする必要があります：</p>
-
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>機能</th>
-                                    <th>例</th>
-                                    <th>理由</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>State管理</td>
-                                    <td>useState、useReducer</td>
-                                    <td>状態はクライアント側で管理</td>
-                                </tr>
-                                <tr>
-                                    <td>副作用</td>
-                                    <td>useEffect、useLayoutEffect</td>
-                                    <td>ブラウザのライフサイクルに依存</td>
-                                </tr>
-                                <tr>
-                                    <td>イベントハンドラ</td>
-                                    <td>onClick、onChange</td>
-                                    <td>ユーザーインタラクション</td>
-                                </tr>
-                                <tr>
-                                    <td>ブラウザAPI</td>
-                                    <td>localStorage、window</td>
-                                    <td>ブラウザ環境でのみ利用可能</td>
-                                </tr>
-                                <tr>
-                                    <td>カスタムフック</td>
-                                    <td>useRouter、useSearchParams</td>
-                                    <td>クライアント側のルーティング</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <h3 class="section-title">4.4 コンポーネントの使い分け</h3>
-
-                    <h4>4.4.1 使い分けの基本原則</h4>
-                    <div class="highlight">
-                        <h6>推奨される使い分け</h6>
-                        <ul>
-                            <li><strong>デフォルトはサーバーコンポーネント</strong>を使用</li>
-                            <li><strong>インタラクティブな部品のみ</strong>クライアントコンポーネントに</li>
-                            <li>できるだけ<strong>葉（末端）のコンポーネント</strong>をクライアント化</li>
-                        </ul>
-                    </div>
-
-                    <div class="exercise-container">
-                        <h5>実習 4-1: サーバーとクライアントの組み合わせ</h5>
-                        
-                        <h6>適切な設計パターン</h6>
-                        <pre class="code-block"><code class="language-javascript">// app/page.js（サーバーコンポーネント）
-import Counter from './components/Counter';
-import LikeButton from './components/LikeButton';
-
-export default async function Page() {
-  // サーバーでデータ取得
-  const posts = await fetch('https://api.example.com/posts').then(res =&gt; res.json());
-  
   return (
     &lt;div&gt;
       &lt;h1&gt;ブログ記事一覧&lt;/h1&gt;
-      {posts.map(post =&gt; (
-        &lt;article key={post.id}&gt;
-          &lt;h2&gt;{post.title}&lt;/h2&gt;
-          &lt;p&gt;{post.content}&lt;/p&gt;
-          {/* クライアントコンポーネントを埋め込む */}
-          &lt;LikeButton postId={post.id} initialLikes={post.likes} /&gt;
-        &lt;/article&gt;
-      ))}
+      &lt;ul&gt;
+        {posts.map((post: any) => (
+          &lt;li key={post.id}&gt;{post.title}&lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
     &lt;/div&gt;
-  );
-}</code></pre>
-
-                        <pre class="code-block"><code class="language-javascript">// app/components/LikeButton.js（クライアントコンポーネント）
-'use client';
-
-import { useState } from 'react';
-
-export default function LikeButton({ postId, initialLikes }) {
-  const [likes, setLikes] = useState(initialLikes);
-  const [liked, setLiked] = useState(false);
-  
-  const handleLike = async () => {
-    if (liked) return;
-    
-    setLikes(likes + 1);
-    setLiked(true);
-    
-    // APIにいいねを送信
-    await fetch(`/api/posts/${postId}/like`, { method: 'POST' });
-  };
-  
-  return (
-    &lt;button onClick={handleLike} disabled={liked}&gt;
-      ❤️ {likes} {liked ? '済' : ''}
-    &lt;/button&gt;
   );
 }</code></pre>
                     </div>
 
-                    <h4>4.4.2 悪い例：過度なクライアントコンポーネント化</h4>
-
-                    <div class="warning">
-                        <pre class="code-block"><code class="language-javascript">// ❌ 悪い例：ページ全体をクライアントコンポーネントに
-'use client';
-
-export default function Page() {
-  const [data, setData] = useState([]);
-  
-  useEffect(() => {
-    fetch('/api/data').then(res => res.json()).then(setData);
-  }, []);
-  
-  // 大量のコンポーネントツリー...
-}</code></pre>
-
-                        <p>この設計の問題点：</p>
-                        <ul>
-                            <li>JavaScriptバンドルが大きくなる</li>
-                            <li>初回表示が遅くなる</li>
-                            <li>SEO効果が低下する</li>
-                        </ul>
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-emerald-600 mt-1"></i>
+                            <div>
+                                <p class="text-emerald-900 font-medium">サーバーコンポーネントでのデータ取得のメリット</p>
+                                <ul class="text-emerald-800 text-sm mt-2 space-y-1">
+                                    <li>useEffectやuseStateが不要でコードがシンプル</li>
+                                    <li>APIキーなどの機密情報をクライアントに公開しない</li>
+                                    <li>データベースへの直接接続が可能</li>
+                                    <li>初回ロード時に完全なHTMLが送られるためSEO効果が高い</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
+                </section>
 
-                    <h3 class="section-title">4.5 コンポーネント間のデータ受け渡し</h3>
-
-                    <h4>4.5.1 サーバー → クライアントコンポーネント</h4>
-                    <p>Propsを使って、サーバーコンポーネントからクライアントコンポーネントへデータを渡せます：</p>
-
-                    <pre class="code-block"><code class="language-javascript">// app/page.js（サーバーコンポーネント）
-import UserProfile from './components/UserProfile';
-
-export default async function Page() {
-  const user = await fetchUserData();
-  
-  return (
-    &lt;div&gt;
-      &lt;UserProfile user={user} /&gt;
-    &lt;/div&gt;
-  );
-}</code></pre>
-
-                    <pre class="code-block"><code class="language-javascript">// app/components/UserProfile.js（クライアントコンポーネント）
-'use client';
-
-import { useState } from 'react';
-
-export default function UserProfile({ user }) {
-  const [isEditing, setIsEditing] = useState(false);
-  
-  return (
-    &lt;div&gt;
-      &lt;h2&gt;{user.name}&lt;/h2&gt;
-      &lt;button onClick={() =&gt; setIsEditing(!isEditing)}&gt;
-        {isEditing ? '保存' : '編集'}
-      &lt;/button&gt;
-    &lt;/div&gt;
-  );
-}</code></pre>
-
-                    <h4>4.5.2 クライアントコンポーネント内にサーバーコンポーネント</h4>
-                    <p>
-                        クライアントコンポーネントの<code>children</code>として、サーバーコンポーネントを渡すことができます：
+                <!-- セクション3: 並列・順次データフェッチング -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.3 並列・順次データフェッチング
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        複数のデータを取得する際、<strong>並列（Parallel）</strong>と<strong>順次（Sequential）</strong>のどちらで実行するかによってパフォーマンスが大きく変わります。
                     </p>
 
-                    <pre class="code-block"><code class="language-javascript">// app/components/ClientWrapper.js（クライアントコンポーネント）
-'use client';
+                    <div class="grid md:grid-cols-2 gap-4 my-6">
+                        <!-- 順次フェッチ（遅い） -->
+                        <div class="bg-red-50 border border-red-200 rounded-xl p-5">
+                            <div class="flex items-start gap-3 mb-3">
+                                <i class="fas fa-exclamation-triangle text-red-500 text-lg"></i>
+                                <h3 class="font-semibold text-red-800">順次フェッチ（遅い）</h3>
+                            </div>
+                            <div class="code-block-wrapper">
+                                <pre class="!bg-slate-800 !rounded-lg overflow-x-auto text-xs"><code class="language-typescript">// 順番に待機（遅い）
+const user = await fetchUser();
+const posts = await fetchPosts();
+// 合計: 2秒 + 3秒 = 5秒</code></pre>
+                            </div>
+                            <p class="text-red-900 text-sm mt-2">
+                                各リクエストが前のリクエスト完了を待つため、合計時間が長くなります。
+                            </p>
+                        </div>
 
-export default function ClientWrapper({ children }) {
+                        <!-- 並列フェッチ（速い） -->
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
+                            <div class="flex items-start gap-3 mb-3">
+                                <i class="fas fa-check-circle text-emerald-500 text-lg"></i>
+                                <h3 class="font-semibold text-emerald-800">並列フェッチ（速い）</h3>
+                            </div>
+                            <div class="code-block-wrapper">
+                                <pre class="!bg-slate-800 !rounded-lg overflow-x-auto text-xs"><code class="language-typescript">// 同時実行（速い）
+const [user, posts] = await Promise.all([
+  fetchUser(),
+  fetchPosts()
+]);
+// 合計: max(2秒, 3秒) = 3秒</code></pre>
+                            </div>
+                            <p class="text-emerald-900 text-sm mt-2">
+                                Promise.allを使うことで並列実行され、最も遅いリクエストの時間のみで完了します。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                                rounded-xl p-5 my-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                        flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">
+                                    実習 4-1: 並列データフェッチの実装
+                                </h3>
+                                <p class="text-purple-900 mb-4 break-words">
+                                    複数のAPIエンドポイントから並列でデータを取得し、パフォーマンスを最適化します。
+                                </p>
+
+                                <h4 class="font-medium text-purple-800 mb-2">実装例</h4>
+                                <div class="code-block-wrapper">
+                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                        <span class="text-slate-400 text-sm">app/dashboard/page.tsx</span>
+                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">async function getUser() {
+  const res = await fetch('https://api.example.com/user');
+  return res.json();
+}
+
+async function getPosts() {
+  const res = await fetch('https://api.example.com/posts');
+  return res.json();
+}
+
+export default async function DashboardPage() {
+  // 並列実行で高速化
+  const [user, posts] = await Promise.all([
+    getUser(),
+    getPosts()
+  ]);
+
   return (
-    &lt;div style={{ border: '2px solid blue' }}&gt;
-      {children}
+    &lt;div&gt;
+      &lt;h1&gt;{user.name}のダッシュボード&lt;/h1&gt;
+      &lt;p&gt;投稿数: {posts.length}&lt;/p&gt;
     &lt;/div&gt;
   );
 }</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-                    <pre class="code-block"><code class="language-javascript">// app/page.js（サーバーコンポーネント）
-import ClientWrapper from './components/ClientWrapper';
-import ServerData from './components/ServerData';
+                <!-- セクション4: キャッシュの仕組み -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.4 キャッシュの仕組み（Data Cache & Full Route Cache）
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Next.jsは2層のキャッシュシステムを提供し、パフォーマンスを最大化しています。
+                    </p>
 
-export default function Page() {
+                    <div class="my-6">
+                        <div class="mermaid">
+flowchart TB
+    A[ユーザーリクエスト] --> B{Full Route Cache}
+    B -->|キャッシュHIT| C[HTMLを即座に返却]
+    B -->|キャッシュMISS| D[サーバーで処理]
+    D --> E{Data Cache}
+    E -->|キャッシュHIT| F[キャッシュデータを使用]
+    E -->|キャッシュMISS| G[API/DBから取得]
+    G --> H[Data Cacheに保存]
+    F --> I[HTMLをレンダリング]
+    H --> I
+    I --> J[Full Route Cacheに保存]
+    J --> K[クライアントに返却]
+                        </div>
+                    </div>
+
+                    <!-- キャッシュ比較表 -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-table text-slate-500"></i>
+                            2つのキャッシュレイヤー
+                        </h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="border-b-2 border-slate-300">
+                                        <th class="text-left py-2 px-3 font-semibold text-slate-700">キャッシュ種類</th>
+                                        <th class="text-left py-2 px-3 font-semibold text-slate-700">対象</th>
+                                        <th class="text-left py-2 px-3 font-semibold text-slate-700">保存場所</th>
+                                        <th class="text-left py-2 px-3 font-semibold text-slate-700">無効化方法</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-slate-600">
+                                    <tr class="border-b border-slate-200 bg-blue-50">
+                                        <td class="py-2 px-3 font-medium">Data Cache</td>
+                                        <td class="py-2 px-3">fetchリクエストの結果</td>
+                                        <td class="py-2 px-3">サーバー（永続的）</td>
+                                        <td class="py-2 px-3">revalidate、revalidateTag</td>
+                                    </tr>
+                                    <tr class="bg-emerald-50">
+                                        <td class="py-2 px-3 font-medium">Full Route Cache</td>
+                                        <td class="py-2 px-3">レンダリング済みHTML</td>
+                                        <td class="py-2 px-3">サーバー（永続的）</td>
+                                        <td class="py-2 px-3">revalidatePath、revalidateTag</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">タグベースキャッシュ無効化</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">// データフェッチ時にタグを付与
+async function getPosts() {
+  const res = await fetch('https://api.example.com/posts', {
+    next: { tags: ['posts'] } // タグ付け
+  });
+  return res.json();
+}
+
+// Server Action内でタグを指定してキャッシュを無効化
+import { revalidateTag } from 'next/cache';
+
+export async function createPost(data: FormData) {
+  // 投稿を作成
+  await savePost(data);
+
+  // 'posts'タグのキャッシュを無効化
+  revalidateTag('posts');
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション5: revalidateによる再検証 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.5 revalidateによる再検証
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <code class="bg-slate-100 px-1 rounded text-sm">revalidate</code>を使うことで、キャッシュの有効期限を設定し、定期的にデータを更新できます。これにより、ISR（Incremental Static Regeneration）のような動作を実現できます。
+                    </p>
+
+                    <div class="space-y-4 my-6">
+                        <details class="group bg-white border border-slate-200 rounded-lg overflow-hidden">
+                            <summary class="cursor-pointer p-4 hover:bg-slate-50 transition-colors font-medium text-slate-800 flex items-center gap-2">
+                                <i class="fas fa-chevron-right transition-transform group-open:rotate-90 text-primary-500"></i>
+                                fetchレベルでのrevalidate
+                            </summary>
+                            <div class="p-4 border-t border-slate-200 bg-slate-50">
+                                <div class="code-block-wrapper">
+                                    <pre class="!bg-slate-800 !rounded-lg overflow-x-auto text-xs"><code class="language-typescript">// 個別のfetchリクエストに対して設定
+const res = await fetch('https://api.example.com/data', {
+  next: { revalidate: 60 } // 60秒後に再検証
+});</code></pre>
+                                </div>
+                            </div>
+                        </details>
+
+                        <details class="group bg-white border border-slate-200 rounded-lg overflow-hidden">
+                            <summary class="cursor-pointer p-4 hover:bg-slate-50 transition-colors font-medium text-slate-800 flex items-center gap-2">
+                                <i class="fas fa-chevron-right transition-transform group-open:rotate-90 text-primary-500"></i>
+                                ルートセグメントレベルでのrevalidate
+                            </summary>
+                            <div class="p-4 border-t border-slate-200 bg-slate-50">
+                                <div class="code-block-wrapper">
+                                    <pre class="!bg-slate-800 !rounded-lg overflow-x-auto text-xs"><code class="language-typescript">// page.tsxやlayout.tsxでエクスポート
+export const revalidate = 3600; // 1時間
+
+export default async function Page() {
+  // このページ内のすべてのfetchが1時間キャッシュされる
+  const data = await fetch('https://api.example.com/data');
+  // ...
+}</code></pre>
+                                </div>
+                            </div>
+                        </details>
+
+                        <details class="group bg-white border border-slate-200 rounded-lg overflow-hidden">
+                            <summary class="cursor-pointer p-4 hover:bg-slate-50 transition-colors font-medium text-slate-800 flex items-center gap-2">
+                                <i class="fas fa-chevron-right transition-transform group-open:rotate-90 text-primary-500"></i>
+                                On-Demand Revalidation（オンデマンド再検証）
+                            </summary>
+                            <div class="p-4 border-t border-slate-200 bg-slate-50">
+                                <div class="code-block-wrapper">
+                                    <pre class="!bg-slate-800 !rounded-lg overflow-x-auto text-xs"><code class="language-typescript">import { revalidatePath, revalidateTag } from 'next/cache';
+
+// 特定のパスを再検証
+revalidatePath('/blog/posts');
+
+// 特定のタグを再検証
+revalidateTag('posts');</code></pre>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+                </section>
+
+                <!-- セクション6: 動的関数（cookies、headers） -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.6 動的関数（cookies、headers）の使用
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <code class="bg-slate-100 px-1 rounded text-sm">cookies()</code>や<code class="bg-slate-100 px-1 rounded text-sm">headers()</code>などの<strong>動的関数</strong>を使用すると、そのページは自動的に<strong>動的レンダリング（SSR）</strong>にオプトインされます。
+                    </p>
+
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                            <div>
+                                <p class="text-red-900 font-medium">注意：動的関数を使うとキャッシュが無効化される</p>
+                                <p class="text-red-800 text-sm mt-1">
+                                    動的関数を使用すると、Full Route Cacheが無効化され、リクエストごとにサーバーで処理されます。本当に必要な場合のみ使用してください。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">動的関数の使用例</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">import { cookies, headers } from 'next/headers';
+
+export default async function UserPage() {
+  // クッキーを取得（動的レンダリングにオプトイン）
+  const cookieStore = cookies();
+  const token = cookieStore.get('auth_token');
+
+  // ヘッダーを取得
+  const headersList = headers();
+  const userAgent = headersList.get('user-agent');
+
+  // トークンを使ってユーザー情報を取得
+  const user = await fetch('https://api.example.com/me', {
+    headers: { Authorization: `Bearer ${token?.value}` }
+  }).then(res => res.json());
+
   return (
-    &lt;ClientWrapper&gt;
-      {/* ServerDataはサーバーコンポーネント */}
-      &lt;ServerData /&gt;
-    &lt;/ClientWrapper&gt;
+    &lt;div&gt;
+      &lt;h1&gt;{user.name}のプロフィール&lt;/h1&gt;
+      &lt;p&gt;User Agent: {userAgent}&lt;/p&gt;
+    &lt;/div&gt;
   );
 }</code></pre>
+                    </div>
+                </section>
 
-                    <h3 class="section-title">4.6 パフォーマンスの考察</h3>
+                <!-- セクション7: ローディングとストリーミングUI -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.7 ローディングとストリーミングUI
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        App Routerでは、<code class="bg-slate-100 px-1 rounded text-sm">loading.tsx</code>とReactの<code class="bg-slate-100 px-1 rounded text-sm">Suspense</code>を使って、データ読み込み中のローディング状態を簡単に実装できます。
+                    </p>
 
-                    <div class="mermaid">
-                        flowchart TB
-                            A["ページアクセス"]
-                            A --> B["サーバーコンポーネント<br/>実行（サーバー側）"]
-                            B --> C["HTMLを生成"]
-                            C --> D["クライアントに送信"]
-                            D --> E["クライアントコンポーネント<br/>ハイドレーション"]
-                            E --> F["インタラクティブに"]
+                    <div class="my-6">
+                        <div class="mermaid">
+flowchart LR
+    A[ユーザーアクセス] --> B[loading.tsx表示]
+    B --> C[データフェッチ中]
+    C --> D[page.tsx<br/>コンテンツ表示]
+    D --> E[完了]
+                        </div>
                     </div>
 
-                    <h4>4.6.1 バンドルサイズの比較</h4>
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                                rounded-xl p-5 my-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                        flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">
+                                    実習 4-2: loading.tsxとSuspenseでローディングUI実装
+                                </h3>
+                                <p class="text-purple-900 mb-4 break-words">
+                                    ローディング状態を表示し、ユーザー体験を向上させます。
+                                </p>
 
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>コンポーネントタイプ</th>
-                                    <th>バンドルに含まれる</th>
-                                    <th>JavaScriptサイズ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>サーバーコンポーネント</td>
-                                    <td>❌ 含まれない</td>
-                                    <td>0 KB（クライアント側）</td>
-                                </tr>
-                                <tr>
-                                    <td>クライアントコンポーネント</td>
-                                    <td>✅ 含まれる</td>
-                                    <td>コンポーネントのサイズ分</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="quiz-container">
-                        <h5>理解度確認クイズ</h5>
-                        <ol>
-                            <li>
-                                <strong>App Routerでデフォルトのコンポーネントタイプは何ですか？</strong>
-                                <div style="margin-top: 10px; padding: 10px; background-color: white; border-radius: 5px;">
-                                    回答：サーバーコンポーネント（特に指定しない限り）
+                                <h4 class="font-medium text-purple-800 mb-2">app/blog/loading.tsx</h4>
+                                <div class="code-block-wrapper mb-3">
+                                    <pre class="!bg-slate-800 !rounded-lg overflow-x-auto text-xs"><code class="language-typescript">export default function Loading() {
+  return (
+    &lt;div className="animate-pulse space-y-4"&gt;
+      &lt;div className="h-8 bg-gray-200 rounded w-1/2"&gt;&lt;/div&gt;
+      &lt;div className="h-4 bg-gray-200 rounded w-3/4"&gt;&lt;/div&gt;
+      &lt;div className="h-4 bg-gray-200 rounded w-5/6"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
                                 </div>
-                            </li>
-                            <li>
-                                <strong>useStateを使用したい場合、ファイル先頭に何を記述する必要がありますか？</strong>
-                                <div style="margin-top: 10px; padding: 10px; background-color: white; border-radius: 5px;">
-                                    回答：'use client'ディレクティブ
+
+                                <h4 class="font-medium text-purple-800 mb-2">app/blog/page.tsx（Suspenseを使用）</h4>
+                                <div class="code-block-wrapper">
+                                    <pre class="!bg-slate-800 !rounded-lg overflow-x-auto text-xs"><code class="language-typescript">import { Suspense } from 'react';
+
+async function Posts() {
+  const posts = await fetch('https://api.example.com/posts')
+    .then(res => res.json());
+  return &lt;ul&gt;{/* 記事リスト */}&lt;/ul&gt;;
+}
+
+export default function BlogPage() {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;ブログ&lt;/h1&gt;
+      &lt;Suspense fallback={&lt;p&gt;読み込み中...&lt;/p&gt;}&gt;
+        &lt;Posts /&gt;
+      &lt;/Suspense&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
                                 </div>
-                            </li>
-                            <li>
-                                <strong>サーバーコンポーネントの主な利点を2つ挙げてください。</strong>
-                                <div style="margin-top: 10px; padding: 10px; background-color: white; border-radius: 5px;">
-                                    回答例：（1）バンドルサイズの削減、（2）データベースやファイルシステムへの直接アクセス
-                                </div>
-                            </li>
-                        </ol>
+                            </div>
+                        </div>
                     </div>
 
-                    <h3 class="section-title">4.7 まとめ</h3>
-                    <p>この章では、サーバーコンポーネントとクライアントコンポーネントについて学びました：</p>
-                    <ul>
-                        <li>App Routerではデフォルトがサーバーコンポーネント</li>
-                        <li>サーバーコンポーネントはバンドルサイズを削減し、パフォーマンスを向上</li>
-                        <li>クライアントコンポーネントは'use client'で指定</li>
-                        <li>インタラクティブな機能にはクライアントコンポーネントが必要</li>
-                        <li>適切な使い分けがパフォーマンス最適化の鍵</li>
-                    </ul>
-
-                    <div class="highlight">
-                        <h6>次の章の予告</h6>
-                        <p>
-                            第5章では、<strong>データフェッチングとレンダリング戦略</strong>について学びます。SSG、SSR、ISRなどの異なるレンダリング方式と、それぞれの使い分けを理解していきます。
-                        </p>
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div>
+                                <p class="text-blue-900 font-medium">ストリーミングSSRの利点</p>
+                                <p class="text-blue-800 text-sm mt-1">
+                                    Suspenseを使うと、ページ全体を待つことなく、準備できた部分から順次クライアントに送信（ストリーミング）できます。これにより、体感速度が向上します。
+                                </p>
+                            </div>
+                        </div>
                     </div>
+                </section>
 
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="nextjs-learning-material-03.html" class="btn btn-secondary">← 前の章</a>
-                        <a href="nextjs-learning-material-05.html" class="btn btn-primary">次の章 →</a>
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q1. Next.jsのfetch APIで `cache: 'no-store'` を指定するとどうなりますか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            リクエストがキャッシュされず、常に最新のデータを取得します。これは動的なデータ（ユーザー固有の情報や頻繁に更新されるコンテンツ）に適しています。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q2. 並列データフェッチングを実現するために使用するJavaScriptの機能は何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            `Promise.all()`を使用します。複数の非同期処理を配列で渡すことで、並列実行され、すべてが完了するまで待機します。これにより、順次実行よりも大幅に高速化できます。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q3. Data CacheとFull Route Cacheの違いを説明してください。</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            Data Cacheは個別のfetchリクエストの結果をキャッシュし、Full Route Cacheはレンダリング済みのHTML全体をキャッシュします。Data Cacheはデータレベル、Full Route Cacheはページレベルのキャッシュと考えることができます。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
                     </div>
                 </div>
-            </main>
-        </div>
+
+                <!-- 章のまとめ -->
+                <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6 my-8">
+                    <h2 class="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-check-circle text-slate-500"></i>
+                        この章のまとめ
+                    </h2>
+                    <ul class="space-y-2 text-slate-700">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>Next.jsのfetchは拡張されており、cache、revalidate、tagsなどのオプションでキャッシュ制御が可能</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>サーバーコンポーネント内でasync/awaitを使って直接データフェッチでき、コードがシンプルになる</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>Promise.allによる並列データフェッチングでパフォーマンスを大幅に向上できる</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>Data CacheとFull Route Cacheの2層キャッシュシステムを理解し、適切に活用することが重要</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>loading.tsxとSuspenseを使ってローディング状態を実装し、ストリーミングSSRで体感速度を向上できる</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <a href="nextjs-learning-material-03.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-200 hover:bg-slate-300 text-slate-700 transition-colors">
+                        <i class="fas fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
+                        <div class="text-left">
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="font-medium">第3章: サーバーコンポーネントとクライアントコンポーネント</span>
+                        </div>
+                    </a>
+                    <a href="nextjs-learning-material-05.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">第5章: API Routesでバックエンド開発</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
     </div>
 
-    <footer class="bg-dark text-white mt-5">
-        <div class="container-fluid py-3">
-            <div class="row">
-                <div class="col-12 text-center">
-                    <p class="mb-0">© 2025 F-Circle. All rights reserved.<br>
-本資料はAIツールを活用し、人間による編集・監修のもと作成されています。無断転載・再配布を禁じます。</p>
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="#" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script>
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'default'
-        });
-    </script>
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- サイドバー生成 -->
+    <script src="sidebar-content.js"></script>
+
+    <!-- 共通JavaScript -->
+    <script src="main.js"></script>
+
+    <!-- 描画ツール -->
+    <script src="drawing-tool.js"></script>
 </body>
 </html>
