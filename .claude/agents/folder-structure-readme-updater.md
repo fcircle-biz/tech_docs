@@ -35,7 +35,7 @@ README.mdの構成順序（必須）：
 12. **設計手法・モデリング** - UML, ER図, 要件定義, システム設計, DDD, マイクロサービス
 13. **テスト／QA** - ソフトウェアテスト, テスト自動化, 品質管理, CI/CD連携
 14. **PM／ガバナンス** - PMBOK, PMO, ITガバナンス, 法務・コンプライアンス
-15. **SaaS／PaaS** - SAP, Salesforce, Power Platform, Microsoft Office, OutSystems
+15. **SaaS／PaaS／アプリケーション** - SAP, Salesforce, Power Platform, Microsoft Office, OutSystems
 16. **業務知識・ドメイン** - 会計・財務, 物流・SCM, 人事・労務, 製造・生産管理, 販売・マーケティング
 17. **資格・認定試験** - ITパスポート, 情報処理技術者試験
 

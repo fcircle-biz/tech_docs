@@ -73,7 +73,7 @@ IT技術、業務知識、資格試験を網羅した包括的な学習ドメイ
 | | **PMO／組織運営** | 進捗／課題管理・ステークホルダー調整 | 複数プロジェクトの管理 |
 | | **ITガバナンス** | COBIT・ITIL・内部統制 | 組織ITの成熟度向上 |
 | | **法務・コンプライアンス** | 個人情報保護法・GDPR・電子帳簿保存法 | システムに必須の法的知識 |
-| **SaaS／PaaS** | **SAP** | ABAP・HANA・Fiori | 大企業 ERP のデファクト |
+| **SaaS／PaaS／アプリケーション** | **SAP** | ABAP・HANA・Fiori | 大企業 ERP のデファクト |
 | | **Salesforce** | Apex・Lightning・AppExchange | CRM 中心にノーコード拡張 |
 | | **Power Platform** | Power Apps・Power Automate・Dataverse | Microsoft 365 連携、市民開発 |
 | | **Microsoft Office** | Excel／Word／Access・VBA・Office Scripts | 業務マクロからクラウド化まで一気通貫 |
