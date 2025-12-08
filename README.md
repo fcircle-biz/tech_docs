@@ -108,7 +108,7 @@
 - **[UML学習ガイド](docs/guide/design-modeling/software-design/uml/README.md)** - UML（統一モデリング言語）の基礎から実践的なシステム設計まで10章完成カリキュラム
 - **[要求工学学習ガイド](docs/guide/design-modeling/software-design/requirements-engineering/README.md)** - 要求工学の基礎理論から実践的な要求分析・管理まで10章完成カリキュラム
 
-### SaaS／PaaS
+### SaaS／PaaS／アプリケーション
 
 - **[Excel基本操作学習ガイド](docs/guide/business-saas/excel-basic/README.md)** - Excel基本操作から関数、VBA入門まで8章完成カリキュラム
 - **[VBA学習ガイド](docs/guide/business-saas/vba/README.md)** - VBA基礎からExcel自動化まで12章完成カリキュラム
