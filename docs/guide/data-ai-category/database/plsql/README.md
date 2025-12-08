@@ -1,70 +1,112 @@
-# PL/SQL学習ガイドライン
+# PL/SQL入門（プログラム初心者向け） 学習ガイドライン
 
-このガイドラインでは、Oracle PL/SQLの基礎から応用までを段階的に学習するためのカリキュラムを提供しています。各トピックには詳細な解説へのリンクが含まれています。
+このガイドラインでは、PL/SQL（Oracle手続き型SQL）の基礎をプログラミング初心者向けに段階的に学習するためのカリキュラムを提供しています。SQL学習ガイドとOracle学習ガイドで身につけた知識を基に、データベース処理を自動化するプログラムの作り方を習得します。
+
+## 前提条件
+
+### 必要な環境
+- Oracle Database環境（Oracle Database FreeまたはDockerコンテナ）
+- Oracle SQL Developer（Oracle学習ガイドで設定済み）
+- Windows 10/11またはmacOS（Docker Desktop環境）
+- 8GB以上のRAM、20GB以上のディスク空き容量
+
+### 参考リソース
+- [Oracle PL/SQL公式ドキュメント](https://docs.oracle.com/cd/F19136_01/lnpls/index.html)
+- [Oracle SQL Developer公式サイト](https://www.oracle.com/database/sqldeveloper/)
+- [PL/SQLベストプラクティス](https://www.oracle.com/technical-resources/articles/database/plsql-best-practices.html)
+
+### 前提知識
+- **必須**: SQL学習ガイド履修済み（SELECT、INSERT、UPDATE、DELETE、JOIN、サブクエリ、集計関数の理解）
+- **必須**: Oracle学習ガイド履修済み（Oracle環境構築、SQL Developer操作、基本的なOracle SQL）
+- **推奨**: 簡単な条件分岐（もし〜なら）の概念理解
 
 ## 学習コンテンツ
 
-### [1. PL/SQLの基本](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-01.html)
-PL/SQLの概要と特徴、SQLとの違い、ブロック構造、匿名ブロックの作成方法について解説し、Oracle環境でのPL/SQL実行環境の設定方法を学びます。
+### [1. PL/SQLってなに？ - プログラミングでデータベース処理を自動化しよう](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-01.html)
+SQLだけでは難しい「もし〜なら」「〜を繰り返す」といった処理を可能にするPL/SQLの役割と特徴を、身近な例（請求書の自動作成、在庫チェック）を使って分かりやすく説明します。
 
-### [2. 変数とデータ型](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-02.html)
-変数の宣言方法、各種データ型の選択と使い方、定数の定義、%TYPE属性と%ROWTYPE属性を使った変数宣言について学習します。
+### [2. はじめてのPL/SQLプログラム - Hello Worldから始めよう](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-02.html)
+SQL Developerを使って最初のPL/SQLプログラムを作成します。画面への文字出力（DBMS_OUTPUT）、簡単な計算、コメントの書き方など、プログラミングの第一歩を体験します。
 
-### [3. 制御構造](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-03.html)
-IF文による条件分岐、CASE文、LOOP文、FOR文、WHILE文などの繰り返し処理と、EXIT文やCONTINUE文を使った制御フローについて学びます。
+### [3. 変数を使ってデータを覚えよう - 値を保存する箱の使い方](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-03.html)
+変数という「データを入れる箱」の概念を理解し、数値、文字、日付などのデータ型の選び方、代入の方法、定数の使い方を、電卓や住所録の例で学習します。
 
-### [4. プロシージャとファンクション](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-04.html)
-ストアドプロシージャとファンクションの作成、パラメータの定義（IN、OUT、IN OUT）、戻り値の設定、実行方法について詳しく学習します。
+### [4. データベースからデータを取り出そう - SELECTとINTO句](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-04.html)
+SQLのSELECT文をPL/SQL内で使って、データベースから値を取得して変数に格納する方法を学習します。1件のデータ取得、%TYPE属性を使った安全な変数宣言も習得します。
 
-### [5. 例外処理](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-05.html)
-EXCEPTION句を使った例外処理の基本、定義済み例外の使い方、ユーザー定義例外の作成、RAISE文による例外の発生について学びます。
+### [5. 条件によって処理を変えよう - IF文で賢いプログラム](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-05.html)
+IF-THEN-ELSE文を使った条件分岐を学習します。年齢による割引計算、在庫チェック、成績評価など、実用的な例を通じて条件による処理の切り替え方を理解します。
 
-### [6. カーソル](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-06.html)
-明示カーソルと暗黙カーソルの違いと使い方、カーソルのライフサイクル、カーソル属性、カーソルFORループについて学習します。
+### [6. 同じ処理を繰り返そう - LOOP文で効率的なプログラム](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-06.html)
+基本LOOP、FOR LOOP、WHILE LOOPの3種類の繰り返し処理を学習します。1から100までの合計計算、テーブルの全データ処理など、繰り返しが必要な場面での使い方を習得します。
 
-### [7. トリガー](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-07.html)
-データベーストリガーの概念と種類、DMLトリガー（BEFORE/AFTER）、行レベルトリガーと文レベルトリガー、トリガーの作成と管理について学びます。
+### [7. 複数のデータをまとめて処理 - カーソルで行ごとの処理](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-07.html)
+SELECT文で複数行を取得してー行ずつ処理するカーソルの使い方を学習します。明細データの合計計算、全社員の給与更新など、実践的な例で理解を深めます。
 
-### [8. パッケージ](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-08.html)
-パッケージの概念と利点、パッケージ仕様部（SPECIFICATION）と本体部（BODY）の作成、パッケージ変数とパッケージプロシージャの使い方を学習します。
+### [8. エラーに備えよう - 例外処理で安全なプログラム](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-08.html)
+プログラム実行中のエラー（データが見つからない、ゼロ除算など）に対処する例外処理を学習します。TRY-CATCHのような仕組みで、エラーが起きても止まらないプログラムを作ります。
 
-### [9. 動的SQL](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-09.html)
-EXECUTE IMMEDIATE文を使った動的SQL実行、REF CURSORの使い方、DBMS_SQLパッケージの基本、動的SQLのセキュリティ対策について学びます。
+### [9. 処理をまとめて部品化 - プロシージャとファンクション](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-09.html)
+よく使う処理をプロシージャ（手続き）やファンクション（関数）として部品化する方法を学習します。消費税計算、年齢計算など、再利用可能な処理の作り方を習得します。
 
-### [10. パフォーマンスとベストプラクティス](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-10.html)
-PL/SQLのパフォーマンス最適化技術、BULK COLLECTとFORALL文、コンパイル最適化、デバッグ技術、コーディング規約について学習します。
+### [10. データベースの変更を自動化 - トリガーで賢い仕組み作り](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-10.html)
+データの追加・更新・削除時に自動で動くトリガーの作成方法を学習します。在庫の自動更新、履歴の自動記録など、データベースを賢くする仕組みを実装します。
+
+### [11. 複数の処理をパッケージ化 - 関連する機能をまとめて管理](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-11.html)
+関連するプロシージャやファンクションをパッケージとしてまとめる方法を学習します。「社員管理パッケージ」「在庫管理パッケージ」など、機能別に整理する方法を習得します。
+
+### [12. 実践！簡単な業務システムを作ろう - 総合演習](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/plsql/plsql-learning-material-12.html)
+これまでの知識を活用して「図書貸出管理システム」を作成します。会員登録、貸出処理、返却処理、延滞チェックなど、実際の業務を想定したプログラムを段階的に構築します。
 
 ## 学習の進め方
 
-1. 初めてPL/SQLを学ぶ方は、必ず「1. PL/SQLの基本」から順番に学習を進めてください。
-2. 各トピックの内容を理解したら、実際にOracle環境でコードを書いて試してみましょう。
-3. 演習問題や理解度確認テストに取り組み、理解を深めましょう。
-4. 学習を進めながら小さなプロジェクト（例：在庫管理システム、注文処理システム）を作成すると、理解が定着します。
-5. SQLの基礎知識がない場合は、先に[SQL学習ガイド](../sql/README.md)を学習することをお勧めします。
+1. **プログラミングの考え方から始める**: 第1章でPL/SQLが解決する問題を理解し、なぜプログラミングが必要かを把握します。
 
-## 前提知識
+2. **小さなプログラムから徐々に**: 第2〜3章で簡単なプログラムを書いて、成功体験を積み重ねましょう。
 
-- **必須**: SQL の基本的な知識（SELECT、INSERT、UPDATE、DELETE文）
-- **推奨**: リレーショナルデータベースの基本概念
-- **推奨**: Oracle Database の基本的な使い方
+3. **SQL Developerで必ず実行**: サンプルコードは必ず自分で入力して実行し、結果を確認することで理解が深まります。
+
+4. **エラーを恐れない**: エラーメッセージは学習のチャンス。どこが間違っているか教えてくれる先生だと思いましょう。
+
+5. **段階的に複雑化**: 基本構文（第2〜6章）をマスターしてから、応用的な内容（第7〜11章）に進みます。
+
+6. **実践で定着**: 第12章の総合演習で実際の業務を想定したシステムを作り、理解を定着させます。
+
+## 推奨学習期間
+
+- **基礎習得コース** (1-6章): 3-4週間（1日30分〜1時間の学習）
+  - プログラミングの基本概念とPL/SQL基本構文を確実に習得
+- **実践活用コース** (7-12章): 4-5週間（1日30分〜1時間の学習）
+  - カーソル、例外処理、サブプログラムなど実践的な技術を習得
 
 ## 関連リソース
 
-- [PL/SQLチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/applied/plsql-graphic-recording.html) - PL/SQLの主要な構文とコマンドをまとめた参考資料
-- [SQL学習ガイド](../sql/README.md) - SQL基礎の学習ガイド
-- [Oracleチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/applied/oracle-cheatsheet.html) - Oracle Databaseの基本操作をまとめた参考資料
+- [PL/SQLチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/databases/plsql-cheatsheet.html) - よく使うPL/SQL構文の早見表
+- [SQL学習ガイド](../sql/README.md) - SQLの復習をしたい方向け
+- [Oracle学習ガイド](../oracle/README.md) - Oracle環境の再構築が必要な方向け
+- [Oracle管理者ガイド（上級編）](./v1/README.md) - より高度なPL/SQL技術を学びたい方向け
 
 ## 学習目標
 
 このガイドを完了すると、以下のスキルを身につけることができます：
 
-- PL/SQLブロック構造の理解と実装
-- 変数とデータ型の適切な使い分け
-- 制御構造を使った複雑なロジックの実装
-- ストアドプロシージャとファンクションの作成
-- 例外処理による堅牢なプログラムの作成
-- カーソルを使った効率的なデータ処理
-- トリガーによる自動化処理の実装
-- パッケージを使ったモジュラープログラミング
-- 動的SQLによる柔軟なプログラム作成
-- パフォーマンスを考慮したPL/SQL開発
+- PL/SQLプログラムの基本構造を理解し、簡単なプログラムを作成できる
+- 変数を使ってデータを保存・操作できる
+- データベースからデータを取得してプログラム内で使用できる
+- IF文による条件分岐で、状況に応じた処理を実装できる
+- LOOP文による繰り返し処理で、効率的なプログラムを作成できる
+- カーソルを使って複数行のデータを処理できる
+- 例外処理でエラーに強いプログラムを作成できる
+- プロシージャとファンクションで再利用可能な処理を作成できる
+- トリガーでデータベースの自動処理を実装できる
+- パッケージで関連機能をまとめて管理できる
+- 簡単な業務システムのデータベース処理を自動化できる
+- エラーメッセージを読んで問題を解決できる
+
+## 次のステップ
+
+このガイドライン完了後は、以下の学習に進むことをお勧めします：
+
+- [PL/SQL応用編（パフォーマンスチューニング）](./v1/README.md) - BULK COLLECT、動的SQLなど高度な技術
+- [Javaプログラミング入門](../../programming-languages/java-ecosystem/java/README.md) - アプリケーション開発へのステップアップ
+- [Oracle Database管理者ガイド](../oracle-dba/README.md) - データベース管理の専門知識
