@@ -5,192 +5,134 @@
 ## 前提条件
 
 ### 必要な環境
-- **Node.js**: バージョン14.0以上（npm/yarn パッケージマネージャーを含む）
-- **テキストエディタ**: VS Code、WebStorm、またはその他のコードエディタ
-- **モダンブラウザ**: Chrome、Firefox、Safari、Edge（開発者ツールを使用できるもの）
-- **ターミナル/コマンドプロンプト**: コマンドライン操作の基本知識
+- **テキストエディタ**: Visual Studio Code（無料）または任意のテキストエディタ
+  - Visual Studio Codeの推奨拡張機能：
+    - Tailwind CSS IntelliSense（クラス名の自動補完）
+    - Live Server（HTMLファイルをブラウザで即座に確認）
+- **Webブラウザ**: Google Chrome、Firefox、Safari、Microsoft Edgeのいずれか（最新版推奨）
+- **インターネット接続**: CDN経由でTailwind CSSを読み込むため必要
 
 ### 参考リソース
-- [Tailwind CSS 公式ドキュメント](https://tailwindcss.com/docs) - 最も信頼できる情報源
-- [Tailwind CSS Playground](https://play.tailwindcss.com/) - オンラインで試せる環境
-- [Tailwind UI](https://tailwindui.com/) - プレミアムコンポーネント集（一部無料）
-- [Headless UI](https://headlessui.com/) - アクセシブルなUIコンポーネント
-- [GitHub - Tailwind CSS](https://github.com/tailwindlabs/tailwindcss) - ソースコードとイシュー管理
+- [Tailwind CSS 公式ドキュメント（日本語対応）](https://tailwindcss.com/docs)
+- [Tailwind CSS Playground](https://play.tailwindcss.com/) - ブラウザ上で試せる環境
+- [Tailwind CSS チートシート](https://nerdcave.com/tailwind-cheat-sheet) - クラス名の早見表
 
 ### 前提知識
-- **必須**:
-  - HTML5の基本（タグ、属性、セマンティックHTML）
-  - CSS基礎（セレクタ、プロパティ、値、ボックスモデル）
-  - ファイルシステムとディレクトリ構造の理解
-  - コマンドライン操作の基礎知識
+- **必須**: HTML/CSS学習ガイドの履修完了
+  - HTMLの基本タグと構造の理解
+  - CSSの基本（セレクタ、プロパティ、値）
+  - ボックスモデルの理解
+  - Flexboxの基礎知識
 - **推奨**:
-  - CSS Flexboxの理解
   - CSS Gridの基礎知識
-  - レスポンシブWebデザインの概念
-  - JavaScriptの基本（DOM操作）
-  - npmまたはyarnの使用経験
-  - ビルドツール（webpack、Vite等）の基礎知識
+  - レスポンシブデザインの概念
+  - ブラウザの開発者ツールの基本操作
 
 ## 学習コンテンツ
 
-### [1. Tailwind CSS入門と環境構築](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-01.html)
-Tailwind CSSとは何か、ユーティリティファーストCSSの概念、従来のCSSとの違い、開発環境のセットアップ方法を学びます。CDN版とビルド版の違い、基本的なプロジェクト構成、設定ファイル（tailwind.config.js）の理解から始めます。
+### [1. Tailwind CSSとは - 新しいスタイリング手法の理解](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-01.html)
+Tailwind CSSの概念と特徴、従来のCSSとの違い、ユーティリティファーストアプローチの利点を学びます。CDNを使った簡単な導入方法で、すぐに始められる環境構築を行います。
 
-### [2. ユーティリティクラスの基礎](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-02.html)
-Tailwind CSSの核となるユーティリティクラスの使い方を習得します。テキストスタイリング、色の適用、サイズ指定、スペーシング（padding、margin）、ボーダー、背景、シャドウなど、頻繁に使用される基本的なユーティリティクラスを実践的に学習します。
+### [2. 基本的なスタイリング - テキストと色の装飾](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-02.html)
+文字サイズ、文字色、背景色、フォント、文字の装飾など、基本的なテキストスタイリングのクラスを学びます。Tailwindの色システムと、よく使われるテキスト関連のユーティリティクラスを習得します。
 
-### [3. レイアウト構築の基礎](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-03.html)
-FlexboxとGridを活用したレイアウト構築手法を学びます。コンテナとグリッドシステム、要素の配置とアライメント、レスポンシブなカラムレイアウト、カードレイアウト、ナビゲーションバー、フッターなど、実用的なレイアウトパターンを作成します。
+### [3. スペーシングとサイジング - 余白と大きさの調整](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-03.html)
+padding、margin、width、heightなど、要素の間隔とサイズを制御するクラスを学びます。Tailwindのスペーシングスケールシステムを理解し、一貫性のあるレイアウトを作成します。
 
-### [4. レスポンシブデザインの実装](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-04.html)
-Tailwind CSSのブレークポイントシステムを使用したレスポンシブデザインの実装方法を学びます。モバイルファーストアプローチ、画面サイズごとのスタイル調整、レスポンシブタイポグラフィ、条件付きレイアウト変更など、マルチデバイス対応のテクニックを習得します。
+### [4. ボーダーと装飾 - 要素の見た目を整える](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-04.html)
+ボーダー、角丸、影（shadow）、透明度など、要素を装飾するためのクラスを学びます。カードやボタンなどのUIコンポーネントに必要な装飾技術を習得します。
 
-### [5. カスタマイズと設定のカスタマイズ](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-05.html)
-tailwind.config.jsを使用したカスタマイズ方法を深く理解します。カスタムカラーパレットの定義、スペーシングスケールの調整、フォントファミリーの追加、ブレークポイントの変更、プラグインの導入、デザインシステムへの適合など、プロジェクト固有の要件に対応する設定方法を学びます。
+### [5. Flexboxレイアウト - 柔軟な配置の実現](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-05.html)
+Tailwind CSSのFlexboxユーティリティクラスを使って、要素の配置と整列を制御する方法を学びます。ヘッダー、サイドバー、カードレイアウトなど実用的な例を作成します。
 
-### [6. コンポーネントとパターンの構築](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-06.html)
-再利用可能なコンポーネントパターンの作成方法を学びます。ボタン、フォーム要素、カード、モーダル、ドロップダウン、タブ、アコーディオンなど、一般的なUIコンポーネントをTailwind CSSで構築するベストプラクティスを習得します。
+### [6. Gridレイアウト - 格子状の配置を簡単に](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-06.html)
+CSS Gridに対応したTailwindクラスを使って、複雑なグリッドレイアウトを簡単に作成する方法を学びます。ギャラリー、ダッシュボード、マガジンレイアウトなどを実装します。
 
-### [7. フォームとインタラクティブ要素](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-07.html)
-入力フォーム、チェックボックス、ラジオボタン、セレクトボックス、テキストエリアなど、フォーム要素のスタイリング方法を学びます。擬似クラス（hover、focus、active）の使用、バリデーション表示、アクセシビリティへの配慮、ユーザーフィードバックの実装など、実用的なフォームデザインを習得します。
+### [7. レスポンシブデザイン - 画面サイズに応じた調整](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-07.html)
+Tailwindのレスポンシブプレフィックス（sm:、md:、lg:、xl:）を使って、異なる画面サイズに対応したデザインを実装する方法を学びます。モバイルファーストアプローチの実践方法も習得します。
 
-### [8. ダークモードとテーマ実装](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-08.html)
-ダークモードの実装方法とテーマ切り替え機能の構築を学びます。dark:バリアント修飾子の使用、システム設定に基づく自動切り替え、手動トグル機能の実装、カスタムテーマの作成、色の一貫性を保つ設計パターンなど、現代的なUIに必須の機能を習得します。
+### [8. ホバーとフォーカス - インタラクティブな要素](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-08.html)
+hover:、focus:、active:などの状態プレフィックスを使って、ユーザーの操作に反応する要素を作成します。ボタン、リンク、フォーム要素のインタラクティブな動作を実装します。
 
-### [9. パフォーマンス最適化とベストプラクティス](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-09.html)
-本番環境向けの最適化手法を学びます。PurgeCSSによる未使用クラスの削除、ファイルサイズの最小化、JITモード（Just-In-Time）の活用、ビルドプロセスの最適化、パフォーマンス測定、メンテナブルなコードの書き方など、プロフェッショナルな開発に必要な知識を習得します。
+### [9. コンポーネントの作成 - よく使うUIパーツ](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-09.html)
+ボタン、カード、ナビゲーション、フォーム、モーダルなど、実際のWebサイトでよく使われるUIコンポーネントをTailwind CSSで作成する方法を学びます。
 
-### [10. 実践プロジェクト統合と高度なテクニック](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-10.html)
-Tailwind CSSを実際のプロジェクトに統合する方法と高度なテクニックを学びます。React、Vue、Next.js等のフレームワークとの連携、コンポーネントライブラリの構築、デザインシステムの実装、チーム開発での運用方法、トラブルシューティング、実践的なワークフローを総合的に習得します。
+### [10. 実践プロジェクト - ランディングページの作成](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-10.html)
+学んだ知識を総合して、企業や製品のランディングページを作成します。ヘッダー、ヒーローセクション、特徴紹介、料金表、フッターなど、実践的なページを完成させます。
 
 ## 学習の進め方
 
-1. **順序立てて学習する**
-   - 第1章から順番に進めることを強く推奨します
-   - 各章は前章の知識を前提としています
-   - 基礎をしっかり固めてから応用に進むことで、効率的に習得できます
+1. **HTML/CSS学習ガイドの復習**
+   - Tailwind CSSを始める前に、HTML/CSSの基礎をしっかり復習しましょう
+   - 特にFlexboxとボックスモデルの理解は重要です
 
-2. **実際に手を動かす**
-   - 各章のサンプルコードを必ず自分で入力して試してください
-   - 公式ドキュメントを参照しながら、さまざまなユーティリティクラスを実験してください
-   - Tailwind CSS Playgroundを活用して、素早く試行錯誤できます
+2. **CDNから始める**
+   - 最初はCDN版を使って、環境構築の手間なく学習を始めましょう
+   - HTMLファイルに1行追加するだけでTailwind CSSが使えます
 
-3. **小さなプロジェクトから始める**
-   - 簡単なランディングページやカードレイアウトから始めましょう
-   - 徐々に複雑なレイアウトやコンポーネントに挑戦してください
-   - 既存のデザインを模倣して再現する練習が効果的です
+3. **クラス名を覚えるより理解する**
+   - すべてのクラス名を暗記する必要はありません
+   - パターンと命名規則を理解することが重要です
+   - チートシートやIntelliSenseを活用しましょう
 
-4. **デベロッパーツールを活用する**
-   - ブラウザの開発者ツールでクラスの適用状態を確認してください
-   - Tailwind CSS IntelliSense拡張機能（VS Code）を使用すると効率的です
-   - 生成されたCSSを確認して、内部動作を理解しましょう
+4. **小さな部品から作る**
+   - まずはボタンやカードなど、小さなコンポーネントから作成
+   - 徐々に複雑なレイアウトに挑戦していきましょう
 
-5. **コミュニティとリソースを活用する**
-   - 公式ドキュメントは最も信頼できる情報源です
-   - Tailwind Labs YouTubeチャンネルでビデオチュートリアルを視聴できます
-   - コミュニティフォーラムやGitHub Discussionsで質問や事例を探せます
+5. **開発者ツールで確認**
+   - ブラウザの開発者ツールで適用されているスタイルを確認
+   - どのクラスがどんなCSSを生成しているか理解しましょう
 
 ## 推奨学習期間
 
-- **基礎習得コース** (1-4章): 1-2週間
-  - 1日1-2時間の学習で、Tailwind CSSの基本概念とレスポンシブデザインまで習得
-  - 小規模なWebページを作成できるレベルに到達
+- **基礎習得コース** (1-4章): 1週間
+  - 1日1-2時間の学習で、Tailwind CSSの基本概念とよく使うクラスを習得
+  - HTMLファイルにスタイルを適用できるレベルに到達
 
-- **実践活用コース** (5-7章): 2-3週間
-  - カスタマイズ方法とコンポーネント構築を習得
-  - 実用的なWebアプリケーションのUI構築が可能に
+- **レイアウト習得コース** (5-7章): 1-2週間
+  - FlexboxとGridを使ったレイアウト作成を習得
+  - レスポンシブデザインの実装ができるレベルに
 
-- **応用・最適化コース** (8-10章): 2-3週間
-  - ダークモード、パフォーマンス最適化、フレームワーク統合を習得
-  - プロダクションレベルのプロジェクトに適用可能
+- **実践応用コース** (8-10章): 1-2週間
+  - インタラクティブな要素とUIコンポーネントの作成
+  - 実際のWebサイトを作成できるレベルに到達
 
-**合計学習時間**: 約5-8週間（1日1-2時間の学習を想定）
-
-*注: 学習期間は個人の前提知識や学習時間によって変動します。HTML/CSSに既に習熟している場合は、より短期間で習得できます。*
+**合計推奨期間**: 3-5週間（約1ヶ月）
 
 ## 関連リソース
 
 ### チートシート
-- [Tailwind CSS Cheat Sheet](https://tailwindcomponents.com/cheatsheet/) - クラス名のクイックリファレンス
-- [公式ドキュメント検索](https://tailwindcss.com/docs) - 最も正確な情報源
+- [Tailwind CSSクラス早見表](https://fcircle-biz.github.io/tech_docs/cheatsheet/web-technologies/tailwind-classes-cheatsheet.html)
+- [レスポンシブデザイン対応表](https://fcircle-biz.github.io/tech_docs/cheatsheet/web-technologies/tailwind-responsive-cheatsheet.html)
 
 ### 関連ガイドライン
-- [HTML/CSS 学習ガイドライン](../html-css/README.md) - Web技術の基礎
-- [React 学習ガイドライン](../../programming-languages/javascript-ecosystem/react/README.md) - Reactとの統合
-- [Next.js 学習ガイドライン](../../programming-languages/javascript-ecosystem/nextjs/README.md) - Next.jsプロジェクトでの活用
-
-### 開発ツール
-- [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) - VS Code拡張機能（自動補完とプレビュー）
-- [Headwind](https://marketplace.visualstudio.com/items?itemName=heybourn.headwind) - クラス名の自動並び替え
-- [Tailwind Docs](https://marketplace.visualstudio.com/items?itemName=austenc.tailwind-docs) - エディタ内でドキュメント参照
-
-### コミュニティとサンプル
-- [Tailwind Components](https://tailwindcomponents.com/) - コミュニティ製コンポーネント集
-- [Tailwind Toolbox](https://www.tailwindtoolbox.com/) - 無料のテンプレートとコンポーネント
-- [Tailwind Weekly](https://tailwindweekly.com/) - 最新ニュースとリソースのまとめ
+- [HTML/CSS学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/README.md) - 前提となる基礎知識
+- [Bootstrap学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/bootstrap/README.md) - 別のCSSフレームワーク
+- [JavaScript入門学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/README.md) - 動的な機能を追加
 
 ## 学習目標
 
 このガイドを完了すると、以下のスキルを身につけることができます：
 
-- **Tailwind CSSの基礎理解**
-  - ユーティリティファーストCSSの概念と利点を説明できる
-  - 従来のCSSアプローチとの違いを理解し、適切に使い分けられる
-
-- **レスポンシブWebデザインの実装**
-  - モバイルファーストアプローチでマルチデバイス対応のレイアウトを作成できる
-  - ブレークポイントシステムを使用して、画面サイズごとに最適化されたUIを構築できる
-
-- **効率的なUI構築**
-  - 一般的なUIコンポーネント（ボタン、フォーム、カード、ナビゲーション等）を素早く構築できる
-  - 再利用可能なコンポーネントパターンを設計・実装できる
-
-- **カスタマイズとテーマ管理**
-  - tailwind.config.jsを使用してプロジェクト固有のデザインシステムを構築できる
-  - カスタムカラーパレット、スペーシング、タイポグラフィを定義できる
-  - ダークモードとライトモードの切り替え機能を実装できる
-
-- **パフォーマンス最適化**
-  - 本番環境向けにCSSファイルサイズを最小化できる
-  - JITモードを活用して開発体験を向上させられる
-  - パフォーマンスとメンテナンス性のバランスを取れる
-
-- **フレームワーク統合**
-  - React、Vue、Next.js等のモダンフレームワークと統合できる
-  - コンポーネントベースの開発ワークフローに適用できる
-
-- **実践的な開発スキル**
-  - 実際のプロジェクトでTailwind CSSを効果的に活用できる
-  - チーム開発での一貫性のあるスタイリングを実現できる
-  - デザインシステムの構築と運用ができる
+- **Tailwind CSSの基本理解**: ユーティリティファーストアプローチの概念と利点を理解し、従来のCSSとの使い分けができる
+- **効率的なスタイリング**: Tailwindのクラスを使って、素早くWebページのスタイリングができる
+- **レスポンシブデザイン**: 画面サイズに応じて適切に表示されるWebページを作成できる
+- **モダンなレイアウト**: FlexboxとGridを使った柔軟なレイアウトを実装できる
+- **UIコンポーネント作成**: ボタン、カード、フォームなどの一般的なUIコンポーネントを作成できる
+- **インタラクティブな要素**: ホバーやフォーカス状態に対応した動的な見た目を実装できる
+- **実践的なWebサイト制作**: ランディングページなどの実用的なWebサイトを作成できる
+- **開発効率の向上**: CSSを書く時間を大幅に短縮し、一貫性のあるデザインを実現できる
 
 ## 次のステップ
 
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
 
-### フレームワークとの統合
-- **[React 学習ガイドライン](../../programming-languages/javascript-ecosystem/react/README.md)**
-  - Tailwind CSSとReactを組み合わせてモダンなWebアプリケーションを構築
-  - コンポーネント駆動開発のベストプラクティスを習得
+### JavaScriptで動きをつける
+- [JavaScript入門学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/README.md) - Tailwind CSSで作ったページに動的な機能を追加
 
-- **[Next.js 学習ガイドライン](../../programming-languages/javascript-ecosystem/nextjs/README.md)**
-  - Next.jsプロジェクトにTailwind CSSを統合
-  - SSR/SSGとTailwind CSSの組み合わせを実践
+### より高度なTailwind CSS
+- [Tailwind CSS上級ガイドライン（ビルドツール版）](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/v1/README.md) - Node.jsを使った本格的な開発環境での活用方法
 
-### 関連技術
-- **[JavaScript Intermediate 学習ガイドライン](../../programming-languages/javascript-ecosystem/javascript-intermediate/README.md)**
-  - インタラクティブなUIコンポーネントの実装に必要なJavaScriptスキルを向上
-
-- **[DevOps 学習ガイドライン](../../development-processes/devops/README.md)**
-  - ビルドプロセスの自動化とCI/CDパイプラインへの統合
-
-### 実践プロジェクト
-- **ポートフォリオサイトの構築**: 学んだスキルを活かして自分のポートフォリオを作成
-- **UIライブラリの開発**: 再利用可能なコンポーネントライブラリを構築
-- **オープンソースへの貢献**: Tailwind CSSのエコシステムにコントリビュート
-
----
-
-**最終更新日**: 2025年11月
-
-**フィードバック**: このガイドラインへの改善提案は、リポジトリのIssueまでお寄せください。
+### フレームワークとの組み合わせ
+- [React学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/README.md) - ReactとTailwind CSSを組み合わせたモダンな開発
+- [Next.js学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nextjs/README.md) - Next.jsプロジェクトでのTailwind CSS活用
