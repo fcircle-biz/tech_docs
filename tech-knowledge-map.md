@@ -6,7 +6,7 @@ IT技術、業務知識、資格試験を網羅した包括的な学習ドメイ
 | -------------------- | ---------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------- |
 | **プログラミング言語**        | **Python**             | PyPI・Django・NumPy／Pandas                                                              | Web〜AI まで裾野が広い                              |
 |                      | **Java**               | Maven Central・Spring・Jakarta EE                                                       | エンタープライズ定番、LTS 明確                           |
-|                      | **JavaScript／Node.js** | npm・React／Vue・Express                                                                 | フロント & バック共通言語                              |
+|                      | **JavaScript／Node.js** | npm・React／Vue／Next.js・Express                                                         | フロント & バック共通言語                              |
 |                      | **.NET (C#/F#)**       | NuGet・ASP.NET Core・MAUI                                                               | クロスプラットフォーム化進行                              |
 |                      | **Go**                 | Go modules・gRPC・Kubernetes 連携                                                         | クラウドネイティブ開発の定番                              |
 |                      | **PHP**                | Composer・Laravel・WordPress                                                            | CMS からモダン API まで対応                          |
@@ -14,6 +14,8 @@ IT技術、業務知識、資格試験を網羅した包括的な学習ドメイ
 |                      | **R**                  | CRAN・tidyverse・Shiny                                                                  | 統計・データサイエンス特化                               |
 |                      | **C / C++**            | GCC／Clang・CMake・Conan／vcpkg・Boost・Qt                                                  | 低レベル〜高性能アプリまで広範                             |
 |                      | **COBOL**              | IBM Enterprise COBOL・Micro Focus Visual COBOL・GnuCOBOL                                | メインフレーム勘定系で根強い。モダナイゼーションが進行                 |
+| **Webテクノロジ**          | **HTML／CSS**           | HTML5・CSS3・Flexbox・Grid・レスポンシブデザイン                                                    | Webページの構造とスタイリングの基礎                         |
+|                      | **CSSフレームワーク**        | Tailwind CSS・Bootstrap・Bulma                                                          | 効率的なUI構築、ユーティリティファースト                       |
 | **開発手法・プロセス**        | **アジャイル開発**           | Scrum・XP・Kanban・スプリント・デイリースタンドアップ・レトロスペクティブ                                           | 反復的な開発、変化への迅速な対応                            |
 |                      | **ウォーターフォール開発**       | 要件定義→設計→実装→テスト→運用保守                                                                  | 段階的な開発、計画重視の伝統的手法                           |
 |                      | **DevOps**             | CI/CD・Infrastructure as Code・自動化・監視・フィードバックループ                                        | 開発と運用の融合、継続的デリバリー                           |
