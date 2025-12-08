@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>Next.js学習教材 第12章 - テスト戦略とデバッグ</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#ecfeff',
+                            100: '#cffafe',
+                            200: '#a5f3fc',
+                            300: '#67e8f9',
+                            400: '#22d3ee',
+                            500: '#06b6d4',
+                            600: '#0891b2',
+                            700: '#0e7490',
+                            800: '#155e75',
+                            900: '#164e63',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="w-full px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fab fa-react text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
+
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">Next.js学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                中級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>Webフレームワーク</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 50分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="#" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="#" class="hover:text-primary-600 transition-colors">Next.js</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第12章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第12章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">テスト戦略とデバッグ</h1>
+                    <p class="text-slate-600">Next.jsアプリケーションの品質を保証するためのテスト戦略と、開発効率を高めるデバッグ手法を学びます。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>Jest環境のセットアップとReact Testing Libraryの基本</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>サーバーコンポーネントとAPI Routesのテスト手法</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>PlaywrightやCypressを使ったE2Eテストの実装</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>デバッグツール、エラーバウンダリ、ログ管理のベストプラクティス</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション1: Next.jsにおけるテスト戦略 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        12.1 Next.jsにおけるテスト戦略
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Next.jsアプリケーションでは、<strong>ユニットテスト</strong>、<strong>統合テスト</strong>、<strong>E2Eテスト</strong>の3層に分けたテスト戦略が推奨されます。
+                    </p>
+
+                    <div class="my-6">
+                        <div class="mermaid">
+flowchart TB
+    subgraph Unit["ユニットテスト"]
+        A1["個別コンポーネント"]
+        A2["ユーティリティ関数"]
+        A3["カスタムHooks"]
+    end
+
+    subgraph Integration["統合テスト"]
+        B1["サーバーコンポーネント"]
+        B2["API Routes"]
+        B3["Server Actions"]
+    end
+
+    subgraph E2E["E2Eテスト"]
+        C1["ユーザーシナリオ"]
+        C2["画面遷移フロー"]
+        C3["フォーム送信"]
+    end
+
+    Unit --> Integration
+    Integration --> E2E
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-500 text-lg mt-0.5"></i>
+                            <div>
+                                <h3 class="font-semibold text-blue-800 mb-2">テスト種類と目的</h3>
+                                <ul class="text-blue-900 text-sm space-y-1">
+                                    <li><strong>ユニットテスト：</strong>個別の関数やコンポーネントが正しく動作するか検証（Jest + React Testing Library）</li>
+                                    <li><strong>統合テスト：</strong>複数のモジュールが連携して動作するか検証（MSW等でAPIモック）</li>
+                                    <li><strong>E2Eテスト：</strong>実際のブラウザで本番環境に近い状態でユーザーフローを検証（Playwright/Cypress）</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-table text-slate-500"></i>
+                            テストツール比較表
+                        </h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="border-b-2 border-slate-300">
+                                        <th class="text-left py-2 px-3 font-semibold text-slate-700">ツール</th>
+                                        <th class="text-left py-2 px-3 font-semibold text-slate-700">用途</th>
+                                        <th class="text-left py-2 px-3 font-semibold text-slate-700">速度</th>
+                                        <th class="text-left py-2 px-3 font-semibold text-slate-700">特徴</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-slate-600">
+                                    <tr class="border-b border-slate-200">
+                                        <td class="py-2 px-3 font-medium">Jest</td>
+                                        <td class="py-2 px-3">ユニット/統合テスト</td>
+                                        <td class="py-2 px-3">🚀 高速</td>
+                                        <td class="py-2 px-3">スナップショット、カバレッジ測定</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-200">
+                                        <td class="py-2 px-3 font-medium">React Testing Library</td>
+                                        <td class="py-2 px-3">コンポーネントテスト</td>
+                                        <td class="py-2 px-3">🚀 高速</td>
+                                        <td class="py-2 px-3">ユーザー視点でのテスト</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-200">
+                                        <td class="py-2 px-3 font-medium">Playwright</td>
+                                        <td class="py-2 px-3">E2Eテスト</td>
+                                        <td class="py-2 px-3">⚡ 中速</td>
+                                        <td class="py-2 px-3">マルチブラウザ対応、高速</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 font-medium">Cypress</td>
+                                        <td class="py-2 px-3">E2Eテスト</td>
+                                        <td class="py-2 px-3">⚠️ やや遅い</td>
+                                        <td class="py-2 px-3">直感的なAPI、タイムトラベル</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション2: Jest環境のセットアップ -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        12.2 Jest環境のセットアップ
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Next.jsプロジェクトにJestとReact Testing Libraryを導入し、ユニットテストの基盤を整えます。
+                    </p>
+
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                                rounded-xl p-5 my-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                        flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">
+                                    実習 12-1: Jestをセットアップする
+                                </h3>
+
+                                <h4 class="font-medium text-purple-800 mb-2">1. パッケージのインストール</h4>
+                                <div class="code-block-wrapper mb-4">
+                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                        <span class="text-slate-400 text-sm">terminal</span>
+                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre class="!mt-0 !rounded-t-none"><code class="language-bash">npm install --save-dev jest jest-environment-jsdom @testing-library/react @testing-library/jest-dom</code></pre>
+                                </div>
+
+                                <h4 class="font-medium text-purple-800 mb-2">2. Jest設定ファイル（jest.config.js）</h4>
+                                <div class="code-block-wrapper mb-4">
+                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                        <span class="text-slate-400 text-sm">jest.config.js</span>
+                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre class="!mt-0 !rounded-t-none"><code class="language-javascript">const nextJest = require('next/jest')
+
+const createJestConfig = nextJest({
+  dir: './', // Next.jsアプリのルートディレクトリ
+})
+
+const customJestConfig = {
+  setupFilesAfterEnv: ['&lt;rootDir&gt;/jest.setup.js'],
+  testEnvironment: 'jest-environment-jsdom',
+  moduleNameMapper: {
+    '^@/(.*)$': '&lt;rootDir&gt;/$1', // パスエイリアス
+  },
+}
+
+module.exports = createJestConfig(customJestConfig)</code></pre>
+                                </div>
+
+                                <h4 class="font-medium text-purple-800 mb-2">3. セットアップファイル（jest.setup.js）</h4>
+                                <div class="code-block-wrapper">
+                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                        <span class="text-slate-400 text-sm">jest.setup.js</span>
+                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre class="!mt-0 !rounded-t-none"><code class="language-javascript">// カスタムマッチャーを追加
+import '@testing-library/jest-dom'</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div>
+                                <p class="text-blue-900 font-medium">ヒント</p>
+                                <p class="text-blue-800 text-sm mt-1">
+                                    <code class="bg-blue-100 px-1 rounded">package.json</code>に <code class="bg-blue-100 px-1 rounded">"test": "jest"</code> スクリプトを追加すると、<code class="bg-blue-100 px-1 rounded">npm test</code> でテストを実行できます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション3: コンポーネントテストの基本 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        12.3 コンポーネントテストの基本
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        React Testing Libraryを使って、ユーザーの視点からコンポーネントをテストします。
+                    </p>
+
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">components/Button.tsx</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">interface ButtonProps {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+}
+
+export default function Button({ label, onClick, disabled }: ButtonProps) {
+  return (
+    &lt;button onClick={onClick} disabled={disabled}&gt;
+      {label}
+    &lt;/button&gt;
+  )
+}</code></pre>
+                    </div>
+
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">__tests__/Button.test.tsx</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">import { render, screen, fireEvent } from '@testing-library/react'
+import Button from '@/components/Button'
+
+describe('Button', () => {
+  it('ラベルが正しく表示される', () => {
+    render(&lt;Button label="送信" onClick={() => {}} /&gt;)
+    expect(screen.getByText('送信')).toBeInTheDocument()
+  })
+
+  it('クリック時にonClickが呼ばれる', () => {
+    const handleClick = jest.fn()
+    render(&lt;Button label="送信" onClick={handleClick} /&gt;)
+
+    fireEvent.click(screen.getByText('送信'))
+    expect(handleClick).toHaveBeenCalledTimes(1)
+  })
+})</code></pre>
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-emerald-600 mt-1"></i>
+                            <div>
+                                <p class="text-emerald-900 font-medium">重要なポイント</p>
+                                <ul class="text-emerald-800 text-sm mt-2 space-y-1">
+                                    <li>実装の詳細ではなく、ユーザーの視点でテストする</li>
+                                    <li><code class="bg-emerald-100 px-1 rounded">getByText</code>や<code class="bg-emerald-100 px-1 rounded">getByRole</code>を優先して使用</li>
+                                    <li>モック関数（<code class="bg-emerald-100 px-1 rounded">jest.fn()</code>）で関数呼び出しを検証</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション4: サーバーコンポーネントのテスト -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        12.4 サーバーコンポーネントのテスト
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        React Server Componentsはサーバー側でレンダリングされるため、データフェッチングのモックが必要です。
+                    </p>
+
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">app/posts/page.tsx</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">async function getPosts() {
+  const res = await fetch('https://api.example.com/posts')
+  return res.json()
+}
+
+export default async function PostsPage() {
+  const posts = await getPosts()
+
+  return (
+    &lt;ul&gt;
+      {posts.map((post: any) => (
+        &lt;li key={post.id}&gt;{post.title}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  )
+}</code></pre>
+                    </div>
+
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">__tests__/posts.test.tsx</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">import { render, screen } from '@testing-library/react'
+import PostsPage from '@/app/posts/page'
+
+// fetchをモック
+global.fetch = jest.fn(() =&gt;
+  Promise.resolve({
+    json: () =&gt; Promise.resolve([
+      { id: 1, title: 'テスト投稿1' },
+      { id: 2, title: 'テスト投稿2' },
+    ]),
+  })
+) as jest.Mock
+
+describe('PostsPage', () => {
+  it('投稿一覧が表示される', async () => {
+    render(await PostsPage())
+    expect(screen.getByText('テスト投稿1')).toBeInTheDocument()
+  })
+})</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション5: API Routesのテスト -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        12.5 API Routesのテスト
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Route Handlersは通常の関数としてテストできます。HTTPリクエスト/レスポンスをモックして検証します。
+                    </p>
+
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">app/api/hello/route.ts</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">export async function GET(request: Request) {
+  return Response.json({ message: 'Hello, World!' })
+}
+
+export async function POST(request: Request) {
+  const { name } = await request.json()
+  return Response.json({ message: `Hello, ${name}!` })
+}</code></pre>
+                    </div>
+
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">__tests__/api/hello.test.ts</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">import { GET, POST } from '@/app/api/hello/route'
+
+describe('/api/hello', () => {
+  it('GET: メッセージを返す', async () => {
+    const response = await GET(new Request('http://localhost:3000/api/hello'))
+    const data = await response.json()
+    expect(data).toEqual({ message: 'Hello, World!' })
+  })
+
+  it('POST: 名前付きメッセージを返す', async () => {
+    const request = new Request('http://localhost:3000/api/hello', {
+      method: 'POST',
+      body: JSON.stringify({ name: 'Taro' }),
+    })
+    const response = await POST(request)
+    const data = await response.json()
+    expect(data).toEqual({ message: 'Hello, Taro!' })
+  })
+})</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション6: E2Eテストの実装 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        12.6 E2Eテストの実装（Playwright）
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Playwrightを使って、実際のブラウザで動作するエンドツーエンドテストを実装します。
+                    </p>
+
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                                rounded-xl p-5 my-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                        flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">
+                                    実習 12-2: Playwrightでログインフローをテストする
+                                </h3>
+
+                                <h4 class="font-medium text-purple-800 mb-2">1. Playwrightのインストール</h4>
+                                <div class="code-block-wrapper mb-4">
+                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                        <span class="text-slate-400 text-sm">terminal</span>
+                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre class="!mt-0 !rounded-t-none"><code class="language-bash">npm init playwright@latest</code></pre>
+                                </div>
+
+                                <h4 class="font-medium text-purple-800 mb-2">2. テストコード（e2e/login.spec.ts）</h4>
+                                <div class="code-block-wrapper">
+                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                        <span class="text-slate-400 text-sm">e2e/login.spec.ts</span>
+                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">import { test, expect } from '@playwright/test'
+
+test('ログインフロー', async ({ page }) => {
+  await page.goto('http://localhost:3000/login')
+
+  // フォーム入力
+  await page.fill('input[name="email"]', 'test@example.com')
+  await page.fill('input[name="password"]', 'password123')
+
+  // 送信ボタンをクリック
+  await page.click('button[type="submit"]')
+
+  // ダッシュボードにリダイレクトされることを確認
+  await expect(page).toHaveURL('http://localhost:3000/dashboard')
+  await expect(page.locator('h1')).toContainText('ダッシュボード')
+})</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4 my-6">
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
+                            <h3 class="font-semibold text-emerald-800 mb-3 flex items-center gap-2">
+                                <i class="fas fa-rocket text-emerald-500"></i>
+                                Playwrightの利点
+                            </h3>
+                            <ul class="text-emerald-900 text-sm space-y-2">
+                                <li>✅ Chromium、Firefox、WebKit対応</li>
+                                <li>✅ 高速で安定した実行</li>
+                                <li>✅ 自動待機機能</li>
+                                <li>✅ スクリーンショット・ビデオ録画</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-purple-50 border border-purple-200 rounded-xl p-5">
+                            <h3 class="font-semibold text-purple-800 mb-3 flex items-center gap-2">
+                                <i class="fas fa-terminal text-purple-500"></i>
+                                実行コマンド
+                            </h3>
+                            <ul class="text-purple-900 text-sm space-y-2">
+                                <li><code class="bg-purple-100 px-1 rounded">npx playwright test</code>: 全テスト実行</li>
+                                <li><code class="bg-purple-100 px-1 rounded">npx playwright test --ui</code>: UIモード</li>
+                                <li><code class="bg-purple-100 px-1 rounded">npx playwright codegen</code>: テスト自動生成</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション7: デバッグツールの活用 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        12.7 デバッグツールの活用
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        効率的なデバッグのために、Next.jsが提供するツールとブラウザの開発者ツールを活用します。
+                    </p>
+
+                    <div class="my-6">
+                        <div class="mermaid">
+flowchart LR
+    A[デバッグ開始] --> B{問題の種類}
+    B -->|UIの問題| C["React DevTools<br/>Elements検査"]
+    B -->|ネットワーク| D["Network Tab<br/>API応答確認"]
+    B -->|ロジック| E["console.log<br/>Debugger"]
+    B -->|パフォーマンス| F["Performance Tab<br/>Profiler"]
+
+    C --> G[問題解決]
+    D --> G
+    E --> G
+    F --> G
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4 my-6">
+                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-5">
+                            <h3 class="font-semibold text-blue-800 mb-3">React DevTools</h3>
+                            <ul class="text-blue-900 text-sm space-y-2">
+                                <li>コンポーネントツリーの確認</li>
+                                <li>Props/Stateのリアルタイム検査</li>
+                                <li>再レンダリングのハイライト表示</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-orange-50 border border-orange-200 rounded-xl p-5">
+                            <h3 class="font-semibold text-orange-800 mb-3">Chrome DevTools</h3>
+                            <ul class="text-orange-900 text-sm space-y-2">
+                                <li>Networkタブでリクエスト監視</li>
+                                <li>Consoleでログ出力</li>
+                                <li>Sourcesでブレークポイント設定</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">デバッグログの例</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">export default function UserProfile({ userId }: { userId: string }) {
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    console.log('🔍 Fetching user:', userId)
+    fetchUser(userId).then(data => {
+      console.log('✅ User loaded:', data)
+      setUser(data)
+    })
+  }, [userId])
+
+  return &lt;div&gt;{user?.name}&lt;/div&gt;
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション8: エラーバウンダリとログ管理 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        12.8 エラーバウンダリとログ管理
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        エラーバウンダリでクライアント側のエラーをキャッチし、適切なフォールバックUIを表示します。
+                    </p>
+
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">app/error.tsx</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">'use client'
+
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error
+  reset: () => void
+}) {
+  return (
+    &lt;div className="p-6"&gt;
+      &lt;h2&gt;エラーが発生しました&lt;/h2&gt;
+      &lt;p&gt;{error.message}&lt;/p&gt;
+      &lt;button onClick={reset}&gt;再試行&lt;/button&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+                    </div>
+
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                            <div>
+                                <p class="text-red-900 font-medium">注意</p>
+                                <p class="text-red-800 text-sm mt-1">
+                                    エラー情報をログサービス（Sentry、LogRocket等）に送信することで、本番環境でのエラーを追跡できます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">Sentryの統合例</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">import * as Sentry from '@sentry/nextjs'
+
+export default function Error({ error }: { error: Error }) {
+  useEffect(() => {
+    // エラーをSentryに報告
+    Sentry.captureException(error)
+  }, [error])
+
+  return &lt;div&gt;エラーが発生しました&lt;/div&gt;
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- トラブルシューティングカード -->
+                <div class="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-orange-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-wrench text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-orange-800 mb-4 break-words">トラブルシューティング</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="font-medium text-orange-900 mb-1">❌ Jestでモジュールが見つからない</p>
+                                    <p class="text-orange-800 text-sm mb-2">
+                                        <code class="bg-orange-100 px-1 rounded">moduleNameMapper</code> でパスエイリアスを設定してください。
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-orange-900 mb-1">❌ E2Eテストがタイムアウトする</p>
+                                    <p class="text-orange-800 text-sm mb-2">
+                                        開発サーバーが起動しているか確認。Playwrightの自動待機を活用しましょう。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q1. ユニットテスト、統合テスト、E2Eテストの違いを説明してください。</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            ユニットテストは個別の関数やコンポーネントの動作を検証、統合テストは複数のモジュール間の連携を検証、E2Eテストは実際のブラウザでユーザーフロー全体を検証します。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q2. React Server Componentsをテストする際の注意点は？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            非同期コンポーネントとしてテストし、fetchなどのAPIをモックする必要があります。また、await でコンポーネントをレンダリングします。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q3. エラーバウンダリを実装するファイル名は？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <code class="bg-blue-200 px-1 rounded">app/error.tsx</code> ファイルでエラーバウンダリを実装します。'use client' ディレクティブが必要です。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 章のまとめ -->
+                <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6 my-8">
+                    <h2 class="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-check-circle text-slate-500"></i>
+                        この章のまとめ
+                    </h2>
+                    <ul class="space-y-2 text-slate-700">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>ユニットテスト、統合テスト、E2Eテストの3層でアプリケーションの品質を保証</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>Jest + React Testing Libraryでコンポーネントとサーバーコンポーネントをテスト</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>PlaywrightやCypressで実際のブラウザ環境でのユーザーフローを検証</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>エラーバウンダリとログ管理でエラーを適切に処理・追跡</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <a href="nextjs-learning-material-11.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+                        <i class="fas fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="font-medium">第11章: パフォーマンス最適化とSEO</span>
+                        </div>
+                    </a>
+                    <a href="nextjs-learning-material-13.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">第13章: データベース統合とORM</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
+    </div>
+
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="#" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- サイドバー生成 -->
+    <script src="sidebar-content.js"></script>
+
+    <!-- 共通JavaScript -->
+    <script src="main.js"></script>
+
+    <!-- 描画ツール -->
+    <script src="drawing-tool.js"></script>
+</body>
+</html>
