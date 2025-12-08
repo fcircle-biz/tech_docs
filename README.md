@@ -49,7 +49,7 @@
 - **[JavaScript学習ガイド](docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/README.md)** - プログラミング未経験者向けJavaScript入門12章構成カリキュラム
 - **[TypeScript学習ガイド](docs/guide/programming-languages/javascript-ecosystem/typescript/README.md)** - TypeScriptの基礎をプログラミング完全未経験者向けに段階的に学習するためのカリキュラム。型システムを活用した安全なコード作成を15章で完全習得
 - **[Next.js学習ガイド](docs/guide/programming-languages/javascript-ecosystem/nextjs/README.md)** - Next.jsフレームワークを使用したモダンなReactアプリケーション開発の基礎を入門者向けに段階的に学習するためのカリキュラム（10章構成）
-- **[React学習ガイド](docs/guide/programming-languages/javascript-ecosystem/react/README.md)** - Reactライブラリを使用したモダンなWebアプリケーション開発の基礎を入門者向けに段階的に学習するためのカリキュラム（10章構成）
+- **[React学習ガイド](docs/guide/programming-languages/javascript-ecosystem/react/README.md)** - Reactライブラリを使用したモダンなWebアプリケーション開発の基礎を入門者向けに段階的に学習するためのカリキュラム（12章構成）
 
 #### PHP
 - **[PHP学習ガイド](docs/guide/programming-languages/php-ecosystem/php/README.md)** - PHP基礎から実践的なWebアプリケーション開発まで10章完成カリキュラム
@@ -105,10 +105,10 @@
 #### 統計解析
 - **[統計解析学習ガイド](docs/guide/data-ai-category/statistical-analysis/README.md)** - 統計学基礎から推測統計・仮説検定まで10章完成カリキュラム
 
-### SaaS／PaaS／アプリケーション
+### ビジネスSaaS
 
 - **[Excel基本操作学習ガイド](docs/guide/business-saas/excel-basic/README.md)** - Excel基本操作から関数、VBA入門まで8章完成カリキュラム
-- **[VBA学習ガイド](docs/guide/business-saas/vba/README.md)** - VBA基礎からExcel自動化まで10章完成カリキュラム
+- **[VBA学習ガイド](docs/guide/business-saas/vba/README.md)** - VBA基礎からExcel自動化まで12章完成カリキュラム
 - **[OutSystems学習ガイド](docs/guide/business-saas/outsystems/README.md)** - OutSystemsローコード開発プラットフォームの基礎から実践的なアプリケーション開発まで14章完成カリキュラム
 - **[SAP学習ガイド](docs/guide/business-saas/sap/README.md)** - SAP ERP基礎から実践的な業務プロセスまで10章完成カリキュラム。SAP S/4HANA、ABAP、Fiori、SAP HANA等のモダンなSAP技術を体系的に習得
 
