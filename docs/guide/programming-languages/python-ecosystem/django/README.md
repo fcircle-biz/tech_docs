@@ -1,84 +1,128 @@
-# Django 学習ガイドライン
+# Django入門 学習ガイドライン
 
-このガイドラインでは、Djangoフレームワークを使用したWebアプリケーション開発の基礎を入門者向けに段階的に学習するためのカリキュラムを提供しています。
+このガイドラインでは、PythonのWebフレームワークDjangoの基礎を入門者向けに段階的に学習するためのカリキュラムを提供しています。Python基礎を学んだ方が次のステップとしてWebアプリケーション開発の世界に踏み出すための実践的な内容となっています。
 
 ## 前提条件
+
 ### 必要な環境
-- Python 3.8以降
-- pip（Pythonパッケージマネージャー）
-- テキストエディタまたは統合開発環境（VS Code、PyCharm等）
-- Webブラウザ（Chrome、Firefox、Safari等）
-- SQLiteデータベース（Djangoに標準同梱）
-- コマンドライン/ターミナルの基本操作知識
+- Python 3.8以上がインストールされていること
+- テキストエディタまたはIDE（VS Code、PyCharm等）
+- コマンドライン/ターミナルの基本操作ができること
+- Webブラウザ（Chrome、Firefox等の最新版）
 
 ### 参考リソース
-- [Django公式ドキュメント](https://docs.djangoproject.com/)
-- [Django日本語ドキュメント](https://docs.djangoproject.com/ja/)
-- [Django REST Framework公式ドキュメント](https://www.django-rest-framework.org/)
-- [Django Girls Tutorial（日本語）](https://tutorial.djangogirls.org/ja/)
+- [Django公式ドキュメント（日本語）](https://docs.djangoproject.com/ja/5.0/)
+- [Django公式チュートリアル](https://docs.djangoproject.com/ja/5.0/intro/tutorial01/)
+- [Django Girls Tutorial 日本語版](https://tutorial.djangogirls.org/ja/)
+- [MDN Web Docs - Django入門](https://developer.mozilla.org/ja/docs/Learn/Server-side/Django)
 
 ### 前提知識
-- **必須**: Python基礎文法（変数、関数、クラス、デコレータ）
-- **必須**: HTTPプロトコルの基礎知識（GET、POST、リクエスト/レスポンス）
-- **推奨**: HTML/CSSの基礎知識
-- **推奨**: SQLデータベースの基本概念
+- **必須**: Python基礎（変数、データ型、制御構造、関数、クラス、モジュール、パッケージの概念）
+- **必須**: ファイルとディレクトリの操作、パスの概念
+- **推奨**: HTML/CSSの基礎知識（タグ、要素、スタイルの基本）
+- **推奨**: HTTPの基本概念（GET/POSTメソッド、リクエスト/レスポンス）
 
 ## 学習コンテンツ
-### [1. Django入門と環境構築](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-01.html)
-Djangoの特徴とMVTアーキテクチャ、インストール方法、プロジェクト作成、開発サーバーの起動、管理サイトの初期設定について学びます。
 
-### [2. モデルとデータベース設計](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-02.html)
-モデルクラスの定義、フィールドタイプの選択、マイグレーションの仕組み、リレーションシップ（1対多、多対多）、QuerySetを使用したデータ操作について学習します。
+### [1. Djangoとは - Webフレームワークの基礎理解](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-01.html)
+DjangoとWebフレームワークの概念、MVT（Model-View-Template）アーキテクチャの基本、開発環境のセットアップ方法を学びます。
 
-### [3. ビューとURLルーティング](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-03.html)
-関数ベースビューとクラスベースビュー、URLconf設定、URLパラメータの処理、HttpResponseとショートカット関数、汎用ビューの活用方法を学びます。
+### [2. はじめてのDjangoプロジェクト](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-02.html)
+プロジェクトの作成、開発サーバーの起動、アプリケーションの作成と構造理解、設定ファイルの基礎を実践的に学習します。
 
-### [4. テンプレートとフロントエンド統合](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-04.html)
-Djangoテンプレート言語（DTL）、テンプレート継承、コンテキストプロセッサー、静的ファイル（CSS、JavaScript、画像）の管理、テンプレートタグとフィルターについて学習します。
+### [3. URLルーティング - リクエストの道筋を設計する](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-03.html)
+URLconf の仕組み、URLパターンの定義方法、パラメータの受け渡し、名前付きURLとリバースURLの活用方法を理解します。
 
-### [5. フォームとユーザー入力処理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-05.html)
-Djangoフォームクラス、フォームバリデーション、ModelForm、CSRFプロテクション、ファイルアップロード処理、フォームセットの実装方法を学びます。
+### [4. ビュー - リクエストを処理してレスポンスを返す](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-04.html)
+関数ビューとクラスベースビュー、HttpRequestとHttpResponseオブジェクト、コンテキストデータの渡し方を学びます。
 
-### [6. 認証とユーザー管理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-06.html)
-Django認証システム、ユーザーモデルのカスタマイズ、ログイン/ログアウト機能、パーミッションとグループ、デコレータによるアクセス制御、ソーシャル認証統合について学習します。
+### [5. テンプレート - 動的なHTMLページを作る](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-05.html)
+Djangoテンプレート言語（DTL）、変数の表示とフィルタ、テンプレートタグによる制御、テンプレートの継承とインクルードを習得します。
 
-### [7. Django REST Framework入門](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-07.html)
-RESTful API設計原則、シリアライザーの作成、ViewSetとRouter、認証とパーミッション、ペジネーションとフィルタリング、API ドキュメント自動生成について学びます。
+### [6. モデル - データベースとの架け橋](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-06.html)
+モデルの定義とフィールドタイプ、マイグレーションの仕組み、データベース操作の基礎、リレーションシップの設定を理解します。
 
-### [8. テストとデバッグ](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-08.html)
-Django TestCaseクラス、モデル・ビュー・フォームのテスト、テストデータベース、Fixtureとファクトリー、Django Debug Toolbar、ログ設定とエラー処理について学習します。
+### [7. Django Admin - 管理画面を活用する](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-07.html)
+管理画面の設定とカスタマイズ、モデルの登録、管理者ユーザーの作成、データの追加・編集・削除操作を学びます。
 
-### [9. デプロイメントと本番環境設定](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-09.html)
-本番環境設定（settings.py）、静的ファイルとメディアファイルの配信、WSGI/ASGIサーバー（Gunicorn、Uvicorn）、PostgreSQL/MySQL統合、環境変数管理、セキュリティベストプラクティスを学びます。
+### [8. フォーム - ユーザー入力を処理する](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-08.html)
+Djangoフォームの基礎、フォームフィールドとバリデーション、ModelFormによる効率的な開発、CSRF対策の実装を習得します。
 
-### [10. 高度な機能と最適化](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-10.html)
-カスタム管理コマンド、シグナル、ミドルウェア、キャッシュ戦略、データベースクエリ最適化、非同期ビュー、Celeryによるタスクキュー、国際化（i18n）について学習します。
+### [9. 静的ファイルの管理 - CSS/JavaScript/画像を扱う](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-09.html)
+静的ファイルの設定と配信、テンプレートでの静的ファイル参照、メディアファイルのアップロード処理を学びます。
+
+### [10. 認証システム - ユーザー管理の実装](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-10.html)
+Djangoの認証システム、ログイン・ログアウト機能、ユーザー登録、パスワード管理、アクセス制限の実装方法を理解します。
+
+### [11. セッションとクッキー - 状態管理の仕組み](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-11.html)
+HTTPのステートレス性、セッションフレームワークの使い方、クッキーの操作、ユーザーごとのデータ保存を学びます。
+
+### [12. データベースクエリの最適化](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-12.html)
+QuerySetの詳細、select_relatedとprefetch_related、N+1問題の解決、データベースインデックスの活用を習得します。
+
+### [13. テストの書き方 - 品質を保証する](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-13.html)
+Djangoテストフレームワーク、単体テストと統合テスト、TestCaseクラスの使い方、テストデータベースの扱いを学びます。
+
+### [14. デバッグとエラー処理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-14.html)
+Django Debug Toolbarの活用、エラーページのカスタマイズ、ロギングの設定、例外処理のベストプラクティスを理解します。
+
+### [15. 実践プロジェクト - ブログアプリを作る](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django/django-learning-material-15.html)
+これまで学んだ知識を総動員して、記事投稿、コメント機能、カテゴリ分類を持つ実践的なブログアプリケーションを構築します。
 
 ## 学習の進め方
-1. **プロジェクトベースで学習**: 各章で実際に動作するWebアプリケーションを構築しながら学習を進めます
-2. **管理サイトを活用**: Django管理サイトを使用してデータモデルを視覚的に確認し、理解を深めます
-3. **段階的な機能追加**: シンプルなブログアプリから始めて、徐々に複雑な機能を実装していきます
-4. **ベストプラクティスの適用**: 各章で紹介されるDjangoの設計パターンとセキュリティ対策を実践します
-5. **実用的なアプリケーション構築**: 学習した知識を統合して、実際に使用可能なWebアプリケーションを開発します
+
+1. **環境構築から始める**: 第1章でPythonとDjangoの環境を整え、動作確認を行います。各章のサンプルコードを実際に動かしながら学習を進めてください。
+
+2. **手を動かして学ぶ**: 各章のコード例を必ず自分で入力し、実行結果を確認します。エラーが出たら、エラーメッセージを読んで解決する習慣をつけましょう。
+
+3. **公式ドキュメントを参照する**: 不明な点があれば、Django公式ドキュメントを参照する習慣をつけます。英語が苦手な方は日本語版から始めて、徐々に英語版にも慣れていきましょう。
+
+4. **小さな改造から始める**: サンプルコードを少しずつ改造して、動作の変化を観察します。「もしこうしたらどうなるだろう？」という疑問を持ち、実験することが理解を深めます。
+
+5. **エラーを恐れない**: エラーは学習の機会です。エラーメッセージをよく読み、スタックトレースから原因を特定する練習をしましょう。
 
 ## 推奨学習期間
-- **基礎習得コース** (1-5章): 4-5週間
-- **実践活用コース** (6-10章): 5-6週間
-- **合計学習期間**: 9-11週間（週5-7時間の学習を想定）
+
+- **基礎習得コース** (1-10章): 4-6週間
+  - 週3-4時間の学習ペースで、基本的なWebアプリケーションが作れるようになります
+  - 各章2-3日かけてじっくり理解を深めることを推奨
+
+- **実践活用コース** (11-15章): 3-4週間
+  - より高度な機能とベストプラクティスを学びます
+  - 実際のプロジェクトで使える実践的なスキルを身につけます
+
+- **全体習得期間**: 7-10週間
+  - 無理のないペースで、着実に理解を深めながら進めましょう
 
 ## 関連リソース
-- [Python学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/README.html)
-- [FastAPI学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/fastapi/README.html)
-- [SQLAlchemy学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/sqlalchemy/README.html)
-- [Webアプリケーション設計チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/web/web-app-design-cheatsheet.html)
+
+- [Django チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/python-ecosystem/django/)
+- [Python入門 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/)
+- [HTML/CSS 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/html-css/)
+- [PostgreSQL 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/postgresql/)
+- [Git/GitHub 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git/)
 
 ## 学習目標
+
 このガイドを完了すると、以下のスキルを身につけることができます：
-- DjangoのMVTアーキテクチャを理解し、Webアプリケーションを設計できる
-- モデルを使用してデータベース設計とORM操作を実装できる
-- ビューとテンプレートを連携させた動的なWebページを作成できる
-- フォーム処理とバリデーションを含むユーザー入力機能を実装できる
-- Django認証システムを使用したセキュアなユーザー管理機能を構築できる
-- Django REST Frameworkを使用してRESTful APIを開発できる
-- テスト駆動開発（TDD）の手法でDjangoアプリケーションを開発できる
-- 本番環境へのデプロイメントとパフォーマンス最適化ができる
+
+- **Djangoプロジェクトの構築**: ゼロからDjangoプロジェクトを作成し、基本的な設定ができる
+- **MVTアーキテクチャの理解**: Model-View-Templateパターンを理解し、適切に実装できる
+- **データベース操作**: DjangoのORMを使用してデータベースの操作ができる
+- **ユーザー認証の実装**: ログイン、ログアウト、ユーザー登録機能を実装できる
+- **フォーム処理**: ユーザー入力を安全に処理し、バリデーションを実装できる
+- **テンプレートの活用**: 動的なWebページを効率的に作成できる
+- **管理画面のカスタマイズ**: Django Adminを活用してコンテンツ管理ができる
+- **静的ファイルの管理**: CSS、JavaScript、画像ファイルを適切に配信できる
+- **基本的なWebアプリケーション開発**: ブログ、掲示板などの簡単なWebアプリケーションを作成できる
+
+## 次のステップ
+
+このガイドライン完了後は、以下の学習に進むことをお勧めします：
+
+- [Django REST Framework 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/django-rest-framework/) - REST APIの構築
+- [Flask 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/flask/) - 軽量フレームワークの学習
+- [FastAPI 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/fastapi/) - 高性能APIフレームワーク
+- [React 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/react/) - フロントエンド開発
+- [Docker 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/docker/) - コンテナ技術の習得
+- [AWS 学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/) - クラウドへのデプロイ
