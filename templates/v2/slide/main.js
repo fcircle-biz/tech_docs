@@ -68,9 +68,16 @@
         const slide = slides[index];
 
         // PDFを更新（ページ全体表示パラメータ付き）
+        // スクロール位置をリセットするため、一度空にしてから設定
         const pdfUrl = slide.file + '#view=Fit&page=1';
-        if (pdfViewer) pdfViewer.data = pdfUrl;
-        if (pdfEmbed) pdfEmbed.src = pdfUrl;
+        if (pdfViewer) {
+            pdfViewer.data = '';
+            setTimeout(() => { pdfViewer.data = pdfUrl; }, 0);
+        }
+        if (pdfEmbed) {
+            pdfEmbed.src = '';
+            setTimeout(() => { pdfEmbed.src = pdfUrl; }, 0);
+        }
         if (pdfFallbackLink) pdfFallbackLink.href = slide.file;
 
         // UIを更新
