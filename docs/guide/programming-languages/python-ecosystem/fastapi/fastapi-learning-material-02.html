@@ -2,854 +2,817 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FastAPI学習教材 第2章 - ルーティングとリクエスト処理</title>
-    
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>FastAPI学習教材 第2章 - 基本的なルーティングとHTTPメソッド</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <!-- Google Fonts - Noto Sans JP -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- Highlight.js CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    
+
     <!-- Mermaid.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
-    
-    <style>
-        /* ベースレイアウト */
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            padding-top: 56px;
-        }
 
-        /* ナビゲーション */
-        .navbar {
-            background-color: #2e7d32;
-        }
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        /* サイドバー */
-        .sidebar {
-            position: sticky;
-            top: 70px;
-            height: calc(100vh - 70px);
-            overflow-y: auto;
-        }
-
-        /* タイトル */
-        .chapter-title {
-            color: #2e7d32;
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #2e7d32;
-            padding-bottom: 0.5rem;
-        }
-
-        .section-title {
-            color: #4caf50;
-            margin-top: 1.2rem;
-            margin-bottom: 0.8rem;
-        }
-
-        /* コンテンツボックス */
-        .quiz-container {
-            background-color: #e8f5e8;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #2e7d32;
-        }
-
-        .exercise-container {
-            background-color: #f3e5f5;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #9c27b0;
-        }
-
-        .highlight {
-            background-color: #ffecb3;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #ffc107;
-        }
-
-        .warning {
-            background-color: #ffebee;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #f44336;
-        }
-
-        /* コードハイライト */
-        .code-block {
-            background-color: #1e1e1e;
-            border-radius: 5px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-
-        /* ナビゲーション */
-        .nav-link.active {
-            background-color: #2e7d32 !important;
-            color: white !important;
-        }
-    </style>
+    <!-- カスタムスタイル -->
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <!-- ナビゲーションバー -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand">
-                <strong>FastAPI学習教材</strong>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
-    </nav>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="w-full px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fas fa-bolt text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
 
-    <div class="container-fluid">
-        <div class="row">
-            <!-- サイドバー -->
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        <span>学習章</span>
-                    </h6>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="fastapi-learning-material-01.html">
-                                第1章: FastAPI入門と環境構築
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="fastapi-learning-material-02.html">
-                                第2章: ルーティングとリクエスト処理
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="fastapi-learning-material-03.html">
-                                第3章: Pydanticモデルとデータ検証
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="fastapi-learning-material-04.html">
-                                第4章: レスポンス処理と例外ハンドリング
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="fastapi-learning-material-05.html">
-                                第5章: 依存性注入とミドルウェア
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="fastapi-learning-material-06.html">
-                                第6章: データベース連携とORM
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="fastapi-learning-material-07.html">
-                                第7章: 認証とセキュリティ
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="fastapi-learning-material-08.html">
-                                第8章: 非同期処理とパフォーマンス最適化
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="fastapi-learning-material-09.html">
-                                第9章: テストとドキュメント
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="fastapi-learning-material-10.html">
-                                第10章: デプロイメントと本番環境
-                            </a>
-                        </li>
-                    </ul>
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">FastAPI学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>Python フレームワーク</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 50分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </nav>
 
-            <!-- メインコンテンツ -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/fastapi/" class="hover:text-primary-600 transition-colors">FastAPI</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第2章</span>
+                </nav>
+
                 <!-- 章ヘッダー -->
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">第2章: ルーティングとリクエスト処理</h1>
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第2章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">基本的なルーティングとHTTPメソッド</h1>
+                    <p class="text-slate-600">パスオペレーションの定義方法、HTTPメソッドの使い分け、ステータスコードの設定、レスポンスヘッダーのカスタマイズについて学習します。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>パスオペレーションの定義方法と複数エンドポイントの管理</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>HTTPメソッド（GET、POST、PUT、PATCH、DELETE）の特性と使い分け</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>ステータスコードの意味と適切な返却方法</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>レスポンスヘッダーのカスタマイズとCookie設定</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
 
-                <div id="chapter2">
-                    <!-- 章タイトル -->
-                    <h2 class="chapter-title">APIエンドポイントの設計とリクエスト処理</h2>
-                    
-                    <!-- 学習目標（必須） -->
-                    <div class="highlight">
-                        <h5>この章で学ぶこと</h5>
-                        <ul>
-                            <li>FastAPIにおけるルーティングの基礎概念と設定方法</li>
-                            <li>パスパラメータとクエリパラメータの使い分け</li>
-                            <li>リクエストボディの受け取りと処理方法</li>
-                            <li>HTTPメソッドの適切な選択と使用法</li>
-                            <li>パスオペレーション関数の設計とベストプラクティス</li>
-                        </ul>
+                <!-- セクション1: パスオペレーションの基礎 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        2.1 パスオペレーションとは
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        パスオペレーション（Path Operation）は、FastAPIにおいてURLパスとHTTPメソッドを組み合わせてAPIエンドポイントを定義する仕組みです。RESTful APIの基礎となる概念で、リソースの操作を明確に表現します。
+                    </p>
+
+                    <!-- Mermaid図: パスオペレーションの構造 -->
+                    <div class="my-6 bg-white p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-base font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-sitemap text-primary-500"></i>
+                            パスオペレーションの構造
+                        </h3>
+                        <div class="mermaid">
+flowchart LR
+    A[パスオペレーション] --> B[HTTPメソッド<br/>GET/POST/PUT/DELETE]
+    A --> C[URLパス<br/>/items/123]
+    A --> D[関数<br/>実行する処理]
+
+    style A fill:#dbeafe,stroke:#3b82f6,stroke-width:3px
+                        </div>
                     </div>
 
-                    <!-- セクション1: ルーティングの基礎 -->
-                    <h3 class="section-title">2.1 ルーティングとは何か</h3>
-                    
-                    <p>ルーティングは、クライアントからのHTTPリクエストを適切な処理関数に振り分ける仕組みです。FastAPIでは、デコレータを使用して直感的にルーティングを定義できます。</p>
-                    
-                    <div class="mermaid">
-                        graph LR
-                            A["HTTP Request<br/>GET /users/123"] --> B["FastAPIルーター"]
-                            B --> C["パス解析"]
-                            C --> D["適切なハンドラー関数"]
-                            D --> E["ビジネスロジック実行"]
-                            E --> F["HTTPレスポンス"]
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">RESTful APIの基本原則</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    REST（Representational State Transfer）では、リソースをURLで表現し、HTTPメソッドでリソースに対する操作を表現します。例えば、<code class="bg-blue-100 px-1 rounded">GET /users/1</code> は「ユーザーID=1のデータを取得」を意味します。
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
-                    <p><strong>ルーティングの基本構造</strong></p>
-                    <p>FastAPIでは、以下のパターンでルーティングを定義します：</p>
-                    
-                    <pre class="code-block"><code class="language-python">from fastapi import FastAPI
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">複数のパスオペレーションの定義</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        複数のエンドポイントをまとめて定義することで、APIの全体構造を構築します。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">main.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">from fastapi import FastAPI
 
 app = FastAPI()
 
-@app.{HTTPメソッド}("{パス}")
-def 処理関数():
-    # ビジネスロジック
-    return レスポンス</code></pre>
-
-                    <div class="highlight">
-                        <h6>なぜルーティングが重要なのか</h6>
-                        <ul>
-                            <li><strong>URLの意味付け</strong>: リソースや操作を表現する直感的なURL設計</li>
-                            <li><strong>RESTful設計</strong>: HTTPメソッドとパスでAPIの意図を明確に表現</li>
-                            <li><strong>保守性</strong>: 機能ごとに分離された処理関数で管理しやすいコード</li>
-                            <li><strong>拡張性</strong>: 新機能追加時の影響範囲を限定</li>
-                        </ul>
-                    </div>
-
-                    <!-- セクション2: HTTPメソッドの使い分け -->
-                    <h3 class="section-title">2.2 HTTPメソッドの理解と使い分け</h3>
-                    
-                    <p>RESTful APIでは、各HTTPメソッドに特定の意味があります。FastAPIでこれらを適切に使い分けることで、API設計の意図が明確になります。</p>
-
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>HTTPメソッド</th>
-                                <th>用途</th>
-                                <th>ボディ</th>
-                                <th>冪等性</th>
-                                <th>例</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>GET</strong></td>
-                                <td>データの取得</td>
-                                <td>なし</td>
-                                <td>あり</td>
-                                <td>ユーザー一覧取得</td>
-                            </tr>
-                            <tr>
-                                <td><strong>POST</strong></td>
-                                <td>データの作成</td>
-                                <td>あり</td>
-                                <td>なし</td>
-                                <td>新規ユーザー作成</td>
-                            </tr>
-                            <tr>
-                                <td><strong>PUT</strong></td>
-                                <td>データの完全更新</td>
-                                <td>あり</td>
-                                <td>あり</td>
-                                <td>ユーザー情報置換</td>
-                            </tr>
-                            <tr>
-                                <td><strong>PATCH</strong></td>
-                                <td>データの部分更新</td>
-                                <td>あり</td>
-                                <td>なし</td>
-                                <td>ユーザー名のみ更新</td>
-                            </tr>
-                            <tr>
-                                <td><strong>DELETE</strong></td>
-                                <td>データの削除</td>
-                                <td>なし</td>
-                                <td>あり</td>
-                                <td>ユーザー削除</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div class="exercise-container">
-                        <h5>実習 2-1: 基本的なHTTPメソッドの実装</h5>
-                        <p>ユーザー管理システムの基本的なCRUD操作を実装します。</p>
-                        <h6>実装例</h6>
-                        <pre class="code-block"><code class="language-python">from fastapi import FastAPI
-
-app = FastAPI()
-
-# 仮のユーザーデータベース
-users_db = [
-    {"id": 1, "name": "太郎", "email": "taro@example.com"},
-    {"id": 2, "name": "花子", "email": "hanako@example.com"}
-]
-
+# 全ユーザー一覧を取得
 @app.get("/users")
 def get_users():
-    """すべてのユーザーを取得"""
-    return {"users": users_db}
+    """全ユーザーのリストを返す"""
+    return {"users": ["Alice", "Bob", "Charlie"]}
 
+# 特定ユーザーの詳細を取得
 @app.get("/users/{user_id}")
 def get_user(user_id: int):
-    """特定のユーザーを取得"""
-    for user in users_db:
-        if user["id"] == user_id:
-            return user
-    return {"message": "ユーザーが見つかりません"}
+    """指定されたIDのユーザー情報を返す"""
+    return {"user_id": user_id, "name": "Alice"}
 
+# 新規ユーザーを作成
 @app.post("/users")
-def create_user(user_data: dict):
-    """新規ユーザーを作成"""
-    new_id = max([user["id"] for user in users_db]) + 1
-    new_user = {
-        "id": new_id,
-        "name": user_data["name"],
-        "email": user_data["email"]
-    }
-    users_db.append(new_user)
-    return {"message": "ユーザーが作成されました", "user": new_user}</code></pre>
-                        <h6>期待される結果</h6>
-                        <p>各エンドポイントが適切に動作し、Swagger UIで操作をテストできます。</p>
+def create_user():
+    """新しいユーザーを作成"""
+    return {"message": "User created successfully"}</code></pre>
                     </div>
 
-                    <!-- セクション3: パスパラメータ -->
-                    <h3 class="section-title">2.3 パスパラメータの活用</h3>
-                    
-                    <p>パスパラメータは、URL内に埋め込まれた動的な値を受け取る仕組みです。リソースを一意に識別する際に使用されます。</p>
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">パスの評価順序</p>
+                                <p class="text-emerald-800 text-sm mt-1 break-words">
+                                    FastAPIは定義された順番にパスを評価します。より具体的なパス（<code class="bg-emerald-100 px-1 rounded">/users/me</code>）を先に定義し、パラメータを含む汎用的なパス（<code class="bg-emerald-100 px-1 rounded">/users/{user_id}</code>）を後に定義する必要があります。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-                    <div class="mermaid">
-                        graph LR
-                            A["/users/123"] --> B["パス解析"]
-                            B --> C["user_id = 123"]
-                            C --> D["関数に渡される"]
+                <!-- セクション2: HTTPメソッドの使い分け -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        2.2 HTTPメソッドの使い分け
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        HTTPメソッドは、リソースに対する操作の種類を表現します。FastAPIでは主要な5つのHTTPメソッドを使用します。
+                    </p>
+
+                    <!-- HTTPメソッド一覧カード -->
+                    <div class="grid md:grid-cols-2 gap-4 my-6">
+                        <!-- GET -->
+                        <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-download text-white"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-blue-800">GET - 取得</h3>
+                            </div>
+                            <p class="text-blue-900 text-sm mb-2">
+                                データの取得に使用。サーバーの状態を変更しません（べき等性あり）。
+                            </p>
+                            <code class="text-xs bg-blue-100 text-blue-900 px-2 py-1 rounded block">@app.get("/items")</code>
+                        </div>
+
+                        <!-- POST -->
+                        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-plus text-white"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-emerald-800">POST - 作成</h3>
+                            </div>
+                            <p class="text-emerald-900 text-sm mb-2">
+                                新しいリソースの作成に使用。複数回実行すると異なる結果になります。
+                            </p>
+                            <code class="text-xs bg-emerald-100 text-emerald-900 px-2 py-1 rounded block">@app.post("/items")</code>
+                        </div>
+
+                        <!-- PUT -->
+                        <div class="bg-gradient-to-br from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-edit text-white"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-purple-800">PUT - 全体更新</h3>
+                            </div>
+                            <p class="text-purple-900 text-sm mb-2">
+                                リソース全体を置き換え。指定したフィールド以外はクリアされます（べき等性あり）。
+                            </p>
+                            <code class="text-xs bg-purple-100 text-purple-900 px-2 py-1 rounded block">@app.put("/items/{id}")</code>
+                        </div>
+
+                        <!-- PATCH -->
+                        <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-pen text-white"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-amber-800">PATCH - 部分更新</h3>
+                            </div>
+                            <p class="text-amber-900 text-sm mb-2">
+                                リソースの一部だけを更新。他のフィールドはそのまま保持されます。
+                            </p>
+                            <code class="text-xs bg-amber-100 text-amber-900 px-2 py-1 rounded block">@app.patch("/items/{id}")</code>
+                        </div>
+
+                        <!-- DELETE -->
+                        <div class="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-trash text-white"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-red-800">DELETE - 削除</h3>
+                            </div>
+                            <p class="text-red-900 text-sm mb-2">
+                                リソースの削除に使用。複数回実行しても結果は同じ（べき等性あり）。
+                            </p>
+                            <code class="text-xs bg-red-100 text-red-900 px-2 py-1 rounded block">@app.delete("/items/{id}")</code>
+                        </div>
                     </div>
 
-                    <p><strong>パスパラメータの基本的な使い方</strong></p>
-                    
-                    <div class="exercise-container">
-                        <h5>実習 2-2: パスパラメータの詳細実装</h5>
-                        <p>様々な型のパスパラメータを使用したエンドポイントを作成します。</p>
-                        <h6>実装例</h6>
-                        <pre class="code-block"><code class="language-python">from fastapi import FastAPI, Path
-from enum import Enum
+                    <!-- Mermaid図: CRUD操作とHTTPメソッドの対応 -->
+                    <div class="my-6 bg-white p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-base font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-diagram-project text-primary-500"></i>
+                            CRUD操作とHTTPメソッドの対応
+                        </h3>
+                        <div class="mermaid">
+flowchart LR
+    A[CRUD操作] --> B[Create<br/>作成]
+    A --> C[Read<br/>読み取り]
+    A --> D[Update<br/>更新]
+    A --> E[Delete<br/>削除]
+
+    B --> F[POST]
+    C --> G[GET]
+    D --> H[PUT/PATCH]
+    E --> I[DELETE]
+
+    style F fill:#d1fae5,stroke:#10b981
+    style G fill:#dbeafe,stroke:#3b82f6
+    style H fill:#fae8ff,stroke:#a855f7
+    style I fill:#fee2e2,stroke:#ef4444
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">実装例: ブログ記事API</h3>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">blog_api.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">from fastapi import FastAPI
 
 app = FastAPI()
 
-# 商品カテゴリーを定義（Enum使用）
-class CategoryEnum(str, Enum):
-    electronics = "electronics"
-    books = "books"
-    clothing = "clothing"
+# 記事一覧の取得
+@app.get("/posts")
+def list_posts():
+    """全記事のリストを返す"""
+    return {"posts": [{"id": 1, "title": "はじめての投稿"}]}
 
-@app.get("/items/{item_id}")
-def get_item(
-    item_id: int = Path(..., ge=1, description="商品ID（1以上）")
-):
-    """商品情報を取得（バリデーション付き）"""
-    return {
-        "item_id": item_id,
-        "name": f"商品{item_id}",
-        "category": "electronics"
-    }
+# 記事詳細の取得
+@app.get("/posts/{post_id}")
+def get_post(post_id: int):
+    """特定の記事を取得"""
+    return {"id": post_id, "title": "記事タイトル", "content": "本文"}
 
-@app.get("/categories/{category}/items/{item_id}")
-def get_item_by_category(
-    category: CategoryEnum,
-    item_id: int = Path(..., ge=1, le=9999, description="商品ID")
-):
-    """カテゴリー別商品取得"""
-    return {
-        "category": category,
-        "item_id": item_id,
-        "path": f"/{category}/items/{item_id}"
-    }
-
-@app.get("/files/{file_path:path}")
-def read_file(file_path: str):
-    """ファイルパス（スラッシュを含む）を受け取る"""
-    return {"file_path": file_path}</code></pre>
-                        <h6>期待される結果</h6>
-                        <p>型変換、バリデーション、Enumによる制限が正しく機能することを確認します。</p>
-                    </div>
-
-                    <div class="highlight">
-                        <h6>パスパラメータのベストプラクティス</h6>
-                        <ul>
-                            <li><strong>型指定</strong>: 必ず適切な型（int, str, Enum等）を指定</li>
-                            <li><strong>バリデーション</strong>: Path()を使用して制約条件を設定</li>
-                            <li><strong>説明文</strong>: APIドキュメントのためのdescription追加</li>
-                            <li><strong>一意性</strong>: パスパラメータはリソースを一意に特定できるもの</li>
-                        </ul>
-                    </div>
-
-                    <!-- セクション4: クエリパラメータ -->
-                    <h3 class="section-title">2.4 クエリパラメータによる柔軟な検索</h3>
-                    
-                    <p>クエリパラメータは、URL末尾の「?」以降に記述されるパラメータで、フィルタリングや並び替えなど、オプショナルな条件指定に使用されます。</p>
-
-                    <div class="mermaid">
-                        graph LR
-                            A["/users?page=1&limit=10&sort=name"] --> B["クエリ解析"]
-                            B --> C["page=1, limit=10, sort=name"]
-                            C --> D["関数パラメータに渡される"]
-                    </div>
-
-                    <div class="exercise-container">
-                        <h5>実習 2-3: クエリパラメータによる検索・フィルタリング</h5>
-                        <p>商品検索APIでクエリパラメータを活用した機能を実装します。</p>
-                        <h6>実装例</h6>
-                        <pre class="code-block"><code class="language-python">from fastapi import FastAPI, Query
-from typing import Optional
-from enum import Enum
-
-app = FastAPI()
-
-# ソート順の定義
-class SortOrder(str, Enum):
-    asc = "asc"
-    desc = "desc"
-
-# サンプル商品データ
-products = [
-    {"id": 1, "name": "ノートパソコン", "category": "electronics", "price": 80000},
-    {"id": 2, "name": "Python入門書", "category": "books", "price": 3000},
-    {"id": 3, "name": "Tシャツ", "category": "clothing", "price": 2500},
-    {"id": 4, "name": "スマートフォン", "category": "electronics", "price": 60000},
-]
-
-@app.get("/products")
-def search_products(
-    q: Optional[str] = Query(None, description="商品名での検索キーワード"),
-    category: Optional[str] = Query(None, description="カテゴリーフィルター"),
-    min_price: Optional[int] = Query(None, ge=0, description="最低価格"),
-    max_price: Optional[int] = Query(None, ge=0, description="最高価格"),
-    limit: int = Query(10, ge=1, le=100, description="取得件数"),
-    sort: SortOrder = Query(SortOrder.asc, description="並び順"),
-    page: int = Query(1, ge=1, description="ページ番号")
-):
-    """商品検索API（複数条件対応）"""
-    
-    # フィルタリング処理
-    filtered_products = products.copy()
-    
-    if q:
-        filtered_products = [p for p in filtered_products if q.lower() in p["name"].lower()]
-    
-    if category:
-        filtered_products = [p for p in filtered_products if p["category"] == category]
-    
-    if min_price is not None:
-        filtered_products = [p for p in filtered_products if p["price"] >= min_price]
-    
-    if max_price is not None:
-        filtered_products = [p for p in filtered_products if p["price"] <= max_price]
-    
-    # ソート処理
-    if sort == SortOrder.desc:
-        filtered_products.sort(key=lambda x: x["price"], reverse=True)
-    else:
-        filtered_products.sort(key=lambda x: x["price"])
-    
-    # ページネーション
-    start_index = (page - 1) * limit
-    end_index = start_index + limit
-    paginated_products = filtered_products[start_index:end_index]
-    
-    return {
-        "products": paginated_products,
-        "total": len(filtered_products),
-        "page": page,
-        "limit": limit,
-        "total_pages": (len(filtered_products) + limit - 1) // limit
-    }</code></pre>
-                        <h6>期待される結果</h6>
-                        <p>様々なクエリパラメータの組み合わせで商品検索ができ、ページネーションが正しく機能します。</p>
-                    </div>
-
-                    <div class="warning">
-                        <h6>クエリパラメータ使用時の注意点</h6>
-                        <ul>
-                            <li>デフォルト値の設定で必須/任意を明確にする</li>
-                            <li>Query()でバリデーションルールを設定する</li>
-                            <li>大量のデータ取得を防ぐためlimitの上限を設定</li>
-                            <li>SQLインジェクション対策を考慮した値の処理</li>
-                        </ul>
-                    </div>
-
-                    <!-- セクション5: リクエストボディ -->
-                    <h3 class="section-title">2.5 リクエストボディの処理</h3>
-                    
-                    <p>リクエストボディは、POST、PUT、PATCHメソッドでクライアントからサーバーに送信されるデータです。FastAPIでは、Pythonの辞書や後に学習するPydanticモデルで受け取れます。</p>
-
-                    <div class="mermaid">
-                        sequenceDiagram
-                            participant C as クライアント
-                            participant F as FastAPI
-                            participant H as ハンドラー関数
-                            
-                            C->>F: POST /users<br/>{"name": "太郎", "email": "taro@example.com"}
-                            F->>F: JSON解析・バリデーション
-                            F->>H: user_data パラメータに渡す
-                            H->>H: ビジネスロジック実行
-                            H->>F: レスポンスデータ
-                            F->>C: JSON レスポンス
-                    </div>
-
-                    <div class="exercise-container">
-                        <h5>実習 2-4: リクエストボディを使った投稿システム</h5>
-                        <p>ブログ投稿システムを例に、リクエストボディの処理を学習します。</p>
-                        <h6>実装例</h6>
-                        <pre class="code-block"><code class="language-python">from fastapi import FastAPI, Body
-from typing import Optional
-from datetime import datetime
-
-app = FastAPI()
-
-# ブログ投稿データベース（仮）
-blog_posts = []
-
+# 新規記事の作成
 @app.post("/posts")
-def create_post(post_data: dict = Body(...)):
-    """新規ブログ投稿の作成"""
-    
-    # 必須フィールドのチェック
-    required_fields = ["title", "content", "author"]
-    for field in required_fields:
-        if field not in post_data:
-            return {"error": f"必須フィールド '{field}' が不足しています"}
-    
-    # 新規投稿の作成
-    new_post = {
-        "id": len(blog_posts) + 1,
-        "title": post_data["title"],
-        "content": post_data["content"],
-        "author": post_data["author"],
-        "tags": post_data.get("tags", []),  # オプショナル
-        "published": post_data.get("published", True),
-        "created_at": datetime.now().isoformat(),
-        "updated_at": datetime.now().isoformat()
-    }
-    
-    blog_posts.append(new_post)
-    
-    return {
-        "message": "投稿が作成されました",
-        "post": new_post
-    }
+def create_post():
+    """新しい記事を作成"""
+    return {"id": 2, "message": "記事が作成されました"}
 
+# 記事の全体更新
 @app.put("/posts/{post_id}")
-def update_post(post_id: int, post_data: dict):
-    """投稿の完全更新（PUT）"""
-    
-    # 投稿の検索
-    for i, post in enumerate(blog_posts):
-        if post["id"] == post_id:
-            # 完全置換
-            updated_post = {
-                "id": post_id,
-                "title": post_data["title"],
-                "content": post_data["content"],
-                "author": post_data["author"],
-                "tags": post_data.get("tags", []),
-                "published": post_data.get("published", True),
-                "created_at": post["created_at"],  # 作成日は保持
-                "updated_at": datetime.now().isoformat()
-            }
-            blog_posts[i] = updated_post
-            return {"message": "投稿が更新されました", "post": updated_post}
-    
-    return {"error": "投稿が見つかりません"}
+def update_post(post_id: int):
+    """記事全体を置き換え"""
+    return {"id": post_id, "message": "記事を更新しました"}
 
+# 記事の部分更新
 @app.patch("/posts/{post_id}")
-def partial_update_post(post_id: int, post_data: dict):
-    """投稿の部分更新（PATCH）"""
-    
-    # 投稿の検索
-    for post in blog_posts:
-        if post["id"] == post_id:
-            # 部分更新（送信されたフィールドのみ更新）
-            for key, value in post_data.items():
-                if key in ["title", "content", "author", "tags", "published"]:
-                    post[key] = value
-            post["updated_at"] = datetime.now().isoformat()
-            
-            return {"message": "投稿が部分更新されました", "post": post}
-    
-    return {"error": "投稿が見つかりません"}</code></pre>
-                        <h6>期待される結果</h6>
-                        <p>POST、PUT、PATCHでそれぞれ異なる更新動作が確認でき、Swagger UIで各操作をテストできます。</p>
+def partial_update_post(post_id: int):
+    """記事の一部を更新"""
+    return {"id": post_id, "message": "タイトルを更新しました"}
+
+# 記事の削除
+@app.delete("/posts/{post_id}")
+def delete_post(post_id: int):
+    """記事を削除"""
+    return {"message": f"記事ID {post_id} を削除しました"}</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション3: ステータスコード -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        2.3 ステータスコードの設定
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        HTTPステータスコードは、リクエストの処理結果をクライアントに伝えるための3桁の数字です。FastAPIでは、デコレータの<code class="bg-slate-200 px-2 py-0.5 rounded text-slate-800">status_code</code>パラメータで設定できます。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">主要なステータスコード</h3>
+
+                    <div class="space-y-3 my-6">
+                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                                <span class="bg-blue-500 text-white px-2 py-0.5 rounded text-sm">2xx</span>
+                                成功レスポンス
+                            </h4>
+                            <ul class="text-slate-600 text-sm space-y-1 ml-6">
+                                <li><code class="bg-slate-200 px-1 rounded">200 OK</code> - リクエスト成功</li>
+                                <li><code class="bg-slate-200 px-1 rounded">201 Created</code> - リソース作成成功</li>
+                                <li><code class="bg-slate-200 px-1 rounded">204 No Content</code> - 成功したがレスポンスボディなし（削除時など）</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                                <span class="bg-amber-500 text-white px-2 py-0.5 rounded text-sm">4xx</span>
+                                クライアントエラー
+                            </h4>
+                            <ul class="text-slate-600 text-sm space-y-1 ml-6">
+                                <li><code class="bg-slate-200 px-1 rounded">400 Bad Request</code> - リクエストが不正</li>
+                                <li><code class="bg-slate-200 px-1 rounded">404 Not Found</code> - リソースが見つからない</li>
+                                <li><code class="bg-slate-200 px-1 rounded">422 Unprocessable Entity</code> - バリデーションエラー（FastAPIのデフォルト）</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                                <span class="bg-red-500 text-white px-2 py-0.5 rounded text-sm">5xx</span>
+                                サーバーエラー
+                            </h4>
+                            <ul class="text-slate-600 text-sm space-y-1 ml-6">
+                                <li><code class="bg-slate-200 px-1 rounded">500 Internal Server Error</code> - サーバー内部エラー</li>
+                                <li><code class="bg-slate-200 px-1 rounded">503 Service Unavailable</code> - サービス一時停止中</li>
+                            </ul>
+                        </div>
                     </div>
 
-                    <!-- セクション6: 複合パラメータの使用 -->
-                    <h3 class="section-title">2.6 複合パラメータの組み合わせ</h3>
-                    
-                    <p>実際のAPIでは、パスパラメータ、クエリパラメータ、リクエストボディを組み合わせて使用することが一般的です。</p>
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">ステータスコードの実装</h3>
 
-                    <div class="exercise-container">
-                        <h5>実習 2-5: 複合パラメータを使った高度なAPI</h5>
-                        <p>ユーザーのブログ投稿管理システムで、複数種類のパラメータを組み合わせます。</p>
-                        <h6>実装例</h6>
-                        <pre class="code-block"><code class="language-python">from fastapi import FastAPI, Path, Query, Body
-from typing import Optional
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">status_example.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">from fastapi import FastAPI, status
 
 app = FastAPI()
 
-@app.post("/users/{user_id}/posts")
-def create_user_post(
-    # パスパラメータ
-    user_id: int = Path(..., ge=1, description="ユーザーID"),
-    
-    # クエリパラメータ
-    draft: bool = Query(False, description="下書きとして保存"),
-    notify_followers: bool = Query(True, description="フォロワーに通知"),
-    
-    # リクエストボディ
-    post_data: dict = Body(...)
-):
-    """特定ユーザーの投稿作成（複合パラメータ）"""
-    
-    # バリデーション
-    if "title" not in post_data or "content" not in post_data:
-        return {"error": "titleとcontentは必須です"}
-    
-    # 新規投稿の作成
-    new_post = {
-        "id": 101,  # 実際はDB生成
-        "user_id": user_id,
-        "title": post_data["title"],
-        "content": post_data["content"],
-        "draft": draft,
-        "notify_sent": notify_followers and not draft,
-        "created_at": "2025-01-01T12:00:00"
-    }
-    
-    return {
-        "message": "投稿が作成されました",
-        "post": new_post,
-        "notifications": {
-            "draft_mode": draft,
-            "followers_notified": notify_followers and not draft
-        }
-    }
+# 200 OK（デフォルト）
+@app.get("/items")
+def get_items():
+    """ステータスコードを明示的に指定しない場合は200"""
+    return {"items": []}
 
-@app.get("/users/{user_id}/posts")
-def get_user_posts(
-    # パスパラメータ
-    user_id: int = Path(..., ge=1),
-    
-    # クエリパラメータによる絞り込み
-    include_drafts: bool = Query(False, description="下書きも含む"),
-    tag: Optional[str] = Query(None, description="タグフィルター"),
-    limit: int = Query(10, ge=1, le=50),
-    offset: int = Query(0, ge=0)
-):
-    """ユーザーの投稿一覧取得（フィルタリング付き）"""
-    
-    # 模擬データ
-    all_posts = [
-        {"id": 1, "user_id": user_id, "title": "投稿1", "draft": False, "tags": ["tech"]},
-        {"id": 2, "user_id": user_id, "title": "下書き1", "draft": True, "tags": ["personal"]},
-    ]
-    
-    # フィルタリング
-    filtered_posts = []
-    for post in all_posts:
-        if not include_drafts and post["draft"]:
-            continue
-        if tag and tag not in post.get("tags", []):
-            continue
-        filtered_posts.append(post)
-    
-    # ページネーション
-    paginated_posts = filtered_posts[offset:offset + limit]
-    
-    return {
-        "user_id": user_id,
-        "posts": paginated_posts,
-        "total": len(filtered_posts),
-        "returned": len(paginated_posts),
-        "filters": {
-            "include_drafts": include_drafts,
-            "tag": tag
-        }
-    }</code></pre>
-                        <h6>期待される結果</h6>
-                        <p>パスパラメータでユーザー指定、クエリパラメータで条件指定、ボディでデータ送信が正しく動作します。</p>
+# 201 Created - リソース作成時
+@app.post("/items", status_code=status.HTTP_201_CREATED)
+def create_item():
+    """新規作成時は201を返す"""
+    return {"id": 1, "name": "新しいアイテム"}
+
+# 204 No Content - 削除成功時
+@app.delete("/items/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_item(item_id: int):
+    """削除成功時はレスポンスボディなしで204を返す"""
+    # return文なし、または return None
+    pass</code></pre>
                     </div>
 
-                    <!-- セクション7: エラーハンドリング基礎 -->
-                    <h3 class="section-title">2.7 基本的なエラーハンドリング</h3>
-                    
-                    <p>適切なエラー処理は、API設計の重要な要素です。FastAPIでは、HTTPExceptionを使用して標準的なHTTPエラーレスポンスを返せます。</p>
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-500 text-lg mt-0.5"></i>
+                            <div>
+                                <h3 class="font-semibold text-blue-800 mb-2">statusモジュールの活用</h3>
+                                <p class="text-blue-900 text-sm">
+                                    FastAPIの<code class="bg-blue-100 px-1 rounded">status</code>モジュールを使用すると、数字の代わりに<code class="bg-blue-100 px-1 rounded">status.HTTP_201_CREATED</code>のような定数を使えます。コードの可読性が向上し、タイプミスも防げます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-                    <div class="exercise-container">
-                        <h5>実習 2-6: エラーハンドリングの実装</h5>
-                        <p>適切なエラーレスポンスを返すエンドポイントを作成します。</p>
-                        <h6>実装例</h6>
-                        <pre class="code-block"><code class="language-python">from fastapi import FastAPI, HTTPException, Path
-from typing import List, Dict
+                <!-- セクション4: レスポンスヘッダーのカスタマイズ -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        2.4 レスポンスヘッダーのカスタマイズ
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        レスポンスヘッダーをカスタマイズすることで、キャッシュ制御、Cookie設定、CORSの制御など、高度なAPI機能を実装できます。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">Responseオブジェクトの使用</h3>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">headers_example.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">from fastapi import FastAPI, Response
 
 app = FastAPI()
 
-# 仮のユーザーデータベース
-users: List[Dict] = [
-    {"id": 1, "name": "太郎", "email": "taro@example.com", "active": True},
-    {"id": 2, "name": "花子", "email": "hanako@example.com", "active": False},
-]
+@app.get("/items")
+def get_items(response: Response):
+    """
+    レスポンスヘッダーをカスタマイズ
+    """
+    # カスタムヘッダーの追加
+    response.headers["X-Custom-Header"] = "Custom Value"
+    response.headers["Cache-Control"] = "max-age=3600"
 
-@app.get("/users/{user_id}")
-def get_user_with_error_handling(
-    user_id: int = Path(..., ge=1, description="ユーザーID")
-):
-    """エラーハンドリング付きユーザー取得"""
-    
-    # ユーザー検索
-    for user in users:
-        if user["id"] == user_id:
-            if not user["active"]:
-                raise HTTPException(
-                    status_code=403,
-                    detail="このユーザーはアクティブではありません"
-                )
-            return {"user": user}
-    
-    # ユーザーが見つからない場合
-    raise HTTPException(
-        status_code=404,
-        detail=f"ID {user_id} のユーザーは存在しません"
+    return {"items": ["item1", "item2"]}</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">Cookieの設定</h3>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">cookie_example.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">from fastapi import FastAPI, Response
+
+app = FastAPI()
+
+@app.post("/login")
+def login(response: Response):
+    """
+    ログイン処理とセッションCookieの設定
+    """
+    # Cookieの設定
+    response.set_cookie(
+        key="session_id",
+        value="abc123",
+        max_age=3600,  # 有効期限（秒）
+        httponly=True,  # JavaScriptからのアクセスを防ぐ
+        secure=True,    # HTTPS接続時のみ送信
+        samesite="lax"  # CSRF対策
     )
 
-@app.delete("/users/{user_id}")
-def delete_user(user_id: int = Path(..., ge=1)):
-    """ユーザー削除（エラー処理付き）"""
-    
-    for i, user in enumerate(users):
-        if user["id"] == user_id:
-            deleted_user = users.pop(i)
-            return {
-                "message": "ユーザーが削除されました",
-                "deleted_user": deleted_user
-            }
-    
-    raise HTTPException(
-        status_code=404,
-        detail="削除対象のユーザーが見つかりません"
-    )</code></pre>
-                        <h6>期待される結果</h6>
-                        <p>適切なHTTPステータスコードとエラーメッセージが返され、APIドキュメントにもエラー情報が反映されます。</p>
+    return {"message": "ログイン成功"}</code></pre>
                     </div>
 
-                    <!-- 理解度確認クイズ -->
-                    <div class="quiz-container">
-                        <h5>理解度確認クイズ</h5>
-                        <ol>
-                            <li>
-                                <strong>以下のURL「/users/123?page=2&limit=10」において、パスパラメータとクエリパラメータを識別してください。</strong>
-                                <details>
-                                    <summary>解答例</summary>
-                                    <p>パスパラメータ: 123（user_id）<br>
-                                    クエリパラメータ: page=2, limit=10</p>
-                                </details>
-                            </li>
-                            <li>
-                                <strong>RESTful APIにおいて、新規リソース作成とデータの完全更新に使用するHTTPメソッドはそれぞれ何ですか？</strong>
-                                <details>
-                                    <summary>解答例</summary>
-                                    <p>新規リソース作成: POST<br>
-                                    データの完全更新: PUT</p>
-                                </details>
-                            </li>
-                            <li>
-                                <strong>FastAPIでパスパラメータに制約条件を設定するために使用する関数は何ですか？</strong>
-                                <details>
-                                    <summary>解答例</summary>
-                                    <p>Path()関数<br>
-                                    例: user_id: int = Path(..., ge=1, description="ユーザーID")</p>
-                                </details>
-                            </li>
-                            <li>
-                                <strong>404エラー（Not Found）を返すために使用するFastAPIの例外クラスと、その基本的な使用方法を説明してください。</strong>
-                                <details>
-                                    <summary>解答例</summary>
-                                    <p>HTTPException クラス<br>
-                                    使用例: raise HTTPException(status_code=404, detail="リソースが見つかりません")</p>
-                                </details>
-                            </li>
-                        </ol>
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-star text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">Cookieのセキュリティ設定</p>
+                                <p class="text-emerald-800 text-sm mt-1 break-words">
+                                    <code class="bg-emerald-100 px-1 rounded">httponly=True</code>でXSS攻撃を防ぎ、<code class="bg-emerald-100 px-1 rounded">secure=True</code>で通信の安全性を確保します。<code class="bg-emerald-100 px-1 rounded">samesite</code>属性でCSRF攻撃を防げます。
+                                </p>
+                            </div>
+                        </div>
                     </div>
+                </section>
 
-                    <!-- まとめ -->
-                    <h3 class="section-title">2.8 まとめ</h3>
-                    <p>この章では、FastAPIにおけるルーティングとリクエスト処理の基礎を学習しました。</p>
-                    
-                    <div class="highlight">
-                        <h6>この章で習得したスキル</h6>
-                        <ul>
-                            <li>HTTPメソッドの適切な使い分けと実装方法</li>
-                            <li>パスパラメータを使ったリソース特定</li>
-                            <li>クエリパラメータによる柔軟な検索・フィルタリング</li>
-                            <li>リクエストボディを使ったデータ受信</li>
-                            <li>複合パラメータの組み合わせ活用</li>
-                            <li>基本的なエラーハンドリングの実装</li>
-                        </ul>
-                    </div>
+                <!-- 実習カード -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">
+                                実習 2-1: タスク管理APIの作成
+                            </h3>
+                            <p class="text-purple-900 mb-4 break-words">
+                                タスクの作成、取得、更新、削除ができるシンプルなAPIを実装しましょう。
+                            </p>
 
-                    <p>次の章では、Pydanticモデルを使用した型安全なデータ検証とシリアライゼーションについて詳しく学習します。</p>
+                            <h4 class="font-medium text-purple-800 mb-2">手順</h4>
+                            <ol class="space-y-3 mb-4">
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">1</span>
+                                    <span class="flex-1 min-w-0 break-words">タスク一覧取得のGETエンドポイントを実装</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">2</span>
+                                    <span class="flex-1 min-w-0 break-words">新規タスク作成のPOSTエンドポイントを実装（ステータスコード201）</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">3</span>
+                                    <span class="flex-1 min-w-0 break-words">タスク削除のDELETEエンドポイントを実装（ステータスコード204）</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">4</span>
+                                    <span class="flex-1 min-w-0 break-words">Swagger UI（/docs）で各エンドポイントをテスト</span>
+                                </li>
+                            </ol>
 
-                    <!-- 章間ナビゲーション -->
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="fastapi-learning-material-01.html" class="btn btn-secondary">← 前の章: FastAPI入門と環境構築</a>
-                        <a href="fastapi-learning-material-03.html" class="btn btn-primary">次の章: Pydanticモデルとデータ検証 →</a>
+                            <h4 class="font-medium text-purple-800 mb-2">実装例</h4>
+                            <div class="code-block-wrapper">
+                                <button onclick="copyCode(this)" class="copy-btn px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg transition-colors">
+                                    <i class="fas fa-copy mr-1"></i>コピー
+                                </button>
+                                <pre class="!bg-slate-800 !rounded-lg overflow-x-auto"><code class="language-python">from fastapi import FastAPI, status
+
+app = FastAPI()
+
+@app.get("/tasks")
+def get_tasks():
+    """全タスクを取得"""
+    return {"tasks": [{"id": 1, "title": "買い物"}]}
+
+@app.post("/tasks", status_code=status.HTTP_201_CREATED)
+def create_task():
+    """新規タスクを作成"""
+    return {"id": 2, "title": "新しいタスク"}
+
+@app.delete("/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_task(task_id: int):
+    """タスクを削除"""
+    pass  # レスポンスボディなし</code></pre>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </main>
-        </div>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q1. PUTとPATCHの違いを説明してください。</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>PUT</strong>: リソース全体を置き換えます。指定しなかったフィールドはクリアされます。例: ユーザー情報の全項目を送信する必要がある。<br>
+                                            <strong>PATCH</strong>: リソースの一部だけを更新します。指定したフィールドのみが変更され、他のフィールドは保持されます。例: ユーザー名だけを変更する。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q2. ステータスコード201と200の使い分けを説明してください。</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>200 OK</strong>: リクエストが成功した場合の汎用的なステータスコード。データの取得や更新に使用します。<br>
+                                            <strong>201 Created</strong>: 新しいリソースが正常に作成された場合に使用します。POSTリクエストでリソースを作成した際に返すのが適切です。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q3. FastAPIで複数のパスオペレーションを定義する際、定義順序が重要なのはなぜですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            FastAPIは定義された順番にパスを評価します。例えば、<code class="bg-blue-200 px-1 rounded">/users/{user_id}</code>を先に定義すると、<code class="bg-blue-200 px-1 rounded">/users/me</code>へのリクエストが<code class="bg-blue-200 px-1 rounded">{user_id}</code>にマッチしてしまいます。より具体的なパスを先に定義することで、意図した動作を保証できます。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q4. Cookieに<code class="bg-blue-100 px-1 rounded">httponly=True</code>を設定する理由は何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <code class="bg-blue-200 px-1 rounded">httponly=True</code>を設定すると、JavaScriptからCookieにアクセスできなくなります。これにより、XSS（クロスサイトスクリプティング）攻撃でセッション情報が盗まれるリスクを軽減できます。セキュリティ上、認証情報を含むCookieには必須の設定です。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 章のまとめ -->
+                <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6 my-8">
+                    <h2 class="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-bookmark text-slate-600"></i>
+                        第2章のまとめ
+                    </h2>
+                    <div class="space-y-3 text-slate-700">
+                        <p class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <span>パスオペレーションは、URLパスとHTTPメソッドを組み合わせてエンドポイントを定義する仕組みです</span>
+                        </p>
+                        <p class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <span>HTTPメソッド（GET、POST、PUT、PATCH、DELETE）は、リソースに対する操作を明確に表現します</span>
+                        </p>
+                        <p class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <span>ステータスコードは処理結果を伝えるための重要な手段で、適切に設定することが重要です</span>
+                        </p>
+                        <p class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <span>レスポンスヘッダーとCookieをカスタマイズすることで、高度なAPI機能を実装できます</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <a href="fastapi-learning-material-01.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
+                                  transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">FastAPI入門とセットアップ</span>
+                        </div>
+                    </a>
+                    <a href="fastapi-learning-material-03.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">リクエストとレスポンスモデル</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
     </div>
-    
+
     <!-- フッター -->
-    <footer class="bg-dark text-white mt-5">
-        <div class="container-fluid py-3">
-            <div class="row">
-                <div class="col-12 text-center">
-                    <p class="mb-0">© 2025 F-Circle. All rights reserved.<br>
-本資料はAIツールを活用し、人間による編集・監修のもと作成されています。無断転載・再配布を禁じます。</p>
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </footer>
-    
-    <!-- Bootstrap JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Highlight.js 初期化 -->
-    <script>hljs.highlightAll();</script>
-    
-    <!-- Mermaid.js 初期化 -->
-    <script>
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'default'
-        });
-    </script>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- サイドバー生成 -->
+    <script src="sidebar-content.js"></script>
+
+    <!-- 共通JavaScript -->
+    <script src="main.js"></script>
+
+    <!-- 描画ツール -->
+    <script src="drawing-tool.js"></script>
 </body>
 </html>

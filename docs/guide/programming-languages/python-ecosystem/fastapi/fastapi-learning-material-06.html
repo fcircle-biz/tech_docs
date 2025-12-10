@@ -2,551 +2,897 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FastAPI学習教材 第6章 - データベース連携とORM</title>
-    
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>FastAPI学習教材 第6章 - 認証とセキュリティ</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
-    
-    <style>
-        body { font-family: 'Noto Sans JP', sans-serif; padding-top: 56px; }
-        .navbar { background-color: #2e7d32; }
-        .sidebar { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; }
-        .chapter-title { color: #2e7d32; margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #2e7d32; padding-bottom: 0.5rem; }
-        .section-title { color: #4caf50; margin-top: 1.2rem; margin-bottom: 0.8rem; }
-        .quiz-container { background-color: #e8f5e8; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #2e7d32; }
-        .exercise-container { background-color: #f3e5f5; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #9c27b0; }
-        .highlight { background-color: #ffecb3; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #ffc107; }
-        .code-block { background-color: #1e1e1e; border-radius: 5px; padding: 1rem; margin: 1rem 0; }
-        .nav-link.active { background-color: #2e7d32 !important; color: white !important; }
-    </style>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container-fluid"><a class="navbar-brand"><strong>FastAPI学習教材</strong></a></div>
-    </nav>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="w-full px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fas fa-bolt text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
 
-    <div class="container-fluid">
-        <div class="row">
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <ul class="nav flex-column">
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-01.html">第1章: FastAPI入門と環境構築</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-02.html">第2章: ルーティングとリクエスト処理</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-03.html">第3章: Pydanticモデルとデータ検証</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-04.html">第4章: レスポンス処理と例外ハンドリング</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-05.html">第5章: 依存性注入とミドルウェア</a></li>
-                        <li class="nav-item"><a class="nav-link active" href="fastapi-learning-material-06.html">第6章: データベース連携とORM</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-07.html">第7章: 認証とセキュリティ</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-08.html">第8章: 非同期処理とパフォーマンス最適化</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-09.html">第9章: テストとドキュメント</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-10.html">第10章: デプロイメントと本番環境</a></li>
-                    </ul>
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">FastAPI学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>Python フレームワーク</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 45分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </nav>
 
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">第6章: データベース連携とORM</h1>
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/fastapi/" class="hover:text-primary-600 transition-colors">FastAPI</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第6章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第6章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">認証とセキュリティ</h1>
+                    <p class="text-slate-600">JWTトークン認証の実装、OAuth2の基本、パスワードハッシングなど、FastAPIでセキュアなAPIを構築するための認証・認可の仕組みとセキュリティベストプラクティスを学習します。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>OAuth2とJWTトークンを使った認証の基本概念</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>パスワードのハッシュ化とセキュアな保存方法</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>FastAPIでの認証・認可システムの実装方法</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>セキュリティベストプラクティスと脆弱性対策</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
 
-                <div id="chapter6">
-                    <h2 class="chapter-title">永続化データの管理：SQLAlchemyとORMパターン</h2>
-                    
-                    <div class="highlight">
-                        <h5>この章で学ぶこと</h5>
-                        <ul>
-                            <li>SQLAlchemyとORMの基本概念</li>
-                            <li>データベースモデルの定義と関係性設計</li>
-                            <li>CRUD操作の実装とトランザクション管理</li>
-                            <li>マイグレーションとスキーマ管理</li>
-                            <li>パフォーマンス最適化とクエリ改善</li>
-                        </ul>
+                <!-- セクション1: 認証と認可の基本 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.1 認証と認可の基本概念
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        セキュアなAPIを構築するには、認証（Authentication）と認可（Authorization）の違いを理解することが重要です。
+                    </p>
+
+                    <!-- Mermaid図: 認証と認可のフロー -->
+                    <div class="my-6 bg-white p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-base font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-sitemap text-primary-500"></i>
+                            認証と認可のフロー
+                        </h3>
+                        <div class="mermaid">
+flowchart TD
+    A[クライアント] --> B{ログイン要求}
+    B --> C[認証: ユーザー確認]
+    C -->|成功| D[トークン発行]
+    C -->|失敗| E[エラー: 401 Unauthorized]
+    D --> F[保護されたリソースへのアクセス]
+    F --> G{認可: 権限チェック}
+    G -->|権限あり| H[リソース提供]
+    G -->|権限なし| I[エラー: 403 Forbidden]
+
+    style C fill:#dbeafe,stroke:#3b82f6,stroke-width:2px
+    style G fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+                        </div>
                     </div>
 
-                    <h3 class="section-title">6.1 SQLAlchemyのセットアップ</h3>
-                    <p>SQLAlchemyは、Pythonでもっとも人気のあるORMライブラリです。FastAPIとの連携により、型安全で効率的なデータベース操作が可能になります。</p>
+                    <div class="grid md:grid-cols-2 gap-4 my-6">
+                        <!-- 認証 -->
+                        <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-user-check text-white"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-blue-800">認証（Authentication）</h3>
+                            </div>
+                            <p class="text-blue-900 text-sm mb-3">
+                                「あなたは誰ですか？」という問い。ユーザーが本人であることを確認するプロセスです。
+                            </p>
+                            <ul class="text-blue-900 text-sm space-y-1 ml-4 list-disc">
+                                <li>ユーザー名とパスワード</li>
+                                <li>トークン（JWT、APIキー等）</li>
+                                <li>生体認証、二要素認証</li>
+                            </ul>
+                        </div>
 
-                    <div class="mermaid">
-                        graph TB
-                            A["FastAPI Application"] --> B["SQLAlchemy ORM"]
-                            B --> C["Database Models"]
-                            C --> D["PostgreSQL/MySQL/SQLite"]
-                            B --> E["Session Management"]
-                            E --> F["Transaction Control"]
-                            
-                            G["Pydantic Models"] --> H["Data Validation"]
-                            H --> B
-                            B --> I["Query Results"]
-                            I --> G
+                        <!-- 認可 -->
+                        <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-shield-alt text-white"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-amber-800">認可（Authorization）</h3>
+                            </div>
+                            <p class="text-amber-900 text-sm mb-3">
+                                「何ができますか？」という問い。認証されたユーザーが特定のリソースにアクセスする権限があるかを確認するプロセスです。
+                            </p>
+                            <ul class="text-amber-900 text-sm space-y-1 ml-4 list-disc">
+                                <li>ロールベースアクセス制御（RBAC）</li>
+                                <li>権限ベースアクセス制御</li>
+                                <li>スコープとパーミッション</li>
+                            </ul>
+                        </div>
                     </div>
 
-                    <div class="exercise-container">
-                        <h5>実習 6-1: SQLAlchemyのセットアップとモデル定義</h5>
-                        <h6>実装例</h6>
-                        <pre class="code-block"><code class="language-python"># database.py
-from sqlalchemy import create_engine, Column, Integer, String, Boolean, DateTime, ForeignKey, Text
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session, relationship
-from datetime import datetime
-import os
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">HTTPステータスコードの使い分け</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    <strong>401 Unauthorized</strong>: 認証が必要（ログインしていない）<br>
+                                    <strong>403 Forbidden</strong>: 認証済みだが権限不足（アクセス拒否）
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-# データベースURL設定
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")
+                <!-- セクション2: OAuth2の基本 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.2 OAuth2の基本
+                    </h2>
 
-# SQLAlchemyエンジン作成
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
-)
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        OAuth2は、APIの認証・認可を行うための標準的なプロトコルです。FastAPIはOAuth2を組み込みでサポートしています。
+                    </p>
 
-# セッションファクトリー
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+                    <!-- Mermaid図: OAuth2フロー -->
+                    <div class="my-6 bg-white p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-base font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-diagram-project text-primary-500"></i>
+                            OAuth2 Password Flowの流れ
+                        </h3>
+                        <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant C as クライアント
+    participant A as 認証エンドポイント
+    participant R as 保護リソース
+    participant DB as データベース
 
-# ベースクラス
-Base = declarative_base()
-
-# データベースモデル定義
-class User(Base):
-    __tablename__ = "users"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(50), unique=True, index=True, nullable=False)
-    email = Column(String(100), unique=True, index=True, nullable=False)
-    full_name = Column(String(100), nullable=False)
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
-    # リレーション
-    posts = relationship("Post", back_populates="author", cascade="all, delete-orphan")
-    comments = relationship("Comment", back_populates="user", cascade="all, delete-orphan")
-
-class Post(Base):
-    __tablename__ = "posts"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(200), nullable=False, index=True)
-    content = Column(Text, nullable=False)
-    is_published = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
-    # 外部キー
-    author_id = Column(Integer, ForeignKey("users.id"))
-    
-    # リレーション
-    author = relationship("User", back_populates="posts")
-    comments = relationship("Comment", back_populates="post", cascade="all, delete-orphan")
-
-class Comment(Base):
-    __tablename__ = "comments"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    content = Column(Text, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    
-    # 外部キー
-    user_id = Column(Integer, ForeignKey("users.id"))
-    post_id = Column(Integer, ForeignKey("posts.id"))
-    
-    # リレーション
-    user = relationship("User", back_populates="comments")
-    post = relationship("Post", back_populates="comments")
-
-# データベース初期化
-def init_db():
-    """データベーステーブル作成"""
-    Base.metadata.create_all(bind=engine)
-
-def get_db():
-    """データベースセッション取得"""
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()</code></pre>
+    C->>A: POST /token<br/>username & password
+    A->>DB: ユーザー検証
+    DB-->>A: ユーザー情報
+    A-->>C: アクセストークン（JWT）
+    C->>R: GET /protected<br/>Authorization: Bearer {token}
+    R->>R: トークン検証
+    R-->>C: 保護されたデータ
+                        </div>
                     </div>
 
-                    <h3 class="section-title">6.2 CRUD操作の実装</h3>
-                    <p>Create（作成）、Read（読取）、Update（更新）、Delete（削除）の基本操作を実装します。</p>
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">OAuth2の主要コンポーネント</h3>
 
-                    <div class="exercise-container">
-                        <h5>実習 6-2: CRUD操作とAPIエンドポイント</h5>
-                        <h6>実装例</h6>
-                        <pre class="code-block"><code class="language-python"># schemas.py
-from pydantic import BaseModel, EmailStr
-from typing import List, Optional
-from datetime import datetime
+                    <div class="space-y-4 my-6">
+                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-slate-800 mb-2">リソースオーナー（Resource Owner）</h4>
+                            <p class="text-slate-600 text-sm">
+                                保護されたリソースを所有するユーザー。ログインしてアクセストークンを取得します。
+                            </p>
+                        </div>
 
-class UserBase(BaseModel):
-    username: str
-    email: EmailStr
-    full_name: str
+                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-slate-800 mb-2">クライアント（Client）</h4>
+                            <p class="text-slate-600 text-sm">
+                                ユーザーに代わってリソースにアクセスするアプリケーション（フロントエンド、モバイルアプリなど）。
+                            </p>
+                        </div>
 
-class UserCreate(UserBase):
-    pass
+                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-slate-800 mb-2">認可サーバー（Authorization Server）</h4>
+                            <p class="text-slate-600 text-sm">
+                                ユーザーを認証し、トークンを発行するサーバー。FastAPIで実装する部分です。
+                            </p>
+                        </div>
 
-class UserUpdate(BaseModel):
-    username: Optional[str] = None
-    email: Optional[EmailStr] = None
-    full_name: Optional[str] = None
-    is_active: Optional[bool] = None
+                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-slate-800 mb-2">リソースサーバー（Resource Server）</h4>
+                            <p class="text-slate-600 text-sm">
+                                保護されたリソースを提供するサーバー。トークンを検証してアクセスを許可します。
+                            </p>
+                        </div>
+                    </div>
+                </section>
 
-class User(UserBase):
-    id: int
-    is_active: bool
-    created_at: datetime
-    updated_at: datetime
-    
-    class Config:
-        orm_mode = True
+                <!-- セクション3: パスワードハッシング -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.3 パスワードのハッシュ化
+                    </h2>
 
-class PostBase(BaseModel):
-    title: str
-    content: str
-    is_published: bool = False
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        パスワードを平文で保存することは極めて危険です。必ずハッシュ化してデータベースに保存します。
+                    </p>
 
-class PostCreate(PostBase):
-    pass
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-red-900 font-medium break-words">絶対にやってはいけないこと</p>
+                                <p class="text-red-800 text-sm mt-1 break-words">
+                                    パスワードを平文でデータベースに保存することは、深刻なセキュリティリスクです。データベースが漏洩した場合、全ユーザーのパスワードが露呈します。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
 
-class Post(PostBase):
-    id: int
-    author_id: int
-    created_at: datetime
-    updated_at: datetime
-    
-    class Config:
-        orm_mode = True
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">passlib を使ったハッシュ化</h3>
 
-# crud.py
-from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_
-from . import models, schemas
-from typing import List, Optional
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">ターミナル</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># passlibとpython-joseのインストール
+pip install "passlib[bcrypt]" python-jose[cryptography]</code></pre>
+                    </div>
 
-class UserCRUD:
-    def create_user(self, db: Session, user: schemas.UserCreate) -> models.User:
-        """ユーザー作成"""
-        db_user = models.User(**user.dict())
-        db.add(db_user)
-        db.commit()
-        db.refresh(db_user)
-        return db_user
-    
-    def get_user(self, db: Session, user_id: int) -> Optional[models.User]:
-        """ユーザー取得（ID指定）"""
-        return db.query(models.User).filter(models.User.id == user_id).first()
-    
-    def get_user_by_email(self, db: Session, email: str) -> Optional[models.User]:
-        """ユーザー取得（メール指定）"""
-        return db.query(models.User).filter(models.User.email == email).first()
-    
-    def get_users(
-        self, 
-        db: Session, 
-        skip: int = 0, 
-        limit: int = 100,
-        active_only: bool = True
-    ) -> List[models.User]:
-        """ユーザー一覧取得"""
-        query = db.query(models.User)
-        
-        if active_only:
-            query = query.filter(models.User.is_active == True)
-        
-        return query.offset(skip).limit(limit).all()
-    
-    def update_user(
-        self, 
-        db: Session, 
-        user_id: int, 
-        user_update: schemas.UserUpdate
-    ) -> Optional[models.User]:
-        """ユーザー更新"""
-        db_user = self.get_user(db, user_id)
-        if not db_user:
-            return None
-        
-        update_data = user_update.dict(exclude_unset=True)
-        for field, value in update_data.items():
-            setattr(db_user, field, value)
-        
-        db.commit()
-        db.refresh(db_user)
-        return db_user
-    
-    def delete_user(self, db: Session, user_id: int) -> bool:
-        """ユーザー削除"""
-        db_user = self.get_user(db, user_id)
-        if not db_user:
-            return False
-        
-        db.delete(db_user)
-        db.commit()
-        return True
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">auth.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">from passlib.context import CryptContext
 
-class PostCRUD:
-    def create_post(
-        self, 
-        db: Session, 
-        post: schemas.PostCreate, 
-        author_id: int
-    ) -> models.Post:
-        """投稿作成"""
-        db_post = models.Post(**post.dict(), author_id=author_id)
-        db.add(db_post)
-        db.commit()
-        db.refresh(db_post)
-        return db_post
-    
-    def get_posts_by_user(
-        self, 
-        db: Session, 
-        user_id: int, 
-        published_only: bool = True
-    ) -> List[models.Post]:
-        """ユーザーの投稿一覧取得"""
-        query = db.query(models.Post).filter(models.Post.author_id == user_id)
-        
-        if published_only:
-            query = query.filter(models.Post.is_published == True)
-        
-        return query.order_by(models.Post.created_at.desc()).all()
+# bcryptを使ったハッシュ化コンテキスト
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# インスタンス作成
-user_crud = UserCRUD()
-post_crud = PostCRUD()
+def hash_password(password: str) -> str:
+    """パスワードをハッシュ化"""
+    return pwd_context.hash(password)
 
-# main.py（APIエンドポイント）
-from fastapi import FastAPI, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from . import models, schemas, crud
-from .database import get_db, init_db
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """パスワードの検証"""
+    return pwd_context.verify(plain_password, hashed_password)
+
+# 使用例
+hashed = hash_password("mysecretpassword")
+print(hashed)  # $2b$12$...（ハッシュ値）
+
+# 検証
+is_valid = verify_password("mysecretpassword", hashed)
+print(is_valid)  # True</code></pre>
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-star text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">bcryptの利点</p>
+                                <p class="text-emerald-800 text-sm mt-1 break-words">
+                                    bcryptはソルト（salt）を自動生成し、計算コストを調整できる強力なハッシュアルゴリズムです。同じパスワードでも毎回異なるハッシュ値が生成されるため、レインボーテーブル攻撃に強いです。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション4: JWT認証の実装 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.4 JWT認証の実装
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        JWT（JSON Web Token）は、クレーム（ユーザー情報など）を安全に伝送するためのトークン形式です。署名により改ざんを検出できます。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">JWTトークンの生成と検証</h3>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">jwt_auth.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">from datetime import datetime, timedelta
+from jose import JWTError, jwt
+from typing import Optional
+
+# 秘密鍵（本番環境では環境変数から取得）
+SECRET_KEY = "your-secret-key-keep-it-secret"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    """アクセストークンの生成"""
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt</code></pre>
+                    </div>
+
+                    <div class="bg-orange-50 border-l-4 border-orange-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-circle text-orange-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-orange-900 font-medium break-words">秘密鍵の管理</p>
+                                <p class="text-orange-800 text-sm mt-1 break-words">
+                                    SECRET_KEYは絶対にコードに直接書かないでください。環境変数や設定ファイル（.envなど）で管理し、本番環境では強力なランダム文字列を使用します。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">ログインエンドポイントの実装</h3>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">main.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from pydantic import BaseModel
 
 app = FastAPI()
 
-# データベース初期化
-init_db()
+# OAuth2スキーム（トークン取得URLを指定）
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-@app.post("/users/", response_model=schemas.User, status_code=status.HTTP_201_CREATED)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    """ユーザー作成"""
-    # 重複チェック
-    if crud.user_crud.get_user_by_email(db, user.email):
+# ユーザーモデル（簡易版）
+class User(BaseModel):
+    username: str
+    email: str
+
+@app.post("/token")
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    """ログインしてトークンを取得"""
+    # ユーザー検証（実際にはDBから取得）
+    if form_data.username != "testuser" or form_data.password != "testpass":
         raise HTTPException(
-            status_code=400, 
-            detail="このメールアドレスは既に登録されています"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password"
         )
-    
-    return crud.user_crud.create_user(db=db, user=user)
 
-@app.get("/users/{user_id}", response_model=schemas.User)
-def read_user(user_id: int, db: Session = Depends(get_db)):
-    """ユーザー詳細取得"""
-    db_user = crud.user_crud.get_user(db, user_id=user_id)
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="ユーザーが見つかりません")
-    return db_user
+    # トークン生成
+    access_token = create_access_token(data={"sub": form_data.username})
+    return {"access_token": access_token, "token_type": "bearer"}</code></pre>
+                    </div>
+                </section>
 
-@app.get("/users/", response_model=List[schemas.User])
-def read_users(
-    skip: int = 0, 
-    limit: int = 100, 
-    active_only: bool = True,
-    db: Session = Depends(get_db)
-):
-    """ユーザー一覧取得"""
-    users = crud.user_crud.get_users(db, skip=skip, limit=limit, active_only=active_only)
-    return users
+                <!-- セクション5: 認証が必要なエンドポイント -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.5 認証が必要なエンドポイントの保護
+                    </h2>
 
-@app.put("/users/{user_id}", response_model=schemas.User)
-def update_user(
-    user_id: int, 
-    user_update: schemas.UserUpdate, 
-    db: Session = Depends(get_db)
-):
-    """ユーザー更新"""
-    db_user = crud.user_crud.update_user(db, user_id, user_update)
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="ユーザーが見つかりません")
-    return db_user
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        依存関係（Depends）を使って、特定のエンドポイントに認証を要求できます。
+                    </p>
 
-@app.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(user_id: int, db: Session = Depends(get_db)):
-    """ユーザー削除"""
-    if not crud.user_crud.delete_user(db, user_id):
-        raise HTTPException(status_code=404, detail="ユーザーが見つかりません")
-    return</code></pre>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">main.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">async def get_current_user(token: str = Depends(oauth2_scheme)):
+    """トークンから現在のユーザーを取得"""
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    try:
+        # トークンをデコード
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+
+    # 実際にはDBからユーザーを取得
+    return User(username=username, email=f"{username}@example.com")
+
+@app.get("/users/me")
+async def read_users_me(current_user: User = Depends(get_current_user)):
+    """認証済みユーザー情報の取得"""
+    return current_user</code></pre>
                     </div>
 
-                    <h3 class="section-title">6.3 トランザクション管理</h3>
-                    <p>データの整合性を保つため、適切なトランザクション管理が重要です。</p>
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-500 text-lg mt-0.5"></i>
+                            <div>
+                                <h3 class="font-semibold text-blue-800 mb-2">Dependsによる認証チェーン</h3>
+                                <p class="text-blue-900 text-sm">
+                                    <code class="bg-blue-100 px-1 rounded">Depends(get_current_user)</code> を使うことで、エンドポイントにアクセスする前に自動的に認証チェックが実行されます。認証に失敗すると、エンドポイント関数は実行されず、401エラーが返されます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-                    <div class="exercise-container">
-                        <h5>実習 6-3: トランザクション管理の実装</h5>
-                        <h6>実装例</h6>
-                        <pre class="code-block"><code class="language-python">from sqlalchemy.orm import Session
-from contextlib import contextmanager
-from typing import Generator
-import logging
+                <!-- セクション6: ロールベースのアクセス制御 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.6 ロールベースのアクセス制御（RBAC）
+                    </h2>
 
-logger = logging.getLogger(__name__)
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        ユーザーにロール（役割）を付与し、ロールに基づいてアクセスを制御します。
+                    </p>
 
-@contextmanager
-def db_transaction(db: Session) -> Generator[Session, None, None]:
-    """データベーストランザクション管理"""
-    try:
-        yield db
-        db.commit()
-    except Exception as e:
-        logger.error(f"Transaction failed: {e}")
-        db.rollback()
-        raise
-    finally:
-        db.close()
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">rbac.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">from enum import Enum
+from fastapi import HTTPException, status
 
-class BlogService:
-    """ブログ関連の複合操作"""
-    
-    def create_user_with_welcome_post(
-        self, 
-        db: Session, 
-        user_data: schemas.UserCreate
-    ) -> models.User:
-        """ユーザー作成と同時にウェルカム投稿作成"""
-        
-        with db_transaction(db):
-            # ユーザー作成
-            db_user = models.User(**user_data.dict())
-            db.add(db_user)
-            db.flush()  # IDを取得するため
-            
-            # ウェルカム投稿作成
-            welcome_post = models.Post(
-                title=f"{user_data.full_name}さん、ようこそ！",
-                content="新規ユーザー登録ありがとうございます。",
-                is_published=True,
-                author_id=db_user.id
+class Role(str, Enum):
+    ADMIN = "admin"
+    USER = "user"
+    GUEST = "guest"
+
+class UserWithRole(BaseModel):
+    username: str
+    role: Role
+
+def require_role(required_role: Role):
+    """指定されたロールを要求する依存関係"""
+    async def role_checker(current_user: UserWithRole = Depends(get_current_user)):
+        if current_user.role != required_role:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Insufficient permissions"
             )
-            db.add(welcome_post)
-            
-            return db_user
-    
-    def transfer_posts(
-        self, 
-        db: Session, 
-        from_user_id: int, 
-        to_user_id: int
-    ) -> bool:
-        """投稿の所有者変更（一括）"""
-        
-        with db_transaction(db):
-            # ユーザー存在確認
-            from_user = crud.user_crud.get_user(db, from_user_id)
-            to_user = crud.user_crud.get_user(db, to_user_id)
-            
-            if not from_user or not to_user:
-                raise HTTPException(404, "ユーザーが見つかりません")
-            
-            # 投稿の所有者変更
-            posts_updated = db.query(models.Post).filter(
-                models.Post.author_id == from_user_id
-            ).update({"author_id": to_user_id})
-            
-            logger.info(f"Transferred {posts_updated} posts from user {from_user_id} to {to_user_id}")
-            
-            return posts_updated > 0
+        return current_user
+    return role_checker
 
-blog_service = BlogService()
-
-# API エンドポイント
-@app.post("/users/with-welcome-post", response_model=schemas.User)
-def create_user_with_welcome(
-    user: schemas.UserCreate, 
-    db: Session = Depends(get_db)
+# 管理者のみアクセス可能なエンドポイント
+@app.delete("/users/{user_id}")
+async def delete_user(
+    user_id: int,
+    current_user: UserWithRole = Depends(require_role(Role.ADMIN))
 ):
-    """ユーザー作成（ウェルカム投稿付き）"""
-    try:
-        return blog_service.create_user_with_welcome_post(db, user)
-    except Exception as e:
-        raise HTTPException(500, f"ユーザー作成に失敗しました: {str(e)}")
+    """ユーザー削除（管理者のみ）"""
+    return {"message": f"User {user_id} deleted"}</code></pre>
+                    </div>
+                </section>
 
-@app.post("/admin/transfer-posts")
-def transfer_user_posts(
-    from_user_id: int, 
-    to_user_id: int, 
-    db: Session = Depends(get_db)
-):
-    """投稿の所有者変更（管理者機能）"""
-    try:
-        success = blog_service.transfer_posts(db, from_user_id, to_user_id)
-        if success:
-            return {"message": "投稿の移行が完了しました"}
-        else:
-            return {"message": "移行対象の投稿がありませんでした"}
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(500, f"投稿移行に失敗しました: {str(e)}")</code></pre>
+                <!-- セクション7: セキュリティベストプラクティス -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.7 セキュリティベストプラクティス
+                    </h2>
+
+                    <div class="grid md:grid-cols-2 gap-4 my-6">
+                        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5">
+                            <h3 class="text-lg font-semibold text-emerald-800 mb-3 flex items-center gap-2">
+                                <i class="fas fa-key"></i>
+                                1. 強力な秘密鍵を使用
+                            </h3>
+                            <p class="text-emerald-900 text-sm">
+                                SECRET_KEYは最低32文字以上のランダムな文字列を使用し、環境変数で管理します。定期的にローテーションすることも推奨されます。
+                            </p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-5">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                                <i class="fas fa-clock"></i>
+                                2. トークン有効期限を設定
+                            </h3>
+                            <p class="text-blue-900 text-sm">
+                                JWTトークンには必ず有効期限（exp）を設定します。短い有効期限とリフレッシュトークンの組み合わせが理想的です。
+                            </p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3 flex items-center gap-2">
+                                <i class="fas fa-lock"></i>
+                                3. HTTPS通信を強制
+                            </h3>
+                            <p class="text-purple-900 text-sm">
+                                本番環境では必ずHTTPSを使用します。HTTP通信ではトークンが平文で送信されるため、中間者攻撃のリスクがあります。
+                            </p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-5">
+                            <h3 class="text-lg font-semibold text-amber-800 mb-3 flex items-center gap-2">
+                                <i class="fas fa-users-cog"></i>
+                                4. 最小権限の原則
+                            </h3>
+                            <p class="text-amber-900 text-sm">
+                                ユーザーには必要最小限の権限のみを付与します。デフォルトで権限を制限し、必要に応じて追加します。
+                            </p>
+                        </div>
                     </div>
 
-                    <div class="quiz-container">
-                        <h5>理解度確認クイズ</h5>
-                        <ol>
-                            <li>
-                                <strong>SQLAlchemyでモデルのベースクラスとして使用するものは？</strong>
-                                <details><summary>解答</summary><p>declarative_base()で作成したBase</p></details>
-                            </li>
-                            <li>
-                                <strong>Pydanticモデルでormmodeを有効にする設定は？</strong>
-                                <details><summary>解答</summary><p>class Config: orm_mode = True</p></details>
-                            </li>
-                            <li>
-                                <strong>SQLAlchemyでテーブル間のリレーションを定義する関数は？</strong>
-                                <details><summary>解答</summary><p>relationship()</p></details>
-                            </li>
-                        </ol>
+                    <div class="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 rounded-xl p-5 my-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-exclamation-triangle text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-red-800 mb-2 break-words">よくあるセキュリティ脆弱性</h3>
+                                <ul class="text-red-900 text-sm space-y-2 ml-4 list-disc">
+                                    <li>パスワードの平文保存</li>
+                                    <li>秘密鍵のハードコーディング</li>
+                                    <li>トークンに有効期限を設定しない</li>
+                                    <li>エラーメッセージに機密情報を含める</li>
+                                    <li>SQLインジェクション対策の欠如</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
+                </section>
 
-                    <h3 class="section-title">6.4 まとめ</h3>
-                    <div class="highlight">
-                        <h6>この章で習得したスキル</h6>
-                        <ul>
-                            <li>SQLAlchemyによるORM設計とモデル定義</li>
-                            <li>効率的なCRUD操作の実装</li>
-                            <li>データベースリレーションの管理</li>
-                            <li>トランザクション管理と例外処理</li>
-                            <li>PydanticとSQLAlchemyの連携</li>
-                        </ul>
-                    </div>
+                <!-- 実習カード -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">
+                                実習 6-1: JWT認証システムの構築
+                            </h3>
+                            <p class="text-purple-900 mb-4 break-words">
+                                パスワードハッシング、JWT認証、保護されたエンドポイントを含む認証システムを構築しましょう。
+                            </p>
 
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="fastapi-learning-material-05.html" class="btn btn-secondary">← 前の章: 依存性注入とミドルウェア</a>
-                        <a href="fastapi-learning-material-07.html" class="btn btn-primary">次の章: 認証とセキュリティ →</a>
+                            <h4 class="font-medium text-purple-800 mb-2">手順</h4>
+                            <ol class="space-y-3 mb-4">
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">1</span>
+                                    <span class="flex-1 min-w-0 break-words">必要なライブラリをインストール（passlib、python-jose）</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">2</span>
+                                    <span class="flex-1 min-w-0 break-words">パスワードハッシング関数を実装</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">3</span>
+                                    <span class="flex-1 min-w-0 break-words">JWT生成・検証関数を実装</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">4</span>
+                                    <span class="flex-1 min-w-0 break-words">ログインエンドポイント（/token）を作成</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">5</span>
+                                    <span class="flex-1 min-w-0 break-words">認証が必要な保護されたエンドポイント（/users/me）を作成</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">6</span>
+                                    <span class="flex-1 min-w-0 break-words">Swagger UIでログインとアクセスをテスト</span>
+                                </li>
+                            </ol>
+
+                            <h4 class="font-medium text-purple-800 mt-4 mb-2">動作確認</h4>
+                            <p class="text-purple-900 text-sm mb-2">
+                                Swagger UI（<code class="bg-purple-100 px-1 rounded">http://127.0.0.1:8000/docs</code>）で以下を確認：
+                            </p>
+                            <ul class="text-purple-900 text-sm space-y-1 ml-6 list-disc">
+                                <li>認証なしで /users/me にアクセス → 401エラー</li>
+                                <li>/token でログイン → トークン取得</li>
+                                <li>「Authorize」ボタンでトークンを設定</li>
+                                <li>/users/me にアクセス → ユーザー情報取得成功</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </main>
-        </div>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q1. 認証（Authentication）と認可（Authorization）の違いを説明してください。また、それぞれに対応するHTTPステータスコードは何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>認証</strong>: ユーザーが本人であることを確認するプロセス（「あなたは誰？」）。対応するステータスコードは <strong>401 Unauthorized</strong>（認証が必要）。<br>
+                                            <strong>認可</strong>: 認証されたユーザーが特定のリソースにアクセスする権限があるかを確認するプロセス（「何ができる？」）。対応するステータスコードは <strong>403 Forbidden</strong>（権限不足）。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q2. パスワードを平文で保存してはいけない理由と、bcryptを使うメリットを説明してください。</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>平文保存の危険性</strong>: データベースが漏洩した場合、全ユーザーのパスワードが露呈し、深刻なセキュリティ事故につながります。<br>
+                                            <strong>bcryptのメリット</strong>: ソルトを自動生成し、同じパスワードでも毎回異なるハッシュ値を生成します。計算コストを調整できるため、将来のハードウェア性能向上にも対応でき、レインボーテーブル攻撃やブルートフォース攻撃に強いです。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q3. JWTトークンに必ず含めるべき情報と、含めてはいけない情報は何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>含めるべき情報</strong>: ユーザー識別子（sub）、発行時刻（iat）、有効期限（exp）、必要に応じてロールやスコープ。<br>
+                                            <strong>含めてはいけない情報</strong>: パスワード、クレジットカード番号、個人情報などの機密データ。JWTは署名されていますが暗号化されていないため、Base64デコードすれば内容を読み取れます。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q4. ロールベースアクセス制御（RBAC）において、「最小権限の原則」とは何を意味しますか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            ユーザーには業務遂行に必要な最小限の権限のみを付与するという原則です。デフォルトで権限を制限し、必要に応じて段階的に追加することで、セキュリティリスクを最小化します。例えば、一般ユーザーは閲覧のみ、管理者のみが削除権限を持つといった設計です。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 章のまとめ -->
+                <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6 my-8">
+                    <h2 class="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-bookmark text-slate-600"></i>
+                        第6章のまとめ
+                    </h2>
+                    <div class="space-y-3 text-slate-700">
+                        <p class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <span>認証はユーザー確認、認可は権限チェックであり、それぞれHTTPステータスコード401と403で区別されます</span>
+                        </p>
+                        <p class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <span>パスワードは必ずbcryptなどでハッシュ化し、平文でデータベースに保存してはいけません</span>
+                        </p>
+                        <p class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <span>JWTトークンを使ったOAuth2認証により、ステートレスでスケーラブルな認証システムを構築できます</span>
+                        </p>
+                        <p class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <span>ロールベースアクセス制御により、ユーザーの役割に応じた細やかな権限管理が可能になります</span>
+                        </p>
+                        <p class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <span>秘密鍵の環境変数管理、HTTPS通信、トークン有効期限設定などのベストプラクティスを実践することが重要です</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <a href="fastapi-learning-material-05.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
+                                  transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">データベースの統合（SQLAlchemy）</span>
+                        </div>
+                    </a>
+                    <a href="fastapi-learning-material-07.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">CORSとミドルウェア</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
     </div>
-    
-    <footer class="bg-dark text-white mt-5">
-        <div class="container-fluid py-3">
-            <div class="row">
-                <div class="col-12 text-center">
-                    <p class="mb-0">© 2025 F-Circle. All rights reserved.<br>
-本資料はAIツールを活用し、人間による編集・監修のもと作成されています。無断転載・再配布を禁じます。</p>
+
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </footer>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- サイドバー生成 -->
+    <script src="sidebar-content.js"></script>
+
+    <!-- 共通JavaScript -->
+    <script src="main.js"></script>
+
+    <!-- 描画ツール -->
+    <script src="drawing-tool.js"></script>
 </body>
 </html>

@@ -2,692 +2,941 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FastAPI学習教材 第7章 - 認証とセキュリティ</title>
-    
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>FastAPI学習教材 第7章 - CORSとミドルウェア</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
-    
-    <style>
-        body { font-family: 'Noto Sans JP', sans-serif; padding-top: 56px; }
-        .navbar { background-color: #2e7d32; }
-        .sidebar { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; }
-        .chapter-title { color: #2e7d32; margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #2e7d32; padding-bottom: 0.5rem; }
-        .section-title { color: #4caf50; margin-top: 1.2rem; margin-bottom: 0.8rem; }
-        .quiz-container { background-color: #e8f5e8; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #2e7d32; }
-        .exercise-container { background-color: #f3e5f5; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #9c27b0; }
-        .highlight { background-color: #ffecb3; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #ffc107; }
-        .warning { background-color: #ffebee; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #f44336; }
-        .code-block { background-color: #1e1e1e; border-radius: 5px; padding: 1rem; margin: 1rem 0; }
-        .nav-link.active { background-color: #2e7d32 !important; color: white !important; }
-    </style>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container-fluid"><a class="navbar-brand"><strong>FastAPI学習教材</strong></a></div>
-    </nav>
-
-    <div class="container-fluid">
-        <div class="row">
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <ul class="nav flex-column">
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-01.html">第1章: FastAPI入門と環境構築</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-02.html">第2章: ルーティングとリクエスト処理</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-03.html">第3章: Pydanticモデルとデータ検証</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-04.html">第4章: レスポンス処理と例外ハンドリング</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-05.html">第5章: 依存性注入とミドルウェア</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-06.html">第6章: データベース連携とORM</a></li>
-                        <li class="nav-item"><a class="nav-link active" href="fastapi-learning-material-07.html">第7章: 認証とセキュリティ</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-08.html">第8章: 非同期処理とパフォーマンス最適化</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-09.html">第9章: テストとドキュメント</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-10.html">第10章: デプロイメントと本番環境</a></li>
-                    </ul>
-                </div>
-            </nav>
-
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">第7章: 認証とセキュリティ</h1>
-                </div>
-
-                <div id="chapter7">
-                    <h2 class="chapter-title">セキュアなAPI設計：JWT認証とOAuth2実装</h2>
-                    
-                    <div class="highlight">
-                        <h5>この章で学ぶこと</h5>
-                        <ul>
-                            <li>JWT（JSON Web Token）による認証システム実装</li>
-                            <li>OAuth2プロトコルの理解とFastAPI統合</li>
-                            <li>パスワードハッシング化とセキュリティ強化</li>
-                            <li>ロールベースアクセス制御（RBAC）の実装</li>
-                            <li>セキュリティベストプラクティスと脆弱性対策</li>
-                        </ul>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="w-full px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fas fa-bolt text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
                     </div>
 
-                    <h3 class="section-title">7.1 JWT認証システムの基本実装</h3>
-                    <p>JWT（JSON Web Token）は、安全な情報伝送のための業界標準です。ステートレスな認証を実現し、マイクロサービスアーキテクチャに最適です。</p>
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">FastAPI学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>Python フレームワーク</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 60分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                    <div class="mermaid">
-                        sequenceDiagram
-                            participant Client as クライアント
-                            participant Auth as 認証API
-                            participant Protected as 保護されたAPI
-                            participant DB as データベース
-                            
-                            Client->>Auth: ログイン (username, password)
-                            Auth->>DB: ユーザー認証
-                            DB->>Auth: ユーザー情報
-                            Auth->>Auth: JWTトークン生成
-                            Auth->>Client: アクセストークン
-                            
-                            Client->>Protected: APIリクエスト (Bearer token)
-                            Protected->>Protected: JWTトークン検証
-                            Protected->>Client: APIレスポンス
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/fastapi/" class="hover:text-primary-600 transition-colors">FastAPI</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第7章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第7章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">CORSとミドルウェア</h1>
+                    <p class="text-slate-600">CORS設定の必要性と実装、カスタムミドルウェアの作成、リクエスト/レスポンスのインターセプト、ロギングとエラーハンドリングを学習します。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>CORSとは何か、なぜ必要なのかを理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>FastAPIでCORS設定を実装する方法</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>ミドルウェアの概念とカスタムミドルウェアの作成</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>リクエスト/レスポンスのロギングとエラーハンドリング</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション1: CORSとは -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        7.1 CORSとは
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        CORS（Cross-Origin Resource Sharing）は、異なるオリジン（ドメイン、プロトコル、ポート）間でリソースを共有するためのメカニズムです。Webブラウザのセキュリティ機能により、デフォルトでは異なるオリジンからのリクエストは制限されています。
+                    </p>
+
+                    <!-- Mermaid図: CORS概念図 -->
+                    <div class="my-6 bg-white p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-base font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-sitemap text-primary-500"></i>
+                            CORSの動作イメージ
+                        </h3>
+                        <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant B as ブラウザ<br/>（localhost:3000）
+    participant A as FastAPI<br/>（localhost:8000）
+
+    B->>A: OPTIONS /api/users<br/>（プリフライトリクエスト）
+    A-->>B: Access-Control-Allow-Origin: *<br/>Access-Control-Allow-Methods: GET, POST
+    B->>A: GET /api/users<br/>（実際のリクエスト）
+    A-->>B: データ + CORSヘッダー
+                        </div>
                     </div>
 
-                    <div class="exercise-container">
-                        <h5>実習 7-1: JWT認証システムの実装</h5>
-                        <h6>実装例</h6>
-                        <pre class="code-block"><code class="language-python"># auth.py
-from datetime import datetime, timedelta
-from typing import Optional, Dict, Any
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from passlib.context import CryptContext
-from jose import JWTError, jwt
-import os
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">オリジンとは</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    オリジンは「プロトコル + ドメイン + ポート」の組み合わせです。例えば <code class="bg-blue-100 px-1 rounded">http://localhost:3000</code> と <code class="bg-blue-100 px-1 rounded">http://localhost:8000</code> は異なるオリジンとして扱われます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
 
-# 設定
-SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-here")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">CORSが必要になるケース</h3>
 
-# パスワードハッシュ化
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+                    <div class="grid md:grid-cols-2 gap-4 my-6">
+                        <!-- ケース1 -->
+                        <div class="bg-gradient-to-br from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-desktop text-white"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-purple-800">SPA開発</h3>
+                            </div>
+                            <p class="text-purple-900 text-sm">
+                                React、Vue、Angularなどのフロントエンドは開発サーバー（localhost:3000）で動作し、バックエンドAPI（localhost:8000）とは異なるオリジンになります。
+                            </p>
+                        </div>
 
-# OAuth2スキーム
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+                        <!-- ケース2 -->
+                        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-mobile-alt text-white"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-emerald-800">モバイルアプリ</h3>
+                            </div>
+                            <p class="text-emerald-900 text-sm">
+                                モバイルアプリやデスクトップアプリからWeb APIにアクセスする場合も、オリジンが異なるためCORS設定が必要です。
+                            </p>
+                        </div>
+                    </div>
+                </section>
 
-# パスワード関連関数
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """パスワード検証"""
-    return pwd_context.verify(plain_password, hashed_password)
+                <!-- セクション2: CORS設定の実装 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        7.2 FastAPIでのCORS設定
+                    </h2>
 
-def get_password_hash(password: str) -> str:
-    """パスワードハッシュ化"""
-    return pwd_context.hash(password)
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        FastAPIには、CORS設定を簡単に行うための <code class="bg-slate-200 px-2 py-0.5 rounded text-slate-800">CORSMiddleware</code> が組み込まれています。
+                    </p>
 
-def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
-    """JWTアクセストークン作成"""
-    to_encode = data.copy()
-    
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">基本的なCORS設定</h3>
 
-def verify_token(token: str) -> Dict[str, Any]:
-    """JWTトークン検証"""
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        
-        if username is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="トークンが無効です",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-        
-        return payload
-    
-    except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="トークンが無効です",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-# ユーザー認証関数
-def authenticate_user(username: str, password: str) -> Optional[Dict[str, Any]]:
-    """ユーザー認証（簡易版）"""
-    # 実際のシステムではデータベースから取得
-    fake_users_db = {
-        "testuser": {
-            "username": "testuser",
-            "full_name": "Test User",
-            "email": "test@example.com",
-            "hashed_password": get_password_hash("testpass"),
-            "roles": ["user"]
-        },
-        "admin": {
-            "username": "admin",
-            "full_name": "Administrator",
-            "email": "admin@example.com",
-            "hashed_password": get_password_hash("adminpass"),
-            "roles": ["user", "admin"]
-        }
-    }
-    
-    user = fake_users_db.get(username)
-    if not user:
-        return None
-    
-    if not verify_password(password, user["hashed_password"]):
-        return None
-    
-    return user
-
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> Dict[str, Any]:
-    """現在のユーザー取得"""
-    payload = verify_token(token)
-    username: str = payload.get("sub")
-    
-    # 実際のシステムではデータベースから取得
-    user = authenticate_user(username, "dummy")  # パスワードチェックは省略
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="ユーザーが見つかりません",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    return user
-
-async def get_current_active_user(current_user: Dict[str, Any] = Depends(get_current_user)) -> Dict[str, Any]:
-    """アクティブユーザー取得"""
-    if not current_user.get("is_active", True):
-        raise HTTPException(status_code=400, detail="非アクティブユーザーです")
-    return current_user
-
-# 認証エンドポイント
-from fastapi import FastAPI
-from pydantic import BaseModel
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">main.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
+# CORS設定を追加
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # 許可するオリジン
+    allow_credentials=True,  # Cookieを含むリクエストを許可
+    allow_methods=["*"],  # 許可するHTTPメソッド
+    allow_headers=["*"],  # 許可するHTTPヘッダー
+)
 
-class TokenData(BaseModel):
-    username: Optional[str] = None
+@app.get("/api/users")
+def get_users():
+    return {"users": ["Alice", "Bob", "Charlie"]}</code></pre>
+                    </div>
 
-class User(BaseModel):
-    username: str
-    email: Optional[str] = None
-    full_name: Optional[str] = None
-    roles: list[str] = []
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">CORS設定パラメータの詳細</h3>
 
-@app.post("/token", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    """ログイン（アクセストークン取得）"""
-    user = authenticate_user(form_data.username, form_data.password)
-    
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="ユーザー名またはパスワードが正しくありません",
-            headers={"WWW-Authenticate": "Bearer"},
+                    <div class="space-y-4 my-6">
+                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-slate-800 mb-2">allow_origins</h4>
+                            <p class="text-slate-600 text-sm mb-2">
+                                リクエストを許可するオリジンのリストを指定します。
+                            </p>
+                            <ul class="text-slate-600 text-sm space-y-1 ml-6">
+                                <li class="list-disc">特定のドメイン: <code class="bg-slate-200 px-1 rounded">["https://example.com"]</code></li>
+                                <li class="list-disc">すべて許可（開発環境のみ推奨）: <code class="bg-slate-200 px-1 rounded">["*"]</code></li>
+                                <li class="list-disc">複数指定: <code class="bg-slate-200 px-1 rounded">["http://localhost:3000", "https://app.example.com"]</code></li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-slate-800 mb-2">allow_credentials</h4>
+                            <p class="text-slate-600 text-sm">
+                                <code class="bg-slate-200 px-1 rounded">True</code> に設定すると、Cookie、Authorization ヘッダー、TLS証明書を含むリクエストを許可します。認証が必要なAPIで使用します。
+                            </p>
+                        </div>
+
+                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-slate-800 mb-2">allow_methods</h4>
+                            <p class="text-slate-600 text-sm">
+                                許可するHTTPメソッドを指定します。<code class="bg-slate-200 px-1 rounded">["*"]</code> ですべて許可、または <code class="bg-slate-200 px-1 rounded">["GET", "POST"]</code> のように個別指定も可能です。
+                            </p>
+                        </div>
+
+                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-slate-800 mb-2">allow_headers</h4>
+                            <p class="text-slate-600 text-sm">
+                                許可するHTTPヘッダーを指定します。<code class="bg-slate-200 px-1 rounded">["*"]</code> ですべて許可、または <code class="bg-slate-200 px-1 rounded">["Content-Type", "Authorization"]</code> のように個別指定も可能です。
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-red-900 font-medium break-words">本番環境での注意点</p>
+                                <p class="text-red-800 text-sm mt-1 break-words">
+                                    <code class="bg-red-100 px-1 rounded">allow_origins=["*"]</code> は開発時には便利ですが、本番環境では使用しないでください。セキュリティリスクが高まります。必ず具体的なドメインを指定してください。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">環境別のCORS設定</h3>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">config.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">import os
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+# 環境変数から実行環境を取得
+ENV = os.getenv("ENV", "development")
+
+# 環境別のオリジン設定
+if ENV == "production":
+    origins = ["https://app.example.com"]
+else:
+    origins = ["http://localhost:3000", "http://127.0.0.1:3000"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],
+)</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション3: ミドルウェアの基礎 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        7.3 ミドルウェアの基礎
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        ミドルウェアは、リクエストとレスポンスの間で実行される処理です。すべてのリクエストに対して共通の処理を適用したい場合に使用します。
+                    </p>
+
+                    <!-- Mermaid図: ミドルウェアの動作 -->
+                    <div class="my-6 bg-white p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-base font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-diagram-project text-primary-500"></i>
+                            ミドルウェアの処理フロー
+                        </h3>
+                        <div class="mermaid">
+flowchart LR
+    A[クライアント] --> B{ミドルウェア1}
+    B --> C{ミドルウェア2}
+    C --> D[エンドポイント<br/>処理]
+    D --> E{ミドルウェア2}
+    E --> F{ミドルウェア1}
+    F --> G[クライアント]
+
+    style D fill:#dbeafe,stroke:#3b82f6,stroke-width:2px
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">ミドルウェアの用途</h3>
+
+                    <div class="grid md:grid-cols-2 gap-4 my-6">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                                <i class="fas fa-chart-line"></i>
+                                ロギング・監視
+                            </h4>
+                            <p class="text-blue-900 text-sm">
+                                リクエストの内容、処理時間、レスポンスステータスなどを記録します。パフォーマンス分析やデバッグに役立ちます。
+                            </p>
+                        </div>
+
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-emerald-800 mb-2 flex items-center gap-2">
+                                <i class="fas fa-shield-alt"></i>
+                                認証・認可
+                            </h4>
+                            <p class="text-emerald-900 text-sm">
+                                トークンの検証やユーザー権限のチェックなど、セキュリティ関連の処理を一元管理できます。
+                            </p>
+                        </div>
+
+                        <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-purple-800 mb-2 flex items-center gap-2">
+                                <i class="fas fa-exchange-alt"></i>
+                                データ変換
+                            </h4>
+                            <p class="text-purple-900 text-sm">
+                                リクエストやレスポンスのデータを共通フォーマットに変換したり、追加情報を付与したりできます。
+                            </p>
+                        </div>
+
+                        <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-amber-800 mb-2 flex items-center gap-2">
+                                <i class="fas fa-exclamation-circle"></i>
+                                エラーハンドリング
+                            </h4>
+                            <p class="text-amber-900 text-sm">
+                                予期しないエラーをキャッチし、適切なエラーレスポンスを返すことで、API全体のエラー処理を統一できます。
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション4: カスタムミドルウェアの作成 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        7.4 カスタムミドルウェアの作成
+                    </h2>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">処理時間計測ミドルウェア</h3>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        各リクエストの処理時間を計測し、ログに記録するミドルウェアを作成してみましょう。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">middleware.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">import time
+from fastapi import Request
+
+async def timing_middleware(request: Request, call_next):
+    """
+    リクエストの処理時間を計測するミドルウェア
+    """
+    # 処理開始時刻を記録
+    start_time = time.time()
+
+    # 次の処理（エンドポイント）を実行
+    response = await call_next(request)
+
+    # 処理時間を計算
+    process_time = time.time() - start_time
+
+    # レスポンスヘッダーに処理時間を追加
+    response.headers["X-Process-Time"] = str(process_time)
+
+    # ログ出力
+    print(f"{request.method} {request.url.path} - {process_time:.3f}秒")
+
+    return response</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">ミドルウェアの登録</h3>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">main.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">from fastapi import FastAPI
+from middleware import timing_middleware
+
+app = FastAPI()
+
+# カスタムミドルウェアを追加
+app.middleware("http")(timing_middleware)
+
+@app.get("/api/data")
+async def get_data():
+    # 処理に時間がかかる想定
+    import asyncio
+    await asyncio.sleep(0.5)
+    return {"message": "データを取得しました"}</code></pre>
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">call_nextとは</p>
+                                <p class="text-emerald-800 text-sm mt-1 break-words">
+                                    <code class="bg-emerald-100 px-1 rounded">call_next(request)</code> は次のミドルウェアまたはエンドポイント処理を実行し、レスポンスを返します。これを呼び出す前後で処理を追加することで、リクエスト/レスポンスをインターセプトできます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">リクエストIDミドルウェア</h3>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        各リクエストに一意のIDを付与し、ログの追跡を容易にするミドルウェアです。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">middleware.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">import uuid
+from fastapi import Request
+
+async def request_id_middleware(request: Request, call_next):
+    """
+    各リクエストに一意のIDを付与するミドルウェア
+    """
+    # リクエストIDを生成
+    request_id = str(uuid.uuid4())
+
+    # リクエストの状態にIDを保存
+    request.state.request_id = request_id
+
+    # 次の処理を実行
+    response = await call_next(request)
+
+    # レスポンスヘッダーにリクエストIDを追加
+    response.headers["X-Request-ID"] = request_id
+
+    return response</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション5: ロギングとエラーハンドリング -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        7.5 ロギングとエラーハンドリング
+                    </h2>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">構造化ロギング</h3>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Pythonの標準ライブラリ <code class="bg-slate-200 px-2 py-0.5 rounded text-slate-800">logging</code> を使用して、詳細なログを記録します。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">logging_middleware.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">import logging
+import time
+from fastapi import Request
+
+# ロガーの設定
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+async def logging_middleware(request: Request, call_next):
+    """
+    詳細なログを記録するミドルウェア
+    """
+    start_time = time.time()
+
+    # リクエスト情報をログ出力
+    logger.info(f"開始: {request.method} {request.url}")
+
+    try:
+        response = await call_next(request)
+        process_time = time.time() - start_time
+
+        # 成功時のログ
+        logger.info(
+            f"完了: {request.method} {request.url} "
+            f"- ステータス: {response.status_code} "
+            f"- 処理時間: {process_time:.3f}秒"
         )
-    
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user["username"], "roles": user["roles"]},
-        expires_delta=access_token_expires
-    )
-    
-    return {"access_token": access_token, "token_type": "bearer"}
+        return response
 
-@app.get("/users/me", response_model=User)
-async def read_users_me(current_user: Dict[str, Any] = Depends(get_current_active_user)):
-    """現在のユーザー情報取得"""
-    return User(**current_user)</code></pre>
+    except Exception as e:
+        process_time = time.time() - start_time
+
+        # エラー時のログ
+        logger.error(
+            f"エラー: {request.method} {request.url} "
+            f"- 例外: {type(e).__name__} "
+            f"- 処理時間: {process_time:.3f}秒",
+            exc_info=True
+        )
+        raise</code></pre>
                     </div>
 
-                    <h3 class="section-title">7.2 ロールベースアクセス制御（RBAC）</h3>
-                    <p>ユーザーの役割に基づいてアクセス権限を制御するシステムを実装します。</p>
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">グローバルエラーハンドラー</h3>
 
-                    <div class="exercise-container">
-                        <h5>実習 7-2: RBAC実装</h5>
-                        <h6>実装例</h6>
-                        <pre class="code-block"><code class="language-python"># rbac.py
-from typing import List, Set
-from enum import Enum
-from fastapi import Depends, HTTPException, status
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        すべてのエラーを一元的にハンドリングし、適切なエラーレスポンスを返すミドルウェアです。
+                    </p>
 
-class Role(str, Enum):
-    USER = "user"
-    MODERATOR = "moderator"
-    ADMIN = "admin"
-    SUPER_ADMIN = "super_admin"
-
-class Permission(str, Enum):
-    READ_POST = "read:post"
-    WRITE_POST = "write:post"
-    DELETE_POST = "delete:post"
-    READ_USER = "read:user"
-    WRITE_USER = "write:user"
-    DELETE_USER = "delete:user"
-    ADMIN_PANEL = "admin:panel"
-
-# ロール-権限マッピング
-ROLE_PERMISSIONS: dict[Role, Set[Permission]] = {
-    Role.USER: {
-        Permission.READ_POST,
-        Permission.WRITE_POST,
-        Permission.READ_USER,
-    },
-    Role.MODERATOR: {
-        Permission.READ_POST,
-        Permission.WRITE_POST,
-        Permission.DELETE_POST,
-        Permission.READ_USER,
-    },
-    Role.ADMIN: {
-        Permission.READ_POST,
-        Permission.WRITE_POST,
-        Permission.DELETE_POST,
-        Permission.READ_USER,
-        Permission.WRITE_USER,
-        Permission.DELETE_USER,
-        Permission.ADMIN_PANEL,
-    },
-    Role.SUPER_ADMIN: set(Permission),  # 全権限
-}
-
-def get_permissions_for_roles(roles: List[str]) -> Set[Permission]:
-    """ロールに基づく権限セット取得"""
-    permissions = set()
-    
-    for role_str in roles:
-        try:
-            role = Role(role_str)
-            permissions.update(ROLE_PERMISSIONS.get(role, set()))
-        except ValueError:
-            continue  # 無効なロールは無視
-    
-    return permissions
-
-def require_permissions(*required_permissions: Permission):
-    """権限チェック用デコレータファクトリー"""
-    def permission_checker(current_user: dict = Depends(get_current_active_user)):
-        user_roles = current_user.get("roles", [])
-        user_permissions = get_permissions_for_roles(user_roles)
-        
-        missing_permissions = set(required_permissions) - user_permissions
-        
-        if missing_permissions:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"必要な権限がありません: {', '.join(missing_permissions)}"
-            )
-        
-        return current_user
-    
-    return permission_checker
-
-def require_roles(*required_roles: Role):
-    """ロールチェック用デコレータファクトリー"""
-    def role_checker(current_user: dict = Depends(get_current_active_user)):
-        user_roles = set(current_user.get("roles", []))
-        required_roles_set = {role.value for role in required_roles}
-        
-        if not user_roles.intersection(required_roles_set):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"必要なロールがありません: {', '.join(required_roles_set)}"
-            )
-        
-        return current_user
-    
-    return role_checker
-
-# RBAC適用エンドポイント例
-@app.get("/posts")
-async def read_posts(
-    current_user: dict = Depends(require_permissions(Permission.READ_POST))
-):
-    """投稿一覧取得（読み取り権限必要）"""
-    return {"posts": ["投稿1", "投稿2", "投稿3"], "user": current_user["username"]}
-
-@app.post("/posts")
-async def create_post(
-    post_data: dict,
-    current_user: dict = Depends(require_permissions(Permission.WRITE_POST))
-):
-    """投稿作成（書き込み権限必要）"""
-    return {"message": "投稿が作成されました", "author": current_user["username"]}
-
-@app.delete("/posts/{post_id}")
-async def delete_post(
-    post_id: int,
-    current_user: dict = Depends(require_permissions(Permission.DELETE_POST))
-):
-    """投稿削除（削除権限必要）"""
-    return {"message": f"投稿 {post_id} が削除されました"}
-
-@app.get("/admin/dashboard")
-async def admin_dashboard(
-    current_user: dict = Depends(require_roles(Role.ADMIN, Role.SUPER_ADMIN))
-):
-    """管理者ダッシュボード（管理者ロール必要）"""
-    return {
-        "message": "管理者ダッシュボードへようこそ",
-        "admin": current_user["username"],
-        "permissions": list(get_permissions_for_roles(current_user["roles"]))
-    }
-
-@app.get("/users/{user_id}")
-async def get_user_details(
-    user_id: int,
-    current_user: dict = Depends(require_permissions(Permission.READ_USER))
-):
-    """ユーザー詳細取得"""
-    # 自分の情報または管理者権限があれば表示
-    if (user_id == current_user.get("id") or 
-        Permission.ADMIN_PANEL in get_permissions_for_roles(current_user["roles"])):
-        return {"user_id": user_id, "details": "ユーザー詳細情報"}
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="他のユーザーの情報にアクセスする権限がありません"
-        )</code></pre>
-                    </div>
-
-                    <h3 class="section-title">7.3 セキュリティベストプラクティス</h3>
-                    <p>実際のプロダクション環境で必要なセキュリティ対策を実装します。</p>
-
-                    <div class="warning">
-                        <h6>セキュリティリスクの主な要因</h6>
-                        <ul>
-                            <li><strong>弱いパスワードポリシー</strong>: 簡単に推測されるパスワード</li>
-                            <li><strong>SQL インジェクション</strong>: 不適切なクエリ処理</li>
-                            <li><strong>XSS攻撃</strong>: 入力値のサニタイゼーション不備</li>
-                            <li><strong>CSRF攻撃</strong>: リクエストの正当性チェック不備</li>
-                            <li><strong>機密情報の漏洩</strong>: ログやエラーメッセージでの情報露出</li>
-                        </ul>
-                    </div>
-
-                    <div class="exercise-container">
-                        <h5>実習 7-3: セキュリティ強化実装</h5>
-                        <h6>実装例</h6>
-                        <pre class="code-block"><code class="language-python"># security.py
-import re
-import secrets
-import hashlib
-from datetime import datetime, timedelta
-from typing import Optional, Dict, Any
-from fastapi import HTTPException, Request, Depends
-from pydantic import BaseModel, validator
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">error_handler.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">from fastapi import Request
+from fastapi.responses import JSONResponse
 import logging
 
 logger = logging.getLogger(__name__)
 
-class PasswordPolicy:
-    """パスワードポリシー検証"""
-    MIN_LENGTH = 8
-    MAX_LENGTH = 128
-    
-    @staticmethod
-    def validate_password(password: str) -> tuple[bool, list[str]]:
-        """パスワード強度チェック"""
-        errors = []
-        
-        if len(password) < PasswordPolicy.MIN_LENGTH:
-            errors.append(f"パスワードは{PasswordPolicy.MIN_LENGTH}文字以上である必要があります")
-        
-        if len(password) > PasswordPolicy.MAX_LENGTH:
-            errors.append(f"パスワードは{PasswordPolicy.MAX_LENGTH}文字以下である必要があります")
-        
-        if not re.search(r'[A-Z]', password):
-            errors.append("パスワードには大文字を含めてください")
-        
-        if not re.search(r'[a-z]', password):
-            errors.append("パスワードには小文字を含めてください")
-        
-        if not re.search(r'\d', password):
-            errors.append("パスワードには数字を含めてください")
-        
-        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
-            errors.append("パスワードには記号を含めてください")
-        
-        # 共通パスワードチェック
-        common_passwords = ["password", "123456", "qwerty", "admin"]
-        if password.lower() in common_passwords:
-            errors.append("よく使用されるパスワードは使用できません")
-        
-        return len(errors) == 0, errors
+async def error_handler_middleware(request: Request, call_next):
+    """
+    エラーを統一フォーマットで返すミドルウェア
+    """
+    try:
+        response = await call_next(request)
+        return response
 
-class RateLimiter:
-    """レート制限実装"""
-    def __init__(self, max_requests: int = 5, window_minutes: int = 15):
-        self.max_requests = max_requests
-        self.window_minutes = window_minutes
-        self.attempts: Dict[str, list] = {}
-    
-    def is_allowed(self, identifier: str) -> bool:
-        """リクエスト許可チェック"""
-        now = datetime.utcnow()
-        window_start = now - timedelta(minutes=self.window_minutes)
-        
-        if identifier not in self.attempts:
-            self.attempts[identifier] = []
-        
-        # 古い記録を削除
-        self.attempts[identifier] = [
-            attempt for attempt in self.attempts[identifier]
-            if attempt > window_start
-        ]
-        
-        # リクエスト数チェック
-        if len(self.attempts[identifier]) >= self.max_requests:
-            return False
-        
-        # 新しいリクエストを記録
-        self.attempts[identifier].append(now)
-        return True
-    
-    def get_remaining_time(self, identifier: str) -> int:
-        """次回リクエスト可能まで時間（秒）"""
-        if identifier not in self.attempts or not self.attempts[identifier]:
-            return 0
-        
-        oldest_attempt = min(self.attempts[identifier])
-        next_allowed = oldest_attempt + timedelta(minutes=self.window_minutes)
-        remaining = next_allowed - datetime.utcnow()
-        
-        return max(0, int(remaining.total_seconds()))
-
-# グローバルレート制限インスタンス
-login_rate_limiter = RateLimiter(max_requests=5, window_minutes=15)
-
-class SecureUserRegistration(BaseModel):
-    username: str
-    email: str
-    password: str
-    confirm_password: str
-    
-    @validator('username')
-    def validate_username(cls, v):
-        if not re.match(r'^[a-zA-Z0-9_]{3,20}$', v):
-            raise ValueError('ユーザー名は3-20文字の英数字とアンダースコアのみ使用可能です')
-        return v
-    
-    @validator('password')
-    def validate_password(cls, v):
-        is_valid, errors = PasswordPolicy.validate_password(v)
-        if not is_valid:
-            raise ValueError('; '.join(errors))
-        return v
-    
-    @validator('confirm_password')
-    def passwords_match(cls, v, values):
-        if 'password' in values and v != values['password']:
-            raise ValueError('パスワードが一致しません')
-        return v
-
-def get_client_ip(request: Request) -> str:
-    """クライアントIP取得"""
-    # プロキシ経由の場合のX-Forwarded-Forヘッダーも考慮
-    forwarded_for = request.headers.get("X-Forwarded-For")
-    if forwarded_for:
-        return forwarded_for.split(",")[0].strip()
-    return request.client.host
-
-async def rate_limit_check(request: Request):
-    """レート制限チェック依存性"""
-    client_ip = get_client_ip(request)
-    
-    if not login_rate_limiter.is_allowed(client_ip):
-        remaining_time = login_rate_limiter.get_remaining_time(client_ip)
-        
-        logger.warning(f"Rate limit exceeded for IP: {client_ip}")
-        
-        raise HTTPException(
-            status_code=429,
-            detail=f"リクエスト制限に達しました。{remaining_time}秒後に再試行してください",
-            headers={"Retry-After": str(remaining_time)}
+    except ValueError as e:
+        # バリデーションエラー
+        logger.warning(f"バリデーションエラー: {str(e)}")
+        return JSONResponse(
+            status_code=400,
+            content={"error": "バリデーションエラー", "detail": str(e)}
         )
 
-def generate_secure_token() -> str:
-    """セキュアなトークン生成"""
-    return secrets.token_urlsafe(32)
-
-def hash_sensitive_data(data: str) -> str:
-    """機密データのハッシュ化"""
-    return hashlib.sha256(data.encode()).hexdigest()
-
-# セキュリティ強化されたエンドポイント
-@app.post("/secure/register")
-async def secure_register(
-    user_data: SecureUserRegistration,
-    request: Request,
-    _: None = Depends(rate_limit_check)  # レート制限適用
-):
-    """セキュアなユーザー登録"""
-    
-    client_ip = get_client_ip(request)
-    
-    # セキュリティログ出力
-    logger.info(f"User registration attempt: {user_data.username} from IP: {client_ip}")
-    
-    # パスワードハッシュ化（実際のDBに保存）
-    hashed_password = get_password_hash(user_data.password)
-    
-    # ユーザー情報（パスワードは除外してレスポンス）
-    user_response = {
-        "username": user_data.username,
-        "email": user_data.email,
-        "created_at": datetime.utcnow().isoformat()
-    }
-    
-    logger.info(f"User registered successfully: {user_data.username}")
-    
-    return {
-        "message": "ユーザー登録が完了しました",
-        "user": user_response
-    }
-
-@app.post("/secure/login")
-async def secure_login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    request: Request = None,
-    _: None = Depends(rate_limit_check)
-):
-    """セキュアなログイン"""
-    
-    client_ip = get_client_ip(request)
-    
-    # ログイン試行ログ
-    logger.info(f"Login attempt: {form_data.username} from IP: {client_ip}")
-    
-    user = authenticate_user(form_data.username, form_data.password)
-    
-    if not user:
-        # セキュリティのため、詳細なエラー情報は避ける
-        logger.warning(f"Failed login attempt: {form_data.username} from IP: {client_ip}")
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="ログイン情報が正しくありません",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    # 成功ログ
-    logger.info(f"Successful login: {form_data.username} from IP: {client_ip}")
-    
-    # JWTトークン生成
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user["username"], "roles": user["roles"]},
-        expires_delta=access_token_expires
-    )
-    
-    return {"access_token": access_token, "token_type": "bearer"}</code></pre>
+    except Exception as e:
+        # 予期しないエラー
+        logger.error(f"予期しないエラー: {str(e)}", exc_info=True)
+        return JSONResponse(
+            status_code=500,
+            content={"error": "内部サーバーエラー", "message": "エラーが発生しました"}
+        )</code></pre>
                     </div>
 
-                    <div class="quiz-container">
-                        <h5>理解度確認クイズ</h5>
-                        <ol>
-                            <li>
-                                <strong>JWTトークンの3つの部分を順番に挙げてください。</strong>
-                                <details><summary>解答</summary><p>Header（ヘッダー）、Payload（ペイロード）、Signature（署名）</p></details>
-                            </li>
-                            <li>
-                                <strong>パスワードを安全にハッシュ化するためのPythonライブラリは？</strong>
-                                <details><summary>解答</summary><p>passlib (bcryptアルゴリズム使用)</p></details>
-                            </li>
-                            <li>
-                                <strong>OAuth2PasswordBearerで設定するtokenUrlパラメータの役割は？</strong>
-                                <details><summary>解答</summary><p>トークンを取得するためのエンドポイントURLを指定</p></details>
-                            </li>
-                        </ol>
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">複数ミドルウェアの統合</h3>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">main.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from middleware import timing_middleware, request_id_middleware
+from logging_middleware import logging_middleware
+from error_handler import error_handler_middleware
+
+app = FastAPI()
+
+# ミドルウェアは登録順に実行される
+app.middleware("http")(error_handler_middleware)
+app.middleware("http")(logging_middleware)
+app.middleware("http")(request_id_middleware)
+app.middleware("http")(timing_middleware)
+
+# CORSミドルウェア
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)</code></pre>
                     </div>
 
-                    <h3 class="section-title">7.4 まとめ</h3>
-                    <div class="highlight">
-                        <h6>この章で習得したスキル</h6>
-                        <ul>
-                            <li>JWT認証システムの実装と運用</li>
-                            <li>OAuth2プロトコルに準拠した認証フロー</li>
-                            <li>ロールベースアクセス制御（RBAC）設計</li>
-                            <li>パスワードセキュリティとハッシュ化</li>
-                            <li>レート制限とセキュリティ強化</li>
-                            <li>セキュリティログと監査機能</li>
-                        </ul>
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">ミドルウェアの実行順序</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    ミドルウェアは登録した順番に実行されます。エラーハンドラーは最初に登録し、すべての処理をラップできるようにするのが一般的です。
+                                </p>
+                            </div>
+                        </div>
                     </div>
+                </section>
 
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="fastapi-learning-material-06.html" class="btn btn-secondary">← 前の章: データベース連携とORM</a>
-                        <a href="fastapi-learning-material-08.html" class="btn btn-primary">次の章: 非同期処理とパフォーマンス最適化 →</a>
+                <!-- 実習カード -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">
+                                実習 7-1: CORS設定とカスタムミドルウェアの実装
+                            </h3>
+                            <p class="text-purple-900 mb-4 break-words">
+                                CORS設定を行い、リクエスト情報を記録するカスタムミドルウェアを作成しましょう。
+                            </p>
+
+                            <h4 class="font-medium text-purple-800 mb-2">手順</h4>
+                            <ol class="space-y-3 mb-4">
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">1</span>
+                                    <span class="flex-1 min-w-0 break-words">FastAPIアプリケーションにCORSミドルウェアを追加し、localhost:3000からのアクセスを許可します</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">2</span>
+                                    <span class="flex-1 min-w-0 break-words">リクエストのメソッド、URL、ユーザーエージェントを記録するミドルウェアを作成します</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">3</span>
+                                    <span class="flex-1 min-w-0 break-words">ブラウザから複数回アクセスし、ログが正しく出力されることを確認します</span>
+                                </li>
+                            </ol>
+
+                            <h4 class="font-medium text-purple-800 mb-2">実装例</h4>
+                            <div class="code-block-wrapper">
+                                <button onclick="copyCode(this)" class="copy-btn px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg transition-colors">
+                                    <i class="fas fa-copy mr-1"></i>コピー
+                                </button>
+                                <pre class="!bg-slate-800 !rounded-lg overflow-x-auto"><code class="language-python">from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+# CORS設定
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# リクエスト情報記録ミドルウェア
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    user_agent = request.headers.get("user-agent", "不明")
+    print(f"{request.method} {request.url} - UA: {user_agent}")
+    response = await call_next(request)
+    return response
+
+@app.get("/")
+def root():
+    return {"message": "CORS設定完了"}</code></pre>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </main>
-        </div>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q1. CORSが必要になる理由を説明してください。</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            Webブラウザのセキュリティ機能（Same-Origin Policy）により、異なるオリジン間でのリソース共有はデフォルトで制限されています。SPAや異なるドメインのAPIを利用する際に、CORS設定を行うことで安全にリソースを共有できます。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q2. <code class="bg-blue-100 px-1 rounded">allow_origins=["*"]</code> を本番環境で使用すべきでない理由は何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            すべてのオリジンからのアクセスを許可すると、悪意のあるサイトからもAPIにアクセスできてしまい、セキュリティリスクが高まります。本番環境では必ず具体的な信頼できるドメインのみを指定すべきです。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q3. ミドルウェアで <code class="bg-blue-100 px-1 rounded">call_next(request)</code> を呼ぶ前と後で実行される処理の違いを説明してください。</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>call_next前</strong>: リクエストが到達した時点で実行されます。リクエストデータの検証や加工、ログ記録などに使用します。<br>
+                                            <strong>call_next後</strong>: エンドポイントの処理が完了し、レスポンスが返される直前に実行されます。レスポンスの加工やヘッダー追加、処理時間の計測などに使用します。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q4. 複数のミドルウェアを登録した場合、どのような順序で実行されますか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            ミドルウェアは登録した順番に実行されます。リクエスト時は登録順に処理され、レスポンス時は逆順（最後に登録したものから）で処理されます。エラーハンドラーなど全体をラップしたいミドルウェアは最初に登録するのが一般的です。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 章のまとめ -->
+                <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6 my-8">
+                    <h2 class="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-bookmark text-slate-600"></i>
+                        第7章のまとめ
+                    </h2>
+                    <div class="space-y-3 text-slate-700">
+                        <p class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <span>CORSは異なるオリジン間でリソースを安全に共有するための仕組みで、SPA開発などで必須です</span>
+                        </p>
+                        <p class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <span>FastAPIのCORSMiddlewareを使用することで、簡単にCORS設定を実装できます</span>
+                        </p>
+                        <p class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <span>ミドルウェアはリクエスト/レスポンスをインターセプトし、共通処理を一元管理できます</span>
+                        </p>
+                        <p class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <span>カスタムミドルウェアでロギング、エラーハンドリング、処理時間計測などを実装できます</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <a href="fastapi-learning-material-06.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
+                                  transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">認証とセキュリティ</span>
+                        </div>
+                    </a>
+                    <a href="fastapi-learning-material-08.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">非同期処理とバックグラウンドタスク</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
     </div>
-    
-    <footer class="bg-dark text-white mt-5">
-        <div class="container-fluid py-3">
-            <div class="row">
-                <div class="col-12 text-center">
-                    <p class="mb-0">© 2025 F-Circle. All rights reserved.<br>
-本資料はAIツールを活用し、人間による編集・監修のもと作成されています。無断転載・再配布を禁じます。</p>
+
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </footer>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- サイドバー生成 -->
+    <script src="sidebar-content.js"></script>
+
+    <!-- 共通JavaScript -->
+    <script src="main.js"></script>
+
+    <!-- 描画ツール -->
+    <script src="drawing-tool.js"></script>
 </body>
 </html>

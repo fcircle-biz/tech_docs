@@ -2,585 +2,993 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FastAPI学習教材 第5章 - 依存性注入とミドルウェア</title>
-    
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>FastAPI学習教材 第5章 - データベースの統合（SQLAlchemy）</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <!-- Google Fonts - Noto Sans JP -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- Highlight.js CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    
+
     <!-- Mermaid.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
-    
-    <style>
-        body { font-family: 'Noto Sans JP', sans-serif; padding-top: 56px; }
-        .navbar { background-color: #2e7d32; }
-        .sidebar { position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto; }
-        .chapter-title { color: #2e7d32; margin-top: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #2e7d32; padding-bottom: 0.5rem; }
-        .section-title { color: #4caf50; margin-top: 1.2rem; margin-bottom: 0.8rem; }
-        .quiz-container { background-color: #e8f5e8; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #2e7d32; }
-        .exercise-container { background-color: #f3e5f5; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border-left: 4px solid #9c27b0; }
-        .highlight { background-color: #ffecb3; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #ffc107; }
-        .warning { background-color: #ffebee; border-radius: 8px; padding: 1rem; margin: 1rem 0; border-left: 4px solid #f44336; }
-        .code-block { background-color: #1e1e1e; border-radius: 5px; padding: 1rem; margin: 1rem 0; }
-        .nav-link.active { background-color: #2e7d32 !important; color: white !important; }
-    </style>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand"><strong>FastAPI学習教材</strong></a>
-        </div>
-    </nav>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="w-full px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fas fa-bolt text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
 
-    <div class="container-fluid">
-        <div class="row">
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <ul class="nav flex-column">
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-01.html">第1章: FastAPI入門と環境構築</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-02.html">第2章: ルーティングとリクエスト処理</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-03.html">第3章: Pydanticモデルとデータ検証</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-04.html">第4章: レスポンス処理と例外ハンドリング</a></li>
-                        <li class="nav-item"><a class="nav-link active" href="fastapi-learning-material-05.html">第5章: 依存性注入とミドルウェア</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-06.html">第6章: データベース連携とORM</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-07.html">第7章: 認証とセキュリティ</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-08.html">第8章: 非同期処理とパフォーマンス最適化</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-09.html">第9章: テストとドキュメント</a></li>
-                        <li class="nav-item"><a class="nav-link" href="fastapi-learning-material-10.html">第10章: デプロイメントと本番環境</a></li>
-                    </ul>
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">FastAPI学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>Python フレームワーク</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 60分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </nav>
 
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">第5章: 依存性注入とミドルウェア</h1>
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/fastapi/" class="hover:text-primary-600 transition-colors">FastAPI</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第5章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第5章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">データベースの統合（SQLAlchemy）</h1>
+                    <p class="text-slate-600">SQLAlchemyを使用したデータベース統合について学習します。ORMモデルの定義、CRUDオペレーション、トランザクション管理、マイグレーション方法を実践的に習得します。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>SQLAlchemyの基本概念とFastAPIとの統合方法</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>データベース接続の設定とセッション管理</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>ORMモデルの定義とテーブルマッピング</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>CRUDオペレーション（作成・読取・更新・削除）の実装</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>Alembicによるデータベースマイグレーション</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
 
-                <div id="chapter5">
-                    <h2 class="chapter-title">アーキテクチャの基盤：依存性注入とミドルウェア</h2>
-                    
-                    <div class="highlight">
-                        <h5>この章で学ぶこと</h5>
-                        <ul>
-                            <li>依存性注入（Dependency Injection）の概念と利点</li>
-                            <li>Dependsを使った効率的なコードの共通化</li>
-                            <li>ミドルウェアによるリクエスト・レスポンス処理</li>
-                            <li>CORSの設定とセキュリティ対策</li>
-                            <li>ログ出力とリクエスト追跡の実装</li>
-                        </ul>
+                <!-- セクション1: SQLAlchemyとは -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.1 SQLAlchemyとは
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        SQLAlchemyは、Pythonで最も広く使われているORM（Object-Relational Mapping）ライブラリです。データベースのテーブルをPythonのクラスとして扱い、SQLを直接書かずにデータベース操作ができます。
+                    </p>
+
+                    <!-- Mermaid図: SQLAlchemyの役割 -->
+                    <div class="my-6 bg-white p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-base font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-diagram-project text-primary-500"></i>
+                            SQLAlchemyの役割
+                        </h3>
+                        <div class="mermaid">
+flowchart LR
+    A[FastAPI アプリ] --> B[SQLAlchemy<br/>ORM]
+    B --> C{データベース}
+    C --> D[(SQLite)]
+    C --> E[(PostgreSQL)]
+    C --> F[(MySQL)]
+
+    style B fill:#dbeafe,stroke:#3b82f6,stroke-width:3px
+                        </div>
                     </div>
 
-                    <h3 class="section-title">5.1 依存性注入の基本概念</h3>
-                    <p>依存性注入は、オブジェクト間の依存関係を外部から注入する設計パターンです。FastAPIのDependsを使用することで、コードの再利用性と保守性が大幅に向上します。</p>
+                    <div class="grid md:grid-cols-2 gap-4 my-6">
+                        <!-- 特徴1: ORM -->
+                        <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-layer-group text-white"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-blue-800">ORM機能</h3>
+                            </div>
+                            <p class="text-blue-900 text-sm">
+                                データベースのテーブルをPythonクラスとしてマッピング。SQLを書かずにPythonコードでデータベース操作が可能です。
+                            </p>
+                        </div>
 
-                    <div class="mermaid">
-                        graph LR
-                            A["HTTPリクエスト"] --> B["FastAPIルーター"]
-                            B --> C["依存性解決"]
-                            C --> D["共通パラメータ1"]
-                            C --> E["共通パラメータ2"]
-                            C --> F["認証情報"]
-                            D --> G["エンドポイント関数"]
-                            E --> G
-                            F --> G
-                            G --> H["レスポンス"]
+                        <!-- 特徴2: データベース非依存 -->
+                        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-database text-white"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-emerald-800">データベース非依存</h3>
+                            </div>
+                            <p class="text-emerald-900 text-sm">
+                                SQLite、PostgreSQL、MySQLなど複数のデータベースに対応。接続文字列を変えるだけで切り替え可能です。
+                            </p>
+                        </div>
+
+                        <!-- 特徴3: セッション管理 -->
+                        <div class="bg-gradient-to-br from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-arrows-spin text-white"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-purple-800">セッション管理</h3>
+                            </div>
+                            <p class="text-purple-900 text-sm">
+                                データベース接続とトランザクションを効率的に管理。接続プールによりパフォーマンスを最適化します。
+                            </p>
+                        </div>
+
+                        <!-- 特徴4: マイグレーション -->
+                        <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-code-branch text-white"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-amber-800">マイグレーション</h3>
+                            </div>
+                            <p class="text-amber-900 text-sm">
+                                Alembicと連携してデータベーススキーマの変更履歴を管理。バージョン管理された安全なスキーマ変更が可能です。
+                            </p>
+                        </div>
                     </div>
 
-                    <div class="exercise-container">
-                        <h5>実習 5-1: 基本的な依存性注入</h5>
-                        <h6>実装例</h6>
-                        <pre class="code-block"><code class="language-python">from fastapi import FastAPI, Depends, Query, HTTPException
-from typing import Optional, Dict, Any
-from datetime import datetime
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">ORMのメリット</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    ORMを使用することで、SQLインジェクション対策やデータ型の自動変換などのセキュリティと安全性が向上します。また、コードの可読性と保守性も大幅に改善されます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-app = FastAPI()
+                <!-- セクション2: データベース接続の設定 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.2 データベース接続の設定
+                    </h2>
 
-# 共通のクエリパラメータを依存性として定義
-def common_query_params(
-    page: int = Query(1, ge=1, description="ページ番号"),
-    limit: int = Query(10, ge=1, le=100, description="取得件数"),
-    sort_by: str = Query("created_at", description="ソートフィールド"),
-    order: str = Query("desc", regex="^(asc|desc)$", description="ソート順")
-) -> Dict[str, Any]:
-    """共通クエリパラメータの依存性"""
-    return {
-        "page": page,
-        "limit": limit,
-        "sort_by": sort_by,
-        "order": order,
-        "offset": (page - 1) * limit
-    }
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">必要なパッケージのインストール</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        SQLAlchemyと、今回はSQLiteを使用するため必要なパッケージをインストールします。
+                    </p>
 
-# APIキー認証のための依存性
-def get_api_key(api_key: str = Query(..., description="APIキー")) -> str:
-    """APIキー認証"""
-    valid_keys = ["secret_key_123", "test_key_456"]
-    
-    if api_key not in valid_keys:
-        raise HTTPException(
-            status_code=401,
-            detail="無効なAPIキーです"
-        )
-    
-    return api_key
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">ターミナル</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># SQLAlchemyのインストール
+pip install sqlalchemy
 
-# データベース接続をシミュレートする依存性
-def get_database() -> Dict[str, Any]:
-    """データベース接続（シミュレート）"""
-    return {
-        "connection": "database_connection_mock",
-        "connected_at": datetime.now()
-    }
-
-# 認証済みユーザー情報取得の依存性
-def get_current_user(api_key: str = Depends(get_api_key)) -> Dict[str, Any]:
-    """現在のユーザー情報取得"""
-    # 実際のシステムではAPIキーからユーザー情報を取得
-    user_map = {
-        "secret_key_123": {"id": 1, "name": "管理者", "role": "admin"},
-        "test_key_456": {"id": 2, "name": "テストユーザー", "role": "user"}
-    }
-    
-    return user_map.get(api_key, {"id": 0, "name": "ゲスト", "role": "guest"})
-
-# 依存性を使用したエンドポイント
-@app.get("/users")
-def get_users(
-    commons: Dict[str, Any] = Depends(common_query_params),
-    current_user: Dict[str, Any] = Depends(get_current_user),
-    db = Depends(get_database)
-):
-    """ユーザー一覧取得（依存性注入使用）"""
-    
-    # 模擬ユーザーデータ
-    all_users = [
-        {"id": i, "name": f"ユーザー{i}", "created_at": "2025-01-01"}
-        for i in range(1, 51)
-    ]
-    
-    # ページネーション適用
-    start = commons["offset"]
-    end = start + commons["limit"]
-    paginated_users = all_users[start:end]
-    
-    return {
-        "users": paginated_users,
-        "pagination": {
-            "page": commons["page"],
-            "limit": commons["limit"],
-            "total": len(all_users),
-            "pages": (len(all_users) + commons["limit"] - 1) // commons["limit"]
-        },
-        "requester": current_user,
-        "db_info": f"Connected at {db['connected_at']}"
-    }
-
-@app.get("/protected-data")
-def get_protected_data(
-    current_user: Dict[str, Any] = Depends(get_current_user)
-):
-    """保護されたデータ（認証必須）"""
-    
-    if current_user["role"] != "admin":
-        raise HTTPException(
-            status_code=403,
-            detail="管理者権限が必要です"
-        )
-    
-    return {
-        "message": "機密データにアクセスしました",
-        "admin_user": current_user["name"],
-        "data": ["重要な情報1", "重要な情報2"]
-    }</code></pre>
+# PostgreSQL使用の場合
+pip install psycopg2-binary</code></pre>
                     </div>
 
-                    <h3 class="section-title">5.2 ミドルウェアの実装</h3>
-                    <p>ミドルウェアは、すべてのリクエストとレスポンスに対して共通の処理を実行する仕組みです。ログ出力、CORS設定、パフォーマンス測定などに活用されます。</p>
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">データベース設定ファイルの作成</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        データベース接続を管理する <code class="bg-slate-200 px-2 py-0.5 rounded text-slate-800">database.py</code> ファイルを作成します。
+                    </p>
 
-                    <div class="exercise-container">
-                        <h5>実習 5-2: カスタムミドルウェアの実装</h5>
-                        <h6>実装例</h6>
-                        <pre class="code-block"><code class="language-python">from fastapi import FastAPI, Request, Response
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
-import time
-import uuid
-import json
-from datetime import datetime
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">database.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python"># SQLAlchemyのコアモジュールをインポート
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-app = FastAPI()
+# データベース接続URL（SQLiteの例）
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 
-# CORS設定
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://mydomain.com"],
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["*"],
+# データベースエンジンの作成
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL,
+    connect_args={"check_same_thread": False}  # SQLiteのみ必要
 )
 
-# 信頼できるホストのみ許可
-app.add_middleware(
-    TrustedHostMiddleware,
-    allowed_hosts=["localhost", "127.0.0.1", "mydomain.com"]
+# セッションローカルクラスの作成
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine
 )
 
-# カスタムログ出力ミドルウェア
-@app.middleware("http")
-async def logging_middleware(request: Request, call_next):
-    """リクエスト・レスポンスログミドルウェア"""
-    
-    # リクエストID生成
-    request_id = str(uuid.uuid4())
-    start_time = time.time()
-    
-    # リクエスト情報のログ出力
-    request_log = {
-        "request_id": request_id,
-        "timestamp": datetime.now().isoformat(),
-        "method": request.method,
-        "url": str(request.url),
-        "client_ip": request.client.host,
-        "user_agent": request.headers.get("User-Agent", ""),
-    }
-    
-    print(f"REQUEST: {json.dumps(request_log, ensure_ascii=False)}")
-    
-    # リクエストヘッダーにIDを追加
-    request.state.request_id = request_id
-    
-    # 次の処理を実行
-    response = await call_next(request)
-    
-    # 処理時間計算
-    process_time = time.time() - start_time
-    
-    # レスポンス情報のログ出力
-    response_log = {
-        "request_id": request_id,
-        "status_code": response.status_code,
-        "process_time": f"{process_time:.4f}s",
-        "response_size": response.headers.get("content-length", "unknown")
-    }
-    
-    print(f"RESPONSE: {json.dumps(response_log, ensure_ascii=False)}")
-    
-    # カスタムヘッダーを追加
-    response.headers["X-Request-ID"] = request_id
-    response.headers["X-Process-Time"] = f"{process_time:.4f}s"
-    
-    return response
+# ORMモデルのベースクラス
+Base = declarative_base()</code></pre>
+                    </div>
 
-# セキュリティヘッダー追加ミドルウェア
-@app.middleware("http")
-async def security_headers_middleware(request: Request, call_next):
-    """セキュリティヘッダー追加ミドルウェア"""
-    
-    response = await call_next(request)
-    
-    # セキュリティヘッダーの追加
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["X-Frame-Options"] = "DENY"
-    response.headers["X-XSS-Protection"] = "1; mode=block"
-    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-    
-    return response
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">PostgreSQLの接続URL</p>
+                                <p class="text-emerald-800 text-sm mt-1 break-words">
+                                    PostgreSQLを使用する場合の接続URL:<br>
+                                    <code class="bg-emerald-100 px-2 py-0.5 rounded text-emerald-900">postgresql://user:password@localhost/dbname</code>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
 
-# エラー処理ミドルウェア
-@app.middleware("http")
-async def error_handling_middleware(request: Request, call_next):
-    """エラー処理ミドルウェア"""
-    
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">データベースセッションの依存性注入</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        FastAPIのDependency Injectionを使用して、エンドポイントでデータベースセッションを利用できるようにします。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">database.py（続き）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python"># データベースセッション取得用の依存性関数
+def get_db():
+    """
+    データベースセッションを提供し、
+    リクエスト終了時に自動的にクローズする
+    """
+    db = SessionLocal()
     try:
-        response = await call_next(request)
-        return response
-    
-    except Exception as exc:
-        # エラーログの出力
-        error_log = {
-            "request_id": getattr(request.state, "request_id", "unknown"),
-            "error": str(exc),
-            "path": request.url.path,
-            "method": request.method,
-            "timestamp": datetime.now().isoformat()
-        }
-        
-        print(f"ERROR: {json.dumps(error_log, ensure_ascii=False)}")
-        
-        # エラーレスポンスの返却
-        return Response(
-            content=json.dumps({
-                "error": "内部サーバーエラーが発生しました",
-                "request_id": getattr(request.state, "request_id", "unknown")
-            }),
-            status_code=500,
-            media_type="application/json"
-        )
+        yield db
+    finally:
+        db.close()</code></pre>
+                    </div>
+                </section>
 
-# テスト用エンドポイント
-@app.get("/test")
-def test_endpoint():
-    """ミドルウェア動作確認用"""
-    return {"message": "ミドルウェアが正常に動作しています"}
+                <!-- セクション3: ORMモデルの定義 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.3 ORMモデルの定義
+                    </h2>
 
-@app.get("/slow")
-def slow_endpoint():
-    """処理時間測定用（遅いエンドポイント）"""
-    import time
-    time.sleep(2)  # 2秒待機
-    return {"message": "遅い処理が完了しました"}
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        データベースのテーブル構造を表すORMモデルを定義します。ここではユーザー情報を管理するシンプルなモデルを作成します。
+                    </p>
 
-@app.get("/error")
-def error_endpoint():
-    """エラー処理確認用"""
-    raise Exception("テスト用エラー")</code></pre>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">models.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python"># SQLAlchemyのカラム型とデータベース設定をインポート
+from sqlalchemy import Boolean, Column, Integer, String
+from database import Base
+
+# Userテーブルに対応するORMモデル
+class User(Base):
+    __tablename__ = "users"  # テーブル名を指定
+
+    # カラム定義
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True)
+    username = Column(String, index=True)
+    hashed_password = Column(String)
+    is_active = Column(Boolean, default=True)</code></pre>
                     </div>
 
-                    <h3 class="section-title">5.3 高度な依存性パターン</h3>
-                    <p>より複雑なアプリケーションでは、階層化された依存性や条件付き依存性が必要になります。</p>
+                    <div class="space-y-4 my-6">
+                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-slate-800 mb-2">Column型の種類</h4>
+                            <ul class="text-slate-600 text-sm space-y-1 ml-4 list-disc">
+                                <li><code class="bg-slate-200 px-1 rounded">Integer</code>: 整数型</li>
+                                <li><code class="bg-slate-200 px-1 rounded">String</code>: 文字列型</li>
+                                <li><code class="bg-slate-200 px-1 rounded">Boolean</code>: 真偽値型</li>
+                                <li><code class="bg-slate-200 px-1 rounded">DateTime</code>: 日時型</li>
+                                <li><code class="bg-slate-200 px-1 rounded">Float</code>: 浮動小数点型</li>
+                            </ul>
+                        </div>
 
-                    <div class="exercise-container">
-                        <h5>実習 5-3: 高度な依存性パターン</h5>
-                        <h6>実装例</h6>
-                        <pre class="code-block"><code class="language-python">from fastapi import FastAPI, Depends, HTTPException, Header
-from typing import Optional, Generator
-import contextlib
-from datetime import datetime, timedelta
+                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-slate-800 mb-2">カラムオプション</h4>
+                            <ul class="text-slate-600 text-sm space-y-1 ml-4 list-disc">
+                                <li><code class="bg-slate-200 px-1 rounded">primary_key=True</code>: 主キーとして設定</li>
+                                <li><code class="bg-slate-200 px-1 rounded">unique=True</code>: 一意制約を追加</li>
+                                <li><code class="bg-slate-200 px-1 rounded">index=True</code>: インデックスを作成（検索高速化）</li>
+                                <li><code class="bg-slate-200 px-1 rounded">default=value</code>: デフォルト値を設定</li>
+                            </ul>
+                        </div>
+                    </div>
 
-app = FastAPI()
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">Pydanticスキーマの定義</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        APIのリクエスト/レスポンス用のPydanticモデルを定義します。
+                    </p>
 
-# 設定管理クラス
-class AppConfig:
-    def __init__(self):
-        self.debug_mode = True
-        self.max_connections = 100
-        self.cache_ttl = 300  # 5分
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">schemas.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">from pydantic import BaseModel, EmailStr
 
-# シングルトンの設定インスタンス
-app_config = AppConfig()
+# ユーザー作成時のリクエストモデル
+class UserCreate(BaseModel):
+    email: EmailStr
+    username: str
+    password: str
 
-def get_config() -> AppConfig:
-    """アプリケーション設定取得"""
-    return app_config
+# ユーザー情報のレスポンスモデル
+class UserResponse(BaseModel):
+    id: int
+    email: str
+    username: str
+    is_active: bool
 
-# データベースコネクションプールのシミュレート
-class DatabasePool:
-    def __init__(self, max_connections: int = 10):
-        self.max_connections = max_connections
-        self.active_connections = 0
-    
-    @contextlib.contextmanager
-    def get_connection(self):
-        if self.active_connections >= self.max_connections:
-            raise HTTPException(
-                status_code=503,
-                detail="データベース接続数が上限に達しています"
+    class Config:
+        from_attributes = True  # ORMモードを有効化</code></pre>
+                    </div>
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-500 text-lg mt-0.5"></i>
+                            <div>
+                                <h3 class="font-semibold text-blue-800 mb-2">ORMモードとは</h3>
+                                <p class="text-blue-900 text-sm">
+                                    <code class="bg-blue-100 px-2 py-0.5 rounded">from_attributes = True</code> を設定することで、SQLAlchemyのORMオブジェクトを直接Pydanticモデルに変換できます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">テーブルの作成</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        定義したモデルからデータベーステーブルを作成します。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">main.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">from fastapi import FastAPI
+from database import engine, Base
+import models
+
+# テーブルを作成（すでに存在する場合はスキップ）
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI()</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション4: CRUDオペレーション -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.4 CRUDオペレーション
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        CRUDとは、Create（作成）、Read（読取）、Update（更新）、Delete（削除）の頭文字です。これらの基本的なデータベース操作を実装します。
+                    </p>
+
+                    <!-- Mermaid図: CRUD操作 -->
+                    <div class="my-6 bg-white p-6 rounded-xl border border-slate-200">
+                        <h3 class="text-base font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-diagram-project text-primary-500"></i>
+                            CRUD操作の流れ
+                        </h3>
+                        <div class="mermaid">
+flowchart TD
+    A[クライアント] --> B{HTTPメソッド}
+    B -->|POST| C[Create<br/>新規作成]
+    B -->|GET| D[Read<br/>読取]
+    B -->|PUT/PATCH| E[Update<br/>更新]
+    B -->|DELETE| F[Delete<br/>削除]
+    C --> G[(データベース)]
+    D --> G
+    E --> G
+    F --> G
+
+    style G fill:#dbeafe,stroke:#3b82f6,stroke-width:2px
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">Create（作成）</h3>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">main.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">from fastapi import Depends
+from sqlalchemy.orm import Session
+from database import get_db
+import models, schemas
+
+@app.post("/users/", response_model=schemas.UserResponse)
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    """新規ユーザーを作成"""
+    # ORMモデルのインスタンスを作成
+    db_user = models.User(
+        email=user.email,
+        username=user.username,
+        hashed_password=user.password  # 実際はハッシュ化が必要
+    )
+    db.add(db_user)  # セッションに追加
+    db.commit()      # データベースにコミット
+    db.refresh(db_user)  # オブジェクトをリフレッシュ
+    return db_user</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">Read（読取）</h3>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">main.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">@app.get("/users/{user_id}", response_model=schemas.UserResponse)
+def get_user(user_id: int, db: Session = Depends(get_db)):
+    """IDでユーザーを取得"""
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+@app.get("/users/", response_model=list[schemas.UserResponse])
+def get_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    """ユーザーのリストを取得"""
+    users = db.query(models.User).offset(skip).limit(limit).all()
+    return users</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">Update（更新）</h3>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">main.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">@app.put("/users/{user_id}", response_model=schemas.UserResponse)
+def update_user(user_id: int, user: schemas.UserCreate,
+                db: Session = Depends(get_db)):
+    """ユーザー情報を更新"""
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # 属性を更新
+    db_user.username = user.username
+    db_user.email = user.email
+    db.commit()
+    db.refresh(db_user)
+    return db_user</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">Delete（削除）</h3>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">main.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">@app.delete("/users/{user_id}")
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    """ユーザーを削除"""
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    db.delete(db_user)
+    db.commit()
+    return {"message": "User deleted successfully"}</code></pre>
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-star text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">クエリメソッド</p>
+                                <p class="text-emerald-800 text-sm mt-1 break-words">
+                                    <code class="bg-emerald-100 px-2 py-0.5 rounded text-emerald-900">query()</code>: クエリを開始<br>
+                                    <code class="bg-emerald-100 px-2 py-0.5 rounded text-emerald-900">filter()</code>: 条件でフィルタリング<br>
+                                    <code class="bg-emerald-100 px-2 py-0.5 rounded text-emerald-900">first()</code>: 最初の1件を取得<br>
+                                    <code class="bg-emerald-100 px-2 py-0.5 rounded text-emerald-900">all()</code>: すべての結果を取得
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション5: トランザクション管理 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.5 トランザクション管理
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        トランザクションは、複数のデータベース操作を1つの単位としてまとめて実行する仕組みです。すべての操作が成功するか、すべて失敗するかのどちらかになります。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">main.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">@app.post("/users/bulk/")
+def create_multiple_users(users: list[schemas.UserCreate],
+                         db: Session = Depends(get_db)):
+    """複数のユーザーを一度に作成（トランザクション）"""
+    try:
+        # 複数のユーザーを追加
+        for user_data in users:
+            db_user = models.User(
+                email=user_data.email,
+                username=user_data.username,
+                hashed_password=user_data.password
             )
-        
-        self.active_connections += 1
-        try:
-            yield f"connection_{self.active_connections}"
-        finally:
-            self.active_connections -= 1
+            db.add(db_user)
 
-db_pool = DatabasePool()
-
-def get_db_connection() -> Generator:
-    """データベース接続取得"""
-    with db_pool.get_connection() as conn:
-        yield conn
-
-# キャッシュマネージャー
-class CacheManager:
-    def __init__(self):
-        self._cache = {}
-        self._timestamps = {}
-    
-    def get(self, key: str, ttl: int = 300):
-        if key not in self._cache:
-            return None
-        
-        if datetime.now() - self._timestamps[key] > timedelta(seconds=ttl):
-            del self._cache[key]
-            del self._timestamps[key]
-            return None
-        
-        return self._cache[key]
-    
-    def set(self, key: str, value):
-        self._cache[key] = value
-        self._timestamps[key] = datetime.now()
-
-cache_manager = CacheManager()
-
-def get_cache() -> CacheManager:
-    """キャッシュマネージャー取得"""
-    return cache_manager
-
-# 認証レベル別の依存性
-class AuthLevel:
-    NONE = 0
-    USER = 1
-    ADMIN = 2
-
-def require_auth_level(min_level: int):
-    """認証レベルチェック用ファクトリー関数"""
-    def check_auth_level(
-        authorization: Optional[str] = Header(None),
-        config: AppConfig = Depends(get_config)
-    ):
-        if config.debug_mode and authorization == "debug":
-            return {"level": AuthLevel.ADMIN, "user": "debug_user"}
-        
-        if not authorization:
-            if min_level > AuthLevel.NONE:
-                raise HTTPException(401, "認証が必要です")
-            return {"level": AuthLevel.NONE, "user": "anonymous"}
-        
-        # 簡単な認証シミュレート
-        if authorization == "user_token":
-            user_level = AuthLevel.USER
-        elif authorization == "admin_token":
-            user_level = AuthLevel.ADMIN
-        else:
-            raise HTTPException(401, "無効な認証トークンです")
-        
-        if user_level < min_level:
-            raise HTTPException(403, "権限が不足しています")
-        
-        return {"level": user_level, "user": f"user_level_{user_level}"}
-    
-    return check_auth_level
-
-# 複数の依存性を組み合わせた高度なエンドポイント
-@app.get("/admin/stats")
-def get_admin_stats(
-    auth_info = Depends(require_auth_level(AuthLevel.ADMIN)),
-    db_conn = Depends(get_db_connection),
-    cache: CacheManager = Depends(get_cache),
-    config: AppConfig = Depends(get_config)
-):
-    """管理者向け統計情報（複数依存性使用）"""
-    
-    # キャッシュから取得を試行
-    cache_key = "admin_stats"
-    cached_data = cache.get(cache_key, config.cache_ttl)
-    
-    if cached_data:
-        return {
-            "data": cached_data,
-            "source": "cache",
-            "admin_user": auth_info["user"],
-            "db_connection": db_conn
-        }
-    
-    # 新しいデータを生成
-    stats_data = {
-        "total_users": 1250,
-        "active_sessions": 45,
-        "server_uptime": "72 hours",
-        "generated_at": datetime.now().isoformat()
-    }
-    
-    # キャッシュに保存
-    cache.set(cache_key, stats_data)
-    
-    return {
-        "data": stats_data,
-        "source": "database",
-        "admin_user": auth_info["user"],
-        "db_connection": db_conn
-    }
-
-@app.get("/user/profile")
-def get_user_profile(
-    auth_info = Depends(require_auth_level(AuthLevel.USER)),
-    config: AppConfig = Depends(get_config)
-):
-    """ユーザープロファイル取得"""
-    return {
-        "user": auth_info["user"],
-        "level": auth_info["level"],
-        "debug_mode": config.debug_mode
-    }
-
-@app.get("/public/info")
-def get_public_info(
-    auth_info = Depends(require_auth_level(AuthLevel.NONE)),
-    config: AppConfig = Depends(get_config)
-):
-    """パブリック情報（認証不要）"""
-    return {
-        "message": "パブリック情報です",
-        "user_type": auth_info["user"],
-        "server_time": datetime.now().isoformat()
-    }</code></pre>
+        db.commit()  # すべて成功したらコミット
+        return {"message": f"{len(users)} users created"}
+    except Exception as e:
+        db.rollback()  # エラーが発生したらロールバック
+        raise HTTPException(status_code=400, detail=str(e))</code></pre>
                     </div>
 
-                    <div class="quiz-container">
-                        <h5>理解度確認クイズ</h5>
-                        <ol>
-                            <li>
-                                <strong>FastAPIで依存性注入を使用するために使うキーワードは？</strong>
-                                <details><summary>解答</summary><p>Depends</p></details>
-                            </li>
-                            <li>
-                                <strong>CORSミドルウェアで許可するオリジンを設定するパラメータは？</strong>
-                                <details><summary>解答</summary><p>allow_origins</p></details>
-                            </li>
-                            <li>
-                                <strong>カスタムHTTPミドルウェアを追加するデコレータは？</strong>
-                                <details><summary>解答</summary><p>@app.middleware("http")</p></details>
-                            </li>
-                        </ol>
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-red-900 font-medium break-words">トランザクションの重要性</p>
+                                <p class="text-red-800 text-sm mt-1 break-words">
+                                    複数の操作を行う場合、途中でエラーが発生するとデータの整合性が失われる可能性があります。トランザクションを使用することで、すべての操作が成功するか、何も変更されないかを保証できます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション6: マイグレーション -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.6 データベースマイグレーション（Alembic）
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Alembicは、SQLAlchemyのマイグレーションツールです。データベーススキーマの変更履歴を管理し、バージョン管理された方法でスキーマを更新できます。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">Alembicのインストールと初期化</h3>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">ターミナル</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># Alembicのインストール
+pip install alembic
+
+# Alembicの初期化
+alembic init alembic</code></pre>
                     </div>
 
-                    <h3 class="section-title">5.4 まとめ</h3>
-                    <div class="highlight">
-                        <h6>この章で習得したスキル</h6>
-                        <ul>
-                            <li>依存性注入による効率的なコード共通化</li>
-                            <li>ミドルウェアを使った横断的な処理実装</li>
-                            <li>CORS設定とセキュリティヘッダーの追加</li>
-                            <li>ログ出力とリクエスト追跡機能</li>
-                            <li>階層化された依存性設計</li>
-                        </ul>
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">マイグレーションファイルの作成</h3>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">ターミナル</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># 新しいマイグレーションファイルを自動生成
+alembic revision --autogenerate -m "Create users table"
+
+# マイグレーションを適用
+alembic upgrade head
+
+# マイグレーションを1つ戻す
+alembic downgrade -1</code></pre>
                     </div>
 
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="fastapi-learning-material-04.html" class="btn btn-secondary">← 前の章: レスポンス処理と例外ハンドリング</a>
-                        <a href="fastapi-learning-material-06.html" class="btn btn-primary">次の章: データベース連携とORM →</a>
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-500 text-lg mt-0.5"></i>
+                            <div>
+                                <h3 class="font-semibold text-blue-800 mb-2">マイグレーションのメリット</h3>
+                                <ul class="text-blue-900 text-sm space-y-2 ml-6">
+                                    <li class="list-disc">スキーマ変更の履歴を管理できる</li>
+                                    <li class="list-disc">チーム開発でスキーマ変更を共有できる</li>
+                                    <li class="list-disc">本番環境への安全なデプロイが可能</li>
+                                    <li class="list-disc">変更を元に戻すロールバック機能</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 実習カード -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">
+                                実習 5-1: 商品管理APIの作成
+                            </h3>
+                            <p class="text-purple-900 mb-4 break-words">
+                                商品情報を管理するCRUD APIを実装しましょう。
+                            </p>
+
+                            <h4 class="font-medium text-purple-800 mb-2">手順</h4>
+                            <ol class="space-y-3 mb-4">
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">1</span>
+                                    <span class="flex-1 min-w-0 break-words">models.pyにProductモデルを作成（name, price, stock, descriptionカラム）</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">2</span>
+                                    <span class="flex-1 min-w-0 break-words">schemas.pyにProductCreate, ProductResponseスキーマを定義</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">3</span>
+                                    <span class="flex-1 min-w-0 break-words">main.pyに商品のCRUDエンドポイントを実装</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-purple-900">
+                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
+                                                 flex items-center justify-center text-sm font-medium">4</span>
+                                    <span class="flex-1 min-w-0 break-words">Swagger UIで動作確認</span>
+                                </li>
+                            </ol>
+
+                            <h4 class="font-medium text-purple-800 mb-2">必要なエンドポイント</h4>
+                            <ul class="space-y-2 mb-4 text-purple-900 text-sm">
+                                <li class="flex items-start gap-2">
+                                    <code class="bg-purple-100 px-2 py-0.5 rounded flex-shrink-0">POST /products/</code>
+                                    <span>新規商品登録</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <code class="bg-purple-100 px-2 py-0.5 rounded flex-shrink-0">GET /products/</code>
+                                    <span>商品一覧取得</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <code class="bg-purple-100 px-2 py-0.5 rounded flex-shrink-0">GET /products/{id}</code>
+                                    <span>商品詳細取得</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <code class="bg-purple-100 px-2 py-0.5 rounded flex-shrink-0">PUT /products/{id}</code>
+                                    <span>商品情報更新</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <code class="bg-purple-100 px-2 py-0.5 rounded flex-shrink-0">DELETE /products/{id}</code>
+                                    <span>商品削除</span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </main>
-        </div>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q1. ORMの主なメリットを3つ挙げてください。</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            1. <strong>SQLを直接書かずに済む</strong>: Pythonのコードでデータベース操作が可能<br>
+                                            2. <strong>データベース非依存</strong>: 接続文字列を変えるだけで異なるDBに切り替え可能<br>
+                                            3. <strong>セキュリティ向上</strong>: SQLインジェクション対策が自動的に行われる
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q2. <code class="bg-blue-100 px-1 rounded">db.commit()</code> と <code class="bg-blue-100 px-1 rounded">db.rollback()</code> の違いは何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <code class="bg-blue-200 px-1 rounded">commit()</code>: セッション内の変更をデータベースに確定させます。<br>
+                                            <code class="bg-blue-200 px-1 rounded">rollback()</code>: セッション内の変更を破棄し、前回のコミット時点に戻します。エラーが発生した際にデータの整合性を保つために使用します。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q3. Pydanticモデルで <code class="bg-blue-100 px-1 rounded">from_attributes = True</code> を設定する理由は何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            SQLAlchemyのORMオブジェクト（属性アクセス形式）を直接Pydanticモデルに変換できるようにするためです。これにより、データベースから取得したオブジェクトをレスポンスモデルとして返す際の変換が簡単になります。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q4. Alembicを使用するメリットは何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            データベーススキーマの変更履歴を管理でき、チーム開発でスキーマ変更を共有しやすくなります。また、変更を段階的に適用したり、問題があれば元に戻したり（ロールバック）することができます。本番環境への安全なデプロイも可能になります。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 章のまとめ -->
+                <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6 my-8">
+                    <h2 class="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-bookmark text-slate-600"></i>
+                        第5章のまとめ
+                    </h2>
+                    <div class="space-y-3 text-slate-700">
+                        <p class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <span>SQLAlchemyを使用することで、Pythonコードでデータベースをオブジェクトとして扱えます</span>
+                        </p>
+                        <p class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <span>ORMモデルとPydanticスキーマを分離することで、データベース層とAPI層を明確に区別できます</span>
+                        </p>
+                        <p class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <span>CRUDオペレーションを実装することで、基本的なデータベース操作を網羅できます</span>
+                        </p>
+                        <p class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <span>トランザクション管理により、データの整合性を保証できます</span>
+                        </p>
+                        <p class="flex items-start gap-2">
+                            <i class="fas fa-check text-emerald-500 mt-1"></i>
+                            <span>Alembicを使用することで、データベーススキーマのバージョン管理が可能になります</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <a href="fastapi-learning-material-04.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
+                                  transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">パラメータと検証</span>
+                        </div>
+                    </a>
+                    <a href="fastapi-learning-material-06.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">認証とセキュリティ</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
     </div>
-    
-    <footer class="bg-dark text-white mt-5">
-        <div class="container-fluid py-3">
-            <div class="row">
-                <div class="col-12 text-center">
-                    <p class="mb-0">© 2025 F-Circle. All rights reserved.<br>
-本資料はAIツールを活用し、人間による編集・監修のもと作成されています。無断転載・再配布を禁じます。</p>
+
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </footer>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script>
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'default'
-        });
-    </script>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- サイドバー生成 -->
+    <script src="sidebar-content.js"></script>
+
+    <!-- 共通JavaScript -->
+    <script src="main.js"></script>
+
+    <!-- 描画ツール -->
+    <script src="drawing-tool.js"></script>
 </body>
 </html>
