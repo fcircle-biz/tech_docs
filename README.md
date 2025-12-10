@@ -6,6 +6,7 @@
 
 - [📖 概要](#-概要)
 - [📖 学習ガイドライン](#-学習ガイドライン)
+- [📖 スライド資料](#-スライド資料)
 - [📖 チュートリアル](#-チュートリアル)
 
 ---
@@ -48,8 +49,8 @@
 #### JavaScript/Node.js
 - **[JavaScript学習ガイド](docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/README.md)** - プログラミング未経験者向けJavaScript入門12章構成カリキュラム
 - **[TypeScript学習ガイド](docs/guide/programming-languages/javascript-ecosystem/typescript/README.md)** - TypeScriptの基礎をプログラミング完全未経験者向けに段階的に学習するためのカリキュラム。型システムを活用した安全なコード作成を15章で完全習得
-- **[Next.js学習ガイド](docs/guide/programming-languages/javascript-ecosystem/nextjs/README.md)** - Next.jsフレームワークを使用したモダンなReactアプリケーション開発の基礎を入門者向けに段階的に学習するためのカリキュラム（15章構成）
 - **[React学習ガイド](docs/guide/programming-languages/javascript-ecosystem/react/README.md)** - Reactライブラリを使用したモダンなWebアプリケーション開発の基礎を入門者向けに段階的に学習するためのカリキュラム（12章構成）
+- **[Next.js学習ガイド](docs/guide/programming-languages/javascript-ecosystem/nextjs/README.md)** - Next.jsフレームワークを使用したモダンなReactアプリケーション開発の基礎を入門者向けに段階的に学習するためのカリキュラム（15章構成）
 
 #### .NET
 - **[VB.NET学習ガイド](docs/guide/programming-languages/dotnet-ecosystem/vbnet/README.md)** - VB.NET言語基礎からオブジェクト指向プログラミングまで10章完成カリキュラム
@@ -75,7 +76,7 @@
 
 - **[SQL学習ガイド](docs/guide/data-ai-category/database/sql/README.md)** - SQL基本概念からPostgreSQL高度機能まで12章完成カリキュラム
 - **[Oracle学習ガイド](docs/guide/data-ai-category/database/oracle/README.md)** - Oracle Database入門から基本的な運用まで10章完成カリキュラム
-- **[PL/SQL学習ガイド](docs/guide/data-ai-category/database/plsql/README.md)** - Oracle PL/SQLの基礎から応用まで10章完成カリキュラム
+- **[PL/SQL学習ガイド](docs/guide/data-ai-category/database/plsql/README.md)** - Oracle PL/SQLの基礎から応用まで12章完成カリキュラム
 - **[DB2学習ガイド](docs/guide/data-ai-category/database/db2/README.md)** - IBM DB2データベース入門からDocker環境での運用管理まで8章完成カリキュラム
 
 ### クラウド／インフラ
@@ -126,6 +127,16 @@
 
 ---
 
+## 📖 スライド資料
+
+PDF形式のスライド教材をブラウザで閲覧できる教材です。
+
+### Microsoft Office
+
+- **[Excel入門](docs/slide/business-saas/microsoft-office/excel-basics/index.html)** - Excelの基本操作から実践的な活用方法まで学べるスライド教材
+
+---
+
 ## 📖 チュートリアル
 
 実際にコードを書きながら学ぶ実践的なチュートリアル集です。各チュートリアルはユーザー管理システムの開発を通じて、フレームワークの理解を深めます。
@@ -145,8 +156,8 @@
 
 ### JavaScript/Node.js
 
-- **[Next.js実践チュートリアル](docs/tutorial/javascript-ecosystem/nextjs/README.md)** - Next.jsフレームワークを使用したモダンなReactアプリケーション開発の実践的なチュートリアル（10章構成）
 - **[React実践チュートリアル](docs/tutorial/javascript-ecosystem/react/README.md)** - Reactライブラリを使用したモダンなWebアプリケーション開発の実践的なチュートリアル（12章構成）
+- **[Next.js実践チュートリアル](docs/tutorial/javascript-ecosystem/nextjs/README.md)** - Next.jsフレームワークを使用したモダンなReactアプリケーション開発の実践的なチュートリアル（10章構成）
 
 ### .NET
 

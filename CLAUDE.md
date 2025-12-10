@@ -11,8 +11,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Japanese technical documentation repository containing structured learning materials (guides, tutorials, cheatsheets) covering IT and software development topics. All content is static HTML/Markdown served via GitHub Pages.
 
-**Note:** `/docs/slide/` is deprecated and planned for removal.
-
 No build/lint/test framework - content is static HTML/Markdown validated through template standards.
 
 ## Content Architecture
@@ -21,9 +19,11 @@ No build/lint/test framework - content is static HTML/Markdown validated through
 
 - `/docs/guide/` - Comprehensive learning guides (theory-focused)
 - `/docs/tutorial/` - Hands-on project-based tutorials
+- `/docs/slide/` - PDF slide materials with HTML viewer
 - `/docs/cheatsheet/` - Quick reference materials
 - `/templates/v2/` - HTML/CSS template standards (current)
 - `/specs/` - System specifications for tutorial projects
+- `/work_pdf/` - Temporary folder for PDF files to be processed by slide-creator
 - `/.claude/agents/` - Claude agent definitions for automated content creation
 
 ### 9-Level Taxonomy (from tech-knowledge-map.md)
@@ -66,6 +66,7 @@ Available automation agents in `.claude/agents/`:
 | `illustration-creator-workflow` | Full workflow (suggestions → parallel image generation & HTML insert) | `@agent-illustration-creator-workflow [directory-path]` |
 | `illustration-creator-step1` | Analyze HTML guides and suggest illustrations | `@agent-illustration-creator-step1 [directory-path]` |
 | `illustration-creator-step2` | Generate placeholder JPGs, insert into HTML (parallel subagents for multi-chapter) | `@agent-illustration-creator-step2 [suggestions-md-path] [chapter?]` |
+| `slide-creator` | Create PDF slide viewer from work_pdf/ folder | `@agent-slide-creator [title]` |
 
 ### Agent Execution Rules (IMPORTANT)
 
@@ -98,6 +99,12 @@ HTML content must follow standards in `/templates/v2/`:
 - **styles.css** - Common custom styles (green header)
 - **main.js** - Common functionality
 - **drawing-tool.js** - Drawing tool functionality
+
+### Template Files (`slide/`) - For PDF Slide Materials
+- **index.html** - Slide viewer template
+- **slide-content.js** - Slide definitions (customize per project)
+- **styles.css** - Common custom styles
+- **main.js** - Common functionality (PDF viewer, navigation)
 
 ### Reference Documents (`reference/`)
 - **css-styles.md** - Tailwind CSS style guide
