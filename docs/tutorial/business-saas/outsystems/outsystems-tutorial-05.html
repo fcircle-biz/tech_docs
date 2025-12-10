@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>OutSystemsチュートリアル ステップ5 - タスクを一覧表示しよう</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // チュートリアル推奨カラー: Emerald
+                        primary: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="w-full px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fas fa-cube text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
+
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">OutSystems実践チュートリアル</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-hammer text-yellow-300 text-[8px]"></i>
+                                ハンズオン
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>ローコード開発</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 1.5時間</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="#" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="#" class="hover:text-primary-600 transition-colors">OutSystems</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">ステップ5</span>
+                </nav>
+
+                <!-- ステップヘッダー -->
+                <header class="mb-8">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full
+                                     bg-primary-100 text-primary-700 text-sm font-semibold">
+                            <span class="w-6 h-6 flex items-center justify-center
+                                         bg-primary-500 text-white rounded-full text-xs">5</span>
+                            ステップ5
+                        </span>
+                        <span class="text-sm text-slate-500">
+                            <i class="fas fa-clock mr-1"></i>所要時間: 約1.5時間
+                        </span>
+                    </div>
+                    <h1 class="text-3xl font-bold text-slate-900 mb-2">タスクを一覧表示しよう - アグリゲートとリスト</h1>
+                    <p class="text-slate-600">保存されているタスクを画面に一覧で表示します。データベースからデータを取り出して表示する方法を学びます。</p>
+                </header>
+
+                <!-- このステップの目標 -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-6 mb-8">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-flag-checkered text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">このステップで学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-caret-right text-amber-500 mt-1"></i>
+                                    <span>アグリゲートとは何か（データを取り出す仕組み）</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-caret-right text-amber-500 mt-1"></i>
+                                    <span>アグリゲートの作成方法</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-caret-right text-amber-500 mt-1"></i>
+                                    <span>リストウィジェットの使い方</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-caret-right text-amber-500 mt-1"></i>
+                                    <span>データの繰り返し表示</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-caret-right text-amber-500 mt-1"></i>
+                                    <span>表示形式のカスタマイズ</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-caret-right text-amber-500 mt-1"></i>
+                                    <span>テストデータの作成と確認</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション1: アグリゲートとは -->
+                <section class="mb-10">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-6">
+                        5.1 アグリゲートとは？
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-6">
+                        前のステップで作成した「Task」エンティティには、タスクのデータが保存されています。
+                        このデータを画面に表示するには、まず<strong>アグリゲート（Aggregate）</strong>を使ってデータベースからデータを取り出す必要があります。
+                    </p>
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-500 text-lg mt-0.5"></i>
+                            <div>
+                                <h3 class="font-semibold text-blue-800 mb-2">アグリゲートとは</h3>
+                                <p class="text-blue-900 text-sm mb-3">
+                                    アグリゲートは、データベースからデータを「取り出す」ための機能です。
+                                    OutSystemsでは、複雑なSQLクエリを書く代わりに、視覚的にデータの取り出し方を設定できます。
+                                </p>
+                                <ul class="space-y-2 text-blue-900 text-sm">
+                                    <li class="flex items-start gap-2">
+                                        <i class="fas fa-check-circle text-blue-500 mt-1 flex-shrink-0"></i>
+                                        <span><strong>目的:</strong> エンティティに保存されたデータを読み取る</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i class="fas fa-check-circle text-blue-500 mt-1 flex-shrink-0"></i>
+                                        <span><strong>特徴:</strong> ドラッグ&ドロップでデータの絞り込みや並び替えができる</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <i class="fas fa-check-circle text-blue-500 mt-1 flex-shrink-0"></i>
+                                        <span><strong>結果:</strong> 画面で使えるデータのリストとして提供される</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mermaid mb-8">
+flowchart LR
+    A[(Task エンティティ<br/>データベース)] --> B[アグリゲート<br/>データ取得]
+    B --> C[画面<br/>タスク一覧表示]
+
+    style B fill:#d1fae5,stroke:#10b981,stroke-width:2px
+                    </div>
+                </section>
+
+                <!-- セクション2: アグリゲートの作成 -->
+                <section class="mb-10">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-6">
+                        5.2 アグリゲートの作成
+                    </h2>
+
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                                rounded-xl overflow-hidden mb-8">
+                        <div class="bg-purple-100 px-6 py-3 border-b border-purple-200">
+                            <h3 class="font-semibold text-purple-800 flex items-center gap-2">
+                                <i class="fas fa-hammer"></i>
+                                実装 5-1: タスク一覧を取得するアグリゲートの作成
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-purple-900 mb-6">
+                                まず、画面でタスクのデータを取得するためのアグリゲートを作成します。
+                            </p>
+
+                            <!-- 手順リスト -->
+                            <div class="space-y-6">
+                                <!-- 手順1 -->
+                                <div class="flex gap-4">
+                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
+                                                flex items-center justify-center text-white font-bold text-sm">1</div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-purple-800 mb-2">ホーム画面を開く</h4>
+                                        <p class="text-purple-900 text-sm mb-3">
+                                            Service Studioで、前のステップで作成した「Home」スクリーンをダブルクリックして開きます。
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- 手順2 -->
+                                <div class="flex gap-4">
+                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
+                                                flex items-center justify-center text-white font-bold text-sm">2</div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-purple-800 mb-2">データタブを確認</h4>
+                                        <p class="text-purple-900 text-sm mb-3">
+                                            画面右側のプロパティエリアの上部にある「Data」タブをクリックします。
+                                            ここでアグリゲートを作成・管理できます。
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- 手順3 -->
+                                <div class="flex gap-4">
+                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
+                                                flex items-center justify-center text-white font-bold text-sm">3</div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-purple-800 mb-2">新しいアグリゲートを追加</h4>
+                                        <p class="text-purple-900 text-sm mb-3">
+                                            Dataタブ内で右クリックし、「Fetch Data from Database」→「Aggregate」を選択します。
+                                            または、ツールバーの「Aggregate」ボタンをクリックします。
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- 手順4 -->
+                                <div class="flex gap-4">
+                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
+                                                flex items-center justify-center text-white font-bold text-sm">4</div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-purple-800 mb-2">Taskエンティティをドラッグ</h4>
+                                        <p class="text-purple-900 text-sm mb-3">
+                                            左側のツールボックスから「Data」タブを開き、「Task」エンティティを探します。
+                                            「Task」を、画面中央のアグリゲートエディタにドラッグ&ドロップします。
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- 手順5 -->
+                                <div class="flex gap-4">
+                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
+                                                flex items-center justify-center text-white font-bold text-sm">5</div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-purple-800 mb-2">アグリゲート名を設定</h4>
+                                        <p class="text-purple-900 text-sm mb-3">
+                                            作成されたアグリゲートは自動的に「GetTasks」などの名前が付けられます。
+                                            わかりやすい名前に変更する場合は、プロパティで「Name」を編集します（例: GetAllTasks）。
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- 手順6 -->
+                                <div class="flex gap-4">
+                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
+                                                flex items-center justify-center text-white font-bold text-sm">6</div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-purple-800 mb-2">並び替え設定（オプション）</h4>
+                                        <p class="text-purple-900 text-sm mb-3">
+                                            タスクを作成日時の新しい順に表示したい場合は、「Task」エンティティの下にある「Sort」をクリックし、
+                                            「CreatedDate」を選択して「Descending」（降順）を選びます。
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div>
+                                <p class="text-blue-900 font-medium">ヒント</p>
+                                <p class="text-blue-800 text-sm mt-1">
+                                    アグリゲートには、フィルター（Filter）を追加することで、特定の条件に合うデータだけを取得できます。
+                                    例えば「完了していないタスクだけ」を表示したい場合などに使います。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション3: リストウィジェットの追加 -->
+                <section class="mb-10">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-6">
+                        5.3 リストウィジェットでデータを表示
+                    </h2>
+
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                                rounded-xl overflow-hidden mb-8">
+                        <div class="bg-purple-100 px-6 py-3 border-b border-purple-200">
+                            <h3 class="font-semibold text-purple-800 flex items-center gap-2">
+                                <i class="fas fa-hammer"></i>
+                                実装 5-2: リストウィジェットの配置
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-purple-900 mb-6">
+                                アグリゲートで取得したタスクのデータを、画面に一覧表示するためのリストウィジェットを配置します。
+                            </p>
+
+                            <!-- 手順リスト -->
+                            <div class="space-y-6">
+                                <!-- 手順1 -->
+                                <div class="flex gap-4">
+                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
+                                                flex items-center justify-center text-white font-bold text-sm">1</div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-purple-800 mb-2">Listウィジェットを探す</h4>
+                                        <p class="text-purple-900 text-sm mb-3">
+                                            左側のツールボックスから「Widget」→「List」を探します。
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- 手順2 -->
+                                <div class="flex gap-4">
+                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
+                                                flex items-center justify-center text-white font-bold text-sm">2</div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-purple-800 mb-2">画面に配置</h4>
+                                        <p class="text-purple-900 text-sm mb-3">
+                                            「List」ウィジェットを、画面のメインコンテンツエリア（Containerの中など）にドラッグ&ドロップします。
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- 手順3 -->
+                                <div class="flex gap-4">
+                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
+                                                flex items-center justify-center text-white font-bold text-sm">3</div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-purple-800 mb-2">データソースを設定</h4>
+                                        <p class="text-purple-900 text-sm mb-3">
+                                            Listウィジェットを選択し、右側のプロパティで「Source」（データソース）を設定します。
+                                            ドロップダウンから、先ほど作成した「GetAllTasks.List」を選択します。
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- 手順4 -->
+                                <div class="flex gap-4">
+                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
+                                                flex items-center justify-center text-white font-bold text-sm">4</div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-purple-800 mb-2">リストアイテムの内容を設計</h4>
+                                        <p class="text-purple-900 text-sm mb-3">
+                                            Listウィジェットの中には、自動的に「ListItem」という繰り返し部分が作成されます。
+                                            この中にタスクの情報（タイトル、説明など）を表示するウィジェットを配置します。
+                                        </p>
+                                        <ul class="space-y-2 text-purple-900 text-sm">
+                                            <li class="flex items-start gap-2">
+                                                <i class="fas fa-circle text-purple-500 text-[6px] mt-1.5"></i>
+                                                <span>Textウィジェットをドラッグして、「GetAllTasks.List.Current.Task.Title」をバインド</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                                <i class="fas fa-circle text-purple-500 text-[6px] mt-1.5"></i>
+                                                <span>もう1つTextウィジェットを追加して、「GetAllTasks.List.Current.Task.Description」をバインド</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- 手順5 -->
+                                <div class="flex gap-4">
+                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
+                                                flex items-center justify-center text-white font-bold text-sm">5</div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-purple-800 mb-2">スタイルを整える</h4>
+                                        <p class="text-purple-900 text-sm mb-3">
+                                            タイトルのTextウィジェットには「Heading5」などのスタイルを適用し、
+                                            説明文は通常のテキストで表示するなど、見やすくデザインします。
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-star text-emerald-600 mt-1"></i>
+                            <div>
+                                <p class="text-emerald-900 font-medium">重要ポイント</p>
+                                <p class="text-emerald-800 text-sm mt-1">
+                                    Listウィジェットは、データソースに指定されたリストの各アイテムに対して、
+                                    ListItemの内容を繰り返し表示します。これにより、複数のタスクを自動的に一覧表示できます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション4: テストデータの作成 -->
+                <section class="mb-10">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-6">
+                        5.4 テストデータの作成と確認
+                    </h2>
+
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                                rounded-xl overflow-hidden mb-8">
+                        <div class="bg-purple-100 px-6 py-3 border-b border-purple-200">
+                            <h3 class="font-semibold text-purple-800 flex items-center gap-2">
+                                <i class="fas fa-hammer"></i>
+                                実装 5-3: テストデータの追加
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-purple-900 mb-6">
+                                一覧表示を確認するために、いくつかのサンプルタスクをデータベースに追加します。
+                            </p>
+
+                            <!-- 手順リスト -->
+                            <div class="space-y-6">
+                                <!-- 手順1 -->
+                                <div class="flex gap-4">
+                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
+                                                flex items-center justify-center text-white font-bold text-sm">1</div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-purple-800 mb-2">Dataタブを開く</h4>
+                                        <p class="text-purple-900 text-sm mb-3">
+                                            Service Studioの左側のツールボックスで「Data」タブをクリックし、
+                                            「Entities」フォルダの中にある「Task」を右クリックします。
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- 手順2 -->
+                                <div class="flex gap-4">
+                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
+                                                flex items-center justify-center text-white font-bold text-sm">2</div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-purple-800 mb-2">「View Data」を選択</h4>
+                                        <p class="text-purple-900 text-sm mb-3">
+                                            右クリックメニューから「View or Edit Data」を選択します。
+                                            データベースの内容を直接見て編集できる画面が開きます。
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- 手順3 -->
+                                <div class="flex gap-4">
+                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
+                                                flex items-center justify-center text-white font-bold text-sm">3</div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-purple-800 mb-2">新しい行を追加</h4>
+                                        <p class="text-purple-900 text-sm mb-3">
+                                            画面下部の「Add」ボタンをクリックして、新しいタスクのレコードを追加します。
+                                            以下のようなテストデータを入力してみましょう：
+                                        </p>
+                                        <div class="bg-purple-100 rounded-lg p-4 border border-purple-200">
+                                            <ul class="space-y-2 text-purple-900 text-sm">
+                                                <li><strong>タスク1:</strong> Title: "プロジェクト計画書を作成", Description: "Q1のプロジェクト計画をまとめる", IsCompleted: False</li>
+                                                <li><strong>タスク2:</strong> Title: "チームミーティング資料準備", Description: "週次ミーティング用のスライドを作成", IsCompleted: False</li>
+                                                <li><strong>タスク3:</strong> Title: "顧客へのメール返信", Description: "見積もり依頼への回答を送る", IsCompleted: True</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 手順4 -->
+                                <div class="flex gap-4">
+                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
+                                                flex items-center justify-center text-white font-bold text-sm">4</div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-purple-800 mb-2">保存して閉じる</h4>
+                                        <p class="text-purple-900 text-sm mb-3">
+                                            すべてのテストデータを入力したら、画面を閉じます。変更は自動的に保存されます。
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション5: 動作確認 -->
+                <section class="mb-10">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-6">
+                        5.5 動作確認
+                    </h2>
+
+                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200
+                                rounded-xl p-6 mb-6">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg
+                                        flex items-center justify-center">
+                                <i class="fas fa-play text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-lg font-semibold text-emerald-800 mb-3">アプリケーションを実行</h3>
+                                <ol class="space-y-3">
+                                    <li class="flex items-start gap-3 text-emerald-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-emerald-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
+                                        <span>Service Studioで「1-Click Publish」ボタンをクリックして、アプリを公開します</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-emerald-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-emerald-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
+                                        <span>公開が完了したら、「Open in Browser」をクリックして、ブラウザでアプリを開きます</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-emerald-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-emerald-200 rounded-full flex items-center justify-center text-sm font-medium">3</span>
+                                        <span>ホーム画面に、先ほど追加したテストデータのタスクが一覧で表示されることを確認します</span>
+                                    </li>
+                                </ol>
+
+                                <h4 class="font-medium text-emerald-800 mb-2 mt-6">
+                                    <i class="fas fa-check-circle mr-2"></i>期待される結果
+                                </h4>
+                                <div class="bg-emerald-100 rounded-lg p-4 border border-emerald-200">
+                                    <ul class="text-emerald-900 text-sm space-y-2">
+                                        <li class="flex items-start gap-2">
+                                            <i class="fas fa-circle text-emerald-500 text-[6px] mt-1.5"></i>
+                                            <span>画面に3件のタスクが表示される</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <i class="fas fa-circle text-emerald-500 text-[6px] mt-1.5"></i>
+                                            <span>各タスクのタイトルと説明が正しく表示されている</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <i class="fas fa-circle text-emerald-500 text-[6px] mt-1.5"></i>
+                                            <span>作成日時の新しい順（設定した場合）に並んでいる</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション6: 表示のカスタマイズ -->
+                <section class="mb-10">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-6">
+                        5.6 表示形式のカスタマイズ
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-6">
+                        タスク一覧の見た目をより見やすく、わかりやすくカスタマイズしましょう。
+                    </p>
+
+                    <div class="grid md:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-paint-brush text-white"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-emerald-800 mb-2">スタイルの適用</h3>
+                                    <p class="text-emerald-900 text-sm">
+                                        ListItemにCSSクラスを追加して、背景色や枠線、余白などを設定できます。
+                                        例: "list-item-card", "padding-base"
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-check-square text-white"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-emerald-800 mb-2">完了状態の表示</h3>
+                                    <p class="text-emerald-900 text-sm">
+                                        IsCompletedの値に応じて、完了したタスクに異なるスタイル（グレーアウトなど）を適用できます。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-calendar text-white"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-emerald-800 mb-2">日付の表示</h3>
+                                    <p class="text-emerald-900 text-sm">
+                                        CreatedDateをTextウィジェットで表示し、フォーマットを設定して読みやすくします。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-th-list text-white"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-emerald-800 mb-2">空リストの表示</h3>
+                                    <p class="text-emerald-900 text-sm">
+                                        タスクが1件もない場合に「タスクがありません」などのメッセージを表示する設定ができます。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mermaid mb-8">
+flowchart TD
+    A[アグリゲート実行] --> B{データあり?}
+    B -- はい --> C[リスト表示]
+    B -- いいえ --> D[空メッセージ表示]
+    C --> E[各タスクを繰り返し表示]
+    E --> F{完了済み?}
+    F -- はい --> G[グレー表示]
+    F -- いいえ --> H[通常表示]
+                    </div>
+                </section>
+
+                <!-- トラブルシューティング -->
+                <section class="mb-10">
+                    <div class="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200
+                                rounded-xl overflow-hidden">
+                        <div class="bg-orange-100 px-6 py-3 border-b border-orange-200">
+                            <h3 class="font-semibold text-orange-800 flex items-center gap-2">
+                                <i class="fas fa-tools"></i>
+                                トラブルシューティング
+                            </h3>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <!-- エラー1 -->
+                            <details class="group">
+                                <summary class="flex items-center gap-3 cursor-pointer list-none
+                                               p-3 rounded-lg bg-white border border-orange-200
+                                               hover:bg-orange-50 transition-colors">
+                                    <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                    <span class="font-medium text-orange-800">タスクが1件も表示されない</span>
+                                    <i class="fas fa-chevron-down ml-auto text-orange-400
+                                              transition-transform group-open:rotate-180"></i>
+                                </summary>
+                                <div class="mt-3 pl-10 text-orange-900">
+                                    <p class="mb-2"><strong>原因:</strong> テストデータが登録されていない、またはアグリゲートの設定が正しくない</p>
+                                    <p><strong>解決方法:</strong></p>
+                                    <ul class="list-disc pl-5 mt-2 space-y-1">
+                                        <li>「View or Edit Data」でTaskエンティティにデータが存在するか確認</li>
+                                        <li>アグリゲートのSourceが正しくTaskエンティティを参照しているか確認</li>
+                                        <li>ListウィジェットのSourceプロパティが「GetAllTasks.List」になっているか確認</li>
+                                        <li>フィルター設定で誤ってすべてのデータが除外されていないか確認</li>
+                                    </ul>
+                                </div>
+                            </details>
+
+                            <!-- エラー2 -->
+                            <details class="group">
+                                <summary class="flex items-center gap-3 cursor-pointer list-none
+                                               p-3 rounded-lg bg-white border border-orange-200
+                                               hover:bg-orange-50 transition-colors">
+                                    <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                    <span class="font-medium text-orange-800">タスクのタイトルや説明が表示されない</span>
+                                    <i class="fas fa-chevron-down ml-auto text-orange-400
+                                              transition-transform group-open:rotate-180"></i>
+                                </summary>
+                                <div class="mt-3 pl-10 text-orange-900">
+                                    <p class="mb-2"><strong>原因:</strong> TextウィジェットのバインディングExpressionが正しく設定されていない</p>
+                                    <p><strong>解決方法:</strong></p>
+                                    <ul class="list-disc pl-5 mt-2 space-y-1">
+                                        <li>Textウィジェットを選択し、プロパティの「Expression」を確認</li>
+                                        <li>「GetAllTasks.List.Current.Task.Title」のように、正しいパスが設定されているか確認</li>
+                                        <li>テストデータにTitle、Descriptionの値が入力されているか確認</li>
+                                    </ul>
+                                </div>
+                            </details>
+
+                            <!-- エラー3 -->
+                            <details class="group">
+                                <summary class="flex items-center gap-3 cursor-pointer list-none
+                                               p-3 rounded-lg bg-white border border-orange-200
+                                               hover:bg-orange-50 transition-colors">
+                                    <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                    <span class="font-medium text-orange-800">データの並び順が期待通りではない</span>
+                                    <i class="fas fa-chevron-down ml-auto text-orange-400
+                                              transition-transform group-open:rotate-180"></i>
+                                </summary>
+                                <div class="mt-3 pl-10 text-orange-900">
+                                    <p class="mb-2"><strong>原因:</strong> アグリゲートのSort設定が正しくない</p>
+                                    <p><strong>解決方法:</strong></p>
+                                    <ul class="list-disc pl-5 mt-2 space-y-1">
+                                        <li>アグリゲートを開き、Sortセクションを確認</li>
+                                        <li>CreatedDateで並び替えたい場合は、「CreatedDate」を選択し、「Descending」（降順）または「Ascending」（昇順）を設定</li>
+                                        <li>1-Click Publishで再公開してから確認</li>
+                                    </ul>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ステップ完了チェック -->
+                <section class="mb-10">
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200
+                                rounded-xl p-6">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                        flex items-center justify-center">
+                                <i class="fas fa-clipboard-check text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-lg font-semibold text-blue-800 mb-4">ステップ完了チェック</h3>
+                                <p class="text-blue-900 mb-4">以下の項目が完了していることを確認してください：</p>
+
+                                <ul class="space-y-3">
+                                    <li class="checkbox-item flex items-center gap-3">
+                                        <input type="checkbox" id="check1"
+                                               class="w-5 h-5 rounded border-blue-300 text-blue-500
+                                                      focus:ring-blue-500 cursor-pointer">
+                                        <label for="check1" class="text-blue-900 cursor-pointer">
+                                            アグリゲートとは何か理解できた
+                                        </label>
+                                    </li>
+                                    <li class="checkbox-item flex items-center gap-3">
+                                        <input type="checkbox" id="check2"
+                                               class="w-5 h-5 rounded border-blue-300 text-blue-500
+                                                      focus:ring-blue-500 cursor-pointer">
+                                        <label for="check2" class="text-blue-900 cursor-pointer">
+                                            タスク一覧を取得するアグリゲートを作成できた
+                                        </label>
+                                    </li>
+                                    <li class="checkbox-item flex items-center gap-3">
+                                        <input type="checkbox" id="check3"
+                                               class="w-5 h-5 rounded border-blue-300 text-blue-500
+                                                      focus:ring-blue-500 cursor-pointer">
+                                        <label for="check3" class="text-blue-900 cursor-pointer">
+                                            リストウィジェットを配置してデータソースを設定できた
+                                        </label>
+                                    </li>
+                                    <li class="checkbox-item flex items-center gap-3">
+                                        <input type="checkbox" id="check4"
+                                               class="w-5 h-5 rounded border-blue-300 text-blue-500
+                                                      focus:ring-blue-500 cursor-pointer">
+                                        <label for="check4" class="text-blue-900 cursor-pointer">
+                                            テストデータを追加できた
+                                        </label>
+                                    </li>
+                                    <li class="checkbox-item flex items-center gap-3">
+                                        <input type="checkbox" id="check5"
+                                               class="w-5 h-5 rounded border-blue-300 text-blue-500
+                                                      focus:ring-blue-500 cursor-pointer">
+                                        <label for="check5" class="text-blue-900 cursor-pointer">
+                                            ブラウザでタスク一覧が正しく表示されることを確認できた
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 次のステップへ -->
+                <section class="mb-10">
+                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200
+                                rounded-xl p-6">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg
+                                        flex items-center justify-center">
+                                <i class="fas fa-rocket text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-emerald-800 mb-2">おめでとうございます！</h3>
+                                <p class="text-emerald-900 mb-4">
+                                    データベースからデータを取り出して画面に一覧表示する方法を習得しました。
+                                    次のステップでは、ユーザーが新しいタスクを登録できるフォームを作成します。
+                                </p>
+                                <p class="text-emerald-900">
+                                    <strong>次のステップ:</strong> 新しいタスクを登録しよう
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ステップ間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-8 mt-8 border-t border-slate-200">
+                    <a href="outsystems-tutorial-04.html"
+                       class="group flex items-center gap-3 px-5 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600 transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前のステップ</span>
+                            <span class="text-slate-700 font-medium">データを保存する場所を作ろう</span>
+                        </div>
+                    </a>
+                    <a href="outsystems-tutorial-06.html"
+                       class="group flex items-center gap-3 px-5 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors shadow-lg shadow-primary-500/30">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次のステップ</span>
+                            <span class="font-medium">新しいタスクを登録しよう</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
+    </div>
+
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="#" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- サイドバー生成 -->
+    <script src="sidebar-content.js"></script>
+
+    <!-- 共通JavaScript -->
+    <script src="main.js"></script>
+
+    <!-- 描画ツール -->
+    <script src="drawing-tool.js"></script>
+</body>
+</html>
