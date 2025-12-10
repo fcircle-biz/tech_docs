@@ -19,6 +19,10 @@
     let pdfViewer, pdfEmbed, pdfFallbackLink, slideList, progressBar, progressText;
     let currentSlideBadge, currentSlideTitle, prevBtn, nextBtn, prevTitle, nextTitle, downloadBtn;
     let darkModeToggle, sidebarToggleBtn, sidebar, fullscreenBtn, pdfWrapper;
+    let mobileFallback, mobilePdfLink, mobileDownloadLink;
+
+    // スマートフォン判定（タッチデバイスかつ画面幅768px以下）
+    const isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 768;
 
     // DOM要素を取得
     function initDOMElements() {
@@ -40,6 +44,18 @@
         sidebar = document.getElementById('sidebar');
         fullscreenBtn = document.getElementById('fullscreen-btn');
         pdfWrapper = document.getElementById('pdf-wrapper');
+        mobileFallback = document.getElementById('mobile-fallback');
+        mobilePdfLink = document.getElementById('mobile-pdf-link');
+        mobileDownloadLink = document.getElementById('mobile-download-link');
+    }
+
+    // モバイル用UIの初期化
+    function initMobileUI() {
+        if (!isMobile) return;
+
+        // モバイルフォールバックを表示、PDFビューアーを非表示
+        if (mobileFallback) mobileFallback.classList.add('is-mobile');
+        if (pdfViewer) pdfViewer.classList.add('is-mobile-hidden');
     }
 
     // スライドリストを生成
@@ -91,6 +107,10 @@
 
         // ダウンロードリンクを更新
         if (downloadBtn) downloadBtn.href = slide.file;
+
+        // モバイル用リンクを更新
+        if (mobilePdfLink) mobilePdfLink.href = slide.file;
+        if (mobileDownloadLink) mobileDownloadLink.href = slide.file;
 
         // ナビゲーションボタンを更新
         if (prevBtn) prevBtn.disabled = index === 0;
@@ -246,6 +266,7 @@
     // 初期化
     function init() {
         initDOMElements();
+        initMobileUI();
         initNavigation();
         initDarkMode();
         initSidebar();
