@@ -11,8 +11,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Japanese technical documentation repository containing structured learning materials (guides, tutorials, cheatsheets) covering IT and software development topics. All content is static HTML/Markdown served via GitHub Pages.
 
-**Note:** `/docs/slide/` is deprecated and planned for removal.
-
 No build/lint/test framework - content is static HTML/Markdown validated through template standards.
 
 ## Content Architecture
