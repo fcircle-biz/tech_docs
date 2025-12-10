@@ -1,7 +1,7 @@
 ---
 name: slide-creator
 description: work_pdfフォルダのPDFを読み込み、スライド教材ビューアーを自動生成するエージェント。<example>@agent-slide-creator Excel入門</example>
-model: sonnet
+model: opus
 color: green
 ---
 
