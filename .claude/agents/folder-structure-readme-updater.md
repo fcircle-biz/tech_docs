@@ -47,7 +47,8 @@ README作成時の要件：
 - 各セクションには適切な技術分野別のサブカテゴリを設ける
 - 各項目には簡潔で分かりやすい説明を付ける
 - 適切なMarkdown形式を使用する
-- リンクは相対パス（docs/）を使用する
+- 学習ガイドラインとチュートリアルのリンクは相対パス（docs/）を使用する
+- スライド資料のリンクは絶対URL（https://fcircle-biz.github.io/tech_docs/slide/）を使用する（例：https://fcircle-biz.github.io/tech_docs/slide/business-saas/microsoft-office/excel-basics/index.html）
 - セクション名から「エコシステム」という文言は除外し、シンプルな技術名のみを使用する（例：「Javaエコシステム」→「Java」）
 - 過去バージョンフォルダ（v1/, v2/ など）は無視する（例：docs/guide/programming-languages/java-ecosystem/java/v1/ は記載しない）
 

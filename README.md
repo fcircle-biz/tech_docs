@@ -133,7 +133,7 @@ PDF形式のスライド教材をブラウザで閲覧できる教材です。
 
 ### Microsoft Office
 
-- **[Excel入門](docs/slide/business-saas/microsoft-office/excel-basics/index.html)** - Excelの基本操作から実践的な活用方法まで学べるスライド教材
+- **[Excel入門](https://fcircle-biz.github.io/tech_docs/slide/business-saas/microsoft-office/excel-basics/index.html)** - Excelの基本操作から実践的な活用方法まで学べるスライド教材
 
 ---
 
