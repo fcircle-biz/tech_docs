@@ -8,6 +8,7 @@
 - [📖 学習ガイドライン](#-学習ガイドライン)
 - [📖 スライド資料](#-スライド資料)
 - [📖 チュートリアル](#-チュートリアル)
+- [📖 チートシート](#-チートシート)
 
 ---
 
@@ -72,13 +73,6 @@
 - **[Bootstrap学習ガイド](docs/guide/web-technologies/bootstrap/README.md)** - Bootstrapフレームワークを使用したレスポンシブWebデザインの基礎から実践まで10章完成カリキュラム。グリッドシステム、UIコンポーネント、カスタマイズ方法まで体系的に習得
 - **[Tailwind CSS学習ガイド](docs/guide/web-technologies/tailwind-css/README.md)** - Tailwind CSSフレームワークを使用したユーティリティファーストのWebデザインを10章で完全習得
 
-### データベース
-
-- **[SQL学習ガイド](docs/guide/data-ai-category/database/sql/README.md)** - SQL基本概念からPostgreSQL高度機能まで12章完成カリキュラム
-- **[Oracle学習ガイド](docs/guide/data-ai-category/database/oracle/README.md)** - Oracle Database入門から基本的な運用まで10章完成カリキュラム
-- **[PL/SQL学習ガイド](docs/guide/data-ai-category/database/plsql/README.md)** - Oracle PL/SQLの基礎から応用まで12章完成カリキュラム
-- **[DB2学習ガイド](docs/guide/data-ai-category/database/db2/README.md)** - IBM DB2データベース入門からDocker環境での運用管理まで8章完成カリキュラム
-
 ### クラウド／インフラ
 
 - **[AWS学習ガイド](docs/guide/cloud-infrastructure/aws/README.md)** - AWS（Amazon Web Services）の基礎から実践的なクラウドサービス活用まで10章完成カリキュラム
@@ -87,6 +81,12 @@
 - **[Docker学習ガイド](docs/guide/cloud-infrastructure/docker/README.md)** - Dockerの基礎から実践的なコンテナ運用まで10章完成カリキュラム。コンテナ技術の基本概念、イメージ管理、Dockerfile作成、Docker Compose、ボリューム、ネットワーク、マルチコンテナアプリケーション構築、セキュリティ、本番環境デプロイまで網羅
 
 ### データ／AI
+
+#### データベース
+- **[SQL学習ガイド](docs/guide/data-ai-category/database/sql/README.md)** - SQL基本概念からPostgreSQL高度機能まで12章完成カリキュラム
+- **[Oracle学習ガイド](docs/guide/data-ai-category/database/oracle/README.md)** - Oracle Database入門から基本的な運用まで10章完成カリキュラム
+- **[PL/SQL学習ガイド](docs/guide/data-ai-category/database/plsql/README.md)** - Oracle PL/SQLの基礎から応用まで12章完成カリキュラム
+- **[DB2学習ガイド](docs/guide/data-ai-category/database/db2/README.md)** - IBM DB2データベース入門からDocker環境での運用管理まで8章完成カリキュラム
 
 #### 統計解析
 - **[統計解析学習ガイド](docs/guide/data-ai-category/statistical-analysis/README.md)** - 統計学基礎から推測統計・仮説検定まで10章完成カリキュラム
@@ -178,6 +178,18 @@ PDF形式のスライド教材をブラウザで閲覧できる教材です。
 ### SaaS／PaaS／アプリケーション
 
 - **[OutSystems実践チュートリアル](docs/tutorial/business-saas/outsystems/README.md)** - OutSystemsローコード開発プラットフォームを使用したユーザー管理システム開発の実践的なチュートリアル（10章構成）
+
+---
+
+## 📖 チートシート
+
+技術要素を1ページでまとめたクイックリファレンス資料です。
+
+### データ／AI
+
+#### データベース
+
+- **[SQLチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/data-ai-category/database/sql/index.html)** - SQL構文、関数、テクニックを1ページにまとめたクイックリファレンス
 
 ---
 
