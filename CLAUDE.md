@@ -67,6 +67,7 @@ Available automation agents in `.claude/agents/`:
 | `illustration-creator-step1` | Analyze HTML guides and suggest illustrations | `@agent-illustration-creator-step1 [directory-path]` |
 | `illustration-creator-step2` | Generate placeholder JPGs, insert into HTML (parallel subagents for multi-chapter) | `@agent-illustration-creator-step2 [suggestions-md-path] [chapter?]` |
 | `slide-creator` | Create PDF slide viewer from work_pdf/ folder | `@agent-slide-creator [title]` |
+| `cheatsheet-creator` | Generate 1-page quick reference cheatsheet | `@agent-cheatsheet-creator [tech-name] [category-path]` |
 
 ### Agent Execution Rules (IMPORTANT)
 
@@ -105,6 +106,11 @@ HTML content must follow standards in `/templates/v2/`:
 - **slide-content.js** - Slide definitions (customize per project)
 - **styles.css** - Common custom styles
 - **main.js** - Common functionality (PDF viewer, navigation)
+
+### Template Files (`html_cheatsheet/`) - For Cheatsheets
+- **cheatsheet-template.html** - Cheatsheet template (1-page quick reference)
+- **styles.css** - Common custom styles (dark mode support)
+- **main.js** - Common functionality (dark mode toggle, code copy)
 
 ### Reference Documents (`reference/`)
 - **css-styles.md** - Tailwind CSS style guide
