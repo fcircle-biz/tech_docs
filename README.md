@@ -134,8 +134,11 @@ PDF形式のスライド教材をブラウザで閲覧できる教材です。
 ### 開発手法・プロセス
 
 - **[VSCode入門](https://fcircle-biz.github.io/tech_docs/slide/development-processes/vscode-basics/index.html)** - Visual Studio Codeの基本操作から実践的な活用方法まで学べるスライド教材
+- **[SourceTree入門](https://fcircle-biz.github.io/tech_docs/slide/development-processes/sourcetree-basics/index.html)** - SourceTreeを使用したGitの基本操作から実践的なバージョン管理まで学べるスライド教材
 
-### Microsoft Office
+### SaaS／PaaS／アプリケーション
+
+#### Microsoft Office
 
 - **[Excel入門](https://fcircle-biz.github.io/tech_docs/slide/business-saas/microsoft-office/excel-basics/index.html)** - Excelの基本操作から実践的な活用方法まで学べるスライド教材
 
