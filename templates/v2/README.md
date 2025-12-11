@@ -28,6 +28,10 @@ templates/v2/
 │   ├── styles.css                           # 共通カスタムスタイル
 │   ├── main.js                              # 共通機能（サイドバー、描画ツールバー生成等）
 │   └── drawing-tool.js                      # 描画ツール機能
+├── html_cheatsheet/                         # チートシート（cheatsheet）用テンプレート
+│   ├── cheatsheet-template.html             # チートシート用テンプレート
+│   ├── styles.css                           # 共通カスタムスタイル（ダークモード対応）
+│   └── main.js                              # 共通機能（ダークモード、コードコピー等）
 ├── slide/                                   # スライド教材（slide）用テンプレート
 │   ├── index.html                           # スライド教材用テンプレート
 │   ├── slide-content.js                     # スライド定義（カスタマイズ必要）
@@ -66,6 +70,15 @@ templates/v2/
 
   # PDFフォルダを作成してPDFを配置
   mkdir docs/slide/[カテゴリ]/[サブカテゴリ]/[教材名]/pdf
+  ```
+
+- **チートシート（cheatsheet）を作成する場合**
+  ```bash
+  # フォルダを作成してテンプレートをコピー
+  mkdir -p docs/cheatsheet/[カテゴリ]/[サブカテゴリ]/[技術名]
+  cp templates/v2/html_cheatsheet/cheatsheet-template.html docs/cheatsheet/[カテゴリ]/[サブカテゴリ]/[技術名]/index.html
+  cp templates/v2/html_cheatsheet/styles.css docs/cheatsheet/[カテゴリ]/[サブカテゴリ]/[技術名]/
+  cp templates/v2/html_cheatsheet/main.js docs/cheatsheet/[カテゴリ]/[サブカテゴリ]/[技術名]/
   ```
 
 ### 2. TODOコメントを編集
@@ -343,6 +356,44 @@ PDFスライド形式の学習教材向け。以下の機能を含みます：
 
 詳細は `slide/README.md` を参照してください。
 
+### チートシートテンプレート (html_cheatsheet/cheatsheet-template.html)
+
+1ページ完結型のクイックリファレンス向け。以下の機能を含みます：
+
+**レイアウト:**
+- リッチなヘッダーデザイン（グラデーション）
+- 2カラムグリッドレイアウト
+- フル幅セクション
+- レスポンシブ対応（PC・タブレット・スマートフォン）
+
+**コンテンツ:**
+- イントロセクション（タグ付き）
+- コードブロック付きカードセクション
+- ヒントボックス（各カラー対応）
+- 実務Tipsセクション（ダーク背景）
+- ステップ/フロー表示
+- よく使うパターン集
+
+**インタラクティブ機能:**
+- ダークモード切り替え（システム設定連動）
+- コードコピー機能
+- 印刷対応
+
+**カスタマイズ:**
+- `styles.css`: ヘッダーグラデーション色（`.header-emerald`, `.header-violet`等のクラスで変更可能）
+- テンプレート内のプレースホルダー（`{{TITLE}}`, `{{LANGUAGE}}`等）を置換
+
+**プレースホルダー一覧:**
+| プレースホルダー | 説明 | 例 |
+|-----------------|------|-----|
+| `{{TITLE}}` | 技術名/タイトル | SQL, Python, Git |
+| `{{SUBTITLE}}` | サブタイトル | エンジニアのための実践リファレンス |
+| `{{ICON}}` | Font Awesomeアイコン名 | database, code, terminal |
+| `{{LANGUAGE}}` | highlight.js言語名 | sql, javascript, python |
+| `{{INTRO_ICON}}` | イントロセクションのアイコン | table, book, lightbulb |
+| `{{INTRO_TITLE}}` | イントロのタイトル | SQLとは？ |
+| `{{INTRO_DESCRIPTION}}` | イントロの説明文 | - |
+
 ## スニペットの使い方
 
 `snippets/components.html` をブラウザで開くと、各コンポーネントのプレビューが確認できます。
@@ -354,6 +405,8 @@ PDFスライド形式の学習教材向け。以下の機能を含みます：
   - 例: `python-learning-material-01.html`
 - チュートリアル: `[tech-name]-tutorial-[ステップ番号].html`
   - 例: `django-tutorial-01.html`
+- チートシート: `index.html`（フォルダ単位で管理）
+  - 例: `docs/cheatsheet/data-ai-category/database/sql/index.html`
 
 ## デバイス別動作仕様
 
@@ -419,6 +472,14 @@ PDFスライド形式の学習教材向け。以下の機能を含みます：
 **A:** 各技術フォルダの `styles.css` を個別に編集することで、技術ごとに異なる色調整が可能です。例えば、ヘッダーのグラデーション色やサイドバーのハイライト色を変更できます。
 
 ## バージョン履歴
+
+### v2.7.0 (2025-12-11)
+- **チートシートテンプレート追加**: 1ページ完結型クイックリファレンス用テンプレートを新設
+- `html_cheatsheet/` フォルダ: チートシート用テンプレート一式
+- ダークモード対応（システム設定連動、手動切り替え）
+- コードコピー機能
+- 印刷対応
+- 複数のヘッダーカラーバリエーション（CSS クラスで切り替え）
 
 ### v2.6.0 (2025-12-10)
 - **スライド教材テンプレート追加**: PDFスライド形式の学習教材用テンプレートを新設
