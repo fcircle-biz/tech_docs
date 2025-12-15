@@ -1,780 +1,410 @@
-# AWS（Amazon Web Services）学習ガイドライン
+# AWS入門 学習ガイドライン
 
-このガイドラインでは、AWS（Amazon Web Services）の基礎から実践的な活用方法までを初心者向けに段階的に学習するためのカリキュラムを提供しています。クラウドコンピューティングの基本概念から、主要なAWSサービスの使い方、セキュリティのベストプラクティス、コスト最適化まで、実務で必要となるスキルを体系的に身につけることができます。
+このガイドラインでは、AWS（Amazon Web Services）を**まったくの初心者**から学べるように、身近な例えを使いながら丁寧に解説します。「クラウドって何？」という方でも安心して学習を始められる内容になっています。
+
+---
+
+## このガイドの特徴
+
+- **専門用語をできるだけ使わない**: 難しい言葉は身近なもので例えて説明します
+- **実際に手を動かしながら学ぶ**: 読むだけでなく、一緒にやってみることで理解が深まります
+- **つまずきやすいポイントを丁寧に解説**: 初心者がよく迷う箇所を先回りして説明します
+- **お金をかけずに学べる**: 無料で使える範囲内で学習を進められます
+
+---
 
 ## 前提条件
 
 ### 必要な環境
-- インターネット接続環境
-- Webブラウザ（Chrome、Firefox、Safari、Edge等の最新版）
-- メールアドレス（AWS アカウント作成用）
-- クレジットカード（AWS アカウント登録用、無料利用枠内では課金されません）
-- SSH クライアント（Windows: PuTTY、macOS/Linux: 標準搭載）
-- テキストエディタ（Visual Studio Code 推奨）
+- パソコン（Windows、Mac、どちらでもOK）
+- インターネット環境（動画が見られる程度の速度があれば十分）
+- Webブラウザ（Chrome、Edge、Firefox など普段使っているもので大丈夫）
+- メールアドレス（AWSの会員登録に使います）
+- クレジットカード（登録に必要ですが、このガイドの範囲では課金されません）
 
 ### 参考リソース
-- [AWS 公式サイト](https://aws.amazon.com/jp/) - AWS サービス全般の情報
-- [AWS ドキュメント](https://docs.aws.amazon.com/ja_jp/) - 各種サービスの詳細ドキュメント
-- [AWS 無料利用枠](https://aws.amazon.com/jp/free/) - 無料で試せるサービス一覧
-- [AWS トレーニングと認定](https://aws.amazon.com/jp/training/) - 公式トレーニングリソース
-- [AWS Well-Architected Framework](https://aws.amazon.com/jp/architecture/well-architected/) - アーキテクチャのベストプラクティス
-- [AWS 料金計算ツール](https://calculator.aws/) - コスト見積もりツール
+- [AWS 公式サイト（日本語）](https://aws.amazon.com/jp/) - AWSの総合案内
+- [AWS 無料利用枠の説明](https://aws.amazon.com/jp/free/) - 無料で使えるサービスの一覧
+- [AWS 初心者向けハンズオン](https://aws.amazon.com/jp/getting-started/hands-on/) - 公式の練習問題
 
 ### 前提知識
 - **必須**:
-  - 基本的なコンピュータ操作スキル
-  - インターネットとWebの基本的な仕組みの理解
-  - コマンドライン（ターミナル）の基本操作
-- **推奨**:
-  - Linux の基本的なコマンド操作
-  - ネットワークの基礎知識（IPアドレス、DNS、HTTP/HTTPSなど）
-  - プログラミング経験（Python、Node.js、Java等のいずれか）
+  - パソコンの基本操作（ファイルの保存、ブラウザの使い方など）
+  - インターネットの利用経験（Webサイトを見る、メールを送るなど）
+- **あると良い**:
+  - Excelなど表計算ソフトの経験（データの整理に役立ちます）
+  - ホームページを見たことがある（仕組みの理解に役立ちます）
+- **なくても大丈夫**:
+  - プログラミング経験（このガイドでは必要ありません）
+  - サーバーやネットワークの知識（一から説明します）
+
+---
 
 ## 学習コンテンツ
 
-### [1. AWS入門とアカウント設定](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-01.html)
-クラウドコンピューティングの基本概念とAWSの全体像を理解し、AWSアカウントを作成してマネジメントコンソールの基本操作を習得します。
+### [1. クラウドって何？AWSを身近な例えで理解しよう](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-01.html)
+「クラウド」という言葉を聞いたことはあるけど、よくわからない...そんな方のために、レンタルサービスに例えながらクラウドの基本を解説します。
 
-**学習目標:**
-- クラウドコンピューティングの基本概念と利点を理解する
-- AWSのグローバルインフラストラクチャ（リージョン、アベイラビリティゾーン）を理解する
-- AWSアカウントを作成し、セキュアに設定できる
-- AWSマネジメントコンソールの基本操作を習得する
+**この章で学ぶこと:**
+- クラウドとは「インターネット上のレンタルサービス」
+- 自分でパソコンを買う（オンプレミス）との違い
+- AWSは「世界最大のITレンタルショップ」
+- なぜ今、多くの会社がクラウドを使うのか
+- 「リージョン」は倉庫の場所、「サービス」は商品の種類
 
-**学習内容:**
-1. **クラウドコンピューティングとは**
-   - オンプレミスとクラウドの違い
-   - IaaS、PaaS、SaaSの理解
-   - クラウドの6つの利点（コスト、速度、グローバル展開、スケーラビリティ、信頼性、セキュリティ）
-   - クラウドの主要な活用シーン
-
-2. **AWSの全体像**
-   - AWSとは何か、その歴史と市場シェア
-   - AWSが提供する200以上のサービス概要
-   - AWSのグローバルインフラストラクチャ
-   - リージョン、アベイラビリティゾーン、エッジロケーションの概念
-   - 責任共有モデルの理解
-
-3. **AWSアカウントの作成と初期設定**
-   - AWSアカウントの作成手順
-   - ルートユーザーとIAMユーザーの違い
-   - 多要素認証（MFA）の設定
-   - 請求アラートの設定
-   - 無料利用枠の理解と活用方法
-
-4. **AWSマネジメントコンソールの基本操作**
-   - コンソールのナビゲーション
-   - サービス検索とお気に入り登録
-   - リージョンの選択と切り替え
-   - AWS CLI と AWS SDK の概要
-   - CloudShell の基本的な使い方
-
-**演習課題:**
-- AWSアカウントの作成とMFAの有効化
-- 請求アラートと予算設定の構成
-- 東京リージョン（ap-northeast-1）の選択とサービス一覧の確認
-- CloudShell でのAWS CLI基本コマンドの実行
+**身近な例え:**
+- クラウド = 図書館（必要な本を必要なときだけ借りる）
+- オンプレミス = 自分で本を全部買って家に置く
+- AWS = 世界中に支店がある超巨大図書館
 
 ---
 
-### [2. コンピューティングとネットワークの基礎（EC2・VPC）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-02.html)
-AWSの仮想サーバーサービスであるEC2の基本から、仮想ネットワークであるVPCの設計・構築方法を学習します。
+### [2. AWSに登録しよう - お財布にやさしい設定も一緒に](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-02.html)
+AWSのアカウント（会員登録）を作成します。「お金がかかったらどうしよう...」という不安を解消するため、料金アラート（お知らせ機能）の設定も一緒に行います。
 
-**学習目標:**
-- EC2インスタンスを起動し、接続・管理できる
-- セキュリティグループでファイアウォールを設定できる
-- VPCを設計し、サブネット構成を理解する
-- インターネットゲートウェイとルートテーブルを設定できる
+**この章で学ぶこと:**
+- AWSアカウントの作り方（画面を見ながら一緒に進めます）
+- クレジットカード登録の注意点
+- 「無料利用枠」の仕組み（1年間、多くのサービスが無料）
+- 料金アラートの設定（予想外の請求を防ぐ）
+- 初期設定のチェックリスト
 
-**学習内容:**
-1. **Amazon EC2（Elastic Compute Cloud）の基礎**
-   - EC2とは：仮想サーバーの概念
-   - インスタンスタイプの選び方（汎用、コンピューティング最適化、メモリ最適化等）
-   - AMI（Amazon Machine Image）の理解
-   - インスタンスの起動手順（コンソールから）
-   - キーペアの作成と管理
-   - EC2インスタンスへのSSH接続方法
-
-2. **セキュリティグループの設定**
-   - セキュリティグループとは（ステートフルなファイアウォール）
-   - インバウンドルールとアウトバウンドルールの設定
-   - ポート番号とプロトコルの理解（SSH: 22、HTTP: 80、HTTPS: 443）
-   - 最小権限の原則に基づくルール設計
-   - ソースIPアドレスの制限
-
-3. **Amazon VPC（Virtual Private Cloud）**
-   - VPCとは：プライベートな仮想ネットワーク
-   - CIDR ブロックとIPアドレス範囲の設計
-   - パブリックサブネットとプライベートサブネットの違い
-   - サブネットの作成と配置（マルチAZ構成）
-   - インターネットゲートウェイの設定
-   - ルートテーブルの設定と関連付け
-
-4. **ネットワーク設定の実践**
-   - VPCウィザードを使った基本構成の作成
-   - NAT ゲートウェイの理解（プライベートサブネットからのインターネットアクセス）
-   - ネットワークACL（NACL）とセキュリティグループの違い
-   - Elastic IP アドレスの割り当て
-   - VPC フローログによるトラフィック監視
-
-**演習課題:**
-- 無料利用枠のt2.micro/t3.microインスタンスの起動
-- SSH接続してWebサーバー（Apache/Nginx）のインストール
-- カスタムVPCの作成（パブリック/プライベートサブネット構成）
-- セキュリティグループによるHTTP/HTTPS通信の許可設定
+**初心者がつまずきやすいポイント:**
+- 英語が出てきても大丈夫！日本語に切り替える方法
+- 登録後、すぐにいろいろ触りたくなる気持ちをグッと我慢
+- まずは「お金がかからない設定」を完了させましょう
 
 ---
 
-### [3. ストレージサービス（S3・EBS）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-03.html)
-AWSの主要なストレージサービスであるS3（オブジェクトストレージ）とEBS（ブロックストレージ）の特徴と使い方を学習します。
+### [3. AWSの画面に慣れよう - 管理画面の歩き方](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-03.html)
+AWSにログインすると、たくさんのメニューがあって最初は迷います。この章では、管理画面（マネジメントコンソール）の基本的な使い方を覚えます。
 
-**学習目標:**
-- S3バケットを作成し、オブジェクトの管理ができる
-- S3のストレージクラスとライフサイクル管理を理解する
-- EBSボリュームの作成とEC2インスタンスへのアタッチができる
-- バックアップとスナップショットの作成ができる
+**この章で学ぶこと:**
+- ログイン画面の種類（ルートユーザーとIAMユーザー）
+- 管理画面のメニュー構成
+- サービスの探し方（検索機能の使い方）
+- 「東京リージョン」の選び方（日本から使うときは東京がおすすめ）
+- よく使う画面をお気に入り登録する方法
 
-**学習内容:**
-1. **Amazon S3（Simple Storage Service）の基礎**
-   - S3とは：オブジェクトストレージの概念
-   - バケットとオブジェクトの理解
-   - S3バケットの作成と命名規則
-   - オブジェクトのアップロード・ダウンロード・削除
-   - フォルダ構造の管理
-   - バージョニング機能の活用
-
-2. **S3のセキュリティとアクセス制御**
-   - バケットポリシーとIAMポリシーの違い
-   - パブリックアクセスのブロック設定
-   - 署名付きURL（Pre-signed URL）の生成と活用
-   - S3バケットの暗号化（SSE-S3、SSE-KMS）
-   - アクセスログの有効化
-   - CORS設定（クロスオリジンリソース共有）
-
-3. **S3のストレージクラスとコスト最適化**
-   - ストレージクラスの種類（Standard、Intelligent-Tiering、Glacier等）
-   - ライフサイクルポリシーによる自動アーカイブ
-   - S3インベントリとストレージレンズの活用
-   - S3 Select と Glacier Select による効率的なデータ取得
-   - マルチパートアップロードと Transfer Acceleration
-
-4. **Amazon EBS（Elastic Block Store）**
-   - EBSとは：ブロックストレージの概念
-   - EBSボリュームタイプの選択（gp3、io2、st1、sc1）
-   - EBSボリュームの作成とEC2へのアタッチ
-   - ファイルシステムのフォーマットとマウント
-   - EBSスナップショットによるバックアップ
-   - スナップショットからのボリューム復元
-   - EBS最適化インスタンスの理解
-
-5. **その他のストレージサービス**
-   - Amazon EFS（Elastic File System）：共有ファイルストレージ
-   - AWS Storage Gateway：オンプレミスとの統合
-   - Amazon FSx：マネージドファイルシステム
-   - ストレージサービスの使い分け
-
-**演習課題:**
-- S3バケットの作成と静的ウェブサイトホスティングの設定
-- ライフサイクルポリシーによる古いオブジェクトのGlacier移行
-- EBSボリュームの作成、アタッチ、マウント
-- EBSスナップショットの作成と別のアベイラビリティゾーンでの復元
+**身近な例え:**
+- 管理画面 = ショッピングモールの案内図
+- サービス検索 = フロアガイドで目的のお店を探す
+- リージョン選択 = どの支店を利用するか選ぶ
 
 ---
 
-### [4. データベースサービス（RDS・DynamoDB）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-04.html)
-AWSが提供するマネージドデータベースサービス（RDS、DynamoDB）の特徴と使い方、データベース設計のベストプラクティスを学習します。
+### [4. 最初のサーバーを作ってみよう - EC2入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-04.html)
+いよいよサーバー（インターネット上のパソコン）を作ります。「サーバー」と聞くと難しそうですが、手順通りに進めれば15分で完成します。
 
-**学習目標:**
-- RDSインスタンスを作成し、データベースに接続できる
-- RDSのバックアップと復旧を理解し実行できる
-- DynamoDBテーブルを作成し、基本的なCRUD操作ができる
-- リレーショナルデータベースとNoSQLの使い分けを理解する
+**この章で学ぶこと:**
+- サーバーとは「24時間動いているパソコン」
+- EC2は「レンタルパソコン」のサービス
+- 無料で使えるサーバーの選び方（t2.micro / t3.micro）
+- サーバーの作り方（ステップバイステップ）
+- サーバーに接続する方法
+- 使い終わったらサーバーを止める方法（課金を防ぐ）
 
-**学習内容:**
-1. **Amazon RDS（Relational Database Service）の基礎**
-   - RDSとは：マネージドリレーショナルデータベースサービス
-   - 対応データベースエンジン（MySQL、PostgreSQL、Oracle、SQL Server、MariaDB、Aurora）
-   - RDSインスタンスの作成手順
-   - データベースエンジンとバージョンの選択
-   - インスタンスクラスの選択（バーストタイプ vs. 標準）
-   - ストレージの種類とサイズ設定
+**初心者がつまずきやすいポイント:**
+- 「キーペア」は鍵のようなもの - 絶対になくさない！
+- サーバーを「停止」と「終了（削除）」は違う
+- 東京リージョンが選ばれているか確認しよう
 
-2. **RDSの運用と管理**
-   - マルチAZ配置による高可用性
-   - リードレプリカによる読み取りスケーリング
-   - 自動バックアップとスナップショット
-   - ポイントインタイムリカバリ
-   - パラメータグループとオプショングループのカスタマイズ
-   - RDSインスタンスへの接続方法（MySQL WorkbenchやpgAdmin等）
-   - RDS Proxyの活用
-
-3. **Amazon Aurora**
-   - Aurora とは：AWS最適化されたデータベースエンジン
-   - MySQL/PostgreSQL互換性
-   - Auroraのアーキテクチャと性能特性
-   - Auroraのストレージとレプリケーション
-   - Aurora Serverless の概要とユースケース
-   - Aurora Global Database による災害対策
-
-4. **Amazon DynamoDB**
-   - DynamoDBとは：フルマネージドNoSQLデータベース
-   - テーブル、アイテム、属性の概念
-   - プライマリキーの設計（パーティションキーとソートキー）
-   - グローバルセカンダリインデックス（GSI）とローカルセカンダリインデックス（LSI）
-   - キャパシティモード（オンデマンドvsプロビジョニング）
-   - DynamoDB Streamsとイベント駆動アーキテクチャ
-   - DynamoDB トランザクションとバッチ操作
-
-5. **その他のデータベースサービス**
-   - Amazon ElastiCache（Redis、Memcached）：インメモリキャッシュ
-   - Amazon Neptune：グラフデータベース
-   - Amazon DocumentDB：MongoDBコンパチブル
-   - Amazon Timestream：時系列データベース
-   - データベースサービスの選択基準
-
-**演習課題:**
-- MySQL RDSインスタンスの作成と接続
-- サンプルデータベースの作成とSQLクエリの実行
-- RDSスナップショットの作成と復元
-- DynamoDBテーブルの作成とPython/Node.jsでのCRUD操作実装
-- DynamoDBのクエリとスキャン操作の理解
+**身近な例え:**
+- EC2 = レンタカー（必要なときだけ借りて、使い終わったら返す）
+- キーペア = レンタカーの鍵
+- インスタンス = 借りた車そのもの
 
 ---
 
-### [5. ネットワークとコンテンツ配信（CloudFront・Route 53）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-05.html)
-グローバルなコンテンツ配信を実現するCloudFrontと、DNSサービスであるRoute 53を使った高速で信頼性の高いネットワーク構成を学習します。
+### [5. ファイルの保管場所を作ろう - S3入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-05.html)
+写真や文書ファイルを保存できる「S3」というサービスを使ってみます。Dropboxのようなものですが、もっと大きなファイルもたくさん保存できます。
 
-**学習目標:**
-- CloudFrontディストリビューションを作成し、コンテンツ配信を高速化できる
-- Route 53でドメインを管理し、DNSルーティングを設定できる
-- ヘルスチェックとフェイルオーバーを構成できる
-- SSL/TLS証明書の取得と適用ができる
+**この章で学ぶこと:**
+- S3は「インターネット上のファイル置き場」
+- 「バケット」は「フォルダ」のようなもの
+- バケットの作り方
+- ファイルのアップロード・ダウンロード
+- ファイルを誰でも見られるようにする方法（Webサイト公開）
+- ファイルを見られないように守る方法
 
-**学習内容:**
-1. **Amazon CloudFront**
-   - CloudFrontとは：CDN（Content Delivery Network）の概念
-   - エッジロケーションとリージョナルエッジキャッシュ
-   - ディストリビューションの作成（Web、RTMP）
-   - オリジンの設定（S3、EC2、ALB、カスタムオリジン）
-   - キャッシュビヘイビアとTTL設定
-   - CloudFrontとS3の統合によるウェブサイト配信
-   - プライベートコンテンツの配信（署名付きURL、署名付きCookie）
+**身近な例え:**
+- S3 = トランクルーム（いくらでも荷物を入れられる貸し倉庫）
+- バケット = 倉庫の中の棚（整理用）
+- オブジェクト = 棚に入れる荷物（ファイル）
 
-2. **CloudFrontのセキュリティとパフォーマンス**
-   - OAI（Origin Access Identity）によるS3バケットの保護
-   - AWS WAF（Web Application Firewall）との統合
-   - 地理的制限（Geo-Restriction）の設定
-   - カスタムSSL証明書の利用
-   - HTTP/2とHTTP/3のサポート
-   - 圧縮とGzip/Brotli配信
-   - Lambda@Edge によるエッジコンピューティング
-
-3. **Amazon Route 53**
-   - Route 53とは：スケーラブルなDNSサービス
-   - ホストゾーンの作成（パブリックとプライベート）
-   - レコードタイプ（A、AAAA、CNAME、MX、TXT等）
-   - ドメインの登録と移管
-   - Route 53 と他のAWSサービスの統合
-   - エイリアスレコードの活用（CloudFront、ALB、S3等への直接ルーティング）
-
-4. **ルーティングポリシー**
-   - シンプルルーティング
-   - 加重ルーティング（Weighted Routing）
-   - レイテンシーベースルーティング
-   - フェイルオーバールーティング
-   - 地理的ルーティング（Geolocation）
-   - 地理的近接性ルーティング（Geoproximity）
-   - 複数値回答ルーティング
-
-5. **高可用性とディザスタリカバリ**
-   - ヘルスチェックの設定と監視
-   - DNSフェイルオーバーの構成
-   - マルチリージョン構成
-   - アクティブ-アクティブ、アクティブ-パッシブ構成
-   - Route 53トラフィックフローによる高度なルーティング
-
-**演習課題:**
-- S3静的ウェブサイトをCloudFrontで配信
-- カスタムドメインとSSL証明書の設定
-- Route 53でドメインを登録し、レコードを作成
-- 複数リージョンのEC2インスタンスへのレイテンシーベースルーティング設定
-- ヘルスチェックとフェイルオーバールーティングの構成
+**初心者がつまずきやすいポイント:**
+- バケット名は世界で唯一の名前にする必要がある
+- 「パブリックアクセス」の設定に注意（間違えると世界中から見える）
+- 使わないファイルは削除してストレージ料金を節約
 
 ---
 
-### [6. セキュリティとアクセス管理（IAM）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-06.html)
-AWSにおける認証と認可の仕組みを理解し、IAMを使ったセキュアなアクセス制御、暗号化、コンプライアンスのベストプラクティスを学習します。
+### [6. インターネットの通り道を作ろう - ネットワーク入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-06.html)
+サーバーがインターネットとつながるためには「ネットワーク」の設定が必要です。VPCという仕組みを使って、安全な通信環境を作ります。
 
-**学習目標:**
-- IAMユーザー、グループ、ロールを適切に作成・管理できる
-- 最小権限の原則に基づいたポリシーを設計できる
-- 多要素認証（MFA）を設定し、セキュリティを強化できる
-- AWS のセキュリティサービスを理解し活用できる
+**この章で学ぶこと:**
+- ネットワークは「通信の道路」
+- VPCは「自分専用の敷地」
+- サブネットは「敷地内の区画」
+- インターネットゲートウェイは「正門」
+- セキュリティグループは「警備員」
 
-**学習内容:**
-1. **AWS IAM（Identity and Access Management）の基礎**
-   - IAMとは：認証と認可の仕組み
-   - ルートユーザーとIAMユーザーの違い
-   - IAMユーザーの作成とアクセスキーの管理
-   - IAMグループによる権限のグループ化
-   - IAMポリシーの構造（JSON形式）
-   - マネージドポリシーとインラインポリシー
-   - ポリシーシミュレーターによる権限テスト
+**身近な例え:**
+- VPC = 塀で囲まれた自分の家の敷地
+- サブネット = 敷地内の「家」「庭」「車庫」のような区画
+- インターネットゲートウェイ = 敷地と公道をつなぐ門
+- セキュリティグループ = 来訪者をチェックする警備員
 
-2. **IAMロールとサービス間連携**
-   - IAMロールとは：一時的な認証情報
-   - EC2インスタンスロールの活用
-   - クロスアカウントアクセス
-   - サービスロールとサービスリンクロール
-   - AssumeRole による権限の委任
-   - IAM Identity Center (AWS SSO) の概要
-   - 外部IDプロバイダーとのフェデレーション
-
-3. **セキュリティのベストプラクティス**
-   - 最小権限の原則（Least Privilege）
-   - 多要素認証（MFA）の有効化
-   - アクセスキーのローテーション
-   - パスワードポリシーの設定
-   - IAM Access Analyzer による未使用権限の検出
-   - AWS CloudTrail によるAPI呼び出しの監査
-   - 責任共有モデルの理解
-
-4. **データ保護と暗号化**
-   - AWS KMS（Key Management Service）による暗号鍵管理
-   - カスタマー管理キーとAWS管理キー
-   - S3、EBS、RDSの暗号化
-   - AWS Certificate Manager（ACM）によるSSL/TLS証明書管理
-   - AWS Secrets Manager によるシークレット管理
-   - AWS Systems Manager Parameter Store
-
-5. **セキュリティ監視とコンプライアンス**
-   - AWS Security Hub：統合セキュリティダッシュボード
-   - Amazon GuardDuty：脅威検出サービス
-   - AWS Config：リソース設定の記録と評価
-   - Amazon Inspector：脆弱性評価
-   - AWS WAF：Webアプリケーションファイアウォール
-   - AWS Shield：DDoS保護
-   - AWS Artifact：コンプライアンスレポート
-
-**演習課題:**
-- IAMユーザーとグループの作成、カスタムポリシーの適用
-- EC2インスタンスロールを使ったS3へのアクセス設定
-- MFAの有効化とアクセスキーのローテーション
-- KMSによるS3バケットの暗号化
-- CloudTrailログの確認とセキュリティイベントの分析
+**初心者がつまずきやすいポイント:**
+- 「IPアドレス」は住所のようなもの（覚えなくてOK）
+- 設定を間違えるとサーバーに接続できなくなる
+- 困ったときはデフォルト設定を使おう
 
 ---
 
-### [7. 監視と運用管理（CloudWatch・CloudTrail）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-07.html)
-AWSリソースの監視、ログ管理、アラート設定、自動化による運用効率化の方法を学習します。
+### [7. データベースを使ってみよう - RDS入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-07.html)
+たくさんのデータを整理して保存する「データベース」を作ります。Excelの表をもっと便利にしたものと考えてください。
 
-**学習目標:**
-- CloudWatchでメトリクスを監視し、アラームを設定できる
-- CloudWatch Logsでログを集約・分析できる
-- CloudTrailでAPI呼び出しを監査できる
-- 自動化により運用タスクを効率化できる
+**この章で学ぶこと:**
+- データベースは「超高機能な表計算」
+- RDSは「管理おまかせのデータベース」
+- よく使うデータベースの種類（MySQL、PostgreSQL）
+- データベースの作り方
+- データベースに接続する方法
+- バックアップ（自動保存）の仕組み
 
-**学習内容:**
-1. **Amazon CloudWatch の基礎**
-   - CloudWatchとは：監視とオブザーバビリティサービス
-   - メトリクスの種類（標準メトリクスとカスタムメトリクス）
-   - ダッシュボードの作成とカスタマイズ
-   - メトリクスのグラフ化と期間指定
-   - 名前空間とディメンションの理解
-   - CloudWatch統合による各サービスの監視
-   - CloudWatch Contributor Insights
+**身近な例え:**
+- データベース = 図書館の蔵書目録
+- RDS = 司書さんが管理してくれる図書館
+- テーブル = 目録のページ
+- レコード = 目録の1行（1冊の本の情報）
 
-2. **CloudWatch Alarms とイベント**
-   - アラームの作成と閾値設定
-   - アラームアクション（SNS通知、Auto Scaling、EC2アクション）
-   - 複合アラームによる複雑な条件設定
-   - アラームの状態（OK、ALARM、INSUFFICIENT_DATA）
-   - Amazon SNS（Simple Notification Service）との統合
-   - メール、SMS、Lambdaへの通知
-
-3. **CloudWatch Logs**
-   - ロググループとログストリームの概念
-   - EC2、Lambda、ECSからのログ収集
-   - CloudWatch Logs Agentのインストールと設定
-   - ログの検索とフィルタリング
-   - メトリクスフィルタによるカスタムメトリクス作成
-   - Logs Insightsによる高度なログクエリ
-   - ログの保持期間設定とS3へのエクスポート
-
-4. **AWS CloudTrail**
-   - CloudTrailとは：API呼び出しの監査ログサービス
-   - トレイルの作成と設定
-   - 管理イベントとデータイベント
-   - CloudTrailログの分析
-   - AWS Config との統合
-   - セキュリティ監査とコンプライアンス
-   - CloudTrail Insightsによる異常検出
-
-5. **運用自動化とその他の管理サービス**
-   - AWS Systems Manager：統合運用管理サービス
-   - Session Manager：ブラウザベースのシェルアクセス
-   - Patch Manager：パッチ管理の自動化
-   - State Manager：設定管理
-   - Automation：運用タスクの自動化
-   - AWS Trusted Advisor：ベストプラクティスチェック
-   - AWS Personal Health Dashboard：サービス健全性の確認
-
-**演習課題:**
-- EC2のCPU使用率監視アラームの作成とSNS通知設定
-- カスタムダッシュボードでの複数リソースの一元監視
-- CloudWatch Logsを使ったアプリケーションログの集約
-- CloudTrailログの有効化と特定APIアクションの追跡
-- Systems Manager Session Manager によるセキュアなEC2アクセス
+**初心者がつまずきやすいポイント:**
+- データベースは「起動しているだけ」で料金がかかる
+- 無料枠は月750時間まで（1台なら1ヶ月フル稼働でOK）
+- 練習が終わったら必ず削除しよう
 
 ---
 
-### [8. サーバーレスコンピューティング（Lambda・API Gateway）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-08.html)
-サーバー管理不要のサーバーレスアーキテクチャを学び、Lambda関数の作成からAPI Gateway、イベント駆動型アーキテクチャまでを実装します。
+### [8. アクセス権限を管理しよう - IAM入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-08.html)
+「誰が何をできるか」を管理する仕組みを学びます。会社でいう「入館証」や「アクセス権限」のようなものです。
 
-**学習目標:**
-- Lambda関数を作成し、イベント駆動で実行できる
-- API Gatewayでサーバーレスなバックエンドを構築できる
-- S3、DynamoDB、SNSなどとLambdaを連携できる
-- サーバーレスアーキテクチャの設計パターンを理解する
+**この章で学ぶこと:**
+- IAMは「AWSの入館証システム」
+- ルートユーザーは「社長」（普段は使わない）
+- IAMユーザーは「社員証を持った従業員」
+- グループは「部署」（まとめて権限を設定）
+- ポリシーは「できることリスト」
+- MFA（多要素認証）でセキュリティ強化
 
-**学習内容:**
-1. **AWS Lambda の基礎**
-   - Lambdaとは：サーバーレスコンピューティングの概念
-   - Lambda関数の作成とデプロイ
-   - ランタイムの選択（Python、Node.js、Java、Go等）
-   - 関数の設定（メモリ、タイムアウト、環境変数）
-   - 実行ロールとIAMポリシー
-   - Lambda関数のテストとデバッグ
-   - CloudWatch Logsでのログ確認
+**身近な例え:**
+- IAM = オフィスビルのセキュリティシステム
+- ルートユーザー = ビルオーナー（全フロアに入れる）
+- IAMユーザー = 従業員（自分のフロアだけ入れる）
+- ポリシー = 入館証に設定された「入れる部屋リスト」
 
-2. **Lambdaのトリガーとイベントソース**
-   - S3イベントトリガー（オブジェクト作成時に処理）
-   - DynamoDB Streamsとの統合
-   - SNS、SQSからのイベント処理
-   - API Gateway HTTPリクエストの処理
-   - CloudWatch EventsとEventBridgeによるスケジュール実行
-   - Kinesisストリームの処理
-   - イベントソースマッピングの設定
-
-3. **Amazon API Gateway**
-   - API Gatewayとは：フルマネージドAPIサービス
-   - REST APIとHTTP APIの違い
-   - APIの作成とリソース・メソッドの定義
-   - Lambdaプロキシ統合
-   - リクエスト・レスポンスの変換とマッピング
-   - APIキーと使用量プランによる制限
-   - CORSの設定
-   - ステージとデプロイ管理
-
-4. **サーバーレスアプリケーションの構築**
-   - サーバーレスアーキテクチャの設計パターン
-   - API Gateway + Lambda + DynamoDB の3層構成
-   - 認証・認可（Amazon Cognito、カスタムオーソライザー）
-   - AWS SAM（Serverless Application Model）の概要
-   - SAMテンプレートによるインフラストラクチャ定義
-   - ローカル開発とテスト
-   - CI/CD パイプラインの構築
-
-5. **サーバーレスのベストプラクティス**
-   - コールドスタート対策
-   - 関数の適切なサイズとメモリ設定
-   - Lambda Layersによるコード共有
-   - 環境変数とSecrets Managerの活用
-   - エラーハンドリングとリトライ設定
-   - Dead Letter Queue（DLQ）の設定
-   - X-Rayによる分散トレーシング
-   - コスト最適化のヒント
-
-**演習課題:**
-- Hello Worldラムダ関数の作成とテスト
-- S3にファイルアップロード時に画像をサムネイル化するLambda関数
-- API Gateway + Lambda でRESTful APIの構築
-- DynamoDBと連携したCRUD APIの実装
-- EventBridgeによる定期実行バッチ処理の実装
+**初心者がつまずきやすいポイント:**
+- ルートユーザーは日常的に使わない（乗っ取られると大変）
+- IAMユーザーを作って普段はそちらを使う
+- パスワードは複雑なものに設定しよう
 
 ---
 
-### [9. コンテナサービス（ECS・EKS）](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-09.html)
-コンテナ技術とAWSのコンテナオーケストレーションサービス（ECS、EKS）を学び、マイクロサービスアーキテクチャの実装を習得します。
+### [9. サーバーの状態を見守ろう - CloudWatch入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-09.html)
+サーバーが正常に動いているか監視する方法を学びます。車のダッシュボードのように、いろいろな情報を見ることができます。
 
-**学習目標:**
-- Dockerの基本を理解し、コンテナイメージを作成できる
-- ECSでコンテナアプリケーションをデプロイできる
-- ECRでコンテナイメージを管理できる
-- EKSの基本を理解し、Kubernetesの基礎を学ぶ
+**この章で学ぶこと:**
+- CloudWatchは「AWSの健康診断ツール」
+- メトリクスは「健康診断の数値」
+- ダッシュボードで複数の情報を一覧表示
+- アラーム（警告）を設定して異常を知らせる
+- ログを保存して後から確認する
 
-**学習内容:**
-1. **コンテナ技術の基礎**
-   - コンテナとは：仮想マシンとの違い
-   - Docker の基本概念（イメージ、コンテナ、レジストリ）
-   - Dockerfileの作成とベストプラクティス
-   - マルチステージビルドによるイメージサイズ最適化
-   - ローカルでのコンテナ開発とテスト
-   - コンテナのメリット（移植性、効率性、スケーラビリティ）
+**身近な例え:**
+- CloudWatch = 車のダッシュボード
+- メトリクス = スピードメーター、燃料計、水温計
+- アラーム = 警告ランプ（異常があると光る）
+- ダッシュボード = 計器類をまとめた表示板
 
-2. **Amazon ECR（Elastic Container Registry）**
-   - ECRとは：フルマネージドコンテナレジストリ
-   - ECRリポジトリの作成
-   - Docker イメージのプッシュとプル
-   - イメージのタグ管理とライフサイクルポリシー
-   - イメージスキャンによる脆弱性検出
-   - プライベートレジストリとパブリックレジストリ
-   - クロスリージョンレプリケーション
-
-3. **Amazon ECS（Elastic Container Service）**
-   - ECSとは：コンテナオーケストレーションサービス
-   - ECSの主要コンポーネント（クラスター、タスク定義、サービス）
-   - 起動タイプ（EC2とFargate）の違い
-   - タスク定義の作成（コンテナ設定、リソース割り当て）
-   - ECSサービスの作成とデプロイ
-   - Application Load Balancer（ALB）との統合
-   - Auto Scalingによる自動スケーリング
-   - ECS Exec によるコンテナへのアクセス
-
-4. **AWS Fargate**
-   - Fargateとは：サーバーレスコンテナ実行環境
-   - EC2起動タイプとの比較
-   - Fargateタスクの作成と実行
-   - ネットワーキング設定（VPC、セキュリティグループ）
-   - コスト最適化（Fargate Spot）
-   - Fargate Ephemeral Storage の活用
-
-5. **Amazon EKS（Elastic Kubernetes Service）**
-   - Kubernetesの基本概念（Pod、Service、Deployment、Namespace）
-   - EKSクラスターの作成
-   - kubectlによるクラスター操作
-   - ワーカーノードの管理（マネージドノードグループ、Fargate）
-   - AWS Load Balancer Controller
-   - EKSとIAMの統合（IRSA: IAM Roles for Service Accounts）
-   - Helmチャートによるアプリケーション管理
-   - EKSのロギングとモニタリング
-
-**演習課題:**
-- Dockerfileからコンテナイメージをビルドし、ECRにプッシュ
-- ECS FargateでWebアプリケーションをデプロイ
-- ALBと統合したECSサービスの構築
-- EKSクラスターの作成とサンプルアプリケーションのデプロイ
-- コンテナの自動スケーリング設定
+**初心者がつまずきやすいポイント:**
+- 最初は「CPUの使用率」だけ見ておけばOK
+- アラームの設定は料金がかかることも（最初は無料枠内で）
+- グラフの期間設定を間違えるとデータが見えないことがある
 
 ---
 
-### [10. ベストプラクティスとコスト最適化](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-10.html)
-AWS Well-Architected Frameworkに基づくベストプラクティス、コスト最適化手法、アーキテクチャ設計のパターンを学習します。
+### [10. サーバーなしでプログラムを動かそう - Lambda入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-10.html)
+「サーバーレス」という新しい仕組みを体験します。サーバーを持たなくても、必要なときだけプログラムを動かせます。
 
-**学習目標:**
-- AWS Well-Architected Frameworkの5つの柱を理解する
-- コスト最適化の手法を実践できる
-- 高可用性と災害対策のアーキテクチャを設計できる
-- AWSの各種サービスを組み合わせた実践的なシステムを構築できる
+**この章で学ぶこと:**
+- サーバーレスは「必要なときだけ動く自販機」
+- Lambdaは「呼ばれたときだけ働くプログラム」
+- 簡単なプログラムの作り方（プログラミング経験不要）
+- 自動実行の設定（毎日決まった時間に動かす）
+- S3にファイルが追加されたら自動で処理する
 
-**学習内容:**
-1. **AWS Well-Architected Framework**
-   - Well-Architectedフレームワークとは
-   - **運用の優秀性（Operational Excellence）**：運用プロセスの管理と改善
-   - **セキュリティ（Security）**：データ保護と権限管理
-   - **信頼性（Reliability）**：障害からの回復とスケーラビリティ
-   - **パフォーマンス効率（Performance Efficiency）**：リソースの効率的な利用
-   - **コスト最適化（Cost Optimization）**：不要なコストの削減
-   - **持続可能性（Sustainability）**：環境への影響の最小化（第6の柱）
-   - Well-Architected Toolによる自己評価
+**身近な例え:**
+- Lambda = 出前サービス（注文があったときだけ調理・配達）
+- EC2 = 常設レストラン（お客さんがいなくても店を開けておく）
+- トリガー = 注文ボタン（押されたら調理開始）
 
-2. **コスト最適化戦略**
-   - AWS Cost Explorer による支出分析
-   - AWS Budgets による予算管理とアラート
-   - リザーブドインスタンスとSavings Plans
-   - スポットインスタンスの活用
-   - 適切なインスタンスサイジング（Right Sizing）
-   - 不使用リソースの特定と削除
-   - S3ストレージクラスの最適化
-   - データ転送コストの削減
-   - タグによるコスト配分（Cost Allocation Tags）
+**初心者がつまずきやすいポイント:**
+- 「ハンドラー」はプログラムの入り口
+- タイムアウト設定に注意（時間切れでエラーになる）
+- テスト実行で動作確認してから本番利用
 
-3. **高可用性とディザスタリカバリ**
-   - マルチAZ構成とマルチリージョン構成
-   - RPO（Recovery Point Objective）とRTO（Recovery Time Objective）
-   - バックアップとリカバリ戦略
-   - DRパターン（Backup & Restore、Pilot Light、Warm Standby、Multi-Site）
-   - Elastic Load Balancing（ALB、NLB、CLB）
-   - Auto Scaling Group による自動復旧
-   - Route 53 ヘルスチェックとフェイルオーバー
-   - クロスリージョンレプリケーション
+---
 
-4. **パフォーマンスとスケーラビリティ**
-   - キャッシング戦略（CloudFront、ElastiCache、DAX）
-   - データベースのパフォーマンスチューニング
-   - 読み取り/書き込みの分離（リードレプリカ）
-   - 非同期処理とキューイング（SQS、SNS）
-   - マイクロサービスアーキテクチャ
-   - イベント駆動アーキテクチャ
-   - サーバーレスによるスケーラビリティ
+### [11. 学んだことをまとめよう - 復習と実践プロジェクト](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-11.html)
+これまで学んだサービスを組み合わせて、簡単なWebサイトを公開するプロジェクトに挑戦します。
 
-5. **実践的なアーキテクチャパターン**
-   - **3層Webアプリケーション**：フロントエンド、アプリケーション、データベース
-   - **サーバーレスアーキテクチャ**：API Gateway + Lambda + DynamoDB
-   - **マイクロサービス**：コンテナベースの分散システム
-   - **データレイク**：S3 + Glue + Athena + QuickSight
-   - **ハイブリッドクラウド**：Direct Connect、VPN、Storage Gateway
-   - **CI/CD パイプライン**：CodePipeline、CodeBuild、CodeDeploy
-   - **監視と運用**：CloudWatch、X-Ray、Systems Manager
-
-6. **AWSのガバナンスとマルチアカウント戦略**
-   - AWS Organizations による複数アカウント管理
-   - Service Control Policies（SCP）
-   - AWS Control Tower による自動化されたアカウント設定
-   - リソースの命名規則とタグ戦略
-   - コンプライアンスとガバナンス
-   - FinOps の概念と実践
+**この章で学ぶこと:**
+- 各サービスの関係性を整理
+- S3を使った静的Webサイトの公開
+- 学習リソースの削除方法（課金を防ぐ）
+- 次のステップへの案内
 
 **最終プロジェクト:**
-以下の要件を満たす実践的なWebアプリケーションを設計・構築する：
-- マルチAZ構成による高可用性
-- Auto Scaling による自動スケーリング
-- RDSまたはDynamoDBによるデータ永続化
-- CloudFrontによるコンテンツ配信
-- Route 53によるDNS管理
-- IAMによる適切なアクセス制御
-- CloudWatchによる監視とアラート
-- コスト見積もりとコスト最適化計画
-- アーキテクチャ図とドキュメントの作成
+S3を使って自己紹介ページを公開しよう！
+- HTMLファイルをS3にアップロード
+- 世界中からアクセスできるURLを取得
+- 完成したらURLをシェアしてみよう
+
+---
+
+### [12. 次のステップ - これからの学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-12.html)
+基礎を学んだ後、さらにステップアップするための道しるべを紹介します。
+
+**この章で学ぶこと:**
+- AWSの資格試験について
+- より高度なサービスの紹介
+- 無料で学べる公式トレーニング
+- コミュニティへの参加方法
+- よくある質問と回答
+
+---
 
 ## 学習の進め方
 
-1. **無料利用枠の活用**: AWSは12ヶ月間の無料利用枠を提供しています。学習初期はこれを最大限活用し、コストを抑えながら実践的に学びましょう。
+1. **まず動画のように読み進める**: 各章を上から順番に読み、画面の指示に従って操作します
 
-2. **実際に手を動かす**: 読むだけでなく、必ず実際にAWSマネジメントコンソールで操作し、リソースを作成してください。体験が最も効果的な学習方法です。
+2. **実際に手を動かす**: 読むだけでなく、必ず自分のAWSアカウントで同じ操作をしてみましょう
 
-3. **小さく始めて段階的に拡張**: 最初はシンプルな構成から始め、徐々に複雑なアーキテクチャに挑戦しましょう。
+3. **わからなくても先に進む**: 最初は理解できなくても大丈夫。2周目で「あ、そういうことか！」となることが多いです
 
-4. **リソースの削除を忘れない**: 演習後は必ずリソースを削除し、予期しない課金を防ぎましょう。特にEC2、RDS、NAT Gatewayは注意が必要です。
+4. **リソースの削除を忘れずに**: 各章の最後にある「お片付け」の手順を必ず実行しましょう（予期しない課金を防ぎます）
 
-5. **コスト管理**: AWS Budgetsで予算アラートを設定し、Cost Explorerで定期的に支出を確認しましょう。
+5. **困ったら休憩**: 詰まったときは15分休憩してから再チャレンジ。頭がスッキリすると解決することが多いです
 
-6. **公式ドキュメントの活用**: AWS公式ドキュメントは非常に充実しています。困ったときは必ず公式ドキュメントを参照する習慣をつけましょう。
-
-7. **AWSコミュニティへの参加**: JAWS-UG（Japan AWS User Group）などのコミュニティに参加し、情報交換や質問をしましょう。
-
-8. **認定資格の取得**: 学習の到達点として、AWS認定資格（クラウドプラクティショナー、ソリューションアーキテクト-アソシエイト等）の取得を目指すのも効果的です。
+---
 
 ## 推奨学習期間
 
-- **基礎コース** (1-3章): 3-4週間（週10-15時間の学習を想定）
-- **中級コース** (4-7章): 4-6週間（週10-15時間の学習を想定）
-- **応用コース** (8-10章): 4-5週間（週10-15時間の学習を想定）
-- **合計学習期間**: 11-15週間（約3-4ヶ月）
+- **超入門編** (1-3章): 1週間
+  - クラウドの概念理解とアカウント作成
+  - 1日30分程度の学習でOK
 
-学習ペースは個人のバックグラウンドにより異なります。IT基盤の知識がある方はより速く進められますが、初心者の方は焦らず基礎を固めることを優先しましょう。
+- **基礎編** (4-7章): 2-3週間
+  - 主要サービス（EC2、S3、VPC、RDS）の基本操作
+  - 週末にまとめて実習するのがおすすめ
+
+- **応用編** (8-10章): 2週間
+  - セキュリティ、監視、サーバーレスの基礎
+  - 実際に手を動かす時間を多めに
+
+- **まとめ編** (11-12章): 1週間
+  - 学んだことの復習と今後の学習計画
+
+**合計: 6-7週間**（週5-10時間の学習を想定）
+
+---
 
 ## 関連リソース
 
-### チートシート
-- [AWS CLI チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/aws/aws-cli-cheatsheet.html)
-- [AWS サービス選択チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/aws/aws-service-selection-cheatsheet.html)
+### このリポジトリの関連ガイド
+- [Docker入門ガイドライン](../docker/README.md) - コンテナ技術を学ぶ
+- [クラウドコンピューティング基礎](../cloud-computing/README.md) - クラウド全般の知識
 
-### 関連ガイド
-- [Docker学習ガイドライン](../docker/README.md) - コンテナ技術の詳細
-- [Linux基礎ガイドライン](../../os-device/linux/README.md) - LinuxコマンドとEC2運用
-- [Python学習ガイドライン](../../python-ecosystem/python/README.md) - Lambda関数開発
-
-### 公式リソース
-- [AWS Skill Builder](https://skillbuilder.aws/) - 無料のオンライン学習プラットフォーム
-- [AWS ハンズオン](https://aws.amazon.com/jp/getting-started/hands-on/) - 実践的なチュートリアル集
-- [AWS ホワイトペーパー](https://aws.amazon.com/jp/whitepapers/) - アーキテクチャとベストプラクティス
-- [AWS アーキテクチャセンター](https://aws.amazon.com/jp/architecture/) - リファレンスアーキテクチャ
-
-### AWS認定資格
-- [AWS Certified Cloud Practitioner](https://aws.amazon.com/jp/certification/certified-cloud-practitioner/) - 入門レベル
-- [AWS Certified Solutions Architect – Associate](https://aws.amazon.com/jp/certification/certified-solutions-architect-associate/) - 実務レベル
-- [AWS Certified Developer – Associate](https://aws.amazon.com/jp/certification/certified-developer-associate/) - 開発者向け
+### 公式の無料学習リソース
+- [AWS Skill Builder](https://skillbuilder.aws/) - 無料のオンライン学習
+- [AWS 初心者向けハンズオン](https://aws.amazon.com/jp/getting-started/hands-on/) - 公式チュートリアル
+- [AWS Cloud Quest](https://aws.amazon.com/jp/training/digital/aws-cloud-quest/) - ゲーム感覚で学べる
 
 ### コミュニティ
-- [JAWS-UG](https://jaws-ug.jp/) - 日本AWSユーザーグループ
-- [AWS re:Post](https://repost.aws/) - AWS公式Q&Aコミュニティ
+- [JAWS-UG](https://jaws-ug.jp/) - 日本AWSユーザーグループ（初心者歓迎のイベントあり）
+
+---
 
 ## 学習目標
 
-このガイドを完了すると、以下のスキルを身につけることができます：
+このガイドを完了すると、以下のことができるようになります：
 
-### 基本スキル
-- AWSアカウントの作成とセキュアな運用
-- EC2インスタンスの起動と管理
-- VPCによるネットワーク設計
-- S3によるオブジェクトストレージの活用
-- RDS/DynamoDBによるデータベース管理
-- IAMによるアクセス制御とセキュリティ管理
+### 理解できるようになること
+- クラウドサービスの基本的な仕組みと利点
+- AWSの主要サービスの役割と使いどころ
+- 料金の仕組みと節約のコツ
+- セキュリティの基本的な考え方
 
-### 中級スキル
-- CloudFront と Route 53 による高速で信頼性の高いコンテンツ配信
-- CloudWatch と CloudTrail による監視とログ管理
-- Lambda と API Gateway によるサーバーレスアーキテクチャ構築
-- ECS/EKS によるコンテナベースのアプリケーション実行
-- マルチAZ構成による高可用性の実現
+### 操作できるようになること
+- AWSアカウントの作成と安全な管理
+- 仮想サーバー（EC2）の起動・停止
+- ファイル保存サービス（S3）の基本操作
+- 簡単なネットワーク設定
+- データベースの作成と接続
+- 監視ダッシュボードの確認
+- 簡単な自動化処理（Lambda）
 
-### 応用スキル
-- AWS Well-Architected Framework に基づくアーキテクチャ設計
-- コスト最適化とリソース管理
-- 災害対策（DR）とバックアップ戦略
-- マイクロサービスアーキテクチャの設計と実装
-- CI/CD パイプラインの構築
-- 複数AWSサービスを組み合わせた実践的なシステム構築
+### 日常で役立つこと
+- IT系のニュースやブログが理解しやすくなる
+- 「クラウド」「AWS」の話題についていける
+- IT部門との会話がスムーズになる
+- 新しいIT技術への抵抗感が減る
 
-### 業務で活用できる力
-- ビジネス要件に基づいたAWSアーキテクチャの提案
-- 既存システムのクラウドマイグレーション計画
-- セキュリティとコンプライアンスを考慮したシステム設計
-- コストを意識した効率的なリソース活用
-- 運用自動化とモニタリングの実装
+---
 
 ## 次のステップ
 
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
 
-### より高度なAWSスキル
-- [AWS認定ソリューションアーキテクト-プロフェッショナル対策](../certification/aws-sap/README.md) - 上級認定資格
-- [AWS上級ネットワーク設計](../cloud-infrastructure/aws-advanced-networking/README.md) - Transit Gateway、Direct Connect等
-- [AWS DevOps エンジニア向けガイド](../cloud-infrastructure/aws-devops/README.md) - CI/CD、インフラストラクチャ as Code
+### AWSをもっと深く学ぶ
+- [AWS認定クラウドプラクティショナー](https://aws.amazon.com/jp/certification/certified-cloud-practitioner/) - 入門レベルの資格（このガイドの知識＋α）
+- [AWS Terraform入門](../aws-terraform/README.md) - インフラをコードで管理する
 
-### 関連技術
-- [Terraformによるインフラストラクチャ as Code](../cloud-infrastructure/terraform/README.md) - IaCツールでのAWS管理
-- [Kubernetes完全ガイド](../cloud-infrastructure/kubernetes/README.md) - EKSの深い理解
-- [Docker実践ガイド](../cloud-infrastructure/docker/README.md) - コンテナ技術の詳細
+### 関連技術を学ぶ
+- [Docker入門](../docker/README.md) - コンテナ技術の基礎
+- [Linux基礎](../../programming-languages/linux/README.md) - サーバー操作の基本
 
-### アプリケーション開発
-- [Python/FastAPIでのサーバーレスAPI開発](../../python-ecosystem/fastapi/README.md)
-- [Node.js/Express での API 開発](../../javascript-ecosystem/nodejs/README.md)
-- [React によるモダンWebアプリ開発](../../javascript-ecosystem/react/README.md)
-
-### データ分析とAI/ML
-- [AWS上でのデータ分析基盤構築](../data-analytics/aws-data-platform/README.md)
-- [AWS SageMaker による機械学習](../ai-ml/aws-sagemaker/README.md)
+### プログラミングを始める
+- [Python入門](../../programming-languages/python-ecosystem/python-beginner/README.md) - Lambdaで使えるプログラミング言語
+- [JavaScript入門](../../programming-languages/javascript-ecosystem/javascript-beginner/README.md) - Webサイト作成に役立つ
 
 ---
 
-## 始めてみよう
+## よくある質問
 
-準備ができたら、さっそく[第1章：AWS入門とアカウント設定](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-01.html)から始めてみましょう！
+### Q: 本当にお金はかからないの？
+A: このガイドの内容は、すべて無料利用枠内で実施できます。ただし、作ったリソースを削除し忘れると課金される可能性があるので、各章の「お片付け」は必ず実施してください。
 
-### 最初の一歩
+### Q: プログラミングができなくても大丈夫？
+A: はい、大丈夫です！このガイドではプログラミング知識は必要ありません。Lambda（10章）で少しだけコードを扱いますが、コピー＆ペーストで進められます。
 
-1. **AWSアカウントの作成**: https://aws.amazon.com/jp/ にアクセスして無料アカウントを作成
-2. **請求アラートの設定**: コスト管理のため、まず請求アラートを設定
-3. **MFAの有効化**: セキュリティ強化のため、ルートユーザーにMFAを設定
-4. **最初のEC2インスタンス起動**: 無料利用枠内でWebサーバーを立ち上げてみましょう
+### Q: 英語ができなくても大丈夫？
+A: AWSは日本語に対応しています。一部英語が表示される画面もありますが、このガイドで日本語への切り替え方法を説明します。
 
-### 学習のヒント
+### Q: スマートフォンでも学習できる？
+A: 読むだけならスマートフォンでもOKですが、AWS操作はパソコンで行うことを強くお勧めします。画面が小さいと操作ミスの原因になります。
 
-- **失敗を恐れない**: AWSは何度でもやり直せます。削除して再作成することで理解が深まります
-- **小さな成功を積み重ねる**: 最初は簡単なタスクから始め、徐々に複雑なシステムに挑戦しましょう
-- **アーキテクチャ図を描く**: 構築したシステムの構成図を描くことで理解が深まります
-- **公式ドキュメントを読む習慣**: 最も正確で最新の情報は公式ドキュメントにあります
-
-このガイドがあなたのAWS学習の第一歩として、実務で活躍できるクラウドエンジニアへの成長に貢献できることを願っています。
-
-**学習開始日**: _______________
-
-**学習の目標**: _______________
-
-**構築したいシステム**: _______________
+### Q: 何か壊してしまったら？
+A: 大丈夫です。間違えても、リソースを削除してやり直せば元通りになります。クラウドの良いところは「何度でもやり直せる」ことです。
 
 ---
 
-最終更新日: 2025-10-29
+## はじめよう！
+
+準備ができたら、[第1章: クラウドって何？AWSを身近な例えで理解しよう](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-01.html) から始めましょう！
+
+クラウドの世界への第一歩を、一緒に踏み出しましょう。
+
+---
+
+最終更新日: 2025-12-15
