@@ -2,793 +2,874 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Streamlit学習教材 第4章 - ユーザー入力とインタラクション</title>
-    
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>Streamlit学習教材 第4章 - 繰り返し - 同じ処理を何度も行う</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <!-- Google Fonts - Noto Sans JP -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- Highlight.js CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    
-    <style>
-        /* ベースレイアウト */
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            padding-top: 56px;
-        }
 
-        /* ナビゲーション */
-        .navbar {
-            background-color: #4caf50;
-        }
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
 
-        /* サイドバー */
-        .sidebar {
-            position: sticky;
-            top: 70px;
-            height: calc(100vh - 70px);
-            overflow-y: auto;
-            background-color: #f8f9fa;
-        }
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        /* タイトル */
-        .chapter-title {
-            color: #4caf50;
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #4caf50;
-            padding-bottom: 0.5rem;
-        }
-
-        .section-title {
-            color: #66bb6a;
-            margin-top: 1.2rem;
-            margin-bottom: 0.8rem;
-        }
-
-        /* コンテンツボックス */
-        .quiz-container {
-            background-color: #e8f5e8;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #4caf50;
-        }
-
-        .exercise-container {
-            background-color: #f3e5f5;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #9c27b0;
-        }
-
-        .highlight {
-            background-color: #ffecb3;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #ffc107;
-        }
-
-        .info-box {
-            background-color: #e1f5fe;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #2196F3;
-        }
-
-        /* ナビゲーション */
-        .nav-link.active {
-            background-color: #4caf50 !important;
-            color: white !important;
-        }
-
-        .nav-link {
-            color: #666;
-        }
-
-        .nav-link:hover {
-            background-color: #e8f5e8;
-            color: #4caf50;
-        }
-
-        .code-block {
-            background-color: #1e1e1e;
-            border-radius: 5px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-
-        pre {
-            background-color: #f5f5f5;
-            padding: 1rem;
-            border-radius: 4px;
-            overflow-x: auto;
-        }
-
-        code {
-            background-color: #f5f5f5;
-            padding: 0.2rem 0.4rem;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
-        }
-    </style>
+    <!-- カスタムスタイル -->
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <!-- ナビゲーションバー -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Streamlit学習教材</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="../README.md">学習ガイドに戻る</a>
-                    </li>
-                </ul>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="w-full px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fab fa-python text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
+
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">Streamlit学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>Python・Webアプリ</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 50分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
-    <div class="container-fluid">
-        <div class="row">
-            <!-- サイドバー -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        章の一覧
-                    </h6>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="streamlit-learning-material-01.html">第1章: 入門と環境構築</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="streamlit-learning-material-02.html">第2章: 基本的なUIコンポーネント</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="streamlit-learning-material-03.html">第3章: データ表示と可視化</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#chapter4">第4章: ユーザー入力とインタラクション</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="streamlit-learning-material-05.html">第5章: セッション状態管理</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="streamlit-learning-material-06.html">第6章: ファイル操作とデータ処理</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="streamlit-learning-material-07.html">第7章: マルチページアプリケーション</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="streamlit-learning-material-08.html">第8章: データベース連携とAPI統合</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="streamlit-learning-material-09.html">第9章: デプロイメントと本番環境</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="streamlit-learning-material-10.html">第10章: 実践的なデータ分析アプリ開発</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
 
-            <!-- メインコンテンツ -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="../" class="hover:text-primary-600 transition-colors">Python Ecosystem</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第4章</span>
+                </nav>
+
                 <!-- 章ヘッダー -->
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">第4章: ユーザー入力とインタラクション</h1>
-                </div>
-
-                <div id="chapter4">
-                    <!-- 章タイトル -->
-                    <h2 class="chapter-title">インタラクティブなアプリケーションを作る</h2>
-                    
-                    <!-- 学習目標 -->
-                    <div class="highlight">
-                        <h5>この章で学ぶこと</h5>
-                        <ul>
-                            <li>ボタン、チェックボックス、ラジオボタンの実装</li>
-                            <li>セレクトボックス、マルチセレクト、スライダーの活用</li>
-                            <li>テキスト入力、数値入力、日付入力の処理</li>
-                            <li>フォームとコールバック関数の実装</li>
-                            <li>動的なUIの更新とユーザーフィードバック</li>
-                        </ul>
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第4章
+                        </span>
                     </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">繰り返し - 同じ処理を何度も行う</h1>
+                    <p class="text-slate-600">「1から10まで順番に表示する」「リストの中身を全部表示する」といった繰り返し処理を学びます。大量のデータを扱うときに欠かせない知識です。</p>
+                </header>
 
-                    <!-- セクション1: 基本的な入力コンポーネント -->
-                    <h3 class="section-title">4.1 基本的な入力コンポーネント</h3>
-                    <p>Streamlitには豊富な入力コンポーネントが用意されており、ユーザーとのインタラクションを簡単に実装できます。</p>
-                    
-                    <h4>主要な入力コンポーネント</h4>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>コンポーネント</th>
-                                <th>用途</th>
-                                <th>戻り値の型</th>
-                                <th>例</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><code>st.button()</code></td>
-                                <td>アクション実行</td>
-                                <td>bool</td>
-                                <td>送信、リセット</td>
-                            </tr>
-                            <tr>
-                                <td><code>st.checkbox()</code></td>
-                                <td>真偽値選択</td>
-                                <td>bool</td>
-                                <td>オプション設定</td>
-                            </tr>
-                            <tr>
-                                <td><code>st.radio()</code></td>
-                                <td>単一選択</td>
-                                <td>str/int</td>
-                                <td>カテゴリ選択</td>
-                            </tr>
-                            <tr>
-                                <td><code>st.selectbox()</code></td>
-                                <td>ドロップダウン選択</td>
-                                <td>any</td>
-                                <td>リストから選択</td>
-                            </tr>
-                            <tr>
-                                <td><code>st.multiselect()</code></td>
-                                <td>複数選択</td>
-                                <td>list</td>
-                                <td>複数項目選択</td>
-                            </tr>
-                            <tr>
-                                <td><code>st.slider()</code></td>
-                                <td>数値範囲選択</td>
-                                <td>int/float</td>
-                                <td>パラメータ調整</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div class="exercise-container">
-                        <h5>実習 4-1: 基本入力コンポーネントの実装</h5>
-                        <p>様々な入力コンポーネントを組み合わせて、設定パネル付きのアプリを作成します。</p>
-                        
-                        <h6>basic_inputs.py を作成</h6>
-                        <pre class="code-block"><code class="language-python">import streamlit as st
-import pandas as pd
-import numpy as np
-import plotly.express as px
-
-# ページ設定
-st.set_page_config(
-    page_title="入力コンポーネントデモ",
-    page_icon="🎛️",
-    layout="wide"
-)
-
-st.title("🎛️ ユーザー入力コンポーネントデモ")
-
-# サイドバーの設定パネル
-with st.sidebar:
-    st.header("📋 設定パネル")
-    
-    # ボタン
-    if st.button("データを生成", type="primary"):
-        st.session_state.data_generated = True
-        st.success("データが生成されました！")
-    
-    st.divider()
-    
-    # チェックボックス
-    show_raw_data = st.checkbox("生データを表示", value=True)
-    show_statistics = st.checkbox("統計情報を表示", value=False)
-    enable_animation = st.checkbox("アニメーションを有効化", value=False)
-    
-    st.divider()
-    
-    # ラジオボタン
-    chart_type = st.radio(
-        "グラフの種類を選択",
-        ["線グラフ", "棒グラフ", "散布図", "ヒストグラム"]
-    )
-    
-    st.divider()
-    
-    # セレクトボックス
-    dataset_size = st.selectbox(
-        "データセットサイズ",
-        ["小 (100)", "中 (500)", "大 (1000)"],
-        index=1
-    )
-    
-    # 数値を抽出
-    size_map = {"小 (100)": 100, "中 (500)": 500, "大 (1000)": 1000}
-    data_size = size_map[dataset_size]
-    
-    st.divider()
-    
-    # マルチセレクト
-    selected_columns = st.multiselect(
-        "表示する列を選択",
-        ["A", "B", "C", "D", "E"],
-        default=["A", "B", "C"]
-    )
-    
-    st.divider()
-    
-    # スライダー
-    noise_level = st.slider(
-        "ノイズレベル",
-        min_value=0.0,
-        max_value=2.0,
-        value=0.5,
-        step=0.1
-    )
-    
-    random_seed = st.slider(
-        "ランダムシード",
-        min_value=1,
-        max_value=100,
-        value=42
-    )
-
-# メインエリア
-if 'data_generated' not in st.session_state:
-    st.info("👈 サイドバーの'データを生成'ボタンをクリックしてください")
-else:
-    # データ生成
-    np.random.seed(random_seed)
-    data = pd.DataFrame({
-        'A': np.random.randn(data_size) + noise_level * np.random.randn(data_size),
-        'B': np.random.randn(data_size) + noise_level * np.random.randn(data_size),
-        'C': np.random.randn(data_size) + noise_level * np.random.randn(data_size),
-        'D': np.random.randn(data_size) + noise_level * np.random.randn(data_size),
-        'E': np.random.randn(data_size) + noise_level * np.random.randn(data_size)
-    })
-    
-    # 選択された列のみフィルタ
-    if selected_columns:
-        filtered_data = data[selected_columns]
-    else:
-        st.warning("表示する列を選択してください")
-        filtered_data = data
-    
-    # 情報表示
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.metric("データ数", f"{len(filtered_data):,}")
-    
-    with col2:
-        st.metric("列数", len(filtered_data.columns))
-    
-    with col3:
-        st.metric("ノイズレベル", f"{noise_level:.1f}")
-    
-    with col4:
-        st.metric("シード値", random_seed)
-    
-    # グラフ表示
-    st.subheader(f"📊 {chart_type}")
-    
-    if chart_type == "線グラフ":
-        fig = px.line(filtered_data, title="時系列データ")
-        if enable_animation:
-            fig.update_traces(line=dict(width=3))
-    
-    elif chart_type == "棒グラフ":
-        mean_values = filtered_data.mean()
-        fig = px.bar(x=mean_values.index, y=mean_values.values, title="平均値比較")
-    
-    elif chart_type == "散布図":
-        if len(filtered_data.columns) >= 2:
-            fig = px.scatter(
-                filtered_data, 
-                x=filtered_data.columns[0], 
-                y=filtered_data.columns[1],
-                title=f"{filtered_data.columns[0]} vs {filtered_data.columns[1]}"
-            )
-        else:
-            st.error("散布図には少なくとも2つの列が必要です")
-            fig = None
-    
-    elif chart_type == "ヒストグラム":
-        fig = px.histogram(
-            filtered_data.melt(var_name='列', value_name='値'),
-            x='値',
-            color='列',
-            title="データ分布"
-        )
-    
-    if 'fig' in locals() and fig is not None:
-        st.plotly_chart(fig, use_container_width=True)
-    
-    # データ表示オプション
-    if show_raw_data:
-        st.subheader("📋 生データ")
-        st.dataframe(filtered_data, use_container_width=True)
-    
-    if show_statistics:
-        st.subheader("📊 統計情報")
-        st.dataframe(filtered_data.describe(), use_container_width=True)
-</code></pre>
-                        
-                        <h6>実行と確認</h6>
-                        <pre class="code-block"><code class="language-bash">streamlit run basic_inputs.py</code></pre>
-                        
-                        <h6>期待される結果</h6>
-                        <p>サイドバーの設定パネルで各種パラメータを変更すると、メインエリアのグラフと表示内容が動的に更新されます。</p>
-                    </div>
-
-                    <!-- セクション2: テキストと数値入力 -->
-                    <h3 class="section-title">4.2 テキストと数値入力</h3>
-                    <p>フォーム入力やデータ収集に必要なテキスト・数値入力コンポーネントを学習します。</p>
-
-                    <h4>入力コンポーネントの種類</h4>
-                    <div class="info-box">
-                        <h6>テキスト系入力</h6>
-                        <ul>
-                            <li><strong>st.text_input()</strong>: 単行テキスト入力</li>
-                            <li><strong>st.text_area()</strong>: 複数行テキスト入力</li>
-                            <li><strong>st.password_input()</strong>: パスワード入力（非表示）</li>
-                        </ul>
-                        
-                        <h6>数値・日付系入力</h6>
-                        <ul>
-                            <li><strong>st.number_input()</strong>: 数値入力</li>
-                            <li><strong>st.date_input()</strong>: 日付選択</li>
-                            <li><strong>st.time_input()</strong>: 時刻選択</li>
-                        </ul>
-                    </div>
-
-                    <div class="exercise-container">
-                        <h5>実習 4-2: データ入力フォームの作成</h5>
-                        <p>様々な入力コンポーネントを組み合わせて、ユーザー登録フォームを作成します。</p>
-                        
-                        <h6>input_forms.py を作成</h6>
-                        <pre class="code-block"><code class="language-python">import streamlit as st
-import pandas as pd
-from datetime import datetime, date
-import re
-
-# ページ設定
-st.set_page_config(
-    page_title="入力フォームデモ",
-    page_icon="📝",
-    layout="wide"
-)
-
-st.title("📝 データ入力フォームデモ")
-
-# タブで整理
-tab1, tab2, tab3 = st.tabs(["👤 ユーザー登録", "📊 データ分析設定", "📋 入力履歴"])
-
-with tab1:
-    st.subheader("ユーザー登録フォーム")
-    
-    # フォームを使用してまとめて処理
-    with st.form("user_registration"):
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            # 基本情報
-            st.write("**基本情報**")
-            first_name = st.text_input("名", placeholder="太郎")
-            last_name = st.text_input("姓", placeholder="田中")
-            email = st.text_input("メールアドレス", placeholder="user@example.com")
-            password = st.text_input("パスワード", type="password")
-            confirm_password = st.text_input("パスワード確認", type="password")
-        
-        with col2:
-            # 詳細情報
-            st.write("**詳細情報**")
-            birth_date = st.date_input(
-                "生年月日",
-                value=date(1990, 1, 1),
-                min_value=date(1900, 1, 1),
-                max_value=date.today()
-            )
-            
-            gender = st.selectbox(
-                "性別",
-                ["選択してください", "男性", "女性", "その他", "回答しない"]
-            )
-            
-            occupation = st.selectbox(
-                "職業",
-                ["学生", "会社員", "公務員", "自営業", "主婦・主夫", "その他"]
-            )
-            
-            interests = st.multiselect(
-                "興味のある分野",
-                ["技術", "ビジネス", "デザイン", "マーケティング", "データ分析", "AI・機械学習"]
-            )
-        
-        # 追加情報
-        st.write("**追加情報**")
-        bio = st.text_area(
-            "自己紹介",
-            placeholder="簡単な自己紹介をお書きください...",
-            height=100
-        )
-        
-        newsletter = st.checkbox("ニュースレターを受け取る")
-        terms = st.checkbox("利用規約に同意する")
-        
-        # 送信ボタン
-        submitted = st.form_submit_button("登録", type="primary")
-        
-        if submitted:
-            # バリデーション
-            errors = []
-            
-            if not first_name or not last_name:
-                errors.append("名前を入力してください")
-            
-            if not email:
-                errors.append("メールアドレスを入力してください")
-            elif not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email):
-                errors.append("有効なメールアドレスを入力してください")
-            
-            if not password:
-                errors.append("パスワードを入力してください")
-            elif len(password) < 8:
-                errors.append("パスワードは8文字以上にしてください")
-            elif password != confirm_password:
-                errors.append("パスワードが一致しません")
-            
-            if gender == "選択してください":
-                errors.append("性別を選択してください")
-            
-            if not terms:
-                errors.append("利用規約に同意してください")
-            
-            # エラー表示または成功処理
-            if errors:
-                for error in errors:
-                    st.error(error)
-            else:
-                # セッション状態に保存
-                if 'users' not in st.session_state:
-                    st.session_state.users = []
-                
-                user_data = {
-                    '登録日時': datetime.now(),
-                    '名前': f"{last_name} {first_name}",
-                    'メール': email,
-                    '生年月日': birth_date,
-                    '性別': gender,
-                    '職業': occupation,
-                    '興味分野': ', '.join(interests),
-                    '自己紹介': bio,
-                    'ニュースレター': newsletter
-                }
-                
-                st.session_state.users.append(user_data)
-                st.success("ユーザー登録が完了しました！")
-                st.balloons()
-
-with tab2:
-    st.subheader("データ分析設定")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.write("**分析パラメータ**")
-        
-        sample_size = st.number_input(
-            "サンプルサイズ",
-            min_value=10,
-            max_value=10000,
-            value=1000,
-            step=10
-        )
-        
-        confidence_level = st.slider(
-            "信頼度レベル (%)",
-            min_value=90,
-            max_value=99,
-            value=95,
-            step=1
-        )
-        
-        significance_level = st.number_input(
-            "有意水準",
-            min_value=0.01,
-            max_value=0.10,
-            value=0.05,
-            step=0.01,
-            format="%.3f"
-        )
-    
-    with col2:
-        st.write("**時間設定**")
-        
-        analysis_date = st.date_input(
-            "分析実行日",
-            value=date.today()
-        )
-        
-        analysis_time = st.time_input(
-            "分析実行時刻",
-            value=datetime.now().time()
-        )
-        
-        timeout_minutes = st.slider(
-            "タイムアウト (分)",
-            min_value=1,
-            max_value=60,
-            value=30
-        )
-    
-    st.write("**分析オプション**")
-    
-    col3, col4 = st.columns(2)
-    
-    with col3:
-        remove_outliers = st.checkbox("外れ値を除去", value=True)
-        normalize_data = st.checkbox("データを正規化", value=False)
-        save_results = st.checkbox("結果を保存", value=True)
-    
-    with col4:
-        create_report = st.checkbox("レポートを生成", value=True)
-        send_email = st.checkbox("メール通知", value=False)
-        verbose_output = st.checkbox("詳細ログ", value=False)
-    
-    if st.button("分析を実行", type="primary"):
-        # 設定の確認
-        st.success("分析設定が完了しました！")
-        
-        with st.expander("設定内容を確認"):
-            settings = {
-                'サンプルサイズ': sample_size,
-                '信頼度レベル': f"{confidence_level}%",
-                '有意水準': significance_level,
-                '実行日時': f"{analysis_date} {analysis_time}",
-                'タイムアウト': f"{timeout_minutes}分",
-                '外れ値除去': remove_outliers,
-                'データ正規化': normalize_data,
-                '結果保存': save_results,
-                'レポート生成': create_report,
-                'メール通知': send_email,
-                '詳細ログ': verbose_output
-            }
-            
-            for key, value in settings.items():
-                st.write(f"- **{key}**: {value}")
-
-with tab3:
-    st.subheader("入力履歴")
-    
-    if 'users' in st.session_state and st.session_state.users:
-        st.write(f"**登録ユーザー数**: {len(st.session_state.users)}人")
-        
-        # データフレームに変換
-        df = pd.DataFrame(st.session_state.users)
-        
-        # 表示オプション
-        show_details = st.checkbox("詳細情報を表示")
-        
-        if show_details:
-            st.dataframe(df, use_container_width=True)
-        else:
-            # 基本情報のみ表示
-            basic_df = df[['登録日時', '名前', 'メール', '職業']].copy()
-            st.dataframe(basic_df, use_container_width=True)
-        
-        # CSV ダウンロード
-        csv = df.to_csv(index=False, encoding='utf-8-sig')
-        st.download_button(
-            label="CSV形式でダウンロード",
-            data=csv,
-            file_name=f"user_data_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
-            mime="text/csv"
-        )
-        
-        # 統計情報
-        st.subheader("📊 統計情報")
-        
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            gender_counts = df['性別'].value_counts()
-            st.write("**性別分布**")
-            st.bar_chart(gender_counts)
-        
-        with col2:
-            occupation_counts = df['職業'].value_counts()
-            st.write("**職業分布**")
-            st.bar_chart(occupation_counts)
-        
-        with col3:
-            newsletter_count = df['ニュースレター'].sum()
-            total_users = len(df)
-            st.metric(
-                "ニュースレター登録率",
-                f"{newsletter_count}/{total_users}",
-                f"{(newsletter_count/total_users*100):.1f}%"
-            )
-    
-    else:
-        st.info("まだ登録データがありません。ユーザー登録タブからデータを入力してください。")
-        
-        # リセットボタン
-        if st.button("履歴をクリア"):
-            if 'users' in st.session_state:
-                del st.session_state.users
-            st.success("履歴がクリアされました")
-</code></pre>
-                        
-                        <h6>実行と確認</h6>
-                        <pre class="code-block"><code class="language-bash">streamlit run input_forms.py</code></pre>
-                        
-                        <h6>期待される結果</h6>
-                        <p>3つのタブで構成された入力フォームシステムが表示され、バリデーション機能と履歴管理機能が確認できます。</p>
-                    </div>
-
-                    <!-- 理解度確認 -->
-                    <div class="quiz-container">
-                        <h5>理解度確認クイズ</h5>
-                        <ol>
-                            <li>
-                                <strong>複数の項目から複数選択可能な入力コンポーネントはどれですか？</strong>
-                                <ul style="list-style-type: none;">
-                                    <li>a) st.selectbox()</li>
-                                    <li>b) st.multiselect()</li>
-                                    <li>c) st.radio()</li>
-                                    <li>d) st.checkbox()</li>
-                                </ul>
-                                <details style="margin-top: 0.5rem;">
-                                    <summary>解答を見る</summary>
-                                    <p><strong>答え: b)</strong> st.multiselect() は複数の項目を同時に選択できます。</p>
-                                </details>
-                            </li>
-                            
-                            <li>
-                                <strong>フォームを使用する利点を2つ挙げてください</strong>
-                                <details style="margin-top: 0.5rem;">
-                                    <summary>解答を見る</summary>
-                                    <p><strong>答え例:</strong><br>
-                                    1. 入力がまとめて処理され、部分的な再実行を防げる<br>
-                                    2. ユーザーが送信ボタンを押すまで処理が実行されない<br>
-                                    3. 複数の入力を一度に検証できる</p>
-                                </details>
-                            </li>
-                            
-                            <li>
-                                <strong>パスワード入力を非表示にするパラメータは何ですか？</strong>
-                                <details style="margin-top: 0.5rem;">
-                                    <summary>解答を見る</summary>
-                                    <p><strong>答え:</strong> type="password" パラメータを st.text_input() に指定します。</p>
-                                </details>
-                            </li>
-                        </ol>
-                    </div>
-
-                    <!-- 章間ナビゲーション -->
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="streamlit-learning-material-03.html" class="btn btn-secondary">← 前の章: データ表示と可視化</a>
-                        <a href="streamlit-learning-material-05.html" class="btn btn-primary">次の章: セッション状態管理 →</a>
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>for文を使った繰り返し処理の基礎</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>range関数で指定回数の繰り返し</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>リスト（複数のデータをまとめる方法）の基本</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>while文による条件付き繰り返し</span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </main>
-        </div>
+
+                <!-- セクション1: 繰り返し処理とは -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.1 繰り返し処理とは？
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        プログラミングでは、同じ処理を何度も実行したい場面が頻繁にあります。例えば、「1から100までの数を全部表示する」「リストに入っているデータを全部処理する」といった場合です。
+                    </p>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        手作業で100回同じコードを書くのは大変ですし、間違いも起こりやすくなります。そこで、「繰り返し処理」の仕組みを使って、少ないコードで効率的に処理を実行します。
+                    </p>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-star text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">繰り返し処理の便利さ</p>
+                                <p class="text-emerald-800 text-sm mt-1 break-words">
+                                    例えば、100個のデータを処理する場合、繰り返し処理を使えばわずか3〜4行で書けます。これがプログラミングの強力な点です。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">繰り返し処理のイメージ</h3>
+                    <div class="mermaid">
+flowchart TD
+    A[処理開始] --> B{繰り返し条件を<br/>満たす？}
+    B -->|はい| C[処理を実行]
+    C --> B
+    B -->|いいえ| D[繰り返し終了]
+                    </div>
+                </section>
+
+                <!-- セクション2: リストの基礎 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.2 リスト - 複数のデータをまとめる
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        繰り返し処理を学ぶ前に、まず<strong>リスト</strong>について理解しましょう。リストは複数のデータを1つの箱にまとめて管理する仕組みです。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">リストの作り方</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        リストは<code class="bg-slate-100 px-1 rounded">[]</code>（角カッコ）で囲み、データをカンマ<code class="bg-slate-100 px-1 rounded">,</code>で区切って並べます。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">リストの基本例</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python"># 数値のリスト
+numbers = [1, 2, 3, 4, 5]
+
+# 文字列のリスト
+fruits = ["りんご", "バナナ", "みかん"]
+
+# 空のリスト
+empty_list = []
+
+print(numbers)  # [1, 2, 3, 4, 5]
+print(fruits)   # ['りんご', 'バナナ', 'みかん']</code></pre>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">リストの便利さ</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    リストを使えば、関連するデータをまとめて扱えます。例えば、クラスメイトの名前をリストにまとめれば、1つの変数で全員の名前を管理できます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">リストの要素にアクセスする</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        リストの中の特定のデータを取り出すには、<strong>インデックス</strong>（番号）を使います。Pythonでは<strong>0から数える</strong>ので注意が必要です。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">インデックスでアクセス</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">fruits = ["りんご", "バナナ", "みかん"]
+
+# 0番目の要素（最初の要素）
+print(fruits[0])  # りんご
+
+# 1番目の要素
+print(fruits[1])  # バナナ
+
+# 2番目の要素
+print(fruits[2])  # みかん</code></pre>
+                    </div>
+
+                    <div class="bg-orange-50 border-l-4 border-orange-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-orange-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-orange-900 font-medium break-words">注意：インデックスは0から始まる</p>
+                                <p class="text-orange-800 text-sm mt-1 break-words">
+                                    プログラミングでは、最初の要素のインデックスは1ではなく0です。これは少し慣れが必要ですが、多くのプログラミング言語で共通のルールです。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション3: for文の基礎 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.3 for文 - リストの要素を1つずつ処理する
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>for文</strong>は、リストの要素を1つずつ取り出して処理を繰り返す仕組みです。Pythonで最もよく使われる繰り返し処理の1つです。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">for文の基本構文</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">for文の基本形</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">for 変数名 in リスト:
+    繰り返し実行する処理</code></pre>
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        リストの要素が1つずつ変数に代入され、その変数を使って処理を実行します。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">for文の例</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python"># リストの各要素を表示
+fruits = ["りんご", "バナナ", "みかん"]
+
+for fruit in fruits:
+    print(fruit)
+
+# 実行結果：
+# りんご
+# バナナ
+# みかん</code></pre>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">for文の動作イメージ</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    <code class="bg-blue-100 px-1 rounded">for fruit in fruits:</code> は「fruitsリストから要素を1つずつ取り出してfruitに入れる」という意味です。リストの要素がなくなるまで繰り返します。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 実習1: for文でリストを処理 -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">
+                                実習 4-1: for文を使ってリストの要素を表示
+                            </h3>
+                            <p class="text-purple-900 mb-4 break-words">好きな食べ物のリストを作り、for文を使って全て表示してみましょう。</p>
+
+                            <div class="code-block-wrapper mb-4">
+                                <button onclick="copyCode(this)" class="copy-btn px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg transition-colors">
+                                    <i class="fas fa-copy mr-1"></i>コピー
+                                </button>
+                                <pre class="!bg-slate-800 !rounded-lg overflow-x-auto"><code class="language-python"># 好きな食べ物リスト
+favorite_foods = ["ラーメン", "カレー", "寿司", "ピザ"]
+
+# 各要素を表示
+for food in favorite_foods:
+    print(f"私は{food}が好きです")
+
+# 実行結果：
+# 私はラーメンが好きです
+# 私はカレーが好きです
+# 私は寿司が好きです
+# 私はピザが好きです</code></pre>
+                            </div>
+
+                            <div class="bg-purple-100 rounded-lg p-4 mt-4">
+                                <p class="text-purple-900 text-sm"><i class="fas fa-check-circle text-purple-600 mr-2"></i>f文字列（f"..."）を使うと、変数の値を文章の中に埋め込めます。<code class="bg-white px-1 rounded">{food}</code>の部分に変数の値が入ります。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション4: range関数 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.4 range関数 - 指定回数の繰り返し
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>range関数</strong>を使うと、「10回繰り返す」「1から100まで順番に処理する」といった指定回数の繰り返しが簡単に書けます。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">range関数の基本形</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full border-collapse border border-slate-300">
+                            <thead>
+                                <tr class="bg-slate-100">
+                                    <th class="border border-slate-300 px-4 py-2 text-left">使い方</th>
+                                    <th class="border border-slate-300 px-4 py-2 text-left">意味</th>
+                                    <th class="border border-slate-300 px-4 py-2 text-left">例</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border border-slate-300 px-4 py-2"><code class="bg-slate-100 px-1 rounded">range(n)</code></td>
+                                    <td class="border border-slate-300 px-4 py-2">0からn-1まで</td>
+                                    <td class="border border-slate-300 px-4 py-2"><code class="bg-slate-100 px-1 rounded">range(5)</code> → 0, 1, 2, 3, 4</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-300 px-4 py-2"><code class="bg-slate-100 px-1 rounded">range(start, end)</code></td>
+                                    <td class="border border-slate-300 px-4 py-2">startからend-1まで</td>
+                                    <td class="border border-slate-300 px-4 py-2"><code class="bg-slate-100 px-1 rounded">range(1, 6)</code> → 1, 2, 3, 4, 5</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-300 px-4 py-2"><code class="bg-slate-100 px-1 rounded">range(start, end, step)</code></td>
+                                    <td class="border border-slate-300 px-4 py-2">startからend-1まで、step刻み</td>
+                                    <td class="border border-slate-300 px-4 py-2"><code class="bg-slate-100 px-1 rounded">range(0, 10, 2)</code> → 0, 2, 4, 6, 8</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">range関数の例</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python"># 1から10まで表示
+for i in range(1, 11):
+    print(i)
+
+# 5回繰り返す
+for i in range(5):
+    print(f"{i + 1}回目の処理")
+
+# 偶数だけ表示（0, 2, 4, 6, 8）
+for i in range(0, 10, 2):
+    print(i)</code></pre>
+                    </div>
+
+                    <div class="bg-orange-50 border-l-4 border-orange-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-circle text-orange-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-orange-900 font-medium break-words">注意：endの値は含まれない</p>
+                                <p class="text-orange-800 text-sm mt-1 break-words">
+                                    <code class="bg-orange-100 px-1 rounded">range(1, 11)</code>は1から10までであり、11は含まれません。「1から10まで」を作るには、11を指定する必要があります。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 実習2: range関数を使った計算 -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">
+                                実習 4-2: 1から100までの合計を計算
+                            </h3>
+                            <p class="text-purple-900 mb-4 break-words">range関数とfor文を使って、1から100までの数値の合計を計算するプログラムを作りましょう。</p>
+
+                            <div class="code-block-wrapper mb-4">
+                                <button onclick="copyCode(this)" class="copy-btn px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg transition-colors">
+                                    <i class="fas fa-copy mr-1"></i>コピー
+                                </button>
+                                <pre class="!bg-slate-800 !rounded-lg overflow-x-auto"><code class="language-python"># 合計を保存する変数
+total = 0
+
+# 1から100まで足していく
+for i in range(1, 101):
+    total = total + i
+
+print(f"1から100までの合計: {total}")
+
+# 実行結果：
+# 1から100までの合計: 5050</code></pre>
+                            </div>
+
+                            <div class="bg-purple-100 rounded-lg p-4 mt-4">
+                                <p class="text-purple-900 text-sm"><i class="fas fa-info-circle text-purple-600 mr-2"></i><code class="bg-white px-1 rounded">total = total + i</code>は「totalに今のtotalとiを足した値を代入」という意味です。繰り返すたびにtotalに値が蓄積されます。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション5: while文 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.5 while文 - 条件が満たされる間繰り返す
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>while文</strong>は、指定した条件がTrueである限り処理を繰り返します。「合計が100を超えるまで繰り返す」といった、回数が事前にわからない繰り返しに便利です。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">while文の基本構文</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">while文の基本形</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">while 条件式:
+    条件がTrueの間繰り返す処理</code></pre>
+                    </div>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">while文の例</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python"># 1から5まで表示
+count = 1
+while count <= 5:
+    print(count)
+    count = count + 1
+
+# 実行結果：
+# 1
+# 2
+# 3
+# 4
+# 5</code></pre>
+                    </div>
+
+                    <div class="bg-orange-50 border-l-4 border-orange-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-orange-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-orange-900 font-medium break-words">注意：無限ループに気をつける</p>
+                                <p class="text-orange-800 text-sm mt-1 break-words">
+                                    条件式が永遠にTrueのままだと、プログラムが止まらなくなってしまいます。必ずループを終了させる処理（カウンタの更新など）を入れましょう。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">for文とwhile文の使い分け</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h4 class="font-medium text-blue-900 mb-2">for文が適している場合</h4>
+                            <ul class="text-sm text-blue-800 space-y-1">
+                                <li>繰り返し回数がわかっている</li>
+                                <li>リストの全要素を処理する</li>
+                                <li>1から100までなど範囲が決まっている</li>
+                            </ul>
+                        </div>
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                            <h4 class="font-medium text-emerald-900 mb-2">while文が適している場合</h4>
+                            <ul class="text-sm text-emerald-800 space-y-1">
+                                <li>繰り返し回数が事前にわからない</li>
+                                <li>条件が満たされるまで繰り返す</li>
+                                <li>ユーザー入力を待つなど</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 実習3: while文を使った計算 -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">
+                                実習 4-3: 合計が100を超えるまで足し算
+                            </h3>
+                            <p class="text-purple-900 mb-4 break-words">while文を使って、1から順番に足していき、合計が100を超えたら終了するプログラムを作りましょう。</p>
+
+                            <div class="code-block-wrapper mb-4">
+                                <button onclick="copyCode(this)" class="copy-btn px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg transition-colors">
+                                    <i class="fas fa-copy mr-1"></i>コピー
+                                </button>
+                                <pre class="!bg-slate-800 !rounded-lg overflow-x-auto"><code class="language-python"># 初期値設定
+total = 0
+num = 1
+
+# 合計が100を超えるまで繰り返す
+while total <= 100:
+    total = total + num
+    num = num + 1
+
+print(f"最終的な合計: {total}")
+print(f"最後に足した数: {num - 1}")
+
+# 実行結果例：
+# 最終的な合計: 105
+# 最後に足した数: 14</code></pre>
+                            </div>
+
+                            <div class="bg-purple-100 rounded-lg p-4 mt-4">
+                                <p class="text-purple-900 text-sm"><i class="fas fa-check-circle text-purple-600 mr-2"></i>1+2+3+...+14=105で、合計が初めて100を超えるため、ループが終了します。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション6: break と continue -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        4.6 break と continue - ループの制御
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        繰り返し処理の途中で「ループを抜ける」「次の繰り返しにスキップする」といった制御をしたいことがあります。そのために<code class="bg-slate-100 px-1 rounded">break</code>と<code class="bg-slate-100 px-1 rounded">continue</code>を使います。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">break - ループを途中で抜ける</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">breakの例</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python"># 5が見つかったらループを終了
+for i in range(1, 11):
+    if i == 5:
+        print("5を見つけたので終了")
+        break
+    print(i)
+
+# 実行結果：
+# 1
+# 2
+# 3
+# 4
+# 5を見つけたので終了</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">continue - 今回の処理をスキップ</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">continueの例</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python"># 偶数だけ表示（奇数はスキップ）
+for i in range(1, 11):
+    if i % 2 == 1:  # 奇数なら
+        continue    # スキップして次へ
+    print(i)
+
+# 実行結果：
+# 2
+# 4
+# 6
+# 8
+# 10</code></pre>
+                    </div>
+                </section>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q1. Pythonのリストで、最初の要素にアクセスするインデックスはいくつですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>正解：0</strong><br>
+                                            Pythonでは、リストのインデックスは0から始まります。最初の要素は<code class="bg-white px-1 rounded">リスト[0]</code>でアクセスできます。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q2. <code class="bg-blue-100 px-1 rounded">range(1, 6)</code>が生成する数値はどれですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>正解：1, 2, 3, 4, 5</strong><br>
+                                            range関数は開始値を含み、終了値を含みません。<code class="bg-white px-1 rounded">range(1, 6)</code>は1から5までの数値を生成します。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q3. for文とwhile文の使い分けとして正しいものはどれですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>正解：繰り返し回数が決まっている場合はfor文、条件によって回数が変わる場合はwhile文</strong><br>
+                                            for文はリストの全要素処理や指定回数の繰り返しに、while文は条件が満たされるまでの繰り返しに適しています。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- トラブルシューティング -->
+                <div class="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-orange-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-tools text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-orange-800 mb-4 break-words">よくあるエラーと対処法</h3>
+                            <div class="space-y-4">
+                                <div class="bg-orange-100 rounded-lg p-4">
+                                    <p class="font-medium text-orange-900 mb-2 break-words">
+                                        <i class="fas fa-exclamation-circle mr-2"></i>IndexError: list index out of range
+                                    </p>
+                                    <p class="text-orange-800 text-sm break-words">
+                                        <strong>原因：</strong>リストのサイズを超えたインデックスにアクセスしている<br>
+                                        <strong>対処：</strong>リストの長さは<code class="bg-white px-1 rounded">len(リスト)</code>で確認できます。インデックスは必ず<code class="bg-white px-1 rounded">len(リスト) - 1</code>以下にしてください。
+                                    </p>
+                                </div>
+                                <div class="bg-orange-100 rounded-lg p-4">
+                                    <p class="font-medium text-orange-900 mb-2 break-words">
+                                        <i class="fas fa-exclamation-circle mr-2"></i>無限ループでプログラムが止まらない
+                                    </p>
+                                    <p class="text-orange-800 text-sm break-words">
+                                        <strong>原因：</strong>while文の条件が永遠にTrueのまま<br>
+                                        <strong>対処：</strong>ループ内で必ず条件を変化させる処理（カウンタの更新など）を入れてください。緊急停止は<kbd class="bg-white px-1 rounded border">Ctrl+C</kbd>キーです。
+                                    </p>
+                                </div>
+                                <div class="bg-orange-100 rounded-lg p-4">
+                                    <p class="font-medium text-orange-900 mb-2 break-words">
+                                        <i class="fas fa-exclamation-circle mr-2"></i>インデントエラー
+                                    </p>
+                                    <p class="text-orange-800 text-sm break-words">
+                                        <strong>原因：</strong>for文やwhile文の後のブロックのインデント（字下げ）が不足している<br>
+                                        <strong>対処：</strong>ループの中の処理は必ずスペース4つ分（またはタブ1つ）字下げしてください。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 章のまとめ -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        第4章のまとめ
+                    </h2>
+                    <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6">
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-primary-500 mt-1"></i>
+                                <span><strong>リスト</strong>は複数のデータを1つにまとめて管理する仕組み</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-primary-500 mt-1"></i>
+                                <span><strong>for文</strong>でリストの各要素や指定回数の繰り返し処理ができる</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-primary-500 mt-1"></i>
+                                <span><strong>range関数</strong>で簡単に連続した数値を生成できる</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-primary-500 mt-1"></i>
+                                <span><strong>while文</strong>は条件が満たされる間繰り返す</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-primary-500 mt-1"></i>
+                                <span><code class="bg-slate-100 px-1 rounded">break</code>でループを終了、<code class="bg-slate-100 px-1 rounded">continue</code>でスキップできる</span>
+                            </li>
+                        </ul>
+                        <p class="text-slate-600 mt-4 mb-0">
+                            次の章では、よく使う処理を「関数」としてまとめる方法を学びます。コードの再利用性が高まり、プログラムが整理しやすくなりますよ！
+                        </p>
+                    </div>
+                </section>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <a href="streamlit-learning-material-03.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
+                                  transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">第3章: 条件分岐</span>
+                        </div>
+                    </a>
+                    <a href="streamlit-learning-material-05.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">第5章: 関数</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
     </div>
 
-    <!-- Bootstrap JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Highlight.js 初期化 -->
-    <script>hljs.highlightAll();</script>
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- サイドバー生成 -->
+    <script src="sidebar-content.js"></script>
+
+    <!-- 共通JavaScript -->
+    <script src="main.js"></script>
+
+    <!-- 描画ツール -->
+    <script src="drawing-tool.js"></script>
 </body>
 </html>
