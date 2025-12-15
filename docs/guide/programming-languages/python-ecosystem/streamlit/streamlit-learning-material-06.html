@@ -2,1251 +2,843 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Streamlit学習教材 第6章 - ファイル操作とデータ処理</title>
-    
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>Streamlit学習教材 第6章 - Streamlitはじめの一歩 - 最初のWebアプリ</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <!-- Google Fonts - Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Highlight.js CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
-    <style>
-        /* ベースレイアウト */
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            padding-top: 56px;
-        }
 
-        /* ナビゲーション */
-        .navbar {
-            background-color: #4caf50;
-        }
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
 
-        /* サイドバー */
-        .sidebar {
-            position: sticky;
-            top: 70px;
-            height: calc(100vh - 70px);
-            overflow-y: auto;
-            background-color: #f8f9fa;
-        }
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        /* タイトル */
-        .chapter-title {
-            color: #4caf50;
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #4caf50;
-            padding-bottom: 0.5rem;
-        }
-
-        .section-title {
-            color: #66bb6a;
-            margin-top: 1.2rem;
-            margin-bottom: 0.8rem;
-        }
-
-        /* コンテンツボックス */
-        .quiz-container {
-            background-color: #e8f5e8;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #4caf50;
-        }
-
-        .exercise-container {
-            background-color: #f3e5f5;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-left: 4px solid #9c27b0;
-        }
-
-        .highlight {
-            background-color: #ffecb3;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #ffc107;
-        }
-
-        .info-box {
-            background-color: #e1f5fe;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #2196F3;
-        }
-
-        .warning {
-            background-color: #ffebee;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-left: 4px solid #f44336;
-        }
-
-        /* ナビゲーション */
-        .nav-link.active {
-            background-color: #4caf50 !important;
-            color: white !important;
-        }
-
-        .nav-link {
-            color: #666;
-        }
-
-        .nav-link:hover {
-            background-color: #e8f5e8;
-            color: #4caf50;
-        }
-
-        .code-block {
-            background-color: #1e1e1e;
-            border-radius: 5px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-
-        pre {
-            background-color: #f5f5f5;
-            padding: 1rem;
-            border-radius: 4px;
-            overflow-x: auto;
-        }
-
-        code {
-            background-color: #f5f5f5;
-            padding: 0.2rem 0.4rem;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
-        }
-    </style>
+    <!-- カスタムスタイル -->
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <!-- ナビゲーションバー -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Streamlit学習教材</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="../README.md">学習ガイドに戻る</a>
-                    </li>
-                </ul>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="w-full px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fab fa-python text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
+
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">Streamlit学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>Python・Webアプリ</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 50分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
-    <div class="container-fluid">
-        <div class="row">
-            <!-- サイドバー -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-                <div class="position-sticky pt-3">
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                        章の一覧
-                    </h6>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="streamlit-learning-material-01.html">第1章: 入門と環境構築</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="streamlit-learning-material-02.html">第2章: 基本的なUIコンポーネント</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="streamlit-learning-material-03.html">第3章: データ表示と可視化</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="streamlit-learning-material-04.html">第4章: ユーザー入力とインタラクション</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="streamlit-learning-material-05.html">第5章: セッション状態管理</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#chapter6">第6章: ファイル操作とデータ処理</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="streamlit-learning-material-07.html">第7章: マルチページアプリケーション</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="streamlit-learning-material-08.html">第8章: データベース連携とAPI統合</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="streamlit-learning-material-09.html">第9章: デプロイメントと本番環境</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="streamlit-learning-material-10.html">第10章: 実践的なデータ分析アプリ開発</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
 
-            <!-- メインコンテンツ -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="../" class="hover:text-primary-600 transition-colors">Python Ecosystem</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第6章</span>
+                </nav>
+
                 <!-- 章ヘッダー -->
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">第6章: ファイル操作とデータ処理</h1>
-                </div>
-
-                <div id="chapter6">
-                    <!-- 章タイトル -->
-                    <h2 class="chapter-title">ファイルアップロード・ダウンロードとデータキャッシュ</h2>
-                    
-                    <!-- 学習目標 -->
-                    <div class="highlight">
-                        <h5>この章で学ぶこと</h5>
-                        <ul>
-                            <li>ファイルアップロード機能の実装と処理</li>
-                            <li>CSV、Excel、画像ファイルの読み込みと表示</li>
-                            <li>ダウンロードボタンによるファイル生成と配布</li>
-                            <li>@st.cache_dataによるデータキャッシュの活用</li>
-                            <li>大容量ファイルの効率的な処理方法</li>
-                        </ul>
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第6章
+                        </span>
                     </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Streamlitはじめの一歩 - 最初のWebアプリ</h1>
+                    <p class="text-slate-600">いよいよStreamlitを使ってWebアプリ開発を始めます。この章では、Streamlitのインストールから、ブラウザにタイトルや文章を表示する最初のWebアプリまでを学びます。</p>
+                </header>
 
-                    <!-- セクション1: ファイルアップロード -->
-                    <h3 class="section-title">6.1 ファイルアップロード機能</h3>
-                    <p>Streamlitのst.file_uploaderを使用することで、ユーザーが簡単にファイルをアップロードできます。</p>
-                    
-                    <h4>サポートされるファイル形式</h4>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>カテゴリ</th>
-                                <th>ファイル形式</th>
-                                <th>拡張子</th>
-                                <th>用途</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>データファイル</td>
-                                <td>CSV, Excel</td>
-                                <td>.csv, .xlsx, .xls</td>
-                                <td>データ分析、表計算</td>
-                            </tr>
-                            <tr>
-                                <td>画像ファイル</td>
-                                <td>JPEG, PNG, GIF</td>
-                                <td>.jpg, .png, .gif</td>
-                                <td>画像表示、解析</td>
-                            </tr>
-                            <tr>
-                                <td>テキストファイル</td>
-                                <td>TXT, JSON, XML</td>
-                                <td>.txt, .json, .xml</td>
-                                <td>テキスト処理</td>
-                            </tr>
-                            <tr>
-                                <td>その他</td>
-                                <td>PDF, ZIP</td>
-                                <td>.pdf, .zip</td>
-                                <td>文書、アーカイブ</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div class="info-box">
-                        <h6>file_uploaderの主要パラメータ</h6>
-                        <ul>
-                            <li><strong>type</strong>: 許可するファイル形式を指定（例: ["csv", "xlsx"]）</li>
-                            <li><strong>accept_multiple_files</strong>: 複数ファイルのアップロードを許可</li>
-                            <li><strong>key</strong>: ウィジェットの一意識別子</li>
-                            <li><strong>help</strong>: ヘルプテキスト</li>
-                        </ul>
-                    </div>
-
-                    <div class="exercise-container">
-                        <h5>実習 6-1: マルチファイルアップローダー</h5>
-                        <p>様々な形式のファイルをアップロードし、内容を表示・処理するアプリケーションを作成します。</p>
-                        
-                        <h6>file_uploader.py を作成</h6>
-                        <pre class="code-block"><code class="language-python">import streamlit as st
-import pandas as pd
-import numpy as np
-from PIL import Image
-import json
-import io
-import base64
-
-# ページ設定
-st.set_page_config(
-    page_title="ファイルアップローダー",
-    page_icon="📁",
-    layout="wide"
-)
-
-st.title("📁 ファイルアップロード・処理デモ")
-
-# ファイル処理関数
-@st.cache_data
-def load_csv(file):
-    """CSVファイルを読み込み"""
-    try:
-        # エンコーディングを自動判定
-        encodings = ['utf-8', 'shift_jis', 'cp932', 'utf-8-sig']
-        
-        for encoding in encodings:
-            try:
-                file.seek(0)  # ファイルポインタを先頭に戻す
-                df = pd.read_csv(file, encoding=encoding)
-                return df, encoding
-            except UnicodeDecodeError:
-                continue
-        
-        # 全て失敗した場合はUTF-8で強制読み込み
-        file.seek(0)
-        df = pd.read_csv(file, encoding='utf-8', errors='ignore')
-        return df, 'utf-8 (エラー無視)'
-        
-    except Exception as e:
-        st.error(f"CSVファイルの読み込みエラー: {str(e)}")
-        return None, None
-
-@st.cache_data
-def load_excel(file):
-    """Excelファイルを読み込み"""
-    try:
-        # 全シートを読み込み
-        excel_file = pd.ExcelFile(file)
-        sheets = {}
-        
-        for sheet_name in excel_file.sheet_names:
-            sheets[sheet_name] = pd.read_excel(file, sheet_name=sheet_name)
-        
-        return sheets
-    except Exception as e:
-        st.error(f"Excelファイルの読み込みエラー: {str(e)}")
-        return None
-
-def process_image(image_file):
-    """画像ファイルを処理"""
-    try:
-        image = Image.open(image_file)
-        return image
-    except Exception as e:
-        st.error(f"画像ファイルの処理エラー: {str(e)}")
-        return None
-
-def process_json(file):
-    """JSONファイルを処理"""
-    try:
-        content = file.read()
-        if isinstance(content, bytes):
-            content = content.decode('utf-8')
-        return json.loads(content)
-    except Exception as e:
-        st.error(f"JSONファイルの処理エラー: {str(e)}")
-        return None
-
-# タブで機能を分割
-tab1, tab2, tab3, tab4 = st.tabs(["📊 データファイル", "🖼️ 画像ファイル", "📄 テキストファイル", "📋 ファイル管理"])
-
-with tab1:
-    st.subheader("データファイルのアップロードと処理")
-    
-    uploaded_data_files = st.file_uploader(
-        "CSVまたはExcelファイルをアップロード",
-        type=["csv", "xlsx", "xls"],
-        accept_multiple_files=True,
-        key="data_files"
-    )
-    
-    if uploaded_data_files:
-        for file in uploaded_data_files:
-            st.write(f"**ファイル名**: {file.name}")
-            st.write(f"**サイズ**: {file.size:,} bytes")
-            
-            if file.name.endswith('.csv'):
-                df, encoding = load_csv(file)
-                
-                if df is not None:
-                    st.success(f"CSVファイルを読み込みました（エンコーディング: {encoding}）")
-                    
-                    # データ概要
-                    col1, col2, col3 = st.columns(3)
-                    
-                    with col1:
-                        st.metric("行数", len(df))
-                    
-                    with col2:
-                        st.metric("列数", len(df.columns))
-                    
-                    with col3:
-                        st.metric("メモリ使用量", f"{df.memory_usage(deep=True).sum() / 1024:.1f} KB")
-                    
-                    # データプレビュー
-                    st.write("**データプレビュー（最初の10行）**")
-                    st.dataframe(df.head(10), use_container_width=True)
-                    
-                    # 基本統計
-                    if st.checkbox(f"基本統計を表示 - {file.name}"):
-                        st.write("**基本統計情報**")
-                        st.dataframe(df.describe(), use_container_width=True)
-                    
-                    # データ型情報
-                    if st.checkbox(f"データ型情報を表示 - {file.name}"):
-                        dtype_info = pd.DataFrame({
-                            '列名': df.columns,
-                            'データ型': df.dtypes.values,
-                            '非null数': df.count().values,
-                            'null数': df.isnull().sum().values
-                        })
-                        st.dataframe(dtype_info, use_container_width=True, hide_index=True)
-            
-            elif file.name.endswith(('.xlsx', '.xls')):
-                sheets = load_excel(file)
-                
-                if sheets:
-                    st.success(f"Excelファイルを読み込みました（{len(sheets)}シート）")
-                    
-                    # シート選択
-                    selected_sheet = st.selectbox(
-                        f"表示するシートを選択 - {file.name}",
-                        list(sheets.keys())
-                    )
-                    
-                    if selected_sheet:
-                        df = sheets[selected_sheet]
-                        
-                        # データ概要
-                        col1, col2 = st.columns(2)
-                        
-                        with col1:
-                            st.metric("行数", len(df))
-                        
-                        with col2:
-                            st.metric("列数", len(df.columns))
-                        
-                        # データプレビュー
-                        st.write(f"**{selected_sheet}シートのデータ**")
-                        st.dataframe(df.head(10), use_container_width=True)
-            
-            st.divider()
-
-with tab2:
-    st.subheader("画像ファイルのアップロードと表示")
-    
-    uploaded_images = st.file_uploader(
-        "画像ファイルをアップロード",
-        type=["png", "jpg", "jpeg", "gif"],
-        accept_multiple_files=True,
-        key="image_files"
-    )
-    
-    if uploaded_images:
-        # 表示オプション
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            display_width = st.slider("表示幅", 100, 800, 300)
-        
-        with col2:
-            show_details = st.checkbox("詳細情報を表示", value=True)
-        
-        # 画像を表示
-        cols = st.columns(3)
-        
-        for i, image_file in enumerate(uploaded_images):
-            with cols[i % 3]:
-                image = process_image(image_file)
-                
-                if image:
-                    st.image(image, caption=image_file.name, width=display_width)
-                    
-                    if show_details:
-                        st.write(f"**ファイル名**: {image_file.name}")
-                        st.write(f"**サイズ**: {image_file.size:,} bytes")
-                        st.write(f"**画像サイズ**: {image.size[0]} × {image.size[1]} px")
-                        st.write(f"**モード**: {image.mode}")
-                        
-                        # 画像の色情報分析
-                        if image.mode == 'RGB':
-                            img_array = np.array(image)
-                            
-                            # 平均色
-                            avg_color = img_array.mean(axis=(0, 1))
-                            st.write(f"**平均色 (RGB)**: ({avg_color[0]:.0f}, {avg_color[1]:.0f}, {avg_color[2]:.0f})")
-                            
-                            # 色の分布をヒストグラムで表示
-                            if st.checkbox(f"色分布を表示 - {image_file.name}"):
-                                fig = plt.figure(figsize=(10, 3))
-                                
-                                colors = ['red', 'green', 'blue']
-                                for i, color in enumerate(colors):
-                                    plt.subplot(1, 3, i+1)
-                                    plt.hist(img_array[:,:,i].flatten(), bins=50, color=color, alpha=0.7)
-                                    plt.title(f'{color.capitalize()} Channel')
-                                    plt.xlabel('Pixel Value')
-                                    plt.ylabel('Frequency')
-                                
-                                plt.tight_layout()
-                                st.pyplot(fig)
-
-with tab3:
-    st.subheader("テキストファイルの処理")
-    
-    uploaded_text_files = st.file_uploader(
-        "テキストファイルをアップロード",
-        type=["txt", "json", "xml", "md"],
-        accept_multiple_files=True,
-        key="text_files"
-    )
-    
-    if uploaded_text_files:
-        for file in uploaded_text_files:
-            st.write(f"**ファイル名**: {file.name}")
-            
-            if file.name.endswith('.json'):
-                data = process_json(file)
-                
-                if data:
-                    st.success("JSONファイルを正常に読み込みました")
-                    
-                    # JSON構造を表示
-                    st.json(data)
-                    
-                    # JSONを表形式で表示（可能な場合）
-                    try:
-                        if isinstance(data, list) and all(isinstance(item, dict) for item in data):
-                            df = pd.DataFrame(data)
-                            st.write("**表形式での表示**")
-                            st.dataframe(df, use_container_width=True)
-                    except:
-                        pass
-            
-            else:
-                # テキストファイル
-                try:
-                    content = file.read()
-                    
-                    if isinstance(content, bytes):
-                        content = content.decode('utf-8')
-                    
-                    st.write(f"**ファイルサイズ**: {len(content):,} 文字")
-                    
-                    # テキスト統計
-                    lines = content.split('\n')
-                    words = content.split()
-                    
-                    col1, col2, col3 = st.columns(3)
-                    
-                    with col1:
-                        st.metric("行数", len(lines))
-                    
-                    with col2:
-                        st.metric("単語数", len(words))
-                    
-                    with col3:
-                        st.metric("文字数", len(content))
-                    
-                    # テキスト内容表示
-                    if st.checkbox(f"内容を表示 - {file.name}"):
-                        if len(content) > 5000:
-                            st.warning("ファイルが大きいため、最初の5000文字のみ表示します")
-                            st.text_area("ファイル内容", content[:5000], height=300)
-                        else:
-                            st.text_area("ファイル内容", content, height=300)
-                
-                except Exception as e:
-                    st.error(f"テキストファイルの読み込みエラー: {str(e)}")
-            
-            st.divider()
-
-with tab4:
-    st.subheader("アップロードファイル管理")
-    
-    # セッション状態にファイル情報を保存
-    if 'uploaded_files_history' not in st.session_state:
-        st.session_state.uploaded_files_history = []
-    
-    # 現在アップロード中のファイルを履歴に追加
-    all_files = []
-    
-    if uploaded_data_files:
-        all_files.extend(uploaded_data_files)
-    
-    if uploaded_images:
-        all_files.extend(uploaded_images)
-    
-    if uploaded_text_files:
-        all_files.extend(uploaded_text_files)
-    
-    # 新しいファイルを履歴に追加
-    for file in all_files:
-        file_info = {
-            'name': file.name,
-            'size': file.size,
-            'type': file.type,
-            'upload_time': pd.Timestamp.now()
-        }
-        
-        # 重複チェック
-        if not any(f['name'] == file.name for f in st.session_state.uploaded_files_history):
-            st.session_state.uploaded_files_history.append(file_info)
-    
-    # ファイル履歴表示
-    if st.session_state.uploaded_files_history:
-        st.write("**アップロード履歴**")
-        
-        df_history = pd.DataFrame(st.session_state.uploaded_files_history)
-        df_history['size_mb'] = (df_history['size'] / 1024 / 1024).round(3)
-        
-        st.dataframe(
-            df_history[['name', 'type', 'size_mb', 'upload_time']], 
-            use_container_width=True,
-            column_config={
-                'name': 'ファイル名',
-                'type': 'MIMEタイプ',
-                'size_mb': 'サイズ(MB)',
-                'upload_time': 'アップロード時刻'
-            },
-            hide_index=True
-        )
-        
-        # 統計情報
-        total_files = len(df_history)
-        total_size_mb = df_history['size_mb'].sum()
-        
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.metric("総ファイル数", total_files)
-        
-        with col2:
-            st.metric("総サイズ", f"{total_size_mb:.2f} MB")
-        
-        with col3:
-            avg_size = total_size_mb / total_files if total_files > 0 else 0
-            st.metric("平均サイズ", f"{avg_size:.2f} MB")
-        
-        # 履歴クリア
-        if st.button("📝 履歴をクリア"):
-            st.session_state.uploaded_files_history = []
-            st.success("履歴をクリアしました")
-            st.rerun()
-    
-    else:
-        st.info("まだファイルがアップロードされていません")
-</code></pre>
-                        
-                        <h6>必要なライブラリのインストール</h6>
-                        <pre class="code-block"><code class="language-bash">pip install pillow matplotlib</code></pre>
-                        
-                        <h6>実行と確認</h6>
-                        <pre class="code-block"><code class="language-bash">streamlit run file_uploader.py</code></pre>
-                        
-                        <h6>期待される結果</h6>
-                        <p>様々な形式のファイルをアップロードし、適切に処理・表示する統合ファイル管理システムが表示されます。</p>
-                    </div>
-
-                    <!-- セクション2: ダウンロード機能 -->
-                    <h3 class="section-title">6.2 ファイルダウンロード機能</h3>
-                    <p>st.download_buttonを使用して、ユーザーがファイルをダウンロードできる機能を実装できます。</p>
-
-                    <div class="exercise-container">
-                        <h5>実習 6-2: データ生成・ダウンロードアプリ</h5>
-                        <p>様々な形式のファイルを生成し、ダウンロード機能を提供するアプリケーションを作成します。</p>
-                        
-                        <h6>file_downloader.py を作成</h6>
-                        <pre class="code-block"><code class="language-python">import streamlit as st
-import pandas as pd
-import numpy as np
-import json
-import io
-import base64
-from datetime import datetime, timedelta
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-# ページ設定
-st.set_page_config(
-    page_title="ファイルダウンロード",
-    page_icon="💾",
-    layout="wide"
-)
-
-st.title("💾 ファイル生成・ダウンロードデモ")
-
-# データ生成関数
-@st.cache_data
-def generate_sample_data(rows, columns, data_type):
-    """サンプルデータを生成"""
-    np.random.seed(42)
-    
-    if data_type == "売上データ":
-        dates = pd.date_range('2024-01-01', periods=rows, freq='D')
-        data = {
-            '日付': dates,
-            '売上': np.random.randint(10000, 100000, rows),
-            '顧客数': np.random.randint(50, 500, rows),
-            '商品カテゴリ': np.random.choice(['電子機器', '衣類', '食品', '書籍'], rows),
-            '地域': np.random.choice(['東京', '大阪', '名古屋', '福岡'], rows)
-        }
-    elif data_type == "センサーデータ":
-        timestamps = pd.date_range('2024-01-01', periods=rows, freq='H')
-        data = {
-            'timestamp': timestamps,
-            'temperature': np.random.normal(25, 5, rows),
-            'humidity': np.random.normal(60, 10, rows),
-            'pressure': np.random.normal(1013, 20, rows)
-        }
-    else:  # ランダムデータ
-        data = {}
-        for i in range(columns):
-            data[f'列{i+1}'] = np.random.randn(rows)
-    
-    return pd.DataFrame(data)
-
-def create_report_data():
-    """レポート用データを生成"""
-    return {
-        'title': 'データ分析レポート',
-        'date': datetime.now().strftime('%Y-%m-%d'),
-        'summary': {
-            'total_records': 1000,
-            'analysis_duration': '2.5 hours',
-            'accuracy': 0.95
-        },
-        'findings': [
-            '売上は前月比15%増加',
-            '新規顧客が30%増加',
-            '商品Aの人気が急上昇'
-        ],
-        'recommendations': [
-            '在庫管理システムの改善',
-            'マーケティング予算の増額',
-            '新商品の開発検討'
-        ]
-    }
-
-# タブで機能を分割
-tab1, tab2, tab3, tab4 = st.tabs(["📊 データファイル", "📋 レポート", "🖼️ グラフ画像", "⚙️ 設定ファイル"])
-
-with tab1:
-    st.subheader("データファイルの生成とダウンロード")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.write("**データ生成設定**")
-        
-        data_type = st.selectbox(
-            "データタイプ",
-            ["売上データ", "センサーデータ", "ランダムデータ"]
-        )
-        
-        rows = st.number_input("行数", min_value=10, max_value=10000, value=100)
-        
-        if data_type == "ランダムデータ":
-            columns = st.number_input("列数", min_value=2, max_value=20, value=5)
-        else:
-            columns = None
-        
-        if st.button("📊 データを生成", type="primary"):
-            st.session_state.generated_data = generate_sample_data(rows, columns, data_type)
-            st.success(f"{data_type}を生成しました！")
-    
-    with col2:
-        st.write("**ダウンロードオプション**")
-        
-        if 'generated_data' in st.session_state:
-            df = st.session_state.generated_data
-            
-            # ファイル名設定
-            filename_base = st.text_input(
-                "ファイル名（拡張子なし）",
-                value=f"{data_type}_{datetime.now().strftime('%Y%m%d')}"
-            )
-            
-            # CSV ダウンロード
-            csv = df.to_csv(index=False, encoding='utf-8-sig')
-            st.download_button(
-                label="📄 CSV形式でダウンロード",
-                data=csv,
-                file_name=f"{filename_base}.csv",
-                mime="text/csv"
-            )
-            
-            # Excel ダウンロード
-            output = io.BytesIO()
-            with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-                df.to_excel(writer, sheet_name='データ', index=False)
-                
-                # ワークブックとワークシートを取得
-                workbook = writer.book
-                worksheet = writer.sheets['データ']
-                
-                # ヘッダーの書式設定
-                header_format = workbook.add_format({
-                    'bold': True,
-                    'text_wrap': True,
-                    'valign': 'top',
-                    'fg_color': '#D7E4BC',
-                    'border': 1
-                })
-                
-                # ヘッダーに書式を適用
-                for col_num, value in enumerate(df.columns.values):
-                    worksheet.write(0, col_num, value, header_format)
-                
-                # 列幅を自動調整
-                for i, col in enumerate(df.columns):
-                    worksheet.set_column(i, i, max(len(col), 12))
-            
-            excel_data = output.getvalue()
-            
-            st.download_button(
-                label="📊 Excel形式でダウンロード",
-                data=excel_data,
-                file_name=f"{filename_base}.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
-            
-            # JSON ダウンロード
-            json_data = df.to_json(orient='records', date_format='iso', force_ascii=False, indent=2)
-            st.download_button(
-                label="🗂️ JSON形式でダウンロード",
-                data=json_data,
-                file_name=f"{filename_base}.json",
-                mime="application/json"
-            )
-    
-    # データプレビュー
-    if 'generated_data' in st.session_state:
-        st.divider()
-        st.write("**データプレビュー**")
-        
-        df = st.session_state.generated_data
-        
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.metric("行数", len(df))
-        
-        with col2:
-            st.metric("列数", len(df.columns))
-        
-        with col3:
-            memory_usage = df.memory_usage(deep=True).sum() / 1024
-            st.metric("メモリ使用量", f"{memory_usage:.1f} KB")
-        
-        st.dataframe(df.head(10), use_container_width=True)
-
-with tab2:
-    st.subheader("レポート生成とダウンロード")
-    
-    col1, col2 = st.columns([2, 1])
-    
-    with col1:
-        st.write("**レポート設定**")
-        
-        report_title = st.text_input("レポートタイトル", value="データ分析レポート")
-        
-        include_summary = st.checkbox("サマリーを含める", value=True)
-        include_findings = st.checkbox("発見事項を含める", value=True)
-        include_recommendations = st.checkbox("推奨事項を含める", value=True)
-        
-        custom_findings = st.text_area(
-            "カスタム発見事項（1行1項目）",
-            placeholder="売上が増加した\n新規顧客が増えた\n...",
-            height=100
-        )
-        
-        custom_recommendations = st.text_area(
-            "カスタム推奨事項（1行1項目）",
-            placeholder="マーケティング強化\n新商品開発\n...",
-            height=100
-        )
-    
-    with col2:
-        st.write("**レポート生成**")
-        
-        if st.button("📋 レポートを生成", type="primary"):
-            report_data = create_report_data()
-            
-            # カスタム項目を追加
-            if custom_findings:
-                report_data['findings'].extend([f.strip() for f in custom_findings.split('\n') if f.strip()])
-            
-            if custom_recommendations:
-                report_data['recommendations'].extend([r.strip() for r in custom_recommendations.split('\n') if r.strip()])
-            
-            # タイトルを更新
-            report_data['title'] = report_title
-            
-            st.session_state.report_data = report_data
-            st.success("レポートが生成されました！")
-    
-    # レポートダウンロード
-    if 'report_data' in st.session_state:
-        report = st.session_state.report_data
-        
-        st.divider()
-        st.write("**レポートプレビュー**")
-        
-        st.markdown(f"# {report['title']}")
-        st.markdown(f"**作成日**: {report['date']}")
-        
-        if include_summary:
-            st.markdown("## サマリー")
-            for key, value in report['summary'].items():
-                st.write(f"- **{key}**: {value}")
-        
-        if include_findings:
-            st.markdown("## 主な発見事項")
-            for finding in report['findings']:
-                st.write(f"- {finding}")
-        
-        if include_recommendations:
-            st.markdown("## 推奨事項")
-            for rec in report['recommendations']:
-                st.write(f"- {rec}")
-        
-        # ダウンロードボタン
-        st.divider()
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            # Markdown形式
-            markdown_content = f"""# {report['title']}
-
-**作成日**: {report['date']}
-
-## サマリー
-"""
-            if include_summary:
-                for key, value in report['summary'].items():
-                    markdown_content += f"- **{key}**: {value}\n"
-            
-            if include_findings:
-                markdown_content += "\n## 主な発見事項\n"
-                for finding in report['findings']:
-                    markdown_content += f"- {finding}\n"
-            
-            if include_recommendations:
-                markdown_content += "\n## 推奨事項\n"
-                for rec in report['recommendations']:
-                    markdown_content += f"- {rec}\n"
-            
-            st.download_button(
-                label="📝 Markdown形式でダウンロード",
-                data=markdown_content,
-                file_name=f"{report['title'].replace(' ', '_')}_{datetime.now().strftime('%Y%m%d')}.md",
-                mime="text/markdown"
-            )
-        
-        with col2:
-            # JSON形式
-            json_content = json.dumps(report, ensure_ascii=False, indent=2, default=str)
-            
-            st.download_button(
-                label="🗂️ JSON形式でダウンロード",
-                data=json_content,
-                file_name=f"{report['title'].replace(' ', '_')}_{datetime.now().strftime('%Y%m%d')}.json",
-                mime="application/json"
-            )
-
-with tab3:
-    st.subheader("グラフ画像の生成とダウンロード")
-    
-    col1, col2 = st.columns([1, 1])
-    
-    with col1:
-        st.write("**グラフ設定**")
-        
-        chart_type = st.selectbox(
-            "グラフタイプ",
-            ["線グラフ", "棒グラフ", "散布図", "ヒストグラム", "ヒートマップ"]
-        )
-        
-        data_points = st.slider("データポイント数", 10, 500, 100)
-        
-        # 色設定
-        color_palette = st.selectbox(
-            "カラーパレット",
-            ["viridis", "plasma", "inferno", "magma", "coolwarm", "rainbow"]
-        )
-        
-        # 画像サイズ
-        fig_width = st.slider("図の幅", 6, 20, 10)
-        fig_height = st.slider("図の高さ", 4, 15, 6)
-        
-        if st.button("🎨 グラフを生成", type="primary"):
-            # データ生成
-            np.random.seed(42)
-            
-            plt.style.use('seaborn-v0_8')
-            fig, ax = plt.subplots(figsize=(fig_width, fig_height))
-            
-            if chart_type == "線グラフ":
-                x = np.linspace(0, 10, data_points)
-                y1 = np.sin(x) + np.random.normal(0, 0.1, data_points)
-                y2 = np.cos(x) + np.random.normal(0, 0.1, data_points)
-                
-                ax.plot(x, y1, label='sin(x)', linewidth=2)
-                ax.plot(x, y2, label='cos(x)', linewidth=2)
-                ax.set_title('線グラフ', fontsize=16)
-                ax.set_xlabel('X軸')
-                ax.set_ylabel('Y軸')
-                ax.legend()
-                ax.grid(True, alpha=0.3)
-            
-            elif chart_type == "棒グラフ":
-                categories = [f'カテゴリ{i+1}' for i in range(min(data_points//10, 10))]
-                values = np.random.randint(10, 100, len(categories))
-                
-                bars = ax.bar(categories, values, color=plt.cm.get_cmap(color_palette)(np.linspace(0, 1, len(categories))))
-                ax.set_title('棒グラフ', fontsize=16)
-                ax.set_ylabel('値')
-                
-                # 値をバーの上に表示
-                for bar, value in zip(bars, values):
-                    ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 1, 
-                           str(value), ha='center', va='bottom')
-            
-            elif chart_type == "散布図":
-                x = np.random.randn(data_points)
-                y = 2 * x + np.random.randn(data_points)
-                colors = np.random.rand(data_points)
-                
-                scatter = ax.scatter(x, y, c=colors, cmap=color_palette, alpha=0.6)
-                ax.set_title('散布図', fontsize=16)
-                ax.set_xlabel('X軸')
-                ax.set_ylabel('Y軸')
-                plt.colorbar(scatter, ax=ax)
-            
-            elif chart_type == "ヒストグラム":
-                data = np.random.normal(0, 1, data_points)
-                
-                n, bins, patches = ax.hist(data, bins=30, alpha=0.7, color='skyblue', edgecolor='black')
-                ax.set_title('ヒストグラム', fontsize=16)
-                ax.set_xlabel('値')
-                ax.set_ylabel('頻度')
-                ax.grid(True, alpha=0.3)
-            
-            elif chart_type == "ヒートマップ":
-                size = min(int(np.sqrt(data_points)), 20)
-                data = np.random.randn(size, size)
-                
-                im = ax.imshow(data, cmap=color_palette, aspect='auto')
-                ax.set_title('ヒートマップ', fontsize=16)
-                plt.colorbar(im, ax=ax)
-            
-            plt.tight_layout()
-            st.session_state.generated_chart = fig
-            
-    with col2:
-        if 'generated_chart' in st.session_state:
-            st.write("**グラフプレビュー**")
-            st.pyplot(st.session_state.generated_chart)
-            
-            # ダウンロードボタン
-            img_buffer = io.BytesIO()
-            st.session_state.generated_chart.savefig(img_buffer, format='png', dpi=300, bbox_inches='tight')
-            img_buffer.seek(0)
-            
-            st.download_button(
-                label="🖼️ PNG形式でダウンロード",
-                data=img_buffer.getvalue(),
-                file_name=f"{chart_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png",
-                mime="image/png"
-            )
-            
-            # PDF形式でも保存
-            pdf_buffer = io.BytesIO()
-            st.session_state.generated_chart.savefig(pdf_buffer, format='pdf', bbox_inches='tight')
-            pdf_buffer.seek(0)
-            
-            st.download_button(
-                label="📄 PDF形式でダウンロード",
-                data=pdf_buffer.getvalue(),
-                file_name=f"{chart_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
-                mime="application/pdf"
-            )
-
-with tab4:
-    st.subheader("設定ファイルの生成")
-    
-    st.write("**アプリケーション設定**")
-    
-    # 設定項目
-    app_config = {}
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        app_config['app_name'] = st.text_input("アプリケーション名", value="MyStreamlitApp")
-        app_config['version'] = st.text_input("バージョン", value="1.0.0")
-        app_config['debug_mode'] = st.checkbox("デバッグモード", value=False)
-        app_config['max_upload_size'] = st.number_input("最大アップロードサイズ(MB)", value=100)
-    
-    with col2:
-        app_config['database_url'] = st.text_input("データベースURL", value="sqlite:///app.db")
-        app_config['api_timeout'] = st.number_input("APIタイムアウト(秒)", value=30)
-        app_config['cache_ttl'] = st.number_input("キャッシュTTL(秒)", value=3600)
-        app_config['log_level'] = st.selectbox("ログレベル", ["DEBUG", "INFO", "WARNING", "ERROR"])
-    
-    # 追加設定
-    st.write("**追加設定**")
-    
-    custom_settings = st.text_area(
-        "カスタム設定（JSON形式）",
-        value="""{
-  "feature_flags": {
-    "enable_new_ui": true,
-    "enable_analytics": false
-  },
-  "external_services": {
-    "email_service": "smtp.example.com",
-    "storage_service": "s3://my-bucket"
-  }
-}""",
-        height=150
-    )
-    
-    if st.button("⚙️ 設定ファイルを生成", type="primary"):
-        try:
-            # カスタム設定をパース
-            if custom_settings.strip():
-                custom_config = json.loads(custom_settings)
-                app_config.update(custom_config)
-            
-            # タイムスタンプを追加
-            app_config['generated_at'] = datetime.now().isoformat()
-            
-            st.session_state.app_config = app_config
-            st.success("設定ファイルが生成されました！")
-            
-        except json.JSONDecodeError:
-            st.error("カスタム設定のJSON形式が無効です")
-    
-    # 設定ファイルのダウンロード
-    if 'app_config' in st.session_state:
-        config = st.session_state.app_config
-        
-        st.write("**生成された設定**")
-        st.json(config)
-        
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            # JSON形式
-            json_config = json.dumps(config, indent=2, ensure_ascii=False)
-            st.download_button(
-                label="📋 JSON設定ファイル",
-                data=json_config,
-                file_name=f"config_{datetime.now().strftime('%Y%m%d')}.json",
-                mime="application/json"
-            )
-        
-        with col2:
-            # YAML形式（簡易版）
-            yaml_config = ""
-            for key, value in config.items():
-                if isinstance(value, dict):
-                    yaml_config += f"{key}:\n"
-                    for k, v in value.items():
-                        yaml_config += f"  {k}: {v}\n"
-                else:
-                    yaml_config += f"{key}: {value}\n"
-            
-            st.download_button(
-                label="📄 YAML設定ファイル",
-                data=yaml_config,
-                file_name=f"config_{datetime.now().strftime('%Y%m%d')}.yaml",
-                mime="text/yaml"
-            )
-        
-        with col3:
-            # Python形式
-            python_config = f"""# Generated configuration file
-# Created: {datetime.now()}
-
-CONFIG = {repr(config)}
-"""
-            
-            st.download_button(
-                label="🐍 Python設定ファイル",
-                data=python_config,
-                file_name=f"config_{datetime.now().strftime('%Y%m%d')}.py",
-                mime="text/x-python"
-            )
-</code></pre>
-                        
-                        <h6>実行と確認</h6>
-                        <pre class="code-block"><code class="language-bash">streamlit run file_downloader.py</code></pre>
-                        
-                        <h6>期待される結果</h6>
-                        <p>多様な形式のファイル生成・ダウンロード機能を持つ統合システムが表示され、各種ファイル形式でのデータ出力が確認できます。</p>
-                    </div>
-
-                    <!-- 理解度確認 -->
-                    <div class="quiz-container">
-                        <h5>理解度確認クイズ</h5>
-                        <ol>
-                            <li>
-                                <strong>st.file_uploaderで複数ファイルのアップロードを許可するパラメータは何ですか？</strong>
-                                <ul style="list-style-type: none;">
-                                    <li>a) multiple=True</li>
-                                    <li>b) accept_multiple_files=True</li>
-                                    <li>c) allow_multiple=True</li>
-                                    <li>d) multi_file=True</li>
-                                </ul>
-                                <details style="margin-top: 0.5rem;">
-                                    <summary>解答を見る</summary>
-                                    <p><strong>答え: b)</strong> accept_multiple_files=True で複数ファイルのアップロードが可能になります。</p>
-                                </details>
-                            </li>
-                            
-                            <li>
-                                <strong>@st.cache_dataデコレータの主な利点を2つ挙げてください</strong>
-                                <details style="margin-top: 0.5rem;">
-                                    <summary>解答を見る</summary>
-                                    <p><strong>答え例:</strong><br>
-                                    1. 同じデータの再読み込みを防ぎ、処理速度を向上させる<br>
-                                    2. 大容量ファイルの処理でメモリ使用量を最適化する<br>
-                                    3. ユーザー体験の向上（待機時間の短縮）</p>
-                                </details>
-                            </li>
-                            
-                            <li>
-                                <strong>ダウンロードボタンで必要な主要パラメータを3つ答えてください</strong>
-                                <details style="margin-top: 0.5rem;">
-                                    <summary>解答を見る</summary>
-                                    <p><strong>答え:</strong><br>
-                                    1. <strong>label</strong>: ボタンに表示するテキスト<br>
-                                    2. <strong>data</strong>: ダウンロードするデータ<br>
-                                    3. <strong>file_name</strong>: ダウンロード時のファイル名</p>
-                                </details>
-                            </li>
-                        </ol>
-                    </div>
-
-                    <!-- 章間ナビゲーション -->
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="streamlit-learning-material-05.html" class="btn btn-secondary">← 前の章: セッション状態管理</a>
-                        <a href="streamlit-learning-material-07.html" class="btn btn-primary">次の章: マルチページアプリケーション →</a>
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>Streamlitをパソコンにインストールする</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>st.title、st.header、st.subheaderで見出しを表示する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>st.writeで文章やデータを表示する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>st.markdownで装飾された文章を表示する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>streamlit runコマンドでアプリを起動する</span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </main>
-        </div>
+
+                <!-- セクション1: Streamlitのインストール -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.1 Streamlitをインストールしよう
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Streamlitは、Pythonのパッケージ管理ツール「pip」を使ってインストールします。コマンドラインを開いて、以下のコマンドを実行してください。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">コマンドプロンプト / ターミナル</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash">pip install streamlit</code></pre>
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        インストールには数分かかります。以下のような表示が出ればインストール成功です。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">実行結果例</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-plaintext">Successfully installed streamlit-1.xx.x</code></pre>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">pipとは？</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    pipは、Pythonのパッケージ（便利なツールやライブラリ）をインストール・管理するためのツールです。Pythonをインストールすると自動的に付属してきます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">インストール確認</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        正しくインストールできたか確認しましょう。以下のコマンドを実行してください。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">コマンドプロンプト / ターミナル</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash">streamlit --version</code></pre>
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        バージョン番号が表示されればインストール成功です。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">実行結果例</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-plaintext">Streamlit, version 1.xx.x</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション2: 最初のStreamlitアプリ -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.2 最初のStreamlitアプリを作ろう
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        それでは、最初のStreamlitアプリを作成しましょう。テキストエディタを開いて、以下のコードを入力してください。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">app.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python"># Streamlitをインポート
+import streamlit as st
+
+# タイトルを表示
+st.title("私の最初のStreamlitアプリ")
+
+# テキストを表示
+st.write("こんにちは、Streamlitの世界へようこそ！")</code></pre>
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        ファイル名を<code class="bg-slate-100 px-1 rounded">app.py</code>として保存してください。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">アプリを起動しよう</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        保存したファイルがあるフォルダで、コマンドラインを開いて以下のコマンドを実行してください。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">コマンドプロンプト / ターミナル</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash">streamlit run app.py</code></pre>
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        すると、自動的にブラウザが開いて、以下のような画面が表示されます。
+                    </p>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-star text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">おめでとうございます！</p>
+                                <p class="text-emerald-800 text-sm mt-1 break-words">
+                                    ブラウザに「私の最初のStreamlitアプリ」というタイトルと、「こんにちは、Streamlitの世界へようこそ！」というメッセージが表示されていれば成功です。これが、あなたが作った最初のWebアプリです！
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">アプリの停止方法</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Streamlitアプリを停止するには、コマンドラインで <code class="bg-slate-100 px-1 rounded">Ctrl + C</code>（MacはCommand + C）を押してください。
+                    </p>
+                </section>
+
+                <!-- セクション3: コードの解説 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.3 コードの意味を理解しよう
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        先ほど書いたコードを1行ずつ見ていきましょう。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">1. Streamlitのインポート</h3>
+                    <div class="code-block-wrapper my-4">
+                        <pre class="!bg-slate-800 !rounded-lg"><code class="language-python">import streamlit as st</code></pre>
+                    </div>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        この行は、「Streamlitライブラリを使えるようにする」という宣言です。<code class="bg-slate-100 px-1 rounded">as st</code>は「Streamlitを<code class="bg-slate-100 px-1 rounded">st</code>という短い名前で呼べるようにする」という意味です。これにより、毎回<code class="bg-slate-100 px-1 rounded">streamlit.title()</code>と長く書く代わりに、<code class="bg-slate-100 px-1 rounded">st.title()</code>と短く書けます。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">2. タイトルの表示</h3>
+                    <div class="code-block-wrapper my-4">
+                        <pre class="!bg-slate-800 !rounded-lg"><code class="language-python">st.title("私の最初のStreamlitアプリ")</code></pre>
+                    </div>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <code class="bg-slate-100 px-1 rounded">st.title()</code>は、大きな見出し（タイトル）を表示する関数です。カッコの中に表示したい文字を書きます。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">3. テキストの表示</h3>
+                    <div class="code-block-wrapper my-4">
+                        <pre class="!bg-slate-800 !rounded-lg"><code class="language-python">st.write("こんにちは、Streamlitの世界へようこそ！")</code></pre>
+                    </div>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <code class="bg-slate-100 px-1 rounded">st.write()</code>は、テキストやデータを表示する万能な関数です。文字列だけでなく、数値、リスト、辞書、データフレームなど、様々なものを表示できます。
+                    </p>
+                </section>
+
+                <!-- セクション4: さまざまな表示方法 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.4 さまざまな表示方法を試そう
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Streamlitには、テキストを表示するための様々な関数が用意されています。それぞれ試してみましょう。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">見出しの階層</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        見出しには大きさの段階があります。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">app.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">import streamlit as st
+
+# 一番大きな見出し
+st.title("これがタイトルです")
+
+# 大見出し
+st.header("これが大見出しです")
+
+# 中見出し
+st.subheader("これが中見出しです")
+
+# 通常のテキスト
+st.write("これが通常のテキストです")</code></pre>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">見出しの使い分け</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    <code class="bg-blue-100 px-1 rounded">st.title()</code>はページ全体のタイトル、<code class="bg-blue-100 px-1 rounded">st.header()</code>は大きなセクションの見出し、<code class="bg-blue-100 px-1 rounded">st.subheader()</code>は小さなセクションの見出しとして使います。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">Markdownで装飾</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <code class="bg-slate-100 px-1 rounded">st.markdown()</code>を使うと、文字を太字にしたり、色を変えたりできます。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">app.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">import streamlit as st
+
+# Markdownで装飾されたテキスト
+st.markdown("**太字のテキスト**")
+st.markdown("*斜体のテキスト*")
+st.markdown("~~取り消し線~~")
+st.markdown(":red[赤い文字]")
+st.markdown(":blue[青い文字]")</code></pre>
+                    </div>
+
+                    <div class="overflow-x-auto my-6">
+                        <table class="min-w-full border-collapse border border-slate-300">
+                            <thead>
+                                <tr class="bg-slate-100">
+                                    <th class="border border-slate-300 px-4 py-2 text-left">書き方</th>
+                                    <th class="border border-slate-300 px-4 py-2 text-left">表示</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border border-slate-300 px-4 py-2"><code class="bg-slate-100 px-1 rounded">**太字**</code></td>
+                                    <td class="border border-slate-300 px-4 py-2"><strong>太字</strong></td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-300 px-4 py-2"><code class="bg-slate-100 px-1 rounded">*斜体*</code></td>
+                                    <td class="border border-slate-300 px-4 py-2"><em>斜体</em></td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-300 px-4 py-2"><code class="bg-slate-100 px-1 rounded">~~取り消し線~~</code></td>
+                                    <td class="border border-slate-300 px-4 py-2"><del>取り消し線</del></td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-300 px-4 py-2"><code class="bg-slate-100 px-1 rounded">:red[赤い文字]</code></td>
+                                    <td class="border border-slate-300 px-4 py-2"><span style="color: red;">赤い文字</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 実習1: いろいろな表示を試す -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">
+                                実習 6-1: 自己紹介アプリを作ろう
+                            </h3>
+                            <p class="text-purple-900 mb-4 break-words">学んだ関数を使って、自己紹介アプリを作成しましょう。</p>
+
+                            <h4 class="font-medium text-purple-800 mb-2">課題</h4>
+                            <p class="text-purple-900 mb-4">以下の要素を含むアプリを作成してください。</p>
+
+                            <ul class="space-y-2 mb-4">
+                                <li class="flex items-start gap-2 text-purple-900">
+                                    <i class="fas fa-check text-purple-600 mt-1 flex-shrink-0"></i>
+                                    <span>タイトル（st.title）: 「自己紹介」</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-purple-900">
+                                    <i class="fas fa-check text-purple-600 mt-1 flex-shrink-0"></i>
+                                    <span>大見出し（st.header）: 「基本情報」</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-purple-900">
+                                    <i class="fas fa-check text-purple-600 mt-1 flex-shrink-0"></i>
+                                    <span>通常のテキスト（st.write）: あなたの名前と年齢</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-purple-900">
+                                    <i class="fas fa-check text-purple-600 mt-1 flex-shrink-0"></i>
+                                    <span>中見出し（st.subheader）: 「趣味」</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-purple-900">
+                                    <i class="fas fa-check text-purple-600 mt-1 flex-shrink-0"></i>
+                                    <span>Markdown（st.markdown）: 趣味を箇条書きで表示</span>
+                                </li>
+                            </ul>
+
+                            <h4 class="font-medium text-purple-800 mb-2">ヒント（コード例）</h4>
+                            <div class="code-block-wrapper mb-4">
+                                <button onclick="copyCode(this)" class="copy-btn px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg transition-colors">
+                                    <i class="fas fa-copy mr-1"></i>コピー
+                                </button>
+                                <pre class="!bg-slate-800 !rounded-lg overflow-x-auto"><code class="language-python">import streamlit as st
+
+st.title("自己紹介")
+st.header("基本情報")
+st.write("名前: 田中太郎")
+st.write("年齢: 25歳")
+
+st.subheader("趣味")
+st.markdown("""
+- 読書
+- プログラミング
+- サイクリング
+""")</code></pre>
+                            </div>
+
+                            <div class="bg-purple-100 rounded-lg p-4 mt-4">
+                                <p class="text-purple-900 text-sm"><i class="fas fa-lightbulb text-purple-600 mr-2"></i><strong>チャレンジ：</strong>Markdownで文字を太字や色付きにしてみましょう。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション5: st.writeの万能性 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.5 st.writeの万能性
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <code class="bg-slate-100 px-1 rounded">st.write()</code>は非常に便利な関数で、文字列だけでなく、様々なデータ型を自動的に適切な形で表示してくれます。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">app.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">import streamlit as st
+
+# 文字列
+st.write("これは文字列です")
+
+# 数値
+st.write(12345)
+
+# 計算結果
+st.write("10 + 20 =", 10 + 20)
+
+# リスト
+st.write([1, 2, 3, 4, 5])
+
+# 辞書
+st.write({"名前": "田中", "年齢": 25})</code></pre>
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        このように、<code class="bg-slate-100 px-1 rounded">st.write()</code>は引数に何を渡しても、適切な形で表示してくれる万能な関数です。
+                    </p>
+
+                    <div class="mermaid">
+flowchart LR
+    A["st.write()"] --> B[文字列]
+    A --> C[数値]
+    A --> D[リスト]
+    A --> E[辞書]
+    A --> F[データフレーム]
+    B --> G[適切な形式で表示]
+    C --> G
+    D --> G
+    E --> G
+    F --> G
+                    </div>
+                </section>
+
+                <!-- 実習2: さまざまなデータを表示 -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">
+                                実習 6-2: 計算アプリを作ろう
+                            </h3>
+                            <p class="text-purple-900 mb-4 break-words">st.writeを使って、簡単な計算結果を表示するアプリを作りましょう。</p>
+
+                            <h4 class="font-medium text-purple-800 mb-2">課題</h4>
+                            <p class="text-purple-900 mb-4">以下の計算結果を表示するアプリを作成してください。</p>
+
+                            <ul class="space-y-2 mb-4">
+                                <li class="flex items-start gap-2 text-purple-900">
+                                    <i class="fas fa-check text-purple-600 mt-1 flex-shrink-0"></i>
+                                    <span>タイトル: 「簡単計算機」</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-purple-900">
+                                    <i class="fas fa-check text-purple-600 mt-1 flex-shrink-0"></i>
+                                    <span>100 + 50の計算結果</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-purple-900">
+                                    <i class="fas fa-check text-purple-600 mt-1 flex-shrink-0"></i>
+                                    <span>200 - 75の計算結果</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-purple-900">
+                                    <i class="fas fa-check text-purple-600 mt-1 flex-shrink-0"></i>
+                                    <span>10 × 8の計算結果</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-purple-900">
+                                    <i class="fas fa-check text-purple-600 mt-1 flex-shrink-0"></i>
+                                    <span>100 ÷ 4の計算結果</span>
+                                </li>
+                            </ul>
+
+                            <h4 class="font-medium text-purple-800 mb-2">ヒント（コード例）</h4>
+                            <div class="code-block-wrapper mb-4">
+                                <button onclick="copyCode(this)" class="copy-btn px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg transition-colors">
+                                    <i class="fas fa-copy mr-1"></i>コピー
+                                </button>
+                                <pre class="!bg-slate-800 !rounded-lg overflow-x-auto"><code class="language-python">import streamlit as st
+
+st.title("簡単計算機")
+
+st.write("100 + 50 =", 100 + 50)
+st.write("200 - 75 =", 200 - 75)
+st.write("10 × 8 =", 10 * 8)
+st.write("100 ÷ 4 =", 100 / 4)</code></pre>
+                            </div>
+
+                            <div class="bg-purple-100 rounded-lg p-4 mt-4">
+                                <p class="text-purple-900 text-sm"><i class="fas fa-info-circle text-purple-600 mr-2"></i><strong>注意：</strong>Pythonでは掛け算は <code class="bg-white px-1 rounded">*</code>、割り算は <code class="bg-white px-1 rounded">/</code> を使います。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q1. Streamlitアプリを起動するコマンドは何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>正解：streamlit run ファイル名.py</strong><br>
+                                            例えば、app.pyを起動する場合は <code class="bg-white px-1 rounded">streamlit run app.py</code> とコマンドラインで実行します。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q2. 大きな見出しを表示するために使う関数は何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>正解：st.title()</strong><br>
+                                            <code class="bg-white px-1 rounded">st.title("タイトル")</code> とすることで、ページの一番大きな見出しを表示できます。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q3. Markdownで太字にするための記号は何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>正解：**テキスト**</strong><br>
+                                            例えば、<code class="bg-white px-1 rounded">st.markdown("**太字**")</code> とすることで、太字のテキストを表示できます。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- トラブルシューティング -->
+                <div class="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-orange-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-wrench text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-orange-800 mb-4 break-words">トラブルシューティング</h3>
+                            <div class="space-y-4">
+                                <div class="bg-orange-100 rounded-lg p-4">
+                                    <p class="font-medium text-orange-900 mb-2 break-words">
+                                        <i class="fas fa-exclamation-triangle text-orange-600 mr-2"></i>
+                                        「ModuleNotFoundError: No module named 'streamlit'」と表示される
+                                    </p>
+                                    <p class="text-orange-800 text-sm break-words">
+                                        <strong>原因：</strong>Streamlitがインストールされていません。<br>
+                                        <strong>解決策：</strong><code class="bg-white px-1 rounded">pip install streamlit</code> を実行してインストールしてください。
+                                    </p>
+                                </div>
+                                <div class="bg-orange-100 rounded-lg p-4">
+                                    <p class="font-medium text-orange-900 mb-2 break-words">
+                                        <i class="fas fa-exclamation-triangle text-orange-600 mr-2"></i>
+                                        ブラウザが自動的に開かない
+                                    </p>
+                                    <p class="text-orange-800 text-sm break-words">
+                                        <strong>原因：</strong>自動起動が無効になっている可能性があります。<br>
+                                        <strong>解決策：</strong>コマンドラインに表示されるURL（http://localhost:8501）をブラウザに直接入力してください。
+                                    </p>
+                                </div>
+                                <div class="bg-orange-100 rounded-lg p-4">
+                                    <p class="font-medium text-orange-900 mb-2 break-words">
+                                        <i class="fas fa-exclamation-triangle text-orange-600 mr-2"></i>
+                                        コードを変更したのに反映されない
+                                    </p>
+                                    <p class="text-orange-800 text-sm break-words">
+                                        <strong>原因：</strong>Streamlitが変更を検知していません。<br>
+                                        <strong>解決策：</strong>ブラウザの「Rerun」ボタンをクリックするか、<code class="bg-white px-1 rounded">Ctrl + C</code>でアプリを停止して、再度 <code class="bg-white px-1 rounded">streamlit run app.py</code> を実行してください。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 章のまとめ -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        第6章のまとめ
+                    </h2>
+                    <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6">
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-primary-500 mt-1"></i>
+                                <span><code class="bg-slate-100 px-1 rounded">pip install streamlit</code>でStreamlitをインストールできる</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-primary-500 mt-1"></i>
+                                <span><code class="bg-slate-100 px-1 rounded">streamlit run ファイル名.py</code>でアプリを起動できる</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-primary-500 mt-1"></i>
+                                <span><code class="bg-slate-100 px-1 rounded">st.title()</code>でタイトル、<code class="bg-slate-100 px-1 rounded">st.header()</code>で大見出し、<code class="bg-slate-100 px-1 rounded">st.subheader()</code>で中見出しを表示できる</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-primary-500 mt-1"></i>
+                                <span><code class="bg-slate-100 px-1 rounded">st.write()</code>は万能な表示関数で、様々なデータ型を自動的に適切な形で表示してくれる</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-primary-500 mt-1"></i>
+                                <span><code class="bg-slate-100 px-1 rounded">st.markdown()</code>でテキストを太字や色付きにできる</span>
+                            </li>
+                        </ul>
+                        <p class="text-slate-600 mt-4 mb-0">
+                            次の章では、サイドバーやカラムを使って、見やすく使いやすい画面をデザインする方法を学びます。Webアプリがどんどんプロフェッショナルな見た目になっていきますよ！
+                        </p>
+                    </div>
+                </section>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <a href="streamlit-learning-material-05.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
+                                  transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">第5章: 関数</span>
+                        </div>
+                    </a>
+                    <a href="streamlit-learning-material-07.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">第7章: 画面を彩る</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
     </div>
 
-    <!-- Bootstrap JavaScript -->
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-    <!-- Highlight.js 初期化 -->
-    <script>hljs.highlightAll();</script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- サイドバー生成 -->
+    <script src="sidebar-content.js"></script>
+
+    <!-- 共通JavaScript -->
+    <script src="main.js"></script>
+
+    <!-- 描画ツール -->
+    <script src="drawing-tool.js"></script>
 </body>
 </html>

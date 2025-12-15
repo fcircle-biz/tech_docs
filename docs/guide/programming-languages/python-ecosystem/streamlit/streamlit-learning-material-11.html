@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
+    <title>Streamlit学習教材 第11章 - 状態を管理する - データの保持と更新</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- カスタムスタイル -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased">
+    <!-- ヘッダー/ナビゲーションバー -->
+    <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
+        <nav class="w-full px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex items-center justify-between py-3">
+                <!-- 左側: ロゴとタイトルセクション -->
+                <div class="flex items-center gap-4">
+                    <!-- アイコン -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <i class="fab fa-python text-3xl icon-rotate-hover drop-shadow-lg"></i>
+                        </div>
+                    </div>
+
+                    <!-- タイトルとメタ情報 -->
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold tracking-wide drop-shadow-md">Streamlit学習教材</span>
+                            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-semibold uppercase tracking-wider">
+                                <i class="fas fa-star text-yellow-300 text-[8px]"></i>
+                                初級
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-code text-[9px]"></i>
+                                <span>Python・Webアプリ</span>
+                            </div>
+                            <div class="hidden sm:flex items-center gap-1">
+                                <i class="fas fa-clock text-[9px]"></i>
+                                <span>推奨 45分</span>
+                            </div>
+                            <div class="hidden lg:flex items-center gap-1">
+                                <i class="fas fa-language text-[9px]"></i>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- メインレイアウト -->
+    <div class="flex min-h-screen pt-20">
+        <!-- サイドバーはsidebar-content.jsで動的に生成されます -->
+
+        <!-- メインコンテンツ -->
+        <main class="flex-1 min-w-0">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
+                <!-- パンくずリスト -->
+                <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <a href="../" class="hover:text-primary-600 transition-colors">Python Ecosystem</a>
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="text-slate-700">第11章</span>
+                </nav>
+
+                <!-- 章ヘッダー -->
+                <header class="mb-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                     bg-primary-100 text-primary-700">
+                            第11章
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">状態を管理する - データの保持と更新</h1>
+                    <p class="text-slate-600">アプリ内でデータを保持し、ボタンを押すたびに値を更新するような機能を実装します。カウンターアプリやTODOリストなどが作れるようになります。</p>
+                </header>
+
+                <!-- 学習目標カード -->
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200
+                            rounded-xl p-5 mb-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-400 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-lightbulb text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-amber-800 mb-3">この章で学ぶこと</h2>
+                            <ul class="space-y-2">
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>st.session_stateを使った状態管理の基礎</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>状態管理の概念とStreamlitの再実行の仕組み</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>コールバック関数を使った効率的な状態更新</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>カウンターやTODOリストなどの実用的なアプリ作成</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション1: 状態管理とは -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        11.1 状態管理とは何か？
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Webアプリケーションでは、ユーザーの操作に応じてデータを保持したり更新したりする必要があります。このデータの保持・管理のことを<strong>状態管理</strong>と呼びます。
+                    </p>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        例えば、カウンターアプリでボタンを押すたびに数字が増えたり、TODOリストで項目を追加・削除したりする機能を実装するには、状態管理が必要です。
+                    </p>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">Streamlitの再実行の仕組み</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    Streamlitは、ボタンをクリックするなどユーザーが操作するたびに、スクリプト全体を上から下まで再実行します。このため、通常の変数は操作のたびにリセットされてしまいます。st.session_stateを使うことで、再実行されてもデータを保持できます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">状態管理の流れ</h3>
+                    <div class="mermaid">
+flowchart LR
+    A["ユーザーが操作<br/>ボタンをクリック"] --> B["st.session_stateに<br/>データを保存"]
+    B --> C["スクリプトが再実行"]
+    C --> D["st.session_stateから<br/>データを読み込み"]
+    D --> E["更新された画面を表示"]
+                    </div>
+                </section>
+
+                <!-- セクション2: st.session_stateの基本 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        11.2 st.session_stateの基本
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>st.session_state</strong>は、Streamlitアプリ内でデータを保持するための特別な辞書のようなものです。再実行されてもデータが失われません。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">基本的な使い方</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">session_state_basic.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">import streamlit as st
+
+# 初期化：キーが存在しない場合のみ初期値を設定
+if 'count' not in st.session_state:
+    st.session_state['count'] = 0  # 辞書形式
+
+# または属性形式でアクセス可能
+if 'name' not in st.session_state:
+    st.session_state.name = ""  # 属性形式
+
+# 値の読み込み
+st.write(f"現在のカウント: {st.session_state.count}")
+st.write(f"名前: {st.session_state.name}")</code></pre>
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-star text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">2つのアクセス方法</p>
+                                <p class="text-emerald-800 text-sm mt-1 break-words">
+                                    st.session_stateは辞書形式（<code class="bg-emerald-100 px-1 rounded">st.session_state['key']</code>）でも、属性形式（<code class="bg-emerald-100 px-1 rounded">st.session_state.key</code>）でもアクセスできます。どちらを使っても構いませんが、属性形式の方が読みやすいためよく使われます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 実習1: シンプルなカウンターアプリ -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">
+                                実習 11-1: シンプルなカウンターアプリ
+                            </h3>
+                            <p class="text-purple-900 mb-4 break-words">ボタンを押すたびに数字が1ずつ増えるカウンターアプリを作ってみましょう。</p>
+
+                            <div class="code-block-wrapper mb-4">
+                                <button onclick="copyCode(this)" class="copy-btn px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg transition-colors">
+                                    <i class="fas fa-copy mr-1"></i>コピー
+                                </button>
+                                <pre class="!bg-slate-800 !rounded-lg overflow-x-auto"><code class="language-python">import streamlit as st
+
+st.title("カウンターアプリ")
+
+# 初期化
+if 'count' not in st.session_state:
+    st.session_state.count = 0
+
+# カウント表示
+st.metric(label="現在のカウント", value=st.session_state.count)
+
+# ボタン配置
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    if st.button("➕ 増やす"):
+        st.session_state.count += 1
+
+with col2:
+    if st.button("➖ 減らす"):
+        st.session_state.count -= 1
+
+with col3:
+    if st.button("🔄 リセット"):
+        st.session_state.count = 0</code></pre>
+                            </div>
+
+                            <h4 class="font-medium text-purple-800 mt-4 mb-2">コードの解説</h4>
+                            <ul class="space-y-2 text-purple-900 text-sm">
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-circle text-purple-400 text-[6px] mt-2"></i>
+                                    <span><code class="bg-purple-100 px-1 rounded">if 'count' not in st.session_state</code>: countキーが存在しない場合のみ初期値0を設定</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-circle text-purple-400 text-[6px] mt-2"></i>
+                                    <span><code class="bg-purple-100 px-1 rounded">st.metric()</code>: 数値を大きく見やすく表示</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-circle text-purple-400 text-[6px] mt-2"></i>
+                                    <span>ボタンがクリックされるたびに、st.session_state.countの値が変更される</span>
+                                </li>
+                            </ul>
+
+                            <div class="bg-purple-100 rounded-lg p-4 mt-4">
+                                <p class="text-purple-900 text-sm"><i class="fas fa-laptop-code text-purple-600 mr-2"></i><strong>実行方法:</strong> このコードを <code class="bg-white px-1 rounded">counter_app.py</code> として保存し、<code class="bg-white px-1 rounded">streamlit run counter_app.py</code> で実行してください。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション3: コールバック関数 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        11.3 コールバック関数で効率的に処理する
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>コールバック関数</strong>とは、ボタンがクリックされたときなど、特定のイベントが発生したときに自動的に実行される関数です。
+                    </p>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        コールバック関数を使うと、状態の更新をより効率的に行えます。特に、入力ウィジェットと連動させる場合に便利です。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">コールバック関数の基本</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">callback_example.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">import streamlit as st
+
+# コールバック関数の定義
+def increment():
+    """カウントを1増やす関数"""
+    st.session_state.count += 1
+
+# 初期化
+if 'count' not in st.session_state:
+    st.session_state.count = 0
+
+st.title("コールバック関数を使ったカウンター")
+st.write(f"カウント: {st.session_state.count}")
+
+# on_click引数でコールバック関数を指定
+st.button("増やす", on_click=increment)</code></pre>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">コールバック関数のメリット</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    コールバック関数は、ボタンがクリックされた直後、スクリプトが再実行される前に実行されます。これにより、状態の更新タイミングを正確に制御でき、処理が効率的になります。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">引数付きコールバック関数</h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        コールバック関数に引数を渡すこともできます。<code class="bg-slate-100 px-1 rounded">args</code>引数を使います。
+                    </p>
+
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">callback_with_args.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">import streamlit as st
+
+# 引数付きコールバック関数
+def add_value(value):
+    """指定された値を加算する関数"""
+    st.session_state.count += value
+
+# 初期化
+if 'count' not in st.session_state:
+    st.session_state.count = 0
+
+st.title("引数付きコールバック")
+st.write(f"カウント: {st.session_state.count}")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.button("+1", on_click=add_value, args=(1,))
+with col2:
+    st.button("+5", on_click=add_value, args=(5,))
+with col3:
+    st.button("+10", on_click=add_value, args=(10,))</code></pre>
+                    </div>
+                </section>
+
+                <!-- 実習2: TODOリストアプリ -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">
+                                実習 11-2: TODOリストアプリ
+                            </h3>
+                            <p class="text-purple-900 mb-4 break-words">タスクを追加・削除できるTODOリストアプリを作成しましょう。</p>
+
+                            <div class="code-block-wrapper mb-4">
+                                <button onclick="copyCode(this)" class="copy-btn px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg transition-colors">
+                                    <i class="fas fa-copy mr-1"></i>コピー
+                                </button>
+                                <pre class="!bg-slate-800 !rounded-lg overflow-x-auto"><code class="language-python">import streamlit as st
+
+st.title("📝 TODOリストアプリ")
+
+# 初期化
+if 'todos' not in st.session_state:
+    st.session_state.todos = []  # TODOリスト
+
+# タスク追加関数
+def add_todo():
+    """入力されたタスクをリストに追加"""
+    if st.session_state.new_todo:  # 空でない場合
+        st.session_state.todos.append({
+            'task': st.session_state.new_todo,
+            'done': False
+        })
+        st.session_state.new_todo = ""  # 入力欄をクリア
+
+# タスク削除関数
+def delete_todo(index):
+    """指定されたインデックスのタスクを削除"""
+    st.session_state.todos.pop(index)
+
+# 入力欄
+st.text_input(
+    "新しいタスク",
+    key="new_todo",
+    on_change=add_todo,
+    placeholder="タスクを入力してEnterキー"
+)
+
+st.markdown("---")
+
+# TODOリスト表示
+if st.session_state.todos:
+    st.subheader("タスク一覧")
+    for i, todo in enumerate(st.session_state.todos):
+        col1, col2 = st.columns([4, 1])
+        with col1:
+            # チェックボックスでタスクの完了状態を管理
+            todo['done'] = st.checkbox(
+                todo['task'],
+                value=todo['done'],
+                key=f"todo_{i}"
+            )
+        with col2:
+            # 削除ボタン
+            st.button(
+                "🗑️",
+                key=f"delete_{i}",
+                on_click=delete_todo,
+                args=(i,)
+            )
+else:
+    st.info("タスクがありません。新しいタスクを追加してください。")</code></pre>
+                            </div>
+
+                            <h4 class="font-medium text-purple-800 mt-4 mb-2">コードの解説</h4>
+                            <ul class="space-y-2 text-purple-900 text-sm">
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-circle text-purple-400 text-[6px] mt-2"></i>
+                                    <span><code class="bg-purple-100 px-1 rounded">st.session_state.todos</code>: リスト形式でタスクを保存</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-circle text-purple-400 text-[6px] mt-2"></i>
+                                    <span><code class="bg-purple-100 px-1 rounded">on_change</code>: テキスト入力が変更されたときにコールバック関数を実行</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-circle text-purple-400 text-[6px] mt-2"></i>
+                                    <span>各タスクには完了状態（done）と内容（task）を辞書形式で保存</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-circle text-purple-400 text-[6px] mt-2"></i>
+                                    <span><code class="bg-purple-100 px-1 rounded">enumerate()</code>: リストの要素とインデックスを同時に取得</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- セクション4: 複数の状態を管理する -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        11.4 複数の状態を管理する
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        実際のアプリケーションでは、複数の状態を同時に管理することがよくあります。例えば、ユーザー名、メール、設定など、様々な情報を保持する必要があります。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">複数の状態を持つアプリ例</h3>
+                    <div class="code-block-wrapper my-6">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">multiple_states.py</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
+                                    onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">import streamlit as st
+
+st.title("ユーザー設定")
+
+# 複数の状態を初期化
+if 'username' not in st.session_state:
+    st.session_state.username = ""
+if 'email' not in st.session_state:
+    st.session_state.email = ""
+if 'theme' not in st.session_state:
+    st.session_state.theme = "ライト"
+
+# 設定フォーム
+st.session_state.username = st.text_input(
+    "ユーザー名",
+    value=st.session_state.username
+)
+
+st.session_state.email = st.text_input(
+    "メールアドレス",
+    value=st.session_state.email
+)
+
+st.session_state.theme = st.selectbox(
+    "テーマ",
+    ["ライト", "ダーク"],
+    index=["ライト", "ダーク"].index(st.session_state.theme)
+)
+
+# 設定の表示
+st.markdown("---")
+st.subheader("現在の設定")
+st.write(f"ユーザー名: {st.session_state.username}")
+st.write(f"メール: {st.session_state.email}")
+st.write(f"テーマ: {st.session_state.theme}")</code></pre>
+                    </div>
+                </section>
+
+                <!-- 実習3: ショッピングカートアプリ -->
+                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">
+                                実習 11-3: シンプルなショッピングカートアプリ
+                            </h3>
+                            <p class="text-purple-900 mb-4 break-words">商品を選んでカートに追加し、合計金額を計算するアプリを作成しましょう。</p>
+
+                            <div class="code-block-wrapper mb-4">
+                                <button onclick="copyCode(this)" class="copy-btn px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg transition-colors">
+                                    <i class="fas fa-copy mr-1"></i>コピー
+                                </button>
+                                <pre class="!bg-slate-800 !rounded-lg overflow-x-auto"><code class="language-python">import streamlit as st
+
+st.title("🛒 ショッピングカート")
+
+# 商品マスタ
+PRODUCTS = {
+    "りんご": 100,
+    "バナナ": 80,
+    "オレンジ": 120,
+    "いちご": 200,
+    "ぶどう": 150
+}
+
+# 初期化
+if 'cart' not in st.session_state:
+    st.session_state.cart = {}  # カート（商品名:個数）
+
+# カートに追加する関数
+def add_to_cart(product):
+    """選択した商品をカートに追加"""
+    if product in st.session_state.cart:
+        st.session_state.cart[product] += 1
+    else:
+        st.session_state.cart[product] = 1
+
+# カートをクリアする関数
+def clear_cart():
+    """カートを空にする"""
+    st.session_state.cart = {}
+
+# 商品選択
+st.subheader("商品を選択")
+col1, col2 = st.columns(2)
+
+with col1:
+    for i, (product, price) in enumerate(list(PRODUCTS.items())[:3]):
+        st.button(
+            f"{product} - ¥{price}",
+            key=f"btn_{product}",
+            on_click=add_to_cart,
+            args=(product,)
+        )
+
+with col2:
+    for i, (product, price) in enumerate(list(PRODUCTS.items())[3:]):
+        st.button(
+            f"{product} - ¥{price}",
+            key=f"btn_{product}",
+            on_click=add_to_cart,
+            args=(product,)
+        )
+
+st.markdown("---")
+
+# カート表示
+st.subheader("カートの中身")
+if st.session_state.cart:
+    total = 0
+    for product, quantity in st.session_state.cart.items():
+        price = PRODUCTS[product]
+        subtotal = price * quantity
+        total += subtotal
+        st.write(f"{product} x {quantity}個 = ¥{subtotal:,}")
+
+    st.markdown("---")
+    st.metric(label="合計金額", value=f"¥{total:,}")
+    st.button("🗑️ カートをクリア", on_click=clear_cart)
+else:
+    st.info("カートは空です。商品を選択してください。")</code></pre>
+                            </div>
+
+                            <h4 class="font-medium text-purple-800 mt-4 mb-2">コードの解説</h4>
+                            <ul class="space-y-2 text-purple-900 text-sm">
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-circle text-purple-400 text-[6px] mt-2"></i>
+                                    <span>商品マスタを辞書で定義（商品名:価格）</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-circle text-purple-400 text-[6px] mt-2"></i>
+                                    <span>カートも辞書で管理（商品名:個数）</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-circle text-purple-400 text-[6px] mt-2"></i>
+                                    <span>合計金額は各商品の小計を足し合わせて計算</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fas fa-circle text-purple-400 text-[6px] mt-2"></i>
+                                    <span><code class="bg-purple-100 px-1 rounded">f"{total:,}"</code>: 数値を3桁カンマ区切りで表示</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- トラブルシューティング -->
+                <div class="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-orange-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-tools text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-orange-800 mb-4 break-words">よくあるトラブルと解決方法</h3>
+
+                            <div class="space-y-4">
+                                <div class="bg-orange-100 rounded-lg p-4">
+                                    <p class="font-medium text-orange-900 mb-2">状態が保存されない</p>
+                                    <p class="text-orange-800 text-sm">
+                                        <strong>原因:</strong> session_stateへの保存処理が正しく実行されていない<br>
+                                        <strong>解決:</strong> ボタンのクリックイベント内やコールバック関数内でst.session_stateに値を代入しているか確認してください。
+                                    </p>
+                                </div>
+
+                                <div class="bg-orange-100 rounded-lg p-4">
+                                    <p class="font-medium text-orange-900 mb-2">KeyError: 'キー名'</p>
+                                    <p class="text-orange-800 text-sm">
+                                        <strong>原因:</strong> session_stateに存在しないキーにアクセスしようとしている<br>
+                                        <strong>解決:</strong> 必ず <code class="bg-white px-1 rounded">if 'key' not in st.session_state</code> で初期化してからアクセスしてください。
+                                    </p>
+                                </div>
+
+                                <div class="bg-orange-100 rounded-lg p-4">
+                                    <p class="font-medium text-orange-900 mb-2">値が意図せず変更される</p>
+                                    <p class="text-orange-800 text-sm">
+                                        <strong>原因:</strong> コールバック関数と通常の処理が競合している<br>
+                                        <strong>解決:</strong> 状態の更新はコールバック関数内に集約するのがベストプラクティスです。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 理解度確認クイズ -->
+                <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-question text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
+                            <ol class="space-y-4">
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q1. st.session_stateの役割は何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>正解：アプリの再実行時にもデータを保持するための機能</strong><br>
+                                            Streamlitは操作のたびにスクリプト全体を再実行します。st.session_stateを使うことで、再実行されても値を保持できます。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q2. コールバック関数はいつ実行されますか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>正解：ボタンがクリックされた直後、スクリプトが再実行される前</strong><br>
+                                            コールバック関数は、イベント発生直後に実行されます。これにより、状態の更新タイミングを正確に制御できます。
+                                        </p>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q3. st.session_stateに初期値を設定する正しい方法はどれですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>正解：<code class="bg-white px-1 rounded">if 'key' not in st.session_state: st.session_state.key = 初期値</code></strong><br>
+                                            キーが存在しない場合のみ初期値を設定することで、既存の値を上書きせずに済みます。
+                                        </p>
+                                    </details>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 章のまとめ -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        第11章のまとめ
+                    </h2>
+                    <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6">
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-primary-500 mt-1"></i>
+                                <span><strong>st.session_state</strong>を使うことで、アプリの再実行時にもデータを保持できる</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-primary-500 mt-1"></i>
+                                <span>状態管理により、カウンターやTODOリストなどの動的なアプリが作成可能</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-primary-500 mt-1"></i>
+                                <span><strong>コールバック関数</strong>を使うと、状態の更新を効率的に処理できる</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-primary-500 mt-1"></i>
+                                <span>辞書形式やリスト形式でも状態を管理できる</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-primary-500 mt-1"></i>
+                                <span>初期化時は必ず <code class="bg-slate-100 px-1 rounded">if 'key' not in st.session_state</code> でチェック</span>
+                            </li>
+                        </ul>
+                        <p class="text-slate-600 mt-4 mb-0">
+                            次の章では、これまで学んだすべての知識を総動員して、実践的なアプリケーションを作成します。あなたのアイデアを形にしましょう！
+                        </p>
+                    </div>
+                </section>
+
+                <!-- 章間ナビゲーション -->
+                <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
+                    <a href="streamlit-learning-material-10.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-slate-100 hover:bg-slate-200 transition-colors">
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
+                                  transition-transform group-hover:-translate-x-1"></i>
+                        <div>
+                            <span class="text-xs text-slate-500 block">前の章</span>
+                            <span class="text-slate-700 font-medium">第10章: ファイルを扱う</span>
+                        </div>
+                    </a>
+                    <a href="streamlit-learning-material-12.html"
+                       class="group flex items-center gap-3 px-4 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次の章</span>
+                            <span class="font-medium">第12章: 実践プロジェクト</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </nav>
+            </div>
+        </main>
+    </div>
+
+    <!-- フッター -->
+    <footer class="bg-slate-800 text-slate-300">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-center md:text-left">
+                    &copy; 2025 F-Circle. All rights reserved.<br>
+                    本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- スクロールトップボタン -->
+    <button id="scroll-top-btn"
+            class="fixed bottom-6 right-6 w-12 h-12 bg-primary-500 text-white rounded-full
+                   shadow-lg hover:bg-primary-600 transition-all duration-300
+                   opacity-0 invisible translate-y-4"
+            onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- サイドバー生成 -->
+    <script src="sidebar-content.js"></script>
+
+    <!-- 共通JavaScript -->
+    <script src="main.js"></script>
+
+    <!-- 描画ツール -->
+    <script src="drawing-tool.js"></script>
+</body>
+</html>
