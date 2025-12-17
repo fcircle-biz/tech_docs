@@ -126,7 +126,7 @@ OutSystemsは世界的に広く使われているローコード開発プラッ�
 
 ## チュートリアル構成
 
-### Step 1: [OutSystemsとは？環境準備をしよう](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/step1-introduction-setup.html)
+### Step 1: [OutSystemsとは？環境準備をしよう](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/outsystems-tutorial-01.html)
 
 ローコード開発の世界へようこそ！まずはOutSystemsの概要を理解し、開発を始めるための環境を整えます。
 
@@ -142,7 +142,7 @@ OutSystemsは世界的に広く使われているローコード開発プラッ�
 
 ---
 
-### Step 2: [最初のアプリケーションを作ろう](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/step2-first-application.html)
+### Step 2: [最初のアプリケーションを作ろう](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/outsystems-tutorial-02.html)
 
 Service Studioを起動して、最初のアプリケーションを作成します。「Hello, OutSystems!」を表示するシンプルなアプリを通じて、基本的な操作を覚えましょう。
 
@@ -159,7 +159,7 @@ Service Studioを起動して、最初のアプリケーションを作成しま
 
 ---
 
-### Step 3: [画面をデザインしよう - スクリーンとウィジェット](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/step3-screen-widgets.html)
+### Step 3: [画面をデザインしよう - スクリーンとウィジェット](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/outsystems-tutorial-03.html)
 
 タスク管理アプリのメイン画面を作成します。ボタン、テキスト、コンテナなどの「ウィジェット」（部品）を配置して、見た目を整えていきます。
 
@@ -179,7 +179,7 @@ Service Studioを起動して、最初のアプリケーションを作成しま
 
 ---
 
-### Step 4: [データを保存する場所を作ろう - エンティティの設計](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/step4-entity-design.html)
+### Step 4: [データを保存する場所を作ろう - エンティティの設計](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/outsystems-tutorial-04.html)
 
 タスクのデータを保存するための「エンティティ」（データベースのテーブル）を作成します。どんな情報を保存するか設計しましょう。
 
@@ -200,7 +200,7 @@ Service Studioを起動して、最初のアプリケーションを作成しま
 
 ---
 
-### Step 5: [タスクを一覧表示しよう - アグリゲートとリスト](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/step5-list-display.html)
+### Step 5: [タスクを一覧表示しよう - アグリゲートとリスト](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/outsystems-tutorial-05.html)
 
 保存されているタスクを画面に一覧で表示します。データベースからデータを取り出して表示する方法を学びます。
 
@@ -217,7 +217,7 @@ Service Studioを起動して、最初のアプリケーションを作成しま
 
 ---
 
-### Step 6: [新しいタスクを登録しよう - フォームの作成](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/step6-create-form.html)
+### Step 6: [新しいタスクを登録しよう - フォームの作成](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/outsystems-tutorial-06.html)
 
 ユーザーが新しいタスクを登録できるフォーム（入力画面）を作成します。入力されたデータをデータベースに保存する方法を学びます。
 
@@ -237,7 +237,7 @@ Service Studioを起動して、最初のアプリケーションを作成しま
 
 ---
 
-### Step 7: [タスクを編集・削除しよう - 更新と削除機能](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/step7-update-delete.html)
+### Step 7: [タスクを編集・削除しよう - 更新と削除機能](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/outsystems-tutorial-07.html)
 
 登録済みのタスクを編集したり、不要なタスクを削除したりする機能を追加します。
 
@@ -255,7 +255,7 @@ Service Studioを起動して、最初のアプリケーションを作成しま
 
 ---
 
-### Step 8: [処理の流れを制御しよう - アクションとロジック](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/step8-action-logic.html)
+### Step 8: [処理の流れを制御しよう - アクションとロジック](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/outsystems-tutorial-08.html)
 
 ボタンを押したときの処理をより詳しく設定します。条件によって処理を変える方法を学びます。
 
@@ -274,7 +274,7 @@ Service Studioを起動して、最初のアプリケーションを作成しま
 
 ---
 
-### Step 9: [アプリを公開しよう - デプロイメント](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/step9-deployment.html)
+### Step 9: [アプリを公開しよう - デプロイメント](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/outsystems-tutorial-09.html)
 
 作成したアプリを実際に使える状態で公開します。URLを共有して他の人にも使ってもらえるようにしましょう。
 
@@ -291,7 +291,7 @@ Service Studioを起動して、最初のアプリケーションを作成しま
 
 ---
 
-### Step 10: [次のステップへ - さらに学ぶために](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/step10-next-steps.html)
+### Step 10: [次のステップへ - さらに学ぶために](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/outsystems-tutorial-10.html)
 
 チュートリアルの総まとめと、さらにスキルアップするための道筋を紹介します。
 
@@ -493,4 +493,4 @@ primary: {
 
 それでは、Step 1から始めましょう！
 
-[Step 1: OutSystemsとは？環境準備をしよう](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/step1-introduction-setup.html)
+[Step 1: OutSystemsとは？環境準備をしよう](https://fcircle-biz.github.io/tech_docs/tutorial/business-saas/outsystems/outsystems-tutorial-01.html)
