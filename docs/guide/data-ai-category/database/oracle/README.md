@@ -26,8 +26,8 @@ Oracleデータベースの概要と特徴を理解し、学習環境の準備�
 ### [2. Windows環境でのOracleインストール](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/oracle/oracle-learning-material-02.html)
 Windows環境でのOracle Database Freeのインストール手順を詳しく解説します。初心者が躓きやすいポイントを丁寧に説明し、確実に環境構築できるよう導きます。
 
-### [3. Mac環境でのOracleインストール（Docker利用）](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/oracle/oracle-learning-material-03.html)
-Mac環境でのDocker Desktop導入とOracleコンテナの構築手順を解説します。Docker未経験者でも理解できるよう、基本的なコマンドから説明します。
+### [3. Windows環境でのOracleインストール（Rancher Desktop利用）](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/oracle/oracle-learning-material-03.html)
+Windows環境でのRancher Desktop導入とOracleコンテナの構築手順を解説します。Docker未経験者でも理解できるよう、基本的なコマンドから説明します。
 
 ### [4. SQL Developerの導入と接続設定](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/oracle/oracle-learning-material-04.html)
 Oracle SQL Developerのインストールから、データベースへの接続設定までを実践的に学習します。接続エラーの対処法も詳しく解説します。

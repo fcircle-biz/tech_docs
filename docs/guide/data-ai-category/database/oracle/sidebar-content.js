@@ -17,7 +17,7 @@
     const chapters = [
         { number: 1, title: '第1章: Oracle概要と環境準備', file: 'oracle-learning-material-01.html' },
         { number: 2, title: '第2章: Windows環境でのOracleインストール', file: 'oracle-learning-material-02.html' },
-        { number: 3, title: '第3章: Mac環境でのOracleインストール（Docker利用）', file: 'oracle-learning-material-03.html' },
+        { number: 3, title: '第3章: Windows環境でのOracleインストール（Rancher Desktop利用）', file: 'oracle-learning-material-03.html' },
         { number: 4, title: '第4章: SQL Developerの導入と接続設定', file: 'oracle-learning-material-04.html' },
         { number: 5, title: '第5章: SQL Developerの基本操作', file: 'oracle-learning-material-05.html' },
         { number: 6, title: '第6章: Oracle基本SQL（テーブル作成・CRUD操作）', file: 'oracle-learning-material-06.html' },
