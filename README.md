@@ -117,6 +117,7 @@
 - **[OutSystems学習ガイド](docs/guide/business-saas/outsystems/README.md)** - OutSystemsローコード開発プラットフォームの基礎から実践的なアプリケーション開発まで14章完成カリキュラム
 - **[Excel基本操作学習ガイド](docs/guide/business-saas/excel-basic/README.md)** - Excel基本操作から関数、VBA入門まで8章完成カリキュラム
 - **[VBA学習ガイド](docs/guide/business-saas/vba/README.md)** - VBA基礎からExcel自動化まで12章完成カリキュラム
+- **[Access VBA学習ガイド](docs/guide/business-saas/access-vba/README.md)** - Access VBA基礎からデータベース自動化、業務システム構築まで12章完成カリキュラム
 
 ### 業務知識・ドメイン
 
@@ -143,6 +144,7 @@ PDF形式のスライド教材をブラウザで閲覧できる教材です。
 #### Microsoft Office
 
 - **[Excel入門](https://fcircle-biz.github.io/tech_docs/slide/business-saas/microsoft-office/excel-basics/index.html)** - Excelの基本操作から実践的な活用方法まで学べるスライド教材
+- **[Access入門](https://fcircle-biz.github.io/tech_docs/slide/business-saas/microsoft-office/access-basics/index.html)** - Accessの基本操作からデータベース設計、クエリ、フォーム、レポート、マクロまで学べるスライド教材
 
 ---
 
