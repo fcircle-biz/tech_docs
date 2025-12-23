@@ -1,32 +1,28 @@
 /**
- * チュートリアル用サイドバーコンテンツ生成JavaScript
+ * OutSystemsチュートリアル用サイドバーコンテンツ生成JavaScript
  * 各ステップのHTMLから共通のサイドバー部分を動的に生成
  */
 
 (function() {
     'use strict';
 
-    // ========================================
     // プロジェクト情報
-    // ========================================
     const projectInfo = {
         title: 'My Task Manager',
-        description: 'はじめてのタスク管理アプリ開発'
+        description: 'OutSystemsで実装するタスク管理アプリケーション'
     };
 
-    // ========================================
     // ステップの定義データ
-    // ========================================
     const steps = [
         { number: 1, title: 'ステップ1', subtitle: '環境準備', file: 'outsystems-tutorial-01.html' },
-        { number: 2, title: 'ステップ2', subtitle: '最初のアプリ', file: 'outsystems-tutorial-02.html' },
+        { number: 2, title: 'ステップ2', subtitle: '最初のアプリケーション', file: 'outsystems-tutorial-02.html' },
         { number: 3, title: 'ステップ3', subtitle: '画面デザイン', file: 'outsystems-tutorial-03.html' },
-        { number: 4, title: 'ステップ4', subtitle: 'データ設計', file: 'outsystems-tutorial-04.html' },
+        { number: 4, title: 'ステップ4', subtitle: 'エンティティ設計', file: 'outsystems-tutorial-04.html' },
         { number: 5, title: 'ステップ5', subtitle: '一覧表示', file: 'outsystems-tutorial-05.html' },
-        { number: 6, title: 'ステップ6', subtitle: '登録・編集', file: 'outsystems-tutorial-06.html' },
+        { number: 6, title: 'ステップ6', subtitle: 'タスク編集', file: 'outsystems-tutorial-06.html' },
         { number: 7, title: 'ステップ7', subtitle: '削除・完了機能', file: 'outsystems-tutorial-07.html' },
         { number: 8, title: 'ステップ8', subtitle: 'ロジック制御', file: 'outsystems-tutorial-08.html' },
-        { number: 9, title: 'ステップ9', subtitle: 'アプリ公開', file: 'outsystems-tutorial-09.html' },
+        { number: 9, title: 'ステップ9', subtitle: 'デプロイメント', file: 'outsystems-tutorial-09.html' },
         { number: 10, title: 'ステップ10', subtitle: '次のステップ', file: 'outsystems-tutorial-10.html' }
     ];
 
