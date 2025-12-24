@@ -89,7 +89,8 @@
 
 ### クラウド／インフラ
 
-- **[AWS学習ガイド](docs/guide/cloud-infrastructure/aws/README.md)** - AWS（Amazon Web Services）の基礎から実践的なクラウドサービス活用まで10章完成カリキュラム
+- **[AWS基礎編学習ガイド](docs/guide/cloud-infrastructure/aws-basic/README.md)** - AWS（Amazon Web Services）の基礎から実践的なクラウドサービス活用まで12章完成カリキュラム。プログラミング完全未経験者向けにクラウドの基本概念から主要サービス（EC2、S3、RDS、VPC、IAM、CloudWatch、Lambda）まで身近な例えを使いながら丁寧に解説
+- **[AWS SAP-C02入門学習ガイド](docs/guide/cloud-infrastructure/aws-sap-c02-intro/README.md)** - AWS Solutions Architect Professional（SAP-C02）資格取得に向けた知識基盤を構築する15章完成カリキュラム。Auto Scaling、ELB、Route 53、CloudFront、高可用性設計、災害復旧戦略など、エンタープライズ環境に求められる高度なインフラ設計手法を体系的に習得
 - **[AWS Terraform学習ガイド](docs/guide/cloud-infrastructure/aws-terraform/README.md)** - AWS上でTerraformを使用したInfrastructure as Code（IaC）の基礎から実践まで10章完成カリキュラム。HCL構文、VPC/EC2構築、ステート管理、モジュール化、CI/CD統合まで体系的に習得
 - **[クラウドコンピューティング学習ガイド](docs/guide/cloud-infrastructure/cloud-computing/README.md)** - クラウドコンピューティングの基本概念からIaaS、PaaS、SaaSまで10章完成カリキュラム
 - **[Docker学習ガイド](docs/guide/cloud-infrastructure/docker/README.md)** - Dockerの基礎から実践的なコンテナ運用まで10章完成カリキュラム。コンテナ技術の基本概念、イメージ管理、Dockerfile作成、Docker Compose、ボリューム、ネットワーク、マルチコンテナアプリケーション構築、セキュリティ、本番環境デプロイまで網羅
@@ -155,6 +156,10 @@ PDF形式のスライド教材をブラウザで閲覧できる教材です。
 
 - **[Excel入門](https://fcircle-biz.github.io/tech_docs/slide/business-saas/microsoft-office/excel-basics/index.html)** - Excelの基本操作から実践的な活用方法まで学べるスライド教材
 - **[Access入門](https://fcircle-biz.github.io/tech_docs/slide/business-saas/microsoft-office/access-basics/index.html)** - Accessの基本操作からデータベース設計、クエリ、フォーム、レポート、マクロまで学べるスライド教材
+
+### 資格・認定試験
+
+- **[ITパスポート試験入門](https://fcircle-biz.github.io/tech_docs/slide/certification/it-passport-intro/index.html)** - ITパスポート試験の概要と学習方法を学べるスライド教材
 
 ---
 
