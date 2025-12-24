@@ -32,6 +32,7 @@
 ### プログラミング言語
 
 #### Python
+
 - **[Python入門学習ガイド](docs/guide/programming-languages/python-ecosystem/python-beginner/README.md)** - プログラミング完全未経験者向けPython入門12章構成カリキュラム。変数、条件分岐、繰り返し、関数、ファイル操作など、プログラミングの基礎を段階的に学習
 - **[Django学習ガイド](docs/guide/programming-languages/python-ecosystem/django/README.md)** - Djangoフレームワークを使用したWebアプリケーション開発の基礎から実践まで10章完成カリキュラム
 - **[FastAPI学習ガイド](docs/guide/programming-languages/python-ecosystem/fastapi/README.md)** - FastAPIを使用した高性能WebAPI開発の基礎から実践まで10章完成カリキュラム
@@ -40,6 +41,7 @@
 - **[Streamlit学習ガイド](docs/guide/programming-languages/python-ecosystem/streamlit/README.md)** - Streamlitを使用したWebアプリケーション開発の基礎から実践まで10章完成カリキュラム
 
 #### Java
+
 - **[Java学習ガイド](docs/guide/programming-languages/java-ecosystem/java/README.md)** - Java言語基礎から高度技術まで12章完成カリキュラム
 - **[JDBC学習ガイド](docs/guide/programming-languages/java-ecosystem/jdbc/README.md)** - JDBC基礎からパフォーマンスチューニングまで10章完成カリキュラム
 - **[JSP/Servlet学習ガイド](docs/guide/programming-languages/java-ecosystem/jsp/README.md)** - JSP/Servlet基礎からMVCアーキテクチャまで10章完成カリキュラム
@@ -48,23 +50,28 @@
 - **[Struts 1.x学習ガイド](docs/guide/programming-languages/java-ecosystem/struts1/README.md)** - Apache Struts 1.x基礎からデプロイメントまで10章完成カリキュラム
 
 #### JavaScript/Node.js
+
 - **[JavaScript学習ガイド](docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/README.md)** - プログラミング未経験者向けJavaScript入門12章構成カリキュラム
 - **[TypeScript学習ガイド](docs/guide/programming-languages/javascript-ecosystem/typescript/README.md)** - TypeScriptの基礎をプログラミング完全未経験者向けに段階的に学習するためのカリキュラム。型システムを活用した安全なコード作成を15章で完全習得
 - **[React学習ガイド](docs/guide/programming-languages/javascript-ecosystem/react/README.md)** - Reactライブラリを使用したモダンなWebアプリケーション開発の基礎を入門者向けに段階的に学習するためのカリキュラム（12章構成）
 - **[Next.js学習ガイド](docs/guide/programming-languages/javascript-ecosystem/nextjs/README.md)** - Next.jsフレームワークを使用したモダンなReactアプリケーション開発の基礎を入門者向けに段階的に学習するためのカリキュラム（15章構成）
 
 #### .NET
+
 - **[VB.NET学習ガイド](docs/guide/programming-languages/dotnet-ecosystem/vbnet/README.md)** - VB.NET言語基礎からオブジェクト指向プログラミングまで10章完成カリキュラム
 - **[ASP.NET(VB.NET)学習ガイド](docs/guide/programming-languages/dotnet-ecosystem/aspnet-vb/README.md)** - ASP.NET Web Forms基礎から実践的なユーザー管理システム開発まで10章完成カリキュラム
 - **[ASP.NET Core(VB.NET)学習ガイド](docs/guide/programming-languages/dotnet-ecosystem/aspnetcore-vb/README.md)** - ASP.NET Core MVCとEntity Framework Coreを使用したモダンWebアプリケーション開発11章完成カリキュラム
 
 #### PHP
+
 - **[PHP学習ガイド](docs/guide/programming-languages/php-ecosystem/php/README.md)** - PHP基礎から実践的なWebアプリケーション開発まで10章完成カリキュラム
 
 #### R
+
 - **[R言語学習ガイド](docs/guide/programming-languages/r-ecosystem/r/README.md)** - R言語基礎から統計解析・データビジュアライゼーションまで10章完成カリキュラム
 
 #### COBOL
+
 - **[COBOL学習ガイド](docs/guide/programming-languages/cobol-ecosystem/cobol/README.md)** - COBOL基礎から実践的なビジネスロジックまで10章完成カリキュラム
 
 ### Webテクノロジ
@@ -90,12 +97,15 @@
 ### データ／AI
 
 #### 統計解析
+
 - **[統計解析学習ガイド](docs/guide/data-ai-category/statistical-analysis/README.md)** - 統計学基礎から推測統計・仮説検定まで10章完成カリキュラム
 
 #### 機械学習
+
 - **[機械学習学習ガイド](docs/guide/data-ai-category/data-ai/machine-learning/README.md)** - 機械学習の基礎から実践的なモデル構築まで10章完成カリキュラム
 
 #### SAS
+
 - **[SAS学習ガイド](docs/guide/data-ai-category/data-ai/sas/README.md)** - SASによるデータ分析と統計処理の基礎から実践的な応用まで13章完成カリキュラム
 - **[SAS Viya学習ガイド](docs/guide/data-ai-category/data-ai/sas-viya/README.md)** - SAS Viyaのクラウドネイティブアーキテクチャ、CASエンジン、Visual Analytics、Model Studioによる機械学習、Python/R連携、API活用まで15章完成カリキュラム
 
@@ -221,6 +231,10 @@ PDF形式のスライド教材をブラウザで閲覧できる教材です。
 #### テスト
 
 - **[JUnitチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/development-processes/testing/junit/index.html)** - JUnit 5アサーション、ライフサイクル、テストパターンを1ページにまとめたクイックリファレンス
+
+### 設計手法・モデリング
+
+- **[UMLチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/design-modeling/uml/index.html)** - UML図（クラス図、シーケンス図、ユースケース図等）を1ページにまとめたクイックリファレンス
 
 ---
 
