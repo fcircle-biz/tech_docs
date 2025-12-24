@@ -1,4 +1,4 @@
-# AWS Solutions Architect Professional入門 学習ガイドライン
+# AWS SAP-C02入門 学習ガイドライン
 
 このガイドラインでは、AWS基礎（EC2・S3・RDS・VPC）を習得済みの方を対象に、Auto Scaling、Elastic Load Balancing（ELB）、Route 53などのインフラ志向サービスを体系的に学習し、**Solutions Architect Professional（SAP-C02）資格取得**に向けた知識基盤を構築します。
 
@@ -15,9 +15,9 @@ AWS学習パス（インフラ志向ルート）
 └──────────────────────────────────────────────────────────┘
                            ↓
 ┌──────────────────────────────────────────────────────────┐
-│ [本ガイド] AWS Solutions Architect Professional入門      │ ← 現在地
+│ [本ガイド] AWS SAP-C02入門                               │ ← 現在地
 │ Auto Scaling, ELB, Route 53, CloudFront, 高可用性設計    │
-│ (aws-sap-intro: 15章)                                    │
+│ (aws-sap-c02-intro: 15章)                                    │
 └──────────────────────────────────────────────────────────┘
                            ↓
 ┌──────────────────────────────────────────────────────────┐
@@ -61,7 +61,7 @@ AWS学習パス（インフラ志向ルート）
 
 ## 学習コンテンツ
 
-### [1. Solutions Architect Professionalへの道 - 試験概要と学習戦略](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-intro/aws-sap-intro-learning-material-01.html)
+### [1. Solutions Architect Professionalへの道 - 試験概要と学習戦略](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-c02-intro/aws-sap-c02-intro-learning-material-01.html)
 SAP-C02試験の全体像を把握し、効果的な学習計画を立てます。試験範囲、出題傾向、合格に必要なスキルセットを理解します。
 
 **この章で学ぶこと:**
@@ -73,7 +73,7 @@ SAP-C02試験の全体像を把握し、効果的な学習計画を立てます�
 
 ---
 
-### [2. 高可用性設計の基礎 - 単一障害点の排除](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-intro/aws-sap-intro-learning-material-02.html)
+### [2. 高可用性設計の基礎 - 単一障害点の排除](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-c02-intro/aws-sap-c02-intro-learning-material-02.html)
 エンタープライズシステムに求められる高可用性（HA）設計の基本原則を学びます。
 
 **この章で学ぶこと:**
@@ -87,7 +87,7 @@ SAP-C02試験の全体像を把握し、効果的な学習計画を立てます�
 
 ---
 
-### [3. Elastic Load Balancing (ELB) - 負荷分散の設計と実装](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-intro/aws-sap-intro-learning-material-03.html)
+### [3. Elastic Load Balancing (ELB) - 負荷分散の設計と実装](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-c02-intro/aws-sap-c02-intro-learning-material-03.html)
 トラフィックを複数のターゲットに分散するELBの仕組みと、用途に応じた選択基準を習得します。
 
 **この章で学ぶこと:**
@@ -102,7 +102,7 @@ SAP-C02試験の全体像を把握し、効果的な学習計画を立てます�
 
 ---
 
-### [4. Auto Scaling - 需要に応じた自動スケーリング](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-intro/aws-sap-intro-learning-material-04.html)
+### [4. Auto Scaling - 需要に応じた自動スケーリング](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-c02-intro/aws-sap-c02-intro-learning-material-04.html)
 トラフィックの変動に応じてリソースを自動調整するAuto Scalingの設計パターンを学びます。
 
 **この章で学ぶこと:**
@@ -118,7 +118,7 @@ SAP-C02試験の全体像を把握し、効果的な学習計画を立てます�
 
 ---
 
-### [5. Route 53 - DNSとトラフィック管理](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-intro/aws-sap-intro-learning-material-05.html)
+### [5. Route 53 - DNSとトラフィック管理](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-c02-intro/aws-sap-c02-intro-learning-material-05.html)
 Route 53を使用したDNS管理とトラフィックルーティングの高度な設計手法を習得します。
 
 **この章で学ぶこと:**
@@ -134,7 +134,7 @@ Route 53を使用したDNS管理とトラフィックルーティングの高度
 
 ---
 
-### [6. CloudFront - グローバルコンテンツ配信](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-intro/aws-sap-intro-learning-material-06.html)
+### [6. CloudFront - グローバルコンテンツ配信](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-c02-intro/aws-sap-c02-intro-learning-material-06.html)
 CloudFrontを使用したCDN設計と、パフォーマンス最適化の手法を学びます。
 
 **この章で学ぶこと:**
@@ -150,7 +150,7 @@ CloudFrontを使用したCDN設計と、パフォーマンス最適化の手法�
 
 ---
 
-### [7. Global Accelerator - グローバルアプリケーションの高速化](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-intro/aws-sap-intro-learning-material-07.html)
+### [7. Global Accelerator - グローバルアプリケーションの高速化](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-c02-intro/aws-sap-c02-intro-learning-material-07.html)
 Global Acceleratorを使用したグローバルアプリケーションのパフォーマンス最適化を学びます。
 
 **この章で学ぶこと:**
@@ -165,7 +165,7 @@ Global Acceleratorを使用したグローバルアプリケーションのパ�
 
 ---
 
-### [8. 高度なVPC設計 - エンタープライズネットワーキング](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-intro/aws-sap-intro-learning-material-08.html)
+### [8. 高度なVPC設計 - エンタープライズネットワーキング](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-c02-intro/aws-sap-c02-intro-learning-material-08.html)
 大規模環境に対応するVPCの高度な設計パターンを習得します。
 
 **この章で学ぶこと:**
@@ -181,7 +181,7 @@ Global Acceleratorを使用したグローバルアプリケーションのパ�
 
 ---
 
-### [9. ハイブリッドクラウド接続 - オンプレミス統合](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-intro/aws-sap-intro-learning-material-09.html)
+### [9. ハイブリッドクラウド接続 - オンプレミス統合](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-c02-intro/aws-sap-c02-intro-learning-material-09.html)
 オンプレミス環境とAWSを安全に接続するハイブリッドアーキテクチャを設計します。
 
 **この章で学ぶこと:**
@@ -197,7 +197,7 @@ Global Acceleratorを使用したグローバルアプリケーションのパ�
 
 ---
 
-### [10. データベースの高可用性と災害復旧](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-intro/aws-sap-intro-learning-material-10.html)
+### [10. データベースの高可用性と災害復旧](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-c02-intro/aws-sap-c02-intro-learning-material-10.html)
 RDS、Aurora、DynamoDBの高可用性設計と災害復旧戦略を学びます。
 
 **この章で学ぶこと:**
@@ -213,7 +213,7 @@ RDS、Aurora、DynamoDBの高可用性設計と災害復旧戦略を学びます
 
 ---
 
-### [11. ストレージの高可用性とデータ保護](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-intro/aws-sap-intro-learning-material-11.html)
+### [11. ストレージの高可用性とデータ保護](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-c02-intro/aws-sap-c02-intro-learning-material-11.html)
 S3、EBS、EFSの高可用性設計とデータ保護戦略を習得します。
 
 **この章で学ぶこと:**
@@ -229,7 +229,7 @@ S3、EBS、EFSの高可用性設計とデータ保護戦略を習得します。
 
 ---
 
-### [12. 障害復旧（DR）戦略とマルチリージョン設計](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-intro/aws-sap-intro-learning-material-12.html)
+### [12. 障害復旧（DR）戦略とマルチリージョン設計](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-c02-intro/aws-sap-c02-intro-learning-material-12.html)
 ビジネス継続性を確保するための災害復旧戦略とマルチリージョンアーキテクチャを設計します。
 
 **この章で学ぶこと:**
@@ -245,7 +245,7 @@ S3、EBS、EFSの高可用性設計とデータ保護戦略を習得します。
 
 ---
 
-### [13. セキュリティとコンプライアンス - エンタープライズセキュリティ](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-intro/aws-sap-intro-learning-material-13.html)
+### [13. セキュリティとコンプライアンス - エンタープライズセキュリティ](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-c02-intro/aws-sap-c02-intro-learning-material-13.html)
 エンタープライズ環境に求められるセキュリティとコンプライアンス要件への対応を学びます。
 
 **この章で学ぶこと:**
@@ -261,7 +261,7 @@ S3、EBS、EFSの高可用性設計とデータ保護戦略を習得します。
 
 ---
 
-### [14. 監視・ログ・トラブルシューティング](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-intro/aws-sap-intro-learning-material-14.html)
+### [14. 監視・ログ・トラブルシューティング](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-c02-intro/aws-sap-c02-intro-learning-material-14.html)
 大規模環境における監視設計とトラブルシューティング手法を習得します。
 
 **この章で学ぶこと:**
@@ -277,7 +277,7 @@ S3、EBS、EFSの高可用性設計とデータ保護戦略を習得します。
 
 ---
 
-### [15. 総合演習 - 高可用性Webアプリケーションの設計](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-intro/aws-sap-intro-learning-material-15.html)
+### [15. 総合演習 - 高可用性Webアプリケーションの設計](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-c02-intro/aws-sap-c02-intro-learning-material-15.html)
 これまで学んだ知識を統合し、実際のシナリオに基づいた高可用性アーキテクチャを設計します。
 
 **この章で学ぶこと:**
@@ -419,7 +419,7 @@ A: まず1-5章で高可用性設計の基本とコアサービス（ELB、Auto 
 
 ## はじめよう
 
-準備ができたら、[第1章: Solutions Architect Professionalへの道 - 試験概要と学習戦略](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-intro/aws-sap-intro-learning-material-01.html)から始めましょう！
+準備ができたら、[第1章: Solutions Architect Professionalへの道 - 試験概要と学習戦略](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-sap-c02-intro/aws-sap-c02-intro-learning-material-01.html)から始めましょう！
 
 AWSアーキテクトとしてのスキルアップを、一緒に進めていきましょう。
 

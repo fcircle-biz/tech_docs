@@ -15,21 +15,21 @@
     // AWS Solutions Architect Professional入門 - 章の定義データ
     // ========================================
     const chapters = [
-        { number: 1, title: '第1章: Solutions Architect Professionalへの道', file: 'aws-sap-intro-learning-material-01.html' },
-        { number: 2, title: '第2章: 高可用性設計の基礎', file: 'aws-sap-intro-learning-material-02.html' },
-        { number: 3, title: '第3章: Elastic Load Balancing (ELB)', file: 'aws-sap-intro-learning-material-03.html' },
-        { number: 4, title: '第4章: Auto Scaling', file: 'aws-sap-intro-learning-material-04.html' },
-        { number: 5, title: '第5章: Route 53', file: 'aws-sap-intro-learning-material-05.html' },
-        { number: 6, title: '第6章: CloudFront', file: 'aws-sap-intro-learning-material-06.html' },
-        { number: 7, title: '第7章: Global Accelerator', file: 'aws-sap-intro-learning-material-07.html' },
-        { number: 8, title: '第8章: 高度なVPC設計', file: 'aws-sap-intro-learning-material-08.html' },
-        { number: 9, title: '第9章: ハイブリッドクラウド接続', file: 'aws-sap-intro-learning-material-09.html' },
-        { number: 10, title: '第10章: データベースの高可用性と災害復旧', file: 'aws-sap-intro-learning-material-10.html' },
-        { number: 11, title: '第11章: ストレージの高可用性とデータ保護', file: 'aws-sap-intro-learning-material-11.html' },
-        { number: 12, title: '第12章: 障害復旧 (DR) 戦略とマルチリージョン設計', file: 'aws-sap-intro-learning-material-12.html' },
-        { number: 13, title: '第13章: セキュリティとコンプライアンス', file: 'aws-sap-intro-learning-material-13.html' },
-        { number: 14, title: '第14章: 監視・ログ・トラブルシューティング', file: 'aws-sap-intro-learning-material-14.html' },
-        { number: 15, title: '第15章: 総合演習', file: 'aws-sap-intro-learning-material-15.html' }
+        { number: 1, title: '第1章: Solutions Architect Professionalへの道', file: 'aws-sap-c02-intro-learning-material-01.html' },
+        { number: 2, title: '第2章: 高可用性設計の基礎', file: 'aws-sap-c02-intro-learning-material-02.html' },
+        { number: 3, title: '第3章: Elastic Load Balancing (ELB)', file: 'aws-sap-c02-intro-learning-material-03.html' },
+        { number: 4, title: '第4章: Auto Scaling', file: 'aws-sap-c02-intro-learning-material-04.html' },
+        { number: 5, title: '第5章: Route 53', file: 'aws-sap-c02-intro-learning-material-05.html' },
+        { number: 6, title: '第6章: CloudFront', file: 'aws-sap-c02-intro-learning-material-06.html' },
+        { number: 7, title: '第7章: Global Accelerator', file: 'aws-sap-c02-intro-learning-material-07.html' },
+        { number: 8, title: '第8章: 高度なVPC設計', file: 'aws-sap-c02-intro-learning-material-08.html' },
+        { number: 9, title: '第9章: ハイブリッドクラウド接続', file: 'aws-sap-c02-intro-learning-material-09.html' },
+        { number: 10, title: '第10章: データベースの高可用性と災害復旧', file: 'aws-sap-c02-intro-learning-material-10.html' },
+        { number: 11, title: '第11章: ストレージの高可用性とデータ保護', file: 'aws-sap-c02-intro-learning-material-11.html' },
+        { number: 12, title: '第12章: 障害復旧 (DR) 戦略とマルチリージョン設計', file: 'aws-sap-c02-intro-learning-material-12.html' },
+        { number: 13, title: '第13章: セキュリティとコンプライアンス', file: 'aws-sap-c02-intro-learning-material-13.html' },
+        { number: 14, title: '第14章: 監視・ログ・トラブルシューティング', file: 'aws-sap-c02-intro-learning-material-14.html' },
+        { number: 15, title: '第15章: 総合演習', file: 'aws-sap-c02-intro-learning-material-15.html' }
     ];
 
     // 現在のページのファイル名を取得
