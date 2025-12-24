@@ -42,7 +42,7 @@
 
 ## 学習コンテンツ
 
-### [1. クラウドって何？AWSを身近な例えで理解しよう](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-01.html)
+### [1. クラウドって何？AWSを身近な例えで理解しよう](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-basic/aws-learning-material-01.html)
 「クラウド」という言葉を聞いたことはあるけど、よくわからない...そんな方のために、レンタルサービスに例えながらクラウドの基本を解説します。
 
 **この章で学ぶこと:**
@@ -59,7 +59,7 @@
 
 ---
 
-### [2. AWSに登録しよう - お財布にやさしい設定も一緒に](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-02.html)
+### [2. AWSに登録しよう - お財布にやさしい設定も一緒に](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-basic/aws-learning-material-02.html)
 AWSのアカウント（会員登録）を作成します。「お金がかかったらどうしよう...」という不安を解消するため、料金アラート（お知らせ機能）の設定も一緒に行います。
 
 **この章で学ぶこと:**
@@ -76,7 +76,7 @@ AWSのアカウント（会員登録）を作成します。「お金がかか�
 
 ---
 
-### [3. AWSの画面に慣れよう - 管理画面の歩き方](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-03.html)
+### [3. AWSの画面に慣れよう - 管理画面の歩き方](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-basic/aws-learning-material-03.html)
 AWSにログインすると、たくさんのメニューがあって最初は迷います。この章では、管理画面（マネジメントコンソール）の基本的な使い方を覚えます。
 
 **この章で学ぶこと:**
@@ -93,7 +93,7 @@ AWSにログインすると、たくさんのメニューがあって最初は�
 
 ---
 
-### [4. 最初のサーバーを作ってみよう - EC2入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-04.html)
+### [4. 最初のサーバーを作ってみよう - EC2入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-basic/aws-learning-material-04.html)
 いよいよサーバー（インターネット上のパソコン）を作ります。「サーバー」と聞くと難しそうですが、手順通りに進めれば15分で完成します。
 
 **この章で学ぶこと:**
@@ -116,7 +116,7 @@ AWSにログインすると、たくさんのメニューがあって最初は�
 
 ---
 
-### [5. ファイルの保管場所を作ろう - S3入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-05.html)
+### [5. ファイルの保管場所を作ろう - S3入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-basic/aws-learning-material-05.html)
 写真や文書ファイルを保存できる「S3」というサービスを使ってみます。Dropboxのようなものですが、もっと大きなファイルもたくさん保存できます。
 
 **この章で学ぶこと:**
@@ -139,7 +139,7 @@ AWSにログインすると、たくさんのメニューがあって最初は�
 
 ---
 
-### [6. インターネットの通り道を作ろう - ネットワーク入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-06.html)
+### [6. インターネットの通り道を作ろう - ネットワーク入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-basic/aws-learning-material-06.html)
 サーバーがインターネットとつながるためには「ネットワーク」の設定が必要です。VPCという仕組みを使って、安全な通信環境を作ります。
 
 **この章で学ぶこと:**
@@ -162,7 +162,7 @@ AWSにログインすると、たくさんのメニューがあって最初は�
 
 ---
 
-### [7. データベースを使ってみよう - RDS入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-07.html)
+### [7. データベースを使ってみよう - RDS入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-basic/aws-learning-material-07.html)
 たくさんのデータを整理して保存する「データベース」を作ります。Excelの表をもっと便利にしたものと考えてください。
 
 **この章で学ぶこと:**
@@ -186,7 +186,7 @@ AWSにログインすると、たくさんのメニューがあって最初は�
 
 ---
 
-### [8. アクセス権限を管理しよう - IAM入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-08.html)
+### [8. アクセス権限を管理しよう - IAM入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-basic/aws-learning-material-08.html)
 「誰が何をできるか」を管理する仕組みを学びます。会社でいう「入館証」や「アクセス権限」のようなものです。
 
 **この章で学ぶこと:**
@@ -210,7 +210,7 @@ AWSにログインすると、たくさんのメニューがあって最初は�
 
 ---
 
-### [9. サーバーの状態を見守ろう - CloudWatch入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-09.html)
+### [9. サーバーの状態を見守ろう - CloudWatch入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-basic/aws-learning-material-09.html)
 サーバーが正常に動いているか監視する方法を学びます。車のダッシュボードのように、いろいろな情報を見ることができます。
 
 **この章で学ぶこと:**
@@ -233,7 +233,7 @@ AWSにログインすると、たくさんのメニューがあって最初は�
 
 ---
 
-### [10. サーバーなしでプログラムを動かそう - Lambda入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-10.html)
+### [10. サーバーなしでプログラムを動かそう - Lambda入門](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-basic/aws-learning-material-10.html)
 「サーバーレス」という新しい仕組みを体験します。サーバーを持たなくても、必要なときだけプログラムを動かせます。
 
 **この章で学ぶこと:**
@@ -255,7 +255,7 @@ AWSにログインすると、たくさんのメニューがあって最初は�
 
 ---
 
-### [11. 学んだことをまとめよう - 復習と実践プロジェクト](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-11.html)
+### [11. 学んだことをまとめよう - 復習と実践プロジェクト](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-basic/aws-learning-material-11.html)
 これまで学んだサービスを組み合わせて、簡単なWebサイトを公開するプロジェクトに挑戦します。
 
 **この章で学ぶこと:**
@@ -272,7 +272,7 @@ S3を使って自己紹介ページを公開しよう！
 
 ---
 
-### [12. 次のステップ - これからの学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-12.html)
+### [12. 次のステップ - これからの学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-basic/aws-learning-material-12.html)
 基礎を学んだ後、さらにステップアップするための道しるべを紹介します。
 
 **この章で学ぶこと:**
@@ -401,7 +401,7 @@ A: 大丈夫です。間違えても、リソースを削除してやり直せ�
 
 ## はじめよう！
 
-準備ができたら、[第1章: クラウドって何？AWSを身近な例えで理解しよう](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws/aws-learning-material-01.html) から始めましょう！
+準備ができたら、[第1章: クラウドって何？AWSを身近な例えで理解しよう](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-basic/aws-learning-material-01.html) から始めましょう！
 
 クラウドの世界への第一歩を、一緒に踏み出しましょう。
 
