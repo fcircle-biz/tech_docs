@@ -1,193 +1,99 @@
-# ITパスポート試験 学習ガイドライン
+# ITパスポート試験 入門学習ガイドライン
 
-このガイドラインでは、ITパスポート試験（情報処理技術者試験の入門レベル国家資格）の合格を目指す方向けに、体系的かつ効率的な学習カリキュラムを提供しています。
+このガイドラインでは、ITパスポート試験の合格を目指すIT初心者・プログラム未経験者向けに、基礎から段階的に学習するためのカリキュラムを提供しています。
 
 ## 前提条件
 ### 必要な環境
-- インターネット接続環境（過去問題演習サイトやオンライン学習リソースにアクセスするため）
-- Webブラウザ（Chrome、Firefox、Safari等）
-- PDFリーダー（学習資料の閲覧用）
-- CBT方式試験の予約・受験のためのコンピュータ環境
+- インターネット接続環境（オンライン学習リソースへのアクセス用）
+- Webブラウザ（Chrome、Firefox、Safari、Edge等）
+- 表計算ソフト（Excel、Google スプレッドシート等）※第1章の演習用
 
 ### 参考リソース
 - [ITパスポート試験公式サイト（IPA）](https://www3.jitec.ipa.go.jp/JitesCbt/index.html)
-- [ITパスポート試験シラバス（最新版）](https://www.ipa.go.jp/shiken/syllabus/ps6vr70000011kdk-att/syllabus_ip_ver6_0.pdf)
+- [ITパスポート試験シラバス Ver.6.3（最新版）](https://www.ipa.go.jp/shiken/syllabus/)
 - [過去問題・解答例（IPA公式）](https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/questions.html)
-- [IT用語辞典 e-Words](https://e-words.jp/)
 - [ITパスポート試験ドットコム](https://www.itpassportsiken.com/)
 
 ### 前提知識
 - **必須**: なし（ITの基礎知識がなくても学習可能です）
 - **推奨**: パソコンの基本操作（ファイル管理、Webブラウザの使用など）
-- **推奨**: 企業や組織における業務の基本的な流れへの理解
-- **推奨**: 社会人としての一般常識
+- **推奨**: 日常的にパソコンやスマートフォンを使用している経験
 
 ## 学習コンテンツ
-### [1. ITパスポート試験の概要と受験方法](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport/it-passport-learning-material-01.html)
-ITパスポート試験の目的と意義、試験制度の概要、CBT方式による受験の流れ、出題範囲と配点、申込方法、受験料、合格基準について学習します。効果的な学習計画の立て方と、各分野のバランスの取り方を理解します。
 
-### [2. ストラテジ系（企業活動・法務）](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport/it-passport-learning-material-02.html)
-企業活動の基礎知識（経営組織、業務分析、会計、財務諸表）、法務（知的財産権、セキュリティ関連法規、労働関連法規、取引関連法規、標準化）、企業のコンプライアンスとガバナンスについて学習します。最新の法制度（個人情報保護法改正2022年版、電子帳簿保存法、電子契約、クラウド利用時の著作権）にも対応しています。
+### [1. コンピュータ](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport/it-passport-learning-material-01.html)
+コンピュータの基本構成（五大装置、CPU、GPU）、記憶装置（主記憶、補助記憶、キャッシュメモリ）、入出力装置とインタフェース（USB、HDMI、Bluetooth）、ソフトウェアの基礎（OS、OSS）、表計算ソフトの操作（相対参照・絶対参照、基本関数）、2進数と論理演算、マルチメディア（静止画・動画形式、圧縮技術）について学習します。
 
-### [3. ストラテジ系（経営戦略・システム戦略）](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport/it-passport-learning-material-03.html)
-経営戦略（SWOT分析、PPM、バランススコアカード、CSR）、マーケティング戦略（マーケティングミックス、CRM）、技術戦略（技術開発戦略）、ビジネスシステム（EC、IoT、AI活用）、システム戦略（業務プロセス、ソリューションビジネス、システム活用促進）について学習します。DX（デジタルトランスフォーメーション）の推進、新しいビジネスモデル（サブスクリプション、シェアリングエコノミー、プラットフォーム型）、ITガバナンス（COBIT、IT投資評価）についても学びます。
+### [2. データベース](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport/it-passport-learning-material-02.html)
+データベースの基本概念（DBMS、RDBMS、NoSQL）、データベース設計（E-R図、正規化）、データベース操作（主キー、外部キー）、抽出条件の指定と関係演算（選択、射影、結合）について学習します。
 
-### [4. マネジメント系（開発技術・プロジェクトマネジメント）](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport/it-passport-learning-material-04.html)
-システム開発技術（要件定義、設計、プログラミング、テスト）、ソフトウェア開発管理技術（開発プロセス、モデル、アジャイル開発）、プロジェクトマネジメント（統合、スコープ、タイム、コスト、品質、資源、コミュニケーション、リスク、調達マネジメント）について学習します。PMBOK第7版の価値提供志向、ステークホルダー管理、変更管理、アジャイル開発とウォーターフォールの比較についても解説します。
+### [3. ネットワーク](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport/it-passport-learning-material-03.html)
+ネットワークの基礎（LAN、WAN、ルーター、スイッチ）、無線LAN（Wi-Fi規格、ESSID、WPA2/WPA3）、プロトコル（TCP/IP、HTTP/HTTPS、SMTP/POP/IMAP）、IPアドレス（IPv4、IPv6、DNS）、インターネット接続（ISP、テザリング）、インターネット技術（Cookie、URL）、IoT（LPWA、エッジコンピューティング）について学習します。
 
-### [5. マネジメント系（サービスマネジメント）](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport/it-passport-learning-material-05.html)
-サービスマネジメント（ITIL、SLA、サービスサポート、サービスデリバリ）、システム監査（監査の目的、手順、内部統制）、ファシリティマネジメント（設備管理、災害対策）について学習します。クラウドサービス運用における責任分界点、インシデント管理と問題管理の違い、ISO/IEC 20000の概要についても解説します。
+### [4. セキュリティ](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport/it-passport-learning-material-04.html)
+情報資産への脅威（マルウェア、脆弱性）、攻撃手法（フィッシング、SQLインジェクション、ブルートフォース攻撃、プロンプトインジェクション）、脅威への対策（ファイアウォール、WAF、IDS/IPS）、ネットワークセキュリティ（DMZ、VPN）、暗号化技術（共通鍵・公開鍵暗号方式、デジタル署名、PKI）、情報セキュリティマネジメント（三要素、ISMS、リスクアセスメント）について学習します。
 
-### [6. テクノロジ系（基礎理論・アルゴリズム）](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport/it-passport-learning-material-06.html)
-基礎理論（情報に関する理論、2進数、論理演算、確率・統計）、アルゴリズムとプログラミング（データ構造、アルゴリズム、プログラミング言語、マークアップ言語）、コンピュータ構成要素（プロセッサ、メモリ、バス、入出力デバイス）について学習します。AIの基礎（機械学習、ディープラーニングの概要）、データサイエンス関連（ビッグデータ、データ分析プロセス）、量子コンピュータの概要についても学びます。
+### [5. システムの導入](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport/it-passport-learning-material-05.html)
+システム構成（デュアル・デュプレックスシステム、仮想化）、システム導入の流れ（RFI、RFP）、システムの障害対策（稼働率、MTBF、MTTR、バックアップ）、システム監査（監査人、フォローアップ）について学習します。
 
-### [7. テクノロジ系（システム構成・ソフトウェア）](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport/it-passport-learning-material-07.html)
-システム構成要素（クライアントサーバシステム、RAID、システムの性能・信頼性・経済性）、ソフトウェア（OS、ファイルシステム、オープンソースソフトウェア）、ハードウェア（入出力装置、記憶装置）について学習します。クラウドコンピューティング（IaaS、PaaS、SaaS）、仮想化技術、コンテナ（Docker、VM）についても解説します。
+### [6. システム開発](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport/it-passport-learning-material-06.html)
+システム開発の基本（SLCP）、システム設計（外部設計、内部設計）、プログラミング（デバッグ、コーディング）、アルゴリズムとデータ構造（スタック、キュー、木構造、探索・整列アルゴリズム）、システムのテスト（単体・統合・システム・受入れテスト、ホワイトボックス・ブラックボックステスト）、開発モデル（ウォーターフォール、アジャイル、DevOps）について学習します。
 
-### [8. テクノロジ系（ヒューマンインターフェース・データベース・ネットワーク）](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport/it-passport-learning-material-08.html)
-ヒューマンインターフェース（GUI、ユニバーサルデザイン、アクセシビリティ）、マルチメディア（画像、音声、動画の基礎）、データベース（関係データベース、SQL、トランザクション処理、正規化）、ネットワーク（LAN、WAN、プロトコル、IPアドレス、通信サービス）について学習します。ゼロトラストネットワークの概念についても学びます。
+### [7. プロジェクトマネジメント](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport/it-passport-learning-material-07.html)
+プロジェクトマネジメントの基礎（PMBOK、WBS）、アローダイアグラム（クリティカルパス）、順列と組合せ（確率・統計の基礎）、サービスマネジメント（ITIL、SLA、サービスデスク）について学習します。
 
-### [9. テクノロジ系（セキュリティ）](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport/it-passport-learning-material-09.html)
-情報セキュリティ（機密性、完全性、可用性）、脅威と脆弱性（マルウェア、不正アクセス、ソーシャルエンジニアリング）、セキュリティ技術（暗号化、認証、デジタル署名、PKI）、セキュリティ対策（ファイアウォール、IDS/IPS、セキュリティプロトコル）、セキュリティ管理（情報セキュリティポリシー、リスク管理、ISMS）について学習します。脆弱性診断、SOC（セキュリティオペレーションセンター）、CSIRT（シーサート）、セキュリティインシデント対応プロセス、多要素認証（MFA）、ゼロトラストモデル、IPAの「情報セキュリティ10大脅威」についても解説します。
+### [8. 企業活動](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport/it-passport-learning-material-08.html)
+企業の基礎（経営理念MVV、CSR、SDGs）、経営戦略（SWOT分析、PPM、DX）、生産戦略（JIT、かんばん方式）、業績評価（BSC、KPI/KGI）、マーケティング（4P/4C、RFM分析）、分析ツール（パレート図、特性要因図）、組織（職能別・事業部制・マトリックス組織、持株会社）、業務（BPR、PDCA）について学習します。
 
-### [10. 過去問演習・模擬試験・試験対策](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport/it-passport-learning-material-10.html)
-過去問題の効果的な活用方法、分野別弱点の発見と克服、解答テクニックとタイムマネジメント、模擬試験の実施と振り返り、試験直前の総復習ポイント、本番での心構えと注意点について学習します。出題傾向マップ、難易度別過去問リンク集、一問一答形式の練習、試験当日の持ち物・心構え・CBT画面操作についても詳しく解説します。
+### [9. ITの活用](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport/it-passport-learning-material-09.html)
+技術開発戦略（MOT、ロードマップ、イノベーションのジレンマ）、情報システムの活用（ERP、CRM、SCM）、効率的なIT投資（ROI、費用対効果分析）、e-ビジネス（BtoB/BtoC/CtoC、EC、シェアリングエコノミー）、AIとIoTの活用（生成AI、機械学習、Society 5.0）について学習します。
+
+### [10. 法務と財務](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport/it-passport-learning-material-10.html)
+法務の基礎（コンプライアンス、内部統制）、ITに関する法律（個人情報保護法、不正アクセス禁止法）、知的財産権（著作権法、産業財産権）、標準化（ISO/IEC、JIS、QRコード）、財務の基礎（損益分岐点、変動費・固定費）、財務諸表（貸借対照表、損益計算書、キャッシュフロー計算書）について学習します。
 
 ## 学習の進め方
-1. **試験の全体像を把握する**: 第1章で試験制度と出題範囲を理解し、学習計画を立てます
-2. **分野別に体系的に学習**: ストラテジ系、マネジメント系、テクノロジ系の順に段階的に学習を進めます
-3. **重要用語を確実に覚える**: 各分野で出題頻度の高い用語と概念を重点的に学習します
-4. **過去問題で理解を深める**: 各章の学習後は必ず過去問題を解いて理解度を確認します
-5. **弱点分野を重点的に補強**: 模擬試験で特定した弱点分野を重点的に復習します
-6. **本番形式で総仕上げ**: 試験本番と同じ形式（100問/120分）で模擬試験を複数回実施します
+1. **基礎から順に学習する**: 第1章のコンピュータ基礎から始め、各章を順番に進めていきます。特に第1章はすべての章の基盤となる重要な内容です。
+2. **用語を理解しながら進む**: 各章で登場する専門用語は、その場で意味を理解してから次に進みましょう。わからない用語はIT用語辞典等で確認することを推奨します。
+3. **表計算の演習を実際に行う**: 第1章の表計算ソフト（Excel等）の内容は、実際にソフトを操作しながら学習すると効果的です。
+4. **章ごとに確認問題を解く**: 各章の学習後は、関連する過去問題（5-10問程度）を解いて理解度を確認しましょう。
+5. **つながりを意識する**: セキュリティ（第4章）とネットワーク（第3章）、企業活動（第8章）とITの活用（第9章）など、関連する章は連続して学習すると理解が深まります。
+6. **繰り返し復習する**: 特に暗記が必要な用語や概念は、定期的に復習することで定着させましょう。
 
 ## 推奨学習期間
-- **基礎学習コース** (1-9章): 8-10週間（週7-10時間の学習を想定）
-- **総仕上げコース** (10章+復習): 2-3週間（週10-15時間の学習を想定）
-- **合計学習期間**: 10-13週間（約2.5-3ヶ月）
-- **短期集中の場合**: 4-6週間（週20-25時間の学習が可能な場合）
-
-## 効果的な学習計画
-
-### 3ヶ月モデル（週10時間の学習）
-**第1-2ヶ月：基礎知識の習得**
-- 週1-2章のペースで1-9章を学習
-- 各章の学習後は必ず過去問で確認（10-20問程度）
-- 重要用語をノートまたはデジタルツールでまとめる
-
-**第3ヶ月：演習と総復習**
-- 第1-2週：分野別過去問演習（弱点分野を重点的に）
-- 第3週：模擬試験3回実施（本番形式で100問/120分）
-- 第4週：最終総復習と暗記項目の確認
-
-### 6週間集中モデル（週20時間の学習）
-**第1-4週：高速学習**
-- 週2-3章のペースで1-9章を学習
-- 毎日1-2時間、週末は5-6時間確保
-- 理解より暗記を優先し、過去問で補強
-
-**第5-6週：集中演習**
-- 分野別過去問を200問以上解く
-- 模擬試験を5回以上実施
-- 間違えた問題を徹底的に復習
-
-### おすすめ学習ルーチン
-**平日（1-2時間）**
-- 通勤時間：スマホで用語暗記、過去問アプリ（30分）
-- 夜：テキスト学習と過去問演習（1時間）
-
-**休日（3-5時間）**
-- 午前：新規章の学習（2時間）
-- 午後：過去問演習と復習（1-2時間）
-- 夕方：暗記事項の確認とまとめ（1時間）
-
-### 章ごとの理解度チェックリスト
-各章の学習後、以下を確認してください：
-
-- □ 重要用語を正確に説明できる
-- □ 過去問の正答率が70%以上である
-- □ 関連用語の違いを説明できる
-- □ 実務での応用例をイメージできる
-
-上記すべてにチェックが入ったら次の章に進みましょう。
-
-## 学習支援ツールと資料
-
-### 出題傾向分析
-ITパスポート試験の分野別出題割合（目安）：
-- **ストラテジ系**：約35問（35%）- 企業活動、法務、経営戦略、システム戦略
-- **マネジメント系**：約20問（20%）- 開発技術、プロジェクトマネジメント、サービスマネジメント
-- **テクノロジ系**：約45問（45%）- 基礎理論、コンピュータシステム、技術要素
-
-各分野で最低限の正答率を確保することが合格の鍵となります。
-
-### おすすめ過去問サイト
-**無料で利用できる過去問演習サイト**
-- [ITパスポート試験ドットコム](https://www.itpassportsiken.com/)：過去問を分野別・年度別に演習可能
-- [IPA公式過去問題](https://www3.jitec.ipa.go.jp/JitesCbt/html/openinfo/questions.html)：公式の過去問題と解答例
-- [スタディング ITパスポート講座](https://studying.jp/itpassport/)：スマホアプリで通勤時間に学習（一部無料）
-
-### 一問一答形式の学習
-デジタルフラッシュカードツールの活用：
-- **Anki**：無料のフラッシュカードアプリ（PC・スマホ対応）
-- **Quizlet**：オンラインで学習セットを作成・共有
-- **スマホアプリ**：「ITパスポート過去問」「全問解説付 ITパスポート試験」など
-
-### 試験当日の準備
-
-**持ち物チェックリスト**
-- □ 受験票（確認票のプリントアウト）
-- □ 本人確認書類（運転免許証、マイナンバーカード、パスポートなど）
-- □ 時計（腕時計推奨、スマートウォッチは不可）
-- □ 筆記用具（メモ用、試験会場によっては提供される）
-
-**CBT試験の操作方法**
-- マウスとキーボードで操作
-- 問題文と選択肢が画面に表示される
-- 後で見直せるように「フラグ」機能を活用
-- 残り時間が画面に常時表示される
-- 全問解答後、見直し時間を確保
-
-**試験当日の心構え**
-- 試験開始30分前には会場到着を目指す
-- 難しい問題は後回しにし、確実に解ける問題から解答
-- 迷った問題は消去法を活用
-- 時間配分は「1問あたり約1分」を目安に（100問/120分）
-- 見直し時間として最低20分は確保
+- **基礎習得コース** (1-6章): 4-5週間（週7-10時間の学習を想定）
+- **実践活用コース** (7-10章): 3-4週間（週7-10時間の学習を想定）
+- **合計学習期間**: 7-9週間（約2ヶ月）
+- **集中学習の場合**: 4-5週間（週15-20時間の学習が可能な場合）
 
 ## 関連リソース
-- [情報セキュリティマネジメント試験ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/it-security/security-management/README.html)
-- [基本情報技術者試験ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/it-fundamental/fundamental-engineer/README.html)
-- [ビジネス実務法務チートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/business/business-law-cheatsheet.html)
-- [ITセキュリティチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/security/it-security-cheatsheet.html)
+- [ITパスポート試験 練習問題集](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport-practice/) - 分野別過去問演習と解説
+- [Excel基礎学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/business-saas/excel-basic/) - 表計算ソフトの基礎学習
+- [SQL基礎学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/) - データベース操作の基礎
 
 ## 学習目標
 このガイドを完了すると、以下のスキルと知識を身につけることができます：
-- ITパスポート試験の全分野（ストラテジ系、マネジメント系、テクノロジ系）の基礎知識を体系的に習得できる
-- 企業活動、法務、経営戦略に関する基本的なビジネス知識を理解できる
-- システム開発とプロジェクトマネジメントの基本的なプロセスを理解できる
-- コンピュータシステムの構成要素と動作原理を説明できる
-- データベース、ネットワーク、セキュリティの基礎概念を理解できる
-- 情報セキュリティの重要性と基本的な対策方法を理解できる
-- IT業界の動向と最新技術トレンド（AI、IoT、クラウドなど）の概要を把握できる
-- 過去問題を分析し、効率的に試験対策ができる
-- ITパスポート試験に合格するための十分な知識と解答力を身につけることができる
+- コンピュータのハードウェアとソフトウェアの基本構成を理解し、説明できる
+- データベースの基本概念と、データの管理・操作方法を理解できる
+- ネットワークの仕組みとインターネットの基礎技術を理解できる
+- 情報セキュリティの脅威と対策、暗号化技術の基本を理解できる
+- システム開発のプロセスと主要な開発モデルを理解できる
+- プロジェクトマネジメントとサービスマネジメントの基礎を理解できる
+- 企業活動における経営戦略とマーケティングの基本を理解できる
+- ITを活用したビジネスモデルとDXの概念を理解できる
+- IT関連の法律と知的財産権、財務の基礎を理解できる
+- ITパスポート試験の出題範囲を網羅的に学習し、合格に必要な知識を習得できる
 
 ## 次のステップ
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
 
-### IT資格へのステップアップ
-- [情報セキュリティマネジメント試験対策](https://fcircle-biz.github.io/tech_docs/guide/it-security/security-management/README.html)：セキュリティ分野の専門知識
-- [基本情報技術者試験対策](https://fcircle-biz.github.io/tech_docs/guide/it-fundamental/fundamental-engineer/README.html)：技術者としての基礎知識
-- **クラウド基礎資格（AWS Cloud Practitioner、Azure Fundamentals等）**：クラウド技術の基礎
+### 試験対策
+- [ITパスポート試験 練習問題集](https://fcircle-biz.github.io/tech_docs/guide/certification/it-passport-practice/) - 模擬試験と過去問演習による実力確認
 
-### ビジネス・DX関連資格
-- **DX検定**：デジタルトランスフォーメーションの実践知識
-- **情報リテラシー試験**：情報活用能力の証明
-- **ビジネス実務法務検定**：企業法務の実践知識
+### 上位資格へのステップアップ
+- [情報セキュリティマネジメント試験対策](https://fcircle-biz.github.io/tech_docs/guide/certification/sg/) - セキュリティ分野の専門知識
+- [基本情報技術者試験対策](https://fcircle-biz.github.io/tech_docs/guide/certification/fe/) - IT技術者の基礎資格
+- [AWS認定クラウドプラクティショナー](https://fcircle-biz.github.io/tech_docs/guide/certification/aws-clf-c02/) - クラウドの基礎資格
 
-### 技術スキル習得
-- [プログラミング入門（Python）](https://fcircle-biz.github.io/tech_docs/guide/python-ecosystem/python/README.html)：プログラミングの基礎
-- **Pythonによるデータ分析**：データ分析スキルの習得
-- [データベース基礎（SQL）](https://fcircle-biz.github.io/tech_docs/guide/database/sql/README.html)：データベース操作の基礎
-- [Webアプリケーション開発入門](https://fcircle-biz.github.io/tech_docs/guide/javascript-ecosystem/react/README.html)：Web開発の実践
+### 技術スキルの習得
+- [Python入門ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python-beginner/) - プログラミングの第一歩
+- [SQL基礎ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/) - データベース操作の実践
