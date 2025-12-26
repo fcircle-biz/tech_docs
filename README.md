@@ -111,6 +111,7 @@
 #### SAS
 
 - **[SAS学習ガイド](docs/guide/data-ai-category/data-ai/sas/README.md)** - SASによるデータ分析と統計処理の基礎から実践的な応用まで13章完成カリキュラム
+- **[SAS中級学習ガイド](docs/guide/data-ai-category/data-ai/sas-intermediate/README.md)** - SAS入門修了者向け。大規模データ処理、高度な統計手法、マクロプログラミングなど実務で即戦力となる中級テクニックを10章で習得
 - **[SAS Viya学習ガイド](docs/guide/data-ai-category/data-ai/sas-viya/README.md)** - SAS Viyaのクラウドネイティブアーキテクチャ、CASエンジン、Visual Analytics、Model Studioによる機械学習、Python/R連携、API活用まで15章完成カリキュラム
 
 ### 開発手法・プロセス
