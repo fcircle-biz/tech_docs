@@ -19,6 +19,7 @@ No build/lint/test framework - content is static HTML/Markdown validated through
 
 - `/docs/guide/` - Comprehensive learning guides (theory-focused)
 - `/docs/tutorial/` - Hands-on project-based tutorials
+- `/docs/practice/` - Practice exercises and quizzes
 - `/docs/slide/` - PDF slide materials with HTML viewer
 - `/docs/cheatsheet/` - Quick reference materials
 - `/templates/v2/` - HTML/CSS template standards (current)
@@ -40,13 +41,21 @@ No build/lint/test framework - content is static HTML/Markdown validated through
 
 ### File Naming Convention
 
+**Learning Guides:**
 ```
 [technology-name]-learning-material-[XX].html
 ```
 
-Where `[XX]` is zero-padded 2-digit chapter number (01, 02, 03, etc.)
+**Practice Exercises:**
+```
+[technology-name]-practice-[XX].html
+```
 
-Example: `django-learning-material-01.html`
+Where `[XX]` is zero-padded 2-digit chapter/round number (01, 02, 03, etc.)
+
+Examples:
+- `django-learning-material-01.html`
+- `python-basics-practice-01.html`
 
 ## Claude Agents
 
@@ -62,6 +71,10 @@ Available automation agents in `.claude/agents/`:
 | `tutorial-creator-step1` | Create tutorial README.md | `@agent-tutorial-creator-step1 [tech] [env] [db]` |
 | `tutorial-creator-step2` | Generate step 1 HTML + common files | `@agent-tutorial-creator-step2 [readme-path]` |
 | `tutorial-creator-step3` | Generate single step HTML | `@agent-tutorial-creator-step3 [readme-path] [step]` |
+| `practice-creator-workflow` | Full workflow (README → round1 → round2+ parallel) | `@agent-practice-creator-workflow [tech-name]` |
+| `practice-creator-step1` | Create practice README.md | `@agent-practice-creator-step1 [tech-name]` |
+| `practice-creator-step2` | Generate round 1 HTML + common files | `@agent-practice-creator-step2 [readme-path]` |
+| `practice-creator-step3` | Generate single round HTML | `@agent-practice-creator-step3 [readme-path] [round]` |
 | `folder-structure-readme-updater` | Auto-generate folder READMEs | `@agent-folder-structure-readme-updater` |
 | `illustration-creator-workflow` | Full workflow (suggestions → parallel image generation & HTML insert) | `@agent-illustration-creator-workflow [directory-path]` |
 | `illustration-creator-step1` | Analyze HTML guides and suggest illustrations | `@agent-illustration-creator-step1 [directory-path]` |
@@ -111,6 +124,13 @@ HTML content must follow standards in `/templates/v2/`:
 - **cheatsheet-template.html** - Cheatsheet template (1-page quick reference)
 - **styles.css** - Common custom styles (dark mode support)
 - **main.js** - Common functionality (dark mode toggle, code copy)
+
+### Template Files (`html_practice/`) - For Practice Exercises
+- **practice-template.html** - Practice exercise template
+- **sidebar-content.js** - Sidebar generation (for practice rounds)
+- **styles.css** - Common custom styles (question cards, answer toggle)
+- **main.js** - Common functionality (answer display toggle, dark mode)
+- **drawing-tool.js** - Drawing tool functionality
 
 ### Reference Documents (`reference/`)
 - **css-styles.md** - Tailwind CSS style guide
