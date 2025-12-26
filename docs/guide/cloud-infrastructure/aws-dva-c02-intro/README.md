@@ -66,7 +66,7 @@ AWS学習パス（開発者志向ルート）
 
 ## 学習コンテンツ
 
-### [1. Developer Associate資格への道 - 試験概要と学習戦略](https://fcircle-biz.github.io/tech_docs/guide/certification/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-01.html)
+### [1. Developer Associate資格への道 - 試験概要と学習戦略](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-01.html)
 DVA-C02試験の全体像を把握し、効果的な学習計画を立てます。試験範囲、出題傾向、開発者に求められるスキルセットを理解します。
 
 **この章で学ぶこと:**
@@ -78,7 +78,7 @@ DVA-C02試験の全体像を把握し、効果的な学習計画を立てます�
 
 ---
 
-### [2. サーバーレスコンピューティング基礎 - AWS Lambdaの仕組み](https://fcircle-biz.github.io/tech_docs/guide/certification/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-02.html)
+### [2. サーバーレスコンピューティング基礎 - AWS Lambdaの仕組み](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-02.html)
 AWS Lambdaの動作原理とサーバーレスアーキテクチャの基本概念を深く理解します。
 
 **この章で学ぶこと:**
@@ -94,7 +94,7 @@ AWS Lambdaの動作原理とサーバーレスアーキテクチャの基本概�
 
 ---
 
-### [3. Lambda関数の開発とデプロイ - 実践的な開発ワークフロー](https://fcircle-biz.github.io/tech_docs/guide/certification/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-03.html)
+### [3. Lambda関数の開発とデプロイ - 実践的な開発ワークフロー](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-03.html)
 Lambda関数の効率的な開発、テスト、デプロイの手法を習得します。
 
 **この章で学ぶこと:**
@@ -110,7 +110,7 @@ Lambda関数の効率的な開発、テスト、デプロイの手法を習得�
 
 ---
 
-### [4. Amazon DynamoDB基礎 - NoSQLデータベースの設計](https://fcircle-biz.github.io/tech_docs/guide/certification/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-04.html)
+### [4. Amazon DynamoDB基礎 - NoSQLデータベースの設計](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-04.html)
 DynamoDBの基本概念とデータモデリングの基礎を学びます。
 
 **この章で学ぶこと:**
@@ -126,7 +126,7 @@ DynamoDBの基本概念とデータモデリングの基礎を学びます。
 
 ---
 
-### [5. DynamoDB高度な操作 - クエリ、スキャン、ストリーム](https://fcircle-biz.github.io/tech_docs/guide/certification/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-05.html)
+### [5. DynamoDB高度な操作 - クエリ、スキャン、ストリーム](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-05.html)
 DynamoDBの高度な操作とリアルタイムデータ処理を習得します。
 
 **この章で学ぶこと:**
@@ -142,7 +142,7 @@ DynamoDBの高度な操作とリアルタイムデータ処理を習得します
 
 ---
 
-### [6. Amazon API Gateway - RESTful API の構築](https://fcircle-biz.github.io/tech_docs/guide/certification/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-06.html)
+### [6. Amazon API Gateway - RESTful API の構築](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-06.html)
 API Gatewayを使用したRESTful APIの設計と実装を学びます。
 
 **この章で学ぶこと:**
@@ -158,7 +158,7 @@ API Gatewayを使用したRESTful APIの設計と実装を学びます。
 
 ---
 
-### [7. API Gatewayセキュリティと認証 - アクセス制御の実装](https://fcircle-biz.github.io/tech_docs/guide/certification/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-07.html)
+### [7. API Gatewayセキュリティと認証 - アクセス制御の実装](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-07.html)
 API Gatewayの認証・認可メカニズムを習得します。
 
 **この章で学ぶこと:**
@@ -174,7 +174,7 @@ API Gatewayの認証・認可メカニズムを習得します。
 
 ---
 
-### [8. AWS Step Functions - ワークフローオーケストレーション](https://fcircle-biz.github.io/tech_docs/guide/certification/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-08.html)
+### [8. AWS Step Functions - ワークフローオーケストレーション](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-08.html)
 Step Functionsを使用したサーバーレスワークフローの設計を学びます。
 
 **この章で学ぶこと:**
@@ -190,7 +190,7 @@ Step Functionsを使用したサーバーレスワークフローの設計を学
 
 ---
 
-### [9. イベント駆動アーキテクチャ - EventBridge、SQS、SNS](https://fcircle-biz.github.io/tech_docs/guide/certification/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-09.html)
+### [9. イベント駆動アーキテクチャ - EventBridge、SQS、SNS](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-09.html)
 イベント駆動型アプリケーションの設計パターンを習得します。
 
 **この章で学ぶこと:**
@@ -206,7 +206,7 @@ Step Functionsを使用したサーバーレスワークフローの設計を学
 
 ---
 
-### [10. アプリケーションセキュリティ - Secrets Manager、KMS、パラメータストア](https://fcircle-biz.github.io/tech_docs/guide/certification/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-10.html)
+### [10. アプリケーションセキュリティ - Secrets Manager、KMS、パラメータストア](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-10.html)
 アプリケーション開発におけるセキュリティのベストプラクティスを学びます。
 
 **この章で学ぶこと:**
@@ -222,7 +222,7 @@ Step Functionsを使用したサーバーレスワークフローの設計を学
 
 ---
 
-### [11. 開発者ツールとCI/CD - CodePipeline、CodeBuild、CodeDeploy](https://fcircle-biz.github.io/tech_docs/guide/certification/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-11.html)
+### [11. 開発者ツールとCI/CD - CodePipeline、CodeBuild、CodeDeploy](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-11.html)
 AWSネイティブのCI/CDパイプライン構築を習得します。
 
 **この章で学ぶこと:**
@@ -239,7 +239,7 @@ AWSネイティブのCI/CDパイプライン構築を習得します。
 
 ---
 
-### [12. 監視とデバッグ - CloudWatch、X-Ray](https://fcircle-biz.github.io/tech_docs/guide/certification/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-12.html)
+### [12. 監視とデバッグ - CloudWatch、X-Ray](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-12.html)
 アプリケーションの監視、ログ分析、分散トレーシングを習得します。
 
 **この章で学ぶこと:**
@@ -383,7 +383,7 @@ A: 本ガイドはDVA-C02試験の基礎知識を身につけることを目的�
 
 ## はじめよう
 
-準備ができたら、[第1章: Developer Associate資格への道 - 試験概要と学習戦略](https://fcircle-biz.github.io/tech_docs/guide/certification/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-01.html)から始めましょう！
+準備ができたら、[第1章: Developer Associate資格への道 - 試験概要と学習戦略](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/aws-dva-c02-intro/aws-dva-c02-intro-learning-material-01.html)から始めましょう！
 
 AWSでのアプリケーション開発スキルを、一緒に磨いていきましょう。
 
