@@ -43,7 +43,7 @@
 
 #### Java
 
-- **[Java学習ガイド](docs/guide/programming-languages/java-ecosystem/java/README.md)** - Java言語基礎から高度技術まで12章完成カリキュラム
+- **[Java学習ガイド](docs/guide/programming-languages/java-ecosystem/java/README.md)** - Java言語基礎から高度技術まで14章完成カリキュラム
 - **[JDBC学習ガイド](docs/guide/programming-languages/java-ecosystem/jdbc/README.md)** - JDBC基礎からパフォーマンスチューニングまで10章完成カリキュラム
 - **[JSP/Servlet学習ガイド](docs/guide/programming-languages/java-ecosystem/jsp/README.md)** - JSP/Servlet基礎からMVCアーキテクチャまで10章完成カリキュラム
 - **[JUnit学習ガイド](docs/guide/programming-languages/java-ecosystem/junit/README.md)** - JUnit 5を使用した単体テストの基礎から応用まで7章完成カリキュラム
@@ -77,7 +77,7 @@
 
 ### Webテクノロジ
 
-- **[HTML/CSS学習ガイド](docs/guide/web-technologies/html-css/README.md)** - HTML/CSSの基礎から実践的なWebページ制作まで段階的に学習するためのカリキュラム。8つのHTML教材でWebデザインの基本をマスター
+- **[HTML/CSS学習ガイド](docs/guide/web-technologies/html-css/README.md)** - HTML/CSSの基礎から実践的なWebページ制作まで段階的に学習するためのカリキュラム。15章構成でWebデザインの基本をマスター
 - **[Bootstrap学習ガイド](docs/guide/web-technologies/bootstrap/README.md)** - Bootstrapフレームワークを使用したレスポンシブWebデザインの基礎から実践まで10章完成カリキュラム。グリッドシステム、UIコンポーネント、カスタマイズ方法まで体系的に習得
 - **[Tailwind CSS学習ガイド](docs/guide/web-technologies/tailwind-css/README.md)** - Tailwind CSSフレームワークを使用したユーティリティファーストのWebデザインを10章で完全習得
 
@@ -152,6 +152,7 @@ PDF形式のスライド教材をブラウザで閲覧できる教材です。
 
 ### 開発手法・プロセス
 
+- **[アルゴリズム入門](https://fcircle-biz.github.io/tech_docs/slide/development-processes/algorithm-basics/index.html)** - アルゴリズムの基本概念から実践的な活用方法まで学べるスライド教材
 - **[VSCode入門](https://fcircle-biz.github.io/tech_docs/slide/development-processes/vscode-basics/index.html)** - Visual Studio Codeの基本操作から実践的な活用方法まで学べるスライド教材
 - **[SourceTree入門](https://fcircle-biz.github.io/tech_docs/slide/development-processes/sourcetree-basics/index.html)** - SourceTreeを使用したGitの基本操作から実践的なバージョン管理まで学べるスライド教材
 
