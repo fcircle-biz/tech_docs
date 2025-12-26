@@ -83,70 +83,74 @@ const chapters = [
 練習問題HTMLには以下の要素を含める：
 
 1. **ヘッダー**: 回数、タイトル、難易度表示
-2. **問題セクション**:
-   - 選択問題（ラジオボタン）
-   - 穴埋め問題（テキスト入力）
-   - コーディング問題（コードエディタ風）
-   - 記述問題（テキストエリア）
-3. **解答・解説セクション**:
-   - 初期状態は非表示（ボタンで表示切替）
-   - 各問題の正解と詳細解説
-4. **進捗表示**: 正答率、所要時間
+2. **実施ルール**: 練習問題の取り組み方の説明
+3. **問題セクション**: 各問題はdetailsタグで回答を展開
+4. **回まとめ**: 学習ポイントのまとめ
 5. **ナビゲーション**: 前回/次回へのリンク
 
-#### 問題形式のコンポーネント
+#### 問題形式のコンポーネント（クリック展開式）
 
-**選択問題**:
-```html
-<div class="question-card bg-white rounded-xl shadow-md p-6 mb-6">
-    <div class="question-header flex items-center gap-3 mb-4">
-        <span class="question-number bg-primary-500 text-white px-3 py-1 rounded-full text-sm font-bold">問1</span>
-        <span class="question-type bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">選択問題</span>
-    </div>
-    <p class="question-text text-lg mb-4">問題文をここに記述</p>
-    <div class="options space-y-3">
-        <label class="option-label flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-            <input type="radio" name="q1" value="a" class="mr-3">
-            <span>A. 選択肢A</span>
-        </label>
-        <!-- 他の選択肢 -->
-    </div>
-</div>
-```
-
-**穴埋め問題**:
-```html
-<div class="question-card bg-white rounded-xl shadow-md p-6 mb-6">
-    <div class="question-header">...</div>
-    <p class="question-text">以下のコードの<code class="blank-box">___</code>に入る適切な語句を入力してください。</p>
-    <pre class="code-block"><code>def greet(name):
-    return <span class="blank-input"><input type="text" placeholder="答えを入力"></span> + name</code></pre>
-</div>
-```
+**重要**: 回答は `<details>` タグを使用し、「回答を表示」をクリックすると展開される形式にする。
+textarea入力欄や「実行して確認」ボタンは使用しない。
 
 **コーディング問題**:
 ```html
-<div class="question-card bg-white rounded-xl shadow-md p-6 mb-6">
-    <div class="question-header">...</div>
-    <p class="question-text">問題の説明</p>
-    <div class="code-editor-wrapper bg-gray-900 rounded-lg p-4">
-        <textarea class="code-editor w-full h-40 bg-transparent text-green-400 font-mono" placeholder="# コードを入力してください"></textarea>
+<div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-5">
+    <div class="flex items-start gap-4">
+        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold">1</span>
+        </div>
+        <div class="flex-1 min-w-0">
+            <p class="font-medium text-blue-900 mb-3">
+                <strong>問題タイトル</strong><br>
+                問題文をここに記述します。
+            </p>
+            <details class="mt-3">
+                <summary class="cursor-pointer text-blue-600 hover:text-blue-700 font-medium">
+                    回答を表示
+                </summary>
+                <div class="mt-3 text-blue-800 bg-blue-100 rounded-lg p-4">
+                    <p class="font-semibold mb-2">模範解答:</p>
+                    <pre class="bg-slate-900 text-green-400 p-4 rounded-lg text-sm overflow-x-auto"><code class="language-java">// 模範解答コード</code></pre>
+                    <p class="mt-3 text-sm">
+                        <i class="fas fa-lightbulb mr-1"></i>
+                        <strong>ポイント:</strong> 解説をここに記述
+                    </p>
+                </div>
+            </details>
+        </div>
     </div>
-    <button class="run-code-btn mt-3 bg-emerald-500 text-white px-4 py-2 rounded hover:bg-emerald-600">
-        <i class="fas fa-play mr-2"></i>実行して確認
-    </button>
 </div>
 ```
 
-**解答・解説ボタン**:
+**選択問題**:
 ```html
-<div class="answer-section mt-8">
-    <button class="show-answer-btn w-full bg-primary-500 text-white py-3 rounded-lg font-bold hover:bg-primary-600">
-        <i class="fas fa-lightbulb mr-2"></i>解答・解説を表示
-    </button>
-    <div class="answer-content hidden mt-6 bg-amber-50 rounded-xl p-6">
-        <h3 class="font-bold text-lg mb-4"><i class="fas fa-check-circle text-emerald-500 mr-2"></i>解答・解説</h3>
-        <!-- 各問題の解答と解説 -->
+<div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-5">
+    <div class="flex items-start gap-4">
+        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold">2</span>
+        </div>
+        <div class="flex-1 min-w-0">
+            <p class="font-medium text-blue-900 mb-3">
+                <strong>問題タイトル</strong><br>
+                問題文をここに記述します。
+            </p>
+            <div class="space-y-2 ml-4 text-sm text-blue-900">
+                <p>ア. 選択肢A</p>
+                <p>イ. 選択肢B</p>
+                <p>ウ. 選択肢C</p>
+                <p>エ. 選択肢D</p>
+            </div>
+            <details class="mt-3">
+                <summary class="cursor-pointer text-blue-600 hover:text-blue-700 font-medium">
+                    回答を表示
+                </summary>
+                <div class="mt-3 text-blue-800 bg-blue-100 rounded-lg p-4">
+                    <p class="font-semibold">正解: ア</p>
+                    <p class="mt-2">解説をここに記述します。</p>
+                </div>
+            </details>
+        </div>
     </div>
 </div>
 ```
@@ -174,9 +178,8 @@ docs/practice/programming-languages/python-ecosystem/python-basics/
 ## 初心者向け重点事項
 
 - 問題文は明確で理解しやすく
-- 選択肢は紛らわしすぎない適度な難易度
 - 解説は「なぜそうなるか」を丁寧に説明
-- ヒント機能で段階的なサポート
+- コード例は実行可能な完全なコードを記載
 
 ## 出力
 

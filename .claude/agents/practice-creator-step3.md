@@ -72,7 +72,6 @@ step2により以下が作成されている必要があります：
 - `<head>`セクション（Tailwind config、CDN読み込み順序）
 - `<header>`セクション（ヘッダーのクラス名、構造）
 - `<main>`セクション（問題カードの構造、クラス名）
-- 解答・解説セクションの構造
 - `<footer>`セクションとスクリプト読み込み
 
 ### 4. 指定回のHTMLを生成【最重要ステップ】
@@ -91,7 +90,7 @@ step2により以下が作成されている必要があります：
 3. パンくずリストの回数
 4. 回ヘッダー（回数バッジ、h1タイトル、難易度表示）
 5. 問題セクション（README.mdの該当回の内容に基づく問題を作成）
-6. 解答・解説セクション（各問題の正解と解説）
+6. 回まとめセクション（学習ポイント）
 7. 前回/次回ナビゲーションのリンクと回数
 
 #### 書き換えてはいけない箇所（構造を維持）
@@ -111,16 +110,74 @@ step2により以下が作成されている必要があります：
 
 2. **ヘッダー右側のボタンエリア構造を変更しない**
 
-### 5. 問題作成のガイドライン
+### 5. 問題形式のコンポーネント（クリック展開式）
 
-#### 問題数の目安
+**重要**: 回答は `<details>` タグを使用し、「回答を表示」をクリックすると展開される形式にする。
+textarea入力欄や「実行して確認」ボタンは使用しない。
 
-- 選択問題: 3-5問
-- 穴埋め問題: 2-3問
-- コーディング問題: 1-2問（応用編の場合）
-- 記述問題: 0-1問（応用編の場合）
+**コーディング問題**:
+```html
+<div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-5">
+    <div class="flex items-start gap-4">
+        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold">1</span>
+        </div>
+        <div class="flex-1 min-w-0">
+            <p class="font-medium text-blue-900 mb-3">
+                <strong>問題タイトル</strong><br>
+                問題文をここに記述します。
+            </p>
+            <details class="mt-3">
+                <summary class="cursor-pointer text-blue-600 hover:text-blue-700 font-medium">
+                    回答を表示
+                </summary>
+                <div class="mt-3 text-blue-800 bg-blue-100 rounded-lg p-4">
+                    <p class="font-semibold mb-2">模範解答:</p>
+                    <pre class="bg-slate-900 text-green-400 p-4 rounded-lg text-sm overflow-x-auto"><code class="language-java">// 模範解答コード</code></pre>
+                    <p class="mt-3 text-sm">
+                        <i class="fas fa-lightbulb mr-1"></i>
+                        <strong>ポイント:</strong> 解説をここに記述
+                    </p>
+                </div>
+            </details>
+        </div>
+    </div>
+</div>
+```
 
-#### 難易度別の問題設計
+**選択問題**:
+```html
+<div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-5">
+    <div class="flex items-start gap-4">
+        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold">2</span>
+        </div>
+        <div class="flex-1 min-w-0">
+            <p class="font-medium text-blue-900 mb-3">
+                <strong>問題タイトル</strong><br>
+                問題文をここに記述します。
+            </p>
+            <div class="space-y-2 ml-4 text-sm text-blue-900">
+                <p>ア. 選択肢A</p>
+                <p>イ. 選択肢B</p>
+                <p>ウ. 選択肢C</p>
+                <p>エ. 選択肢D</p>
+            </div>
+            <details class="mt-3">
+                <summary class="cursor-pointer text-blue-600 hover:text-blue-700 font-medium">
+                    回答を表示
+                </summary>
+                <div class="mt-3 text-blue-800 bg-blue-100 rounded-lg p-4">
+                    <p class="font-semibold">正解: ア</p>
+                    <p class="mt-2">解説をここに記述します。</p>
+                </div>
+            </details>
+        </div>
+    </div>
+</div>
+```
+
+### 6. 難易度別の問題設計
 
 | 難易度 | 問題の特徴 |
 |--------|-----------|
@@ -130,29 +187,15 @@ step2により以下が作成されている必要があります：
 | ★★★★☆ | 実践的なコーディング問題 |
 | ★★★★★ | 応用・発展問題、設計を考える問題 |
 
-#### 解説の書き方
+### 7. 解説の書き方
 
 - **正解だけでなく「なぜそうなるか」を説明**
 - **よくある間違いとその理由も記載**
 - **関連する概念へのリンクを含める**
 
-### 6. 完了報告
+### 8. 完了報告
 
 HTMLファイル生成が完了したら、生成されたファイルを報告
-
-## コンポーネント一覧
-
-| コンポーネント | 用途 | スタイル |
-|--------------|------|---------|
-| 問題カード | 各問題の外枠 | `bg-white rounded-xl shadow-md p-6` |
-| 問題番号 | 問1, 問2... | `bg-primary-500 text-white px-3 py-1 rounded-full` |
-| 問題タイプ | 選択/穴埋め等 | `bg-gray-100 text-gray-600 px-2 py-1 rounded` |
-| 選択肢 | ラジオボタン | `border rounded-lg p-3 hover:bg-gray-50` |
-| 穴埋めボックス | 入力欄 | `border-b-2 border-dashed` |
-| コードエディタ | コード入力 | `bg-gray-900 text-green-400 font-mono` |
-| 解答セクション | 解答・解説 | `bg-amber-50 rounded-xl p-6` |
-| 正解表示 | 正解マーク | `text-emerald-500` |
-| 不正解表示 | 解説付き | `text-red-500` |
 
 ## Mermaid図作成時の重要ルール
 
