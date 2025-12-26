@@ -214,7 +214,7 @@ PDF形式のスライド教材をブラウザで閲覧できる教材です。
 
 #### Java
 
-- **[Java研修演習課題集](docs/practice/programming-languages/java-ecosystem/java-training/README.md)** - Java基本文法から実践的なプログラミングまで段階的に学べる演習課題集。変数、演算、条件分岐、繰り返し、配列、クラス、継承、例外処理など、Javaの主要な文法要素を10回に分けて体系的に習得
+- **[Java研修演習課題集](docs/practice/programming-languages/java-ecosystem/java-training/README.md)** - Java基本文法から実践的なプログラミングまで段階的に学べる演習課題集。変数、演算、条件分岐、繰り返し、配列、クラス、継承、例外処理など、Javaの主要な文法要素を6回に分けて体系的に習得
 
 ---
 
@@ -248,9 +248,6 @@ PDF形式のスライド教材をブラウザで閲覧できる教材です。
 ### 開発手法・プロセス
 
 - **[Gitチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/development-processes/git/index.html)** - Git基本コマンド、ブランチ操作、リモート操作を1ページにまとめたクイックリファレンス
-
-#### テスト
-
 - **[JUnitチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/development-processes/testing/junit/index.html)** - JUnit 5アサーション、ライフサイクル、テストパターンを1ページにまとめたクイックリファレンス
 
 ### 設計手法・モデリング
