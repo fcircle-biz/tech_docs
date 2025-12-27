@@ -59,7 +59,7 @@
 
 #### .NET
 
-- **[VB.NET学習ガイド](docs/guide/programming-languages/dotnet-ecosystem/vbnet/README.md)** - VB.NET言語基礎からオブジェクト指向プログラミングまで10章完成カリキュラム
+- **[VB.NET入門学習ガイド](docs/guide/programming-languages/dotnet-ecosystem/vbnet-beginner/README.md)** - プログラミング完全未経験者向けVB.NET入門12章構成カリキュラム。変数、条件分岐、繰り返し、配列、関数、クラス、オブジェクト指向など、VB.NETの基礎を段階的に学習
 - **[ASP.NET(VB.NET)学習ガイド](docs/guide/programming-languages/dotnet-ecosystem/aspnet-vb/README.md)** - ASP.NET Web Forms基礎から実践的なユーザー管理システム開発まで10章完成カリキュラム
 - **[ASP.NET Core(VB.NET)学習ガイド](docs/guide/programming-languages/dotnet-ecosystem/aspnetcore-vb/README.md)** - ASP.NET Core MVCとEntity Framework Coreを使用したモダンWebアプリケーション開発11章完成カリキュラム
 
@@ -69,7 +69,7 @@
 
 #### R
 
-- **[R言語学習ガイド](docs/guide/programming-languages/r-ecosystem/r/README.md)** - R言語基礎から統計解析・データビジュアライゼーションまで10章完成カリキュラム
+- **[R言語入門学習ガイド](docs/guide/programming-languages/r-ecosystem/r-language-beginner/README.md)** - プログラミング未経験者向けR言語入門12章構成カリキュラム。RStudioの使い方、変数、ベクトル、データフレーム、条件分岐、繰り返し、関数、グラフ作成、ファイル操作まで段階的に学習
 
 #### COBOL
 
@@ -130,7 +130,7 @@
 
 - **[SAP学習ガイド](docs/guide/business-saas/sap/README.md)** - SAP ERP基礎から実践的な業務プロセスまで10章完成カリキュラム。SAP S/4HANA、ABAP、Fiori、SAP HANA等のモダンなSAP技術を体系的に習得
 - **[OutSystems学習ガイド](docs/guide/business-saas/outsystems/README.md)** - OutSystemsローコード開発プラットフォームの基礎から実践的なアプリケーション開発まで14章完成カリキュラム
-- **[Excel基本操作学習ガイド](docs/guide/business-saas/excel-basic/README.md)** - Excel基本操作から関数、VBA入門まで8章完成カリキュラム
+- **[Excel入門学習ガイド](docs/guide/business-saas/excel-beginner/README.md)** - パソコン初心者向けExcel入門11章構成カリキュラム。セル入力、保存、表作成、計算、関数、書式設定、並べ替え・フィルター、印刷、グラフ作成まで段階的に学習
 - **[VBA学習ガイド](docs/guide/business-saas/vba/README.md)** - VBA基礎からExcel自動化まで12章完成カリキュラム
 - **[Access VBA学習ガイド](docs/guide/business-saas/access-vba/README.md)** - Access VBA基礎からデータベース自動化、業務システム構築まで12章完成カリキュラム
 
