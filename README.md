@@ -35,7 +35,7 @@
 #### Python
 
 - **[Python入門学習ガイド](docs/guide/programming-languages/python-ecosystem/python-beginner/README.md)** - プログラミング完全未経験者向けPython入門12章構成カリキュラム。変数、条件分岐、繰り返し、関数、ファイル操作など、プログラミングの基礎を段階的に学習
-- **[Django学習ガイド](docs/guide/programming-languages/python-ecosystem/django/README.md)** - Djangoフレームワークを使用したWebアプリケーション開発の基礎から実践まで10章完成カリキュラム
+- **[Django学習ガイド](docs/guide/programming-languages/python-ecosystem/django/README.md)** - Djangoフレームワークを使用したWebアプリケーション開発の基礎から実践まで15章完成カリキュラム。MVCパターン、モデル、ビュー、テンプレート、フォーム処理、セキュリティ対策を習得
 - **[FastAPI学習ガイド](docs/guide/programming-languages/python-ecosystem/fastapi/README.md)** - FastAPIを使用した高性能WebAPI開発の基礎から実践まで10章完成カリキュラム
 - **[SQLAlchemy学習ガイド](docs/guide/programming-languages/python-ecosystem/sqlalchemy/README.md)** - SQLAlchemyを使用したPythonデータベースプログラミングの基礎から実践まで8章完成カリキュラム
 - **[SQLModel学習ガイド](docs/guide/programming-languages/python-ecosystem/sqlmodel/README.md)** - SQLModelを使用したモダンなPythonデータベースプログラミング8章完成カリキュラム
@@ -48,7 +48,7 @@
 - **[JSP/Servlet学習ガイド](docs/guide/programming-languages/java-ecosystem/jsp/README.md)** - JSP/Servlet基礎からMVCアーキテクチャまで10章完成カリキュラム
 - **[JUnit学習ガイド](docs/guide/programming-languages/java-ecosystem/junit/README.md)** - JUnit 5を使用した単体テストの基礎から応用まで7章完成カリキュラム
 - **[Spring Framework学習ガイド](docs/guide/programming-languages/java-ecosystem/spring/README.md)** - Spring基礎からSecurity機能まで11章完成カリキュラム
-- **[Struts 1.x学習ガイド](docs/guide/programming-languages/java-ecosystem/struts1/README.md)** - Apache Struts 1.x基礎からデプロイメントまで10章完成カリキュラム
+- **[Struts 1.x学習ガイド](docs/guide/programming-languages/java-ecosystem/struts/README.md)** - Apache Struts 1.xフレームワークの基礎から実践的なタスク管理アプリケーション開発まで12章完成カリキュラム。MVCパターン、ActionForm、バリデーション、データベース連携、国際化対応を習得
 
 #### JavaScript/Node.js
 
