@@ -1,97 +1,117 @@
-# UML (Unified Modeling Language) 学習ガイドライン
+# UML (Unified Modeling Language) 入門ガイドライン
 
-このガイドラインでは、UML（統一モデリング言語）の基礎を入門者向けに段階的に学習するためのカリキュラムを提供しています。ソフトウェア設計の可視化と文書化に不可欠なUMLの各種図法を、実践的な例題を通じて習得できます。
+このガイドラインでは、UML（統一モデリング言語）の基礎を完全未経験者・初心者向けに段階的に学習するためのカリキュラムを提供しています。「図を使ってシステムを説明する」という基本的な考え方から始め、実務で頻繁に使用される各種ダイアグラムの作成方法を、豊富な具体例とともに習得できます。
 
 ## 前提条件
+
 ### 必要な環境
-- 図形描画ツール（draw.io、PlantUML、StarUML、Enterprise Architect等）
-- テキストエディタ（PlantUML使用時）
-- Webブラウザ（オンラインツール使用時）
+- Webブラウザ（Chrome、Firefox、Edge など）
+- 無料のUMLツール（以下のいずれか）
+  - [draw.io (diagrams.net)](https://app.diagrams.net/) - ブラウザで即座に使用可能
+  - [PlantUML Web版](https://www.plantuml.com/plantuml/uml/) - テキストで図を作成
+- テキストエディタ（メモ帳、VS Code 等）
 
 ### 参考リソース
-- [OMG UML公式仕様書](https://www.omg.org/spec/UML/)
-- [PlantUML公式ドキュメント](https://plantuml.com/ja/)
-- [draw.io（diagrams.net）](https://app.diagrams.net/)
-- [UML 2.5仕様書（日本語要約）](https://www.ogis-ri.co.jp/otc/hiroba/technical/UML/)
+- [draw.io 公式サイト](https://app.diagrams.net/) - 無料のオンライン作図ツール
+- [PlantUML 公式ドキュメント](https://plantuml.com/ja/) - テキストベースのUMLツール
+- [UML入門（OGIS-RI）](https://www.ogis-ri.co.jp/otc/hiroba/technical/UML/) - 日本語のUML解説
+- [OMG UML公式仕様](https://www.omg.org/spec/UML/) - 正式な仕様書（英語）
 
 ### 前提知識
-- **必須**: プログラミングの基本概念（変数、関数、条件分岐）
-- **推奨**: オブジェクト指向プログラミングの基礎知識
-- **推奨**: 何らかのソフトウェア開発経験（小規模でも可）
+- **必須**: 特になし（完全未経験者を対象）
+- **推奨**: 基本的なパソコン操作（ファイル保存、Web検索など）
+- **推奨**: プログラミングの基本用語を聞いたことがある程度
+- **あると良い**: 何らかのソフトウェアやシステムを使った経験
 
 ## 学習コンテンツ
 
-### [1. UML入門と基本概念](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-01.html)
-UMLの歴史と目的、モデリングの重要性、UML 2.5の概要、図の分類（構造図と振る舞い図）、モデリングツールの選定と環境構築について学びます。基本的な記法ルールと命名規則も習得します。
+### [1. UMLとは何か - 図で伝えるソフトウェア設計](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-01.html)
+「そもそもUMLって何？」「なぜ図を描くの？」という疑問に答えます。言葉だけでは伝わりにくいソフトウェアの仕組みを、図を使って誰にでも分かりやすく伝える方法を学びます。UMLの歴史、13種類の図の全体像、使用場面などを具体例とともに紹介します。
 
-### [2. クラス図の基礎](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-02.html)
-オブジェクト指向設計の中核となるクラス図の作成方法を学びます。クラスの表記法、属性と操作の定義、可視性（public/private/protected）、関連・集約・コンポジション、多重度の表現、インターフェースと抽象クラスの記法を習得します。
+### [2. UML作図ツールの基本操作](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-02.html)
+無料で使えるUMLツール（draw.io）の基本操作を実践的に学びます。図形の配置、線の引き方、文字の入力、保存と共有の方法など、実際に手を動かしながら操作に慣れていきます。また、PlantUMLによるテキストベースの作図も体験します。
 
-### [3. ユースケース図とアクター](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-03.html)
-システムの機能要件を可視化するユースケース図の作成方法を学びます。アクターの識別、ユースケースの抽出、システム境界の定義、include/extend関係、汎化関係の表現方法を実践的な例題を通じて習得します。
+### [3. ユースケース図入門 - システムの「使われ方」を描く](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-03.html)
+最も直感的で入門しやすいユースケース図から学習を始めます。「誰が」「何をするか」を図で表現する方法を、ATM、ECサイト、図書館システムなど身近な例を使って習得します。アクター、ユースケース、システム境界の概念を理解します。
 
-### [4. シーケンス図による相互作用モデリング](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-04.html)
-オブジェクト間の時系列的な相互作用を表現するシーケンス図を学びます。ライフライン、メッセージの種類（同期/非同期/リターン）、活性化ボックス、複合フラグメント（alt/opt/loop/par）、相互作用の使用について詳しく解説します。
+### [4. クラス図の基礎 - 「モノ」と「関係」を描く](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-04.html)
+実務で最も頻繁に使用されるクラス図の基礎を学びます。「顧客」「商品」「注文」といった概念を四角形で表し、それらの関係を線で結ぶ方法を習得します。難しい専門用語は後回しにして、まずは「読める」「描ける」を目指します。
 
-### [5. アクティビティ図によるワークフロー設計](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-05.html)
-ビジネスプロセスやアルゴリズムを可視化するアクティビティ図の作成方法を学びます。開始/終了ノード、アクション、制御フロー、分岐と結合、並行処理（フォーク/ジョイン）、スイムレーンによる責任の明確化について習得します。
+### [5. クラス図の詳細 - 属性・操作・関連の表現](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-05.html)
+クラス図をより詳細に表現する方法を学びます。属性（データ）と操作（機能）の書き方、可視性（+/-/#）の意味、関連・集約・コンポジションの違い、多重度（1対多など）の表記方法を実例を通じて理解します。
 
-### [6. ステートマシン図による状態遷移モデリング](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-06.html)
-オブジェクトのライフサイクルと状態遷移を表現するステートマシン図を学びます。状態の定義、遷移とトリガー、ガード条件、アクション（entry/do/exit）、複合状態、並行状態、履歴状態の概念と実装方法を習得します。
+### [6. シーケンス図入門 - 時間の流れで見る処理の順番](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-06.html)
+「この処理の後に、あの処理が行われる」という時間的な流れを表現するシーケンス図を学びます。ログイン処理、商品購入フローなどの具体例を使って、オブジェクト間のメッセージのやり取りを視覚化する方法を習得します。
 
-### [7. コンポーネント図とデプロイメント図](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-07.html)
-システムの物理的な構造を表現する図法を学びます。コンポーネントの定義と依存関係、インターフェースの提供と要求、パッケージ図による論理構造、デプロイメント図によるハードウェア配置、ノードとアーティファクトの関係を理解します。
+### [7. シーケンス図の応用 - 条件分岐とループの表現](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-07.html)
+シーケンス図でより複雑な処理を表現する方法を学びます。「もし～なら」という条件分岐（alt/opt）、「繰り返し」のループ（loop）、並行処理（par）などの複合フラグメントを使いこなす方法を習得します。
 
-### [8. その他の重要な図と高度な技法](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-08.html)
-コミュニケーション図、タイミング図、相互作用概要図、オブジェクト図など、その他のUML図を学びます。また、ステレオタイプ、タグ付き値、制約（OCL）などの拡張メカニズム、プロファイルの概念についても理解を深めます。
+### [8. アクティビティ図 - 業務フローとアルゴリズムを描く](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-08.html)
+業務プロセスやプログラムの処理手順を表現するアクティビティ図を学びます。フローチャートに似た直感的な記法で、分岐・ループ・並行処理などを表現する方法を習得します。スイムレーンを使った担当者別の整理も学びます。
 
-### [9. UMLツールの実践活用](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-09.html)
-主要なUMLツールの使い方を実践的に学びます。PlantUMLによるテキストベースの図作成、draw.ioでのビジュアル編集、商用ツール（Enterprise Architect、Visual Paradigm）の特徴、コード生成とリバースエンジニアリング、バージョン管理との連携方法を習得します。
+### [9. ステートマシン図 - 状態の変化を追跡する](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-09.html)
+「注文中」「発送済み」「配達完了」といった状態の変化を表現するステートマシン図を学びます。状態、遷移、トリガー、ガード条件などの基本要素を、ECサイトの注文管理やエレベーターの動作など身近な例で理解します。
 
-### [10. 実践的なシステム設計演習](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-10.html)
-実際のシステム開発を想定した総合演習を行います。ECサイト、図書館管理システム、SNSアプリケーションなどの設計を通じて、要件分析から詳細設計まで、複数のUML図を組み合わせた統合的なモデリング手法を実践します。
+### [10. コンポーネント図・パッケージ図 - システムの構成部品を描く](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-10.html)
+システムを構成する部品（コンポーネント）とその依存関係を表現する方法を学びます。大規模なシステムを整理して把握するためのパッケージ図も合わせて習得します。Webアプリケーションの構成例を通じて実践的に学びます。
+
+### [11. デプロイメント図 - システムの配置を描く](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-11.html)
+「どのサーバーに何が配置されているか」を表現するデプロイメント図を学びます。ノード、アーティファクト、通信経路などの基本要素を理解し、Webシステムやクラウド環境の構成を図示する方法を習得します。
+
+### [12. 実践演習 - 身近なシステムをUMLで描く](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-12.html)
+これまで学んだ知識を総合して、実際のシステムをUMLで表現する演習を行います。コンビニのPOSシステム、チャットアプリ、予約管理システムなどを題材に、複数の図を組み合わせた設計ドキュメントを作成します。
+
+### [13. チーム開発でのUML活用 - 設計レビューと共有](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-13.html)
+実際のチーム開発でUMLをどのように活用するかを学びます。設計レビューでの図の使い方、ドキュメントの整理方法、バージョン管理、PlantUMLとGitの連携など、実務で役立つテクニックを紹介します。
+
+### [14. UML総まとめと次のステップ](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/uml/uml-learning-material-14.html)
+全体の復習と、UMLをより深く学ぶための道筋を示します。各図の使い分け方のまとめ、よくある間違いとその対処法、業界でのUMLの使われ方、デザインパターンやDDDなど次の学習テーマへの橋渡しを行います。
 
 ## 学習の進め方
 
-1. **基礎から着実に**: UMLの基本概念（第1章）を理解してから、各図法を順番に学習します
-2. **手を動かして学ぶ**: 各章の例題を実際にツールで描きながら理解を深めます
-3. **実例で理解**: 身近なシステムやアプリケーションをUMLでモデリングしてみます
-4. **段階的に複雑化**: 簡単な図から始めて、徐々に詳細で複雑な図を作成していきます
-5. **複数の図を連携**: 後半では、複数の図を組み合わせたシステム全体の設計を練習します
+1. **まずは全体像を把握**: 第1章でUMLの全体像を理解し、「こんなことができる」を把握します
+2. **ツールを使いながら学ぶ**: 第2章でツールの操作を覚え、以降は実際に図を描きながら学習します
+3. **簡単な図から始める**: ユースケース図、クラス図の基礎から始め、徐々に複雑な図に進みます
+4. **身近な例で理解**: 各章で紹介される身近なシステムの例を、自分の言葉で説明できるか確認します
+5. **練習問題に挑戦**: 各章末の練習問題で理解度をチェックします
+6. **自分でも描いてみる**: 興味のあるアプリやシステムを自分でUMLで描いてみましょう
 
 ## 推奨学習期間
 
-- **基礎習得コース** (1-3章): 2-3週間
-  - UMLの基本概念とよく使う図（クラス図、ユースケース図）の習得
-- **実践活用コース** (4-7章): 3-4週間
-  - 動的な振る舞いを表現する図と物理構造の図の習得
-- **応用発展コース** (8-10章): 3-4週間
-  - 高度な技法とツール活用、実践的な設計演習
-- **合計学習期間**: 8-11週間（週4-6時間の学習を想定）
+- **入門コース** (1-4章): 2-3週間
+  - UMLの基本概念、ツールの操作、ユースケース図、クラス図の基礎
+- **基礎習得コース** (5-9章): 4-5週間
+  - クラス図の詳細、シーケンス図、アクティビティ図、ステートマシン図
+- **実践応用コース** (10-14章): 3-4週間
+  - コンポーネント図、デプロイメント図、実践演習、チーム開発での活用
+- **合計学習期間**: 9-12週間（週3-4時間の学習を想定）
 
 ## 関連リソース
 
-- [ソフトウェア設計パターンチートシート](https://fcircle-biz.github.io/tech_docs/cheatsheet/design/design-patterns-cheatsheet.html)
-- [オブジェクト指向設計原則ガイド](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/ood-principles/README.html)
-- [PlantUMLクイックリファレンス](https://fcircle-biz.github.io/tech_docs/cheatsheet/tools/plantuml-cheatsheet.html)
+- [オブジェクト指向プログラミング入門](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/concepts/oop/) - UMLの背景にある考え方
+- [ソフトウェア設計入門](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/) - 設計全般の基礎知識
+- [要件定義入門](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/requirements/) - ユースケース図が活躍する分野
 
 ## 学習目標
 
 このガイドを完了すると、以下のスキルを身につけることができます：
 
-- UMLの各種図法を理解し、適切な場面で使い分けることができる
-- クラス図を使ってオブジェクト指向設計を正確に表現できる
-- ユースケース図でシステムの機能要件を可視化できる
-- シーケンス図やアクティビティ図で動的な振る舞いをモデリングできる
-- 複数のUML図を組み合わせて、システム全体の設計を文書化できる
-- UMLツールを活用して効率的に図を作成・管理できる
-- チーム開発において、UMLを使った設計の共有とレビューができる
-- 既存システムのリバースエンジニアリングでUMLを活用できる
+- UMLとは何か、なぜ使うのかを他の人に説明できる
+- 無料のツール（draw.io、PlantUML）を使ってUML図を作成できる
+- ユースケース図でシステムの「誰が何をするか」を表現できる
+- クラス図で「モノとモノの関係」を正確に表現できる
+- シーケンス図で「処理の流れ」を時系列で表現できる
+- アクティビティ図で「業務の流れ」を分かりやすく描ける
+- ステートマシン図で「状態の変化」を追跡できる
+- システム構成（コンポーネント図、デプロイメント図）を図示できる
+- 複数のUML図を組み合わせて、システム全体を説明できる
+- チーム開発でUMLを使った設計の共有ができる
 
 ## 次のステップ
 
 このガイドライン完了後は、以下の学習に進むことをお勧めします：
 
-- [デザインパターン実践ガイド](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/design-patterns/README.html)
-- [ドメイン駆動設計（DDD）入門](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/ddd/README.html)
-- [SysML（システムモデリング言語）入門](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/sysml/README.html)
+- [デザインパターン入門](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/design-patterns/) - クラス図で表現される設計の定石
+- [ドメイン駆動設計（DDD）入門](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/software-design/ddd/) - ビジネスロジックを中心にした設計手法
+- [アジャイル開発入門](https://fcircle-biz.github.io/tech_docs/guide/development-processes/agile/) - UMLを活用した反復的な開発手法
+- [データベース設計入門（ER図）](https://fcircle-biz.github.io/tech_docs/guide/design-modeling/data-modeling/er-diagram/) - UMLと併用されるデータモデリング
