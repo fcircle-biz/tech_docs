@@ -96,7 +96,7 @@
 - **[AWS SAP-C02入門学習ガイド](docs/guide/cloud-infrastructure/aws-sap-c02-intro/README.md)** - AWS Solutions Architect Professional（SAP-C02）資格取得に向けた知識基盤を構築する15章完成カリキュラム。Auto Scaling、ELB、Route 53、CloudFront、高可用性設計、災害復旧戦略など、エンタープライズ環境に求められる高度なインフラ設計手法を体系的に習得
 - **[AWS Terraform学習ガイド](docs/guide/cloud-infrastructure/aws-terraform/README.md)** - AWS上でTerraformを使用したInfrastructure as Code（IaC）の基礎から実践まで10章完成カリキュラム。HCL構文、VPC/EC2構築、ステート管理、モジュール化、CI/CD統合まで体系的に習得
 - **[クラウドコンピューティング学習ガイド](docs/guide/cloud-infrastructure/cloud-computing/README.md)** - クラウドコンピューティングの基本概念からIaaS、PaaS、SaaSまで10章完成カリキュラム
-- **[Docker学習ガイド](docs/guide/cloud-infrastructure/docker/README.md)** - Dockerの基礎から実践的なコンテナ運用まで10章完成カリキュラム。コンテナ技術の基本概念、イメージ管理、Dockerfile作成、Docker Compose、ボリューム、ネットワーク、マルチコンテナアプリケーション構築、セキュリティ、本番環境デプロイまで網羅
+- **[Docker学習ガイド](docs/guide/cloud-infrastructure/docker/README.md)** - Dockerの基礎から実践的なコンテナ運用まで10章完成カリキュラム。Rancher Desktopを使用してコンテナ技術の基本概念、イメージ管理、Dockerfile作成、Docker Compose、ボリューム、ネットワーク、マルチコンテナアプリケーション構築、トラブルシューティングまで初心者向けに段階的に習得
 
 ### データ／AI
 
@@ -119,11 +119,11 @@
 - **[アジャイル開発学習ガイド](docs/guide/development-processes/agile-development/README.md)** - アジャイル開発の基礎から実践的なScrum、Kanbanまで10章完成カリキュラム
 - **[ウォーターフォール開発学習ガイド](docs/guide/development-processes/waterfall-development/README.md)** - ウォーターフォール開発の基礎から実践的なプロジェクト管理まで10章完成カリキュラム。要件定義、基本設計、詳細設計、実装、テスト、リリース・運用、品質管理、アジャイルとの比較まで体系的に学習
 - **[DevOps学習ガイド](docs/guide/development-processes/devops/README.md)** - DevOpsの基礎からCI/CD、Infrastructure as Codeまで10章完成カリキュラム
-- **[Git/GitHub学習ガイド](docs/guide/development-processes/git-github/README.md)** - Git/GitHubの基礎から実践的なバージョン管理まで12章完成カリキュラム。GUIツール（GitHub Desktop）とコマンドライン両方をカバーし、ブランチ操作、マージ、プルリクエスト、トラブルシューティングまで初心者向けに段階的に学習
+- **[Git/GitHub学習ガイド](docs/guide/development-processes/git-github/README.md)** - Git/GitHubの基礎から実践的なバージョン管理まで15章完成カリキュラム。バージョン管理の概念理解、環境構築、コマンドライン操作（基本操作、ブランチ、マージ、プルリクエスト、トラブルシューティング）、VS Codeでの統合Git機能まで完全未経験者向けに段階的に習得
 
 ### 設計手法・モデリング
 
-- **[UML学習ガイド](docs/guide/design-modeling/software-design/uml/README.md)** - UML（統一モデリング言語）の基礎から実践的なシステム設計まで10章完成カリキュラム
+- **[UML学習ガイド](docs/guide/design-modeling/software-design/uml/README.md)** - UML（統一モデリング言語）の基礎から実践的なシステム設計まで14章完成カリキュラム。無料ツール（draw.io、PlantUML）の使い方、ユースケース図、クラス図、シーケンス図、アクティビティ図、ステートマシン図、コンポーネント図、デプロイメント図、実践演習、チーム開発での活用まで完全未経験者向けに段階的に習得
 - **[要求工学学習ガイド](docs/guide/design-modeling/software-design/requirements-engineering/README.md)** - 要求工学の基礎理論から実践的な要求分析・管理まで10章完成カリキュラム
 
 ### SaaS／PaaS／アプリケーション
