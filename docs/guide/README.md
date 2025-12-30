@@ -20,17 +20,17 @@ tech-knowledge-map.mdに基づく技術分野別の学習教材インデック�
 - [Spring](./programming-languages/java-ecosystem/spring/) - Spring Framework、DI、AOP、Spring Boot
 - [JSP](./programming-languages/java-ecosystem/jsp/) - JSP、サーブレット、EL式、JSTL
 - [JDBC](./programming-languages/java-ecosystem/jdbc/) - JDBC、データベース接続、PreparedStatement、トランザクション
-- [Struts1](./programming-languages/java-ecosystem/struts1/) - Struts1フレームワーク、アクション、ActionForm
+- [Struts](./programming-languages/java-ecosystem/struts/) - Struts1フレームワーク、アクション、ActionForm
 - [JUnit](./programming-languages/java-ecosystem/junit/) - JUnit、単体テスト、アサーション、テスト駆動開発
 
 #### JavaScript Ecosystem
 - [JavaScript Beginner](./programming-languages/javascript-ecosystem/javascript-beginner/) - JavaScript基礎、変数、関数、DOM操作
-- [JavaScript Intermediate](./programming-languages/javascript-ecosystem/javascript-intermediate/) - JavaScript中級、非同期処理、クロージャ、モジュール
+- [TypeScript](./programming-languages/javascript-ecosystem/typescript/) - TypeScript、型システム、インターフェース、ジェネリクス
 - [React](./programming-languages/javascript-ecosystem/react/) - React、コンポーネント、Hooks、状態管理
 - [Next.js](./programming-languages/javascript-ecosystem/nextjs/) - Next.js、SSR、SSG、App Router、API Routes
 
 #### .NET Ecosystem
-- [VB.NET](./programming-languages/dotnet-ecosystem/vbnet/) - VB.NET基礎、オブジェクト指向、.NET Framework
+- [VB.NET Beginner](./programming-languages/dotnet-ecosystem/vbnet-beginner/) - VB.NET基礎、オブジェクト指向、.NET Framework
 - [ASP.NET (VB)](./programming-languages/dotnet-ecosystem/aspnet-vb/) - ASP.NET WebForms、VB.NET、イベント駆動
 - [ASP.NET Core (VB)](./programming-languages/dotnet-ecosystem/aspnetcore-vb/) - ASP.NET Core、VB.NET、MVC、Razor Pages
 
@@ -38,13 +38,10 @@ tech-knowledge-map.mdに基づく技術分野別の学習教材インデック�
 - [PHP](./programming-languages/php-ecosystem/php/) - PHP基礎、Web開発、セッション管理、データベース連携
 
 #### R Ecosystem
-- [R](./programming-languages/r-ecosystem/r/) - R言語、統計解析、データ可視化、パッケージ管理
+- [R Language Beginner](./programming-languages/r-ecosystem/r-language-beginner/) - R言語、統計解析、データ可視化、パッケージ管理
 
 #### COBOL Ecosystem
 - [COBOL](./programming-languages/cobol-ecosystem/cobol/) - COBOL、メインフレーム、バッチ処理、VSAM
-
-#### SAS Ecosystem
-- [SAS](./programming-languages/sas-ecosystem/sas/) - SAS、統計解析、データステップ、PROCステップ
 
 ---
 
@@ -74,12 +71,18 @@ Webページの基礎技術とフロントエンド開発
 - [UML](./design-modeling/software-design/uml/) - UML図、クラス図、シーケンス図、ユースケース図
 - [要件定義](./design-modeling/software-design/requirements-engineering/) - 要件定義、要求分析、システム要件仕様書
 
+#### データモデリング
+- [ER図](./design-modeling/data-modeling/er-diagram/) - ER図、エンティティ、リレーションシップ、カーディナリティ、IE記法、正規化
+
 ---
 
 ### 5. クラウド／インフラ (Cloud & Infrastructure)
 クラウドサービスとインフラストラクチャ
 
-- [AWS](./cloud-infrastructure/aws/) - AWS基礎、EC2、S3、RDS、Lambda、CloudFormation
+- [AWS Basic](./cloud-infrastructure/aws-basic/) - AWS基礎、EC2、S3、RDS、Lambda、CloudWatch
+- [AWS DVA-C02 Intro](./cloud-infrastructure/aws-dva-c02-intro/) - AWS Certified Developer - Associate試験対策
+- [AWS SAA-C03 Intro](./cloud-infrastructure/aws-saa-c03-intro/) - AWS Certified Solutions Architect - Associate試験対策
+- [AWS SAP-C02 Intro](./cloud-infrastructure/aws-sap-c02-intro/) - AWS Solutions Architect Professional試験対策
 - [AWS Terraform](./cloud-infrastructure/aws-terraform/) - Terraform、IaC、HCL構文、ステート管理、モジュール化
 - [Cloud Computing](./cloud-infrastructure/cloud-computing/) - クラウドコンピューティング基礎、IaaS、PaaS、SaaS
 - [Docker](./cloud-infrastructure/docker/) - コンテナ技術、Dockerfile、Docker Compose、イメージ管理
@@ -97,6 +100,9 @@ Webページの基礎技術とフロントエンド開発
 
 #### データ分析・AI
 - [Machine Learning](./data-ai-category/data-ai/machine-learning/) - 機械学習基礎、教師あり学習、教師なし学習
+- [SAS](./data-ai-category/data-ai/sas/) - SAS、統計解析、データステップ、PROCステップ
+- [SAS Intermediate](./data-ai-category/data-ai/sas-intermediate/) - SAS中級、大規模データ処理、マクロプログラミング
+- [SAS Viya](./data-ai-category/data-ai/sas-viya/) - SAS Viya、クラウドネイティブ、CASエンジン、Visual Analytics
 - [Statistical Analysis](./data-ai-category/statistical-analysis/) - 統計学基礎、記述統計、推測統計、仮説検定
 
 ---
@@ -104,9 +110,10 @@ Webページの基礎技術とフロントエンド開発
 ### 7. 業務SaaS／プラットフォーム (Business SaaS & Platforms)
 業務システムとOfficeツール
 
-- [Excel Basic](./business-saas/excel-basic/) - Excel基礎、数式、関数、グラフ、ピボットテーブル
+- [Excel Beginner](./business-saas/excel-beginner/) - Excel基礎、数式、関数、グラフ、ピボットテーブル
 - [VBA](./business-saas/vba/) - VBAプログラミング、マクロ作成、Excel自動化、Office連携
 - [Access VBA](./business-saas/access-vba/) - Access VBA入門、データベース操作自動化、DAO/ADO、フォーム・レポート制御
+- [OutSystems](./business-saas/outsystems/) - OutSystems、ローコード開発、Service Studio、アプリ開発
 - [SAP](./business-saas/sap/) - SAP ERP、SAP S/4HANA、ABAP、SAP HANA、Fiori
 
 ---
@@ -115,6 +122,7 @@ Webページの基礎技術とフロントエンド開発
 IT系資格試験の学習教材
 
 - [ITパスポート](./certification/it-passport/) - ITパスポート試験、ストラテジ系、マネジメント系、テクノロジ系
+- [ITパスポート練習問題](./certification/it-passport-practice/) - ITパスポート試験練習問題集、4択問題、各章・各節別
 
 ---
 
@@ -151,13 +159,12 @@ IT系資格試験の学習教材
 docs/guide/
 ├── programming-languages/           # プログラミング言語エコシステム
 │   ├── python-ecosystem/           # Python Beginner, Django, FastAPI, Streamlit, SQLAlchemy, SQLModel
-│   ├── java-ecosystem/             # Java, Spring, JSP, JDBC, Struts1, JUnit
-│   ├── javascript-ecosystem/       # JavaScript (初級・中級), React, Next.js
-│   ├── dotnet-ecosystem/           # VB.NET, ASP.NET, ASP.NET Core
+│   ├── java-ecosystem/             # Java, Spring, JSP, JDBC, Struts, JUnit
+│   ├── javascript-ecosystem/       # JavaScript Beginner, TypeScript, React, Next.js
+│   ├── dotnet-ecosystem/           # VB.NET Beginner, ASP.NET (VB), ASP.NET Core (VB)
 │   ├── php-ecosystem/              # PHP
-│   ├── r-ecosystem/                # R
-│   ├── cobol-ecosystem/            # COBOL
-│   └── sas-ecosystem/              # SAS
+│   ├── r-ecosystem/                # R Language Beginner
+│   └── cobol-ecosystem/            # COBOL
 ├── web-technologies/                # Web基礎技術
 │   ├── html-css/                   # HTML/CSS
 │   ├── bootstrap/                  # Bootstrap
@@ -168,11 +175,16 @@ docs/guide/
 │   ├── waterfall-development/      # ウォーターフォール開発
 │   └── devops/                     # DevOps
 ├── design-modeling/                 # 設計手法・モデリング
-│   └── software-design/            # ソフトウェア設計
-│       ├── uml/                    # UML
-│       └── requirements-engineering/ # 要件定義
+│   ├── software-design/            # ソフトウェア設計
+│   │   ├── uml/                    # UML
+│   │   └── requirements-engineering/ # 要件定義
+│   └── data-modeling/              # データモデリング
+│       └── er-diagram/             # ER図
 ├── cloud-infrastructure/            # クラウド／インフラ
-│   ├── aws/                        # AWS
+│   ├── aws-basic/                  # AWS基礎
+│   ├── aws-dva-c02-intro/          # AWS DVA-C02入門
+│   ├── aws-saa-c03-intro/          # AWS SAA-C03入門
+│   ├── aws-sap-c02-intro/          # AWS SAP-C02入門
 │   ├── aws-terraform/              # AWS Terraform
 │   ├── cloud-computing/            # クラウドコンピューティング
 │   └── docker/                     # Docker
@@ -183,15 +195,20 @@ docs/guide/
 │   │   ├── plsql/                  # PL/SQL
 │   │   └── db2/                    # DB2
 │   ├── data-ai/                    # データ／AI
-│   │   └── machine-learning/       # 機械学習
+│   │   ├── machine-learning/       # 機械学習
+│   │   ├── sas/                    # SAS
+│   │   ├── sas-intermediate/       # SAS中級
+│   │   └── sas-viya/               # SAS Viya
 │   └── statistical-analysis/       # 統計解析
 ├── business-saas/                   # 業務SaaS／プラットフォーム
-│   ├── excel-basic/                # Excel基礎
+│   ├── excel-beginner/             # Excel入門
 │   ├── vba/                        # VBA (Excel VBA)
 │   ├── access-vba/                 # Access VBA
+│   ├── outsystems/                 # OutSystems
 │   └── sap/                        # SAP
 ├── certification/                   # 資格・認定試験
-│   └── it-passport/                # ITパスポート
+│   ├── it-passport/                # ITパスポート
+│   └── it-passport-practice/       # ITパスポート練習問題
 └── business-domain-knowledge/       # 業務知識・スキル
     ├── finance-accounting/         # 会計・財務
     └── business-docs/              # ビジネス文書

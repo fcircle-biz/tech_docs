@@ -124,6 +124,7 @@
 ### 設計手法・モデリング
 
 - **[UML学習ガイド](docs/guide/design-modeling/software-design/uml/README.md)** - UML（統一モデリング言語）の基礎から実践的なシステム設計まで14章完成カリキュラム。無料ツール（draw.io、PlantUML）の使い方、ユースケース図、クラス図、シーケンス図、アクティビティ図、ステートマシン図、コンポーネント図、デプロイメント図、実践演習、チーム開発での活用まで完全未経験者向けに段階的に習得
+- **[ER図入門学習ガイド](docs/guide/design-modeling/data-modeling/er-diagram/README.md)** - ER図（Entity-Relationship Diagram）によるデータベース設計の基礎から実践まで15章完成カリキュラム。無料ツールdraw.ioを使用した実践的なER図作成手法、エンティティ・属性・リレーションシップの基本概念、カーディナリティ、IE記法、正規化、物理設計まで完全未経験者向けに段階的に習得
 - **[要求工学学習ガイド](docs/guide/design-modeling/software-design/requirements-engineering/README.md)** - 要求工学の基礎理論から実践的な要求分析・管理まで10章完成カリキュラム
 
 ### SaaS／PaaS／アプリケーション
