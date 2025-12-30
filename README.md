@@ -162,6 +162,7 @@ PDF形式のスライド教材をブラウザで閲覧できる教材です。
 #### Microsoft Office
 
 - **[Excel入門](https://fcircle-biz.github.io/tech_docs/slide/business-saas/microsoft-office/excel-basics/index.html)** - Excelの基本操作から実践的な活用方法まで学べるスライド教材
+- **[Word入門](https://fcircle-biz.github.io/tech_docs/slide/business-saas/microsoft-office/word-basics/index.html)** - Wordの基本操作から文書作成、表・画像の挿入まで学べるスライド教材
 - **[Access入門](https://fcircle-biz.github.io/tech_docs/slide/business-saas/microsoft-office/access-basics/index.html)** - Accessの基本操作からデータベース設計、クエリ、フォーム、レポート、マクロまで学べるスライド教材
 
 ### 資格・認定試験
