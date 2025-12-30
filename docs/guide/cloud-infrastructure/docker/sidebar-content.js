@@ -1,13 +1,18 @@
 /**
- * サイドバーコンテンツ生成JavaScript - Docker学習教材
+ * サイドバーコンテンツ生成JavaScript
  * 各章のHTMLから共通のサイドバー部分を動的に生成
+ *
+ * 【使い方】
+ * 1. このファイルを各技術フォルダにコピー
+ * 2. chapters配列を実際の章構成に合わせて編集
+ * 3. HTMLファイルで <script src="sidebar-content.js"></script> を読み込む
  */
 
 (function() {
     'use strict';
 
     // ========================================
-    // Docker学習教材 - 全10章の定義
+    // Docker入門ガイド 章の定義データ
     // ========================================
     const chapters = [
         { number: 1, title: '第1章: Dockerとは何か', file: 'docker-learning-material-01.html' },
@@ -17,7 +22,7 @@
         { number: 5, title: '第5章: Webサーバーを動かしてみよう', file: 'docker-learning-material-05.html' },
         { number: 6, title: '第6章: Dockerfileを書いてみよう', file: 'docker-learning-material-06.html' },
         { number: 7, title: '第7章: データを保存しよう', file: 'docker-learning-material-07.html' },
-        { number: 8, title: '第8章: Docker Composeで複数コンテナ管理', file: 'docker-learning-material-08.html' },
+        { number: 8, title: '第8章: Docker Composeで複数のコンテナを管理', file: 'docker-learning-material-08.html' },
         { number: 9, title: '第9章: 実践プロジェクト', file: 'docker-learning-material-09.html' },
         { number: 10, title: '第10章: トラブルシューティング', file: 'docker-learning-material-10.html' }
     ];
@@ -67,12 +72,9 @@
 
         const sidebarHTML = `
         <!-- サイドバー -->
-        <aside id="sidebar" class="fixed md:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
+        <aside id="sidebar" class="fixed lg:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
                                    bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
-                                   transform -translate-x-full md:translate-x-0 sidebar-transition sidebar-resizable"
-               style="--sidebar-width: 320px;">
-            <!-- リサイズハンドル -->
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle hidden md:block"></div>
+                                   transform -translate-x-full sidebar-transition">
             <div class="p-4">
                 <!-- 進捗インジケーター -->
                 <div class="mb-6 p-4 bg-primary-50 rounded-xl">
@@ -97,13 +99,6 @@ ${chapterListHTML}
             </div>
         </aside>
 
-        <!-- サイドバーオーバーレイ（モバイル用） -->
-        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
-
-        <!-- サイドバートグルボタン（PC用） -->
-        <button id="sidebar-toggle-btn" class="sidebar-toggle-btn hidden md:flex items-center justify-center w-10 h-10">
-            <i class="fas fa-chevron-left text-slate-600"></i>
-        </button>
         `;
 
         return sidebarHTML;
