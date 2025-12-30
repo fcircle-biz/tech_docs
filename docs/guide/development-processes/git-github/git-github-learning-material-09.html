@@ -3,7 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
-    <title>Git/GitHub学習教材 第9章 - プルリクエスト入門</title>
+    <title>Git/GitHub学習教材 第9章 - マージとコンフリクト</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,7 +23,7 @@
             theme: {
                 extend: {
                     colors: {
-                        // Git/GitHub - Slate (GitHub Dark)
+                        // Git/GitHub - Slate カラー
                         primary: {
                             50: '#f8fafc',
                             100: '#f1f5f9',
@@ -55,7 +66,7 @@
 <body class="font-sans bg-slate-50 text-slate-800 antialiased">
     <!-- ヘッダー/ナビゲーションバー -->
     <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
-        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <nav class="w-full px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="flex items-center justify-between py-3">
                 <!-- 左側: ロゴとタイトルセクション -->
                 <div class="flex items-center gap-4">
@@ -93,8 +104,8 @@
                     </div>
                 </div>
 
-                <!-- 右側: モバイルメニューボタン -->
-                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
                     <i class="fas fa-bars text-lg"></i>
                 </button>
             </div>
@@ -107,7 +118,7 @@
 
         <!-- メインコンテンツ -->
         <main class="flex-1 min-w-0">
-            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
                 <!-- パンくずリスト -->
                 <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
                     <a href="#" class="hover:text-primary-600 transition-colors">ホーム</a>
@@ -125,8 +136,8 @@
                             第9章
                         </span>
                     </div>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">プルリクエスト入門 - チーム開発の第一歩</h1>
-                    <p class="text-slate-600">GitHubのプルリクエスト機能を学び、チーム開発の基本を理解します。コードレビューのやり方や、プルリクエストを通じた効果的なコミュニケーションの方法を身につけましょう。</p>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">マージとコンフリクト - 変更の統合と競合解決</h1>
+                    <p class="text-slate-600">ブランチを統合（マージ）する方法と、コンフリクト（競合）の解決方法を学びます。複数の変更を安全に統合するための基礎を理解しましょう。</p>
                 </header>
 
                 <!-- 学習目標カード -->
@@ -142,163 +153,98 @@
                             <ul class="space-y-2">
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>プルリクエスト（Pull Request）とは何か、なぜ使うのか</span>
+                                    <span>マージとは何か、どのように動作するかを理解する</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>プルリクエストの作成方法と説明の書き方</span>
+                                    <span>git mergeコマンドの使い方を習得する</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>コードレビューの基本とコメント機能の使い方</span>
+                                    <span>Fast-forwardマージと3-wayマージの違いを理解する</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>プルリクエストのマージとベストプラクティス</span>
+                                    <span>コンフリクト（競合）の仕組みと発生原因を理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>コンフリクトマーカーを読み解き、手動で解決できる</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>マージを取り消す方法を知る</span>
                                 </li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
-                <!-- セクション1: プルリクエストとは -->
+                <!-- セクション1: マージとは -->
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        9.1 プルリクエストとは - チーム開発の心臓部
+                        9.1 マージとは - ブランチを1つにまとめる
                     </h2>
 
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        <strong>プルリクエスト（Pull Request、略してPR）</strong>とは、「自分の変更をプロジェクトに取り込んでほしい」というリクエスト（依頼）のことです。GitHubが提供するチーム開発のための最も重要な機能の一つです。
+                        <strong>マージ（Merge）</strong>は、2つのブランチの変更履歴を統合する操作です。例えば、新機能を開発したfeatureブランチをmainブランチに統合したい場合にマージを使います。
                     </p>
 
-                    <!-- 用語解説カード -->
-                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
-                                rounded-xl p-5 mb-6 overflow-hidden">
-                        <div class="flex items-start gap-4">
-                            <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
-                                        flex items-center justify-center">
-                                <i class="fas fa-book text-white"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-blue-800 mb-2">用語解説: プルリクエストの名前の由来</h3>
-                                <p class="text-blue-900 mb-3">
-                                    「プル（Pull）」＋「リクエスト（Request）」という名前は、<strong>「自分の変更を取り込んで（Pull）ほしいという依頼（Request）」</strong>という意味から来ています。
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">マージの基本的なイメージ</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    木の枝が幹に戻るイメージです。枝（featureブランチ）で作業した内容を、幹（mainブランチ）に統合します。
                                 </p>
-                                <ul class="space-y-2 text-blue-900">
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-info-circle text-blue-500 mt-1 flex-shrink-0"></i>
-                                        <span><strong>GitLab</strong>では「マージリクエスト（Merge Request）」と呼ばれます</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-info-circle text-blue-500 mt-1 flex-shrink-0"></i>
-                                        <span>どちらも同じ概念を指しています</span>
-                                    </li>
-                                </ul>
                             </div>
                         </div>
                     </div>
 
-                    <!-- プルリクエストのフロー図 -->
-                    <div class="bg-slate-100 rounded-xl p-5 mb-6">
-                        <h4 class="font-semibold text-slate-700 mb-3">プルリクエストの基本フロー</h4>
-                        <div class="mermaid">
-flowchart LR
-    A[1. ブランチ作成] --> B[2. 変更をコミット]
-    B --> C[3. GitHubにプッシュ]
-    C --> D[4. プルリクエスト作成]
-    D --> E[5. レビュー]
-    E --> F{6. 承認?}
-    F -->|OK| G[7. マージ]
-    F -->|修正依頼| H[修正してコミット]
-    H --> E
-    G --> I[8. ブランチ削除]
+                    <!-- マージの図解 -->
+                    <div class="my-6">
+                        <h3 class="text-lg font-semibold text-slate-700 mb-3">マージの流れ</h3>
+                        <div class="mermaid bg-white rounded-lg p-4 border border-slate-200">
+gitGraph
+    commit id: "Initial"
+    commit id: "A"
+    branch feature
+    checkout feature
+    commit id: "B"
+    commit id: "C"
+    checkout main
+    commit id: "D"
+    merge feature id: "Merge feature"
+    commit id: "E"
                         </div>
+                        <p class="text-sm text-slate-600 mt-2">
+                            mainブランチとfeatureブランチが並行して進み、最終的にマージによって1つに統合されます。
+                        </p>
                     </div>
 
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3">なぜプルリクエストを使うのか？</h3>
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">マージの基本的な手順</h3>
 
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        直接mainブランチに変更をマージすることもできますが、プルリクエストを使うことで多くのメリットがあります。
-                    </p>
-
-                    <div class="grid md:grid-cols-2 gap-4 mb-6">
-                        <!-- メリット1 -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-eye text-purple-600"></i>
-                                </div>
-                                <h4 class="font-bold text-slate-800">コードレビュー</h4>
-                            </div>
-                            <p class="text-slate-600 text-sm">
-                                他の人に変更内容を確認してもらえます。バグの早期発見や、より良いコードへの改善提案を受けられます。
-                            </p>
-                        </div>
-
-                        <!-- メリット2 -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-file-alt text-green-600"></i>
-                                </div>
-                                <h4 class="font-bold text-slate-800">変更の可視化</h4>
-                            </div>
-                            <p class="text-slate-600 text-sm">
-                                何が変更されたかが一覧で見られます。変更の意図や背景も説明できるため、チーム全体で理解を共有できます。
-                            </p>
-                        </div>
-
-                        <!-- メリット3 -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-comments text-blue-600"></i>
-                                </div>
-                                <h4 class="font-bold text-slate-800">議論の場</h4>
-                            </div>
-                            <p class="text-slate-600 text-sm">
-                                コードの特定の行についてコメントでき、議論の履歴が残ります。後から「なぜこうなったか」を追跡できます。
-                            </p>
-                        </div>
-
-                        <!-- メリット4 -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-shield-alt text-amber-600"></i>
-                                </div>
-                                <h4 class="font-bold text-slate-800">品質の担保</h4>
-                            </div>
-                            <p class="text-slate-600 text-sm">
-                                レビューを経ないとマージできない設定にすることで、一定の品質を保ったコードのみが本番に反映されます。
-                            </p>
-                        </div>
+                    <div class="bg-slate-100 border border-slate-200 rounded-lg p-4 my-4">
+                        <ol class="text-slate-700 text-sm space-y-2 list-decimal list-inside">
+                            <li><strong>マージ先のブランチに切り替える</strong> - 例: mainブランチに切り替え</li>
+                            <li><strong>git mergeコマンドを実行</strong> - 例: git merge feature</li>
+                            <li><strong>マージコミットが作成される</strong> - 2つのブランチの変更が統合される</li>
+                        </ol>
                     </div>
                 </section>
 
-                <!-- セクション2: プルリクエストの作成 -->
+                <!-- セクション2: git mergeコマンド -->
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        9.2 プルリクエストの作成方法
+                        9.2 git mergeコマンドの使い方
                     </h2>
 
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        プルリクエストを作成する手順を、実際の操作に沿って見ていきましょう。
+                        マージは<code class="text-red-600 bg-red-50 px-1 py-0.5 rounded">git merge</code>コマンドで実行します。基本的な使い方を見てみましょう。
                     </p>
-
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3">前提条件</h3>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        プルリクエストを作成する前に、以下の準備が必要です：
-                    </p>
-
-                    <ol class="list-decimal list-inside space-y-2 text-slate-600 mb-6">
-                        <li>作業用のブランチを作成している</li>
-                        <li>変更をコミットしている</li>
-                        <li>GitHubにプッシュしている</li>
-                    </ol>
 
                     <!-- 実習カード -->
                     <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
@@ -309,730 +255,627 @@ flowchart LR
                                 <i class="fas fa-code text-white"></i>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">
-                                    実習 9-1: プルリクエストを作成する
-                                </h3>
-                                <p class="text-purple-900 mb-4 break-words">ブランチの変更をGitHubにプッシュし、プルリクエストを作成してみましょう。</p>
+                                <h3 class="text-lg font-semibold text-purple-800 mb-4 break-words">実習: 基本的なマージを実行する</h3>
 
-                                <h4 class="font-medium text-purple-800 mb-2">手順</h4>
-                                <ol class="space-y-3 mb-4">
-                                    <li class="flex items-start gap-3 text-purple-900">
-                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                     flex items-center justify-center text-sm font-medium">1</span>
-                                        <span class="flex-1 min-w-0 break-words">ブランチを作成し、ファイルを変更してコミット</span>
-                                    </li>
-                                    <li class="flex items-start gap-3 text-purple-900">
-                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                     flex items-center justify-center text-sm font-medium">2</span>
-                                        <span class="flex-1 min-w-0 break-words">GitHubにプッシュ</span>
-                                    </li>
-                                    <li class="flex items-start gap-3 text-purple-900">
-                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                     flex items-center justify-center text-sm font-medium">3</span>
-                                        <span class="flex-1 min-w-0 break-words">GitHubでプルリクエストを作成</span>
-                                    </li>
-                                </ol>
+                                <p class="text-purple-900 mb-3 break-words">まず、新しいリポジトリでブランチを作成し、マージを体験してみましょう。</p>
 
-                                <h4 class="font-medium text-purple-800 mb-2">コマンド例</h4>
-                                <div class="code-block-wrapper">
-                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                                        <span class="text-slate-400 text-sm">Terminal</span>
-                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                                onclick="copyCode(this)">
+                                <div class="bg-purple-100 rounded-lg p-4 mb-3">
+                                    <p class="text-purple-900 font-medium mb-2">手順1: 新しいディレクトリとリポジトリを作成</p>
+                                    <div class="code-block-wrapper">
+                                        <button class="copy-btn" onclick="copyCode(this)">
                                             <i class="fas fa-copy"></i>
                                         </button>
+                                        <pre><code class="language-bash"># 新しいディレクトリを作成
+mkdir merge-practice
+cd merge-practice
+
+# Gitリポジトリを初期化
+git init</code></pre>
                                     </div>
-                                    <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># 1. 新しいブランチを作成して切り替え
-git checkout -b feature/add-greeting
+                                </div>
 
-# 2. ファイルを編集（例: README.mdに挨拶を追加）
-echo "Hello, Team!" >> README.md
+                                <div class="bg-purple-100 rounded-lg p-4 mb-3">
+                                    <p class="text-purple-900 font-medium mb-2">手順2: mainブランチで最初のファイルを作成</p>
+                                    <div class="code-block-wrapper">
+                                        <button class="copy-btn" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                        <pre><code class="language-bash"># README.mdを作成
+echo "# マージの練習" > README.md
 
-# 3. 変更をステージングしてコミット
+# コミット
 git add README.md
-git commit -m "READMEに挨拶を追加"
-
-# 4. GitHubにプッシュ
-git push -u origin feature/add-greeting</code></pre>
+git commit -m "initial commit"</code></pre>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3">GitHubでのプルリクエスト作成</h3>
+                                <div class="bg-purple-100 rounded-lg p-4 mb-3">
+                                    <p class="text-purple-900 font-medium mb-2">手順3: 新しいブランチを作成して変更を追加</p>
+                                    <div class="code-block-wrapper">
+                                        <button class="copy-btn" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                        <pre><code class="language-bash"># featureブランチを作成して切り替え
+git switch -c feature
 
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        プッシュした後、GitHubのリポジトリページを開くと、黄色い通知バナーが表示されます。
-                    </p>
+# 新しいファイルを追加
+echo "新機能の説明" > feature.txt
+git add feature.txt
+git commit -m "add feature.txt"</code></pre>
+                                    </div>
+                                </div>
 
-                    <div class="bg-slate-100 rounded-xl p-5 mb-6">
-                        <h4 class="font-semibold text-slate-700 mb-3">プルリクエスト作成画面の要素</h4>
-                        <div class="mermaid">
-flowchart TB
-    subgraph PR[プルリクエスト作成画面]
-        direction TB
-        T[タイトル] --> D[説明 Description]
-        D --> R[レビュアー Reviewers]
-        R --> A[担当者 Assignees]
-        A --> L[ラベル Labels]
-        L --> P[プロジェクト Projects]
-        P --> M[マイルストーン Milestone]
-    end
-                        </div>
-                    </div>
+                                <div class="bg-purple-100 rounded-lg p-4">
+                                    <p class="text-purple-900 font-medium mb-2">手順4: mainブランチに戻ってマージ</p>
+                                    <div class="code-block-wrapper">
+                                        <button class="copy-btn" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                        <pre><code class="language-bash"># mainブランチに切り替え
+git switch main
 
-                    <!-- 注意カード -->
-                    <div class="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200
-                                rounded-xl p-5 mb-6 overflow-hidden">
-                        <div class="flex items-start gap-4">
-                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg
-                                        flex items-center justify-center">
-                                <i class="fas fa-lightbulb text-white"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-emerald-800 mb-2">GitHub Desktopからの作成</h3>
-                                <p class="text-emerald-900 mb-3">
-                                    GitHub Desktopを使っている場合、プッシュ後に「Create Pull Request」ボタンが表示されます。
-                                    クリックするとブラウザでGitHubのプルリクエスト作成画面が開きます。
-                                </p>
+# featureブランチをマージ
+git merge feature
+
+# ログを確認
+git log --oneline --graph</code></pre>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- セクション3: プルリクエストの説明の書き方 -->
+                <!-- セクション3: Fast-forwardマージと3-wayマージ -->
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        9.3 良いプルリクエストの説明の書き方
+                        9.3 Fast-forwardマージと3-wayマージの違い
                     </h2>
 
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        プルリクエストの説明（Description）は、レビュアーが変更内容を理解するための重要な情報源です。良い説明を書くことで、レビューがスムーズに進み、マージまでの時間が短縮されます。
+                        Gitのマージには、主に2つのタイプがあります。どちらのタイプになるかは、ブランチの状況によって自動的に決まります。
                     </p>
 
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3">説明に含めるべき項目</h3>
-
-                    <div class="space-y-4 mb-6">
-                        <!-- 項目1 -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-start gap-4">
-                                <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg
-                                            flex items-center justify-center">
-                                    <i class="fas fa-question-circle text-blue-600"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-slate-800 mb-1">何を変更したか（What）</h4>
-                                    <p class="text-slate-600 text-sm">
-                                        変更の概要を簡潔に説明します。どのファイルを変更したか、どんな機能を追加・修正したかを記載します。
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 項目2 -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-start gap-4">
-                                <div class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-lg
-                                            flex items-center justify-center">
-                                    <i class="fas fa-lightbulb text-green-600"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-slate-800 mb-1">なぜ変更したか（Why）</h4>
-                                    <p class="text-slate-600 text-sm">
-                                        変更の理由や背景を説明します。関連するIssue番号があれば、「#123」のように記載してリンクします。
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 項目3 -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-start gap-4">
-                                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-lg
-                                            flex items-center justify-center">
-                                    <i class="fas fa-cogs text-purple-600"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-slate-800 mb-1">どうやって変更したか（How）</h4>
-                                    <p class="text-slate-600 text-sm">
-                                        技術的なアプローチや実装方法を説明します。特殊な対応をした場合は、その理由も記載します。
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 項目4 -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-start gap-4">
-                                <div class="flex-shrink-0 w-10 h-10 bg-amber-100 rounded-lg
-                                            flex items-center justify-center">
-                                    <i class="fas fa-vial text-amber-600"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-slate-800 mb-1">テスト方法</h4>
-                                    <p class="text-slate-600 text-sm">
-                                        変更をどうやって確認したか、レビュアーがどうやって動作確認できるかを記載します。
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- コードブロック: テンプレート例 -->
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">プルリクエストの説明テンプレート</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-markdown">## 概要
-<!-- 何を変更したか簡潔に説明 -->
-ユーザー登録フォームにメールアドレスの形式チェックを追加しました。
-
-## 変更理由
-<!-- なぜこの変更が必要か -->
-- 関連Issue: #42
-- 不正なメールアドレスでの登録を防ぐため
-
-## 変更内容
-<!-- 具体的な変更点 -->
-- `validateEmail()` 関数を追加
-- フォーム送信前にバリデーションを実行
-- エラーメッセージを表示
-
-## テスト方法
-<!-- 動作確認の手順 -->
-1. 登録フォームを開く
-2. 不正なメールアドレス（例: "test"）を入力
-3. エラーメッセージが表示されることを確認
-
-## スクリーンショット
-<!-- 必要に応じて画像を添付 -->
-</code></pre>
-                    </div>
-
-                    <!-- ヒントカード -->
-                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-blue-900 font-medium break-words">ヒント</p>
-                                <p class="text-blue-800 text-sm mt-1 break-words">
-                                    プロジェクトによっては、プルリクエストのテンプレートが用意されています。
-                                    <code class="bg-blue-100 px-1 rounded">.github/PULL_REQUEST_TEMPLATE.md</code> というファイルがあれば、
-                                    自動的にテンプレートが読み込まれます。
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- セクション4: レビューとコメント -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        9.4 レビューとコメント機能
-                    </h2>
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3">Fast-forwardマージ</h3>
 
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        プルリクエストが作成されると、チームメンバーは変更内容を確認（レビュー）し、コメントを残すことができます。
+                        <strong>Fast-forward（早送り）マージ</strong>は、マージ先のブランチが全く進んでいない場合に発生します。ブランチポインタを単純に前に進めるだけで済みます。
                     </p>
 
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3">レビューの種類</h3>
-
-                    <div class="overflow-x-auto mb-6">
-                        <table class="w-full border-collapse bg-white rounded-lg overflow-hidden shadow-sm">
-                            <thead>
-                                <tr class="bg-slate-100">
-                                    <th class="px-4 py-3 text-left font-semibold text-slate-700 border-b">種類</th>
-                                    <th class="px-4 py-3 text-left font-semibold text-slate-700 border-b">意味</th>
-                                    <th class="px-4 py-3 text-left font-semibold text-slate-700 border-b">使う場面</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="border-b">
-                                    <td class="px-4 py-3 text-slate-600">
-                                        <span class="inline-flex items-center gap-1 text-green-600">
-                                            <i class="fas fa-check-circle"></i> Approve
-                                        </span>
-                                    </td>
-                                    <td class="px-4 py-3 text-slate-600">承認</td>
-                                    <td class="px-4 py-3 text-slate-600">問題なし、マージOK</td>
-                                </tr>
-                                <tr class="border-b">
-                                    <td class="px-4 py-3 text-slate-600">
-                                        <span class="inline-flex items-center gap-1 text-red-600">
-                                            <i class="fas fa-times-circle"></i> Request changes
-                                        </span>
-                                    </td>
-                                    <td class="px-4 py-3 text-slate-600">修正依頼</td>
-                                    <td class="px-4 py-3 text-slate-600">修正が必要な箇所がある</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-3 text-slate-600">
-                                        <span class="inline-flex items-center gap-1 text-slate-600">
-                                            <i class="fas fa-comment"></i> Comment
-                                        </span>
-                                    </td>
-                                    <td class="px-4 py-3 text-slate-600">コメントのみ</td>
-                                    <td class="px-4 py-3 text-slate-600">質問や提案がある場合</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3">コメントの種類</h3>
-
-                    <div class="grid md:grid-cols-2 gap-4 mb-6">
-                        <!-- 一般コメント -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-comment text-slate-600"></i>
-                                </div>
-                                <h4 class="font-bold text-slate-800">一般コメント</h4>
-                            </div>
-                            <p class="text-slate-600 text-sm">
-                                プルリクエスト全体に対するコメント。「Conversation」タブから投稿します。全体的な感想や質問に使います。
-                            </p>
-                        </div>
-
-                        <!-- 行コメント -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-code text-blue-600"></i>
-                                </div>
-                                <h4 class="font-bold text-slate-800">行コメント</h4>
-                            </div>
-                            <p class="text-slate-600 text-sm">
-                                特定のコード行に対するコメント。「Files changed」タブで、行番号の「+」ボタンをクリックして投稿します。
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- レビューフロー図 -->
-                    <div class="bg-slate-100 rounded-xl p-5 mb-6">
-                        <h4 class="font-semibold text-slate-700 mb-3">レビューの流れ</h4>
-                        <div class="mermaid">
-sequenceDiagram
-    participant A as 作成者
-    participant R as レビュアー
-    participant GH as GitHub
-
-    A->>GH: プルリクエスト作成
-    GH->>R: レビュー依頼通知
-    R->>GH: コードを確認
-    R->>GH: コメント/レビュー投稿
-    GH->>A: コメント通知
-    A->>GH: 修正をコミット&プッシュ
-    A->>GH: コメントに返信
-    R->>GH: 再確認
-    R->>GH: Approve
-    A->>GH: マージ
-                        </div>
-                    </div>
-
-                    <!-- ヒントカード -->
-                    <div class="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200
-                                rounded-xl p-5 mb-6 overflow-hidden">
-                        <div class="flex items-start gap-4">
-                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg
-                                        flex items-center justify-center">
-                                <i class="fas fa-star text-white"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-emerald-800 mb-2">良いレビューコメントの例</h3>
-                                <ul class="space-y-2 text-emerald-900">
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
-                                        <span>「この変数名を<code class="bg-emerald-100 px-1 rounded">userEmail</code>にすると意図が明確になると思います」</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
-                                        <span>「このループは<code class="bg-emerald-100 px-1 rounded">forEach</code>より<code class="bg-emerald-100 px-1 rounded">map</code>の方が適切かもしれません」</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
-                                        <span>「この実装、分かりやすくて良いですね！」</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- セクション5: 変更の追加とレビューへの対応 -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        9.5 レビュー指摘への対応
-                    </h2>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        レビューで修正依頼を受けた場合、どのように対応すればよいでしょうか。プルリクエストは一度作成した後も、追加のコミットをプッシュすることで更新できます。
-                    </p>
-
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3">修正の手順</h3>
-
-                    <!-- コードブロック -->
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">Terminal</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># 1. プルリクエスト用のブランチに切り替え
-git checkout feature/add-greeting
-
-# 2. 指摘された箇所を修正
-# （ファイルを編集）
-
-# 3. 修正をコミット
-git add .
-git commit -m "レビュー指摘対応: 変数名を修正"
-
-# 4. GitHubにプッシュ（同じブランチへ）
-git push origin feature/add-greeting</code></pre>
-                    </div>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        プッシュすると、プルリクエストに新しいコミットが自動的に追加されます。レビュアーは新しいコミットを確認し、再度レビューできます。
-                    </p>
-
-                    <!-- 注意カード -->
-                    <div class="bg-orange-50 border-l-4 border-orange-500 p-4 my-6 rounded-r-lg overflow-hidden">
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-exclamation-circle text-orange-600 mt-1"></i>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-orange-900 font-medium break-words">注意</p>
-                                <p class="text-orange-800 text-sm mt-1 break-words">
-                                    修正後は、レビューで指摘されたコメントに対して「対応しました」などと返信しましょう。
-                                    コミュニケーションを取ることで、レビュアーが再確認しやすくなります。
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3">Resolveボタンの活用</h3>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        レビューコメントに対応したら、「Resolve conversation」ボタンをクリックして、
-                        対応済みであることを示すことができます。これにより、未対応のコメントが把握しやすくなります。
-                    </p>
-                </section>
-
-                <!-- セクション6: プルリクエストのマージ -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        9.6 プルリクエストのマージ
-                    </h2>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        レビューが承認されたら、いよいよマージ（統合）です。GitHubでは3種類のマージ方法が選べます。
-                    </p>
-
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3">マージの種類</h3>
-
-                    <div class="space-y-4 mb-6">
-                        <!-- Create a merge commit -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-start gap-4">
-                                <div class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-lg
-                                            flex items-center justify-center">
-                                    <i class="fas fa-code-merge text-green-600"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-slate-800 mb-1">Create a merge commit</h4>
-                                    <p class="text-slate-600 mb-2">
-                                        マージコミットを作成して統合します。全てのコミット履歴が残り、いつマージされたかが明確になります。
-                                    </p>
-                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-sm rounded">最も一般的</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Squash and merge -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-start gap-4">
-                                <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg
-                                            flex items-center justify-center">
-                                    <i class="fas fa-compress-arrows-alt text-blue-600"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-slate-800 mb-1">Squash and merge</h4>
-                                    <p class="text-slate-600 mb-2">
-                                        複数のコミットを1つにまとめてマージします。細かいコミットが多い場合に履歴をスッキリさせられます。
-                                    </p>
-                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 text-sm rounded">履歴を整理したい場合</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Rebase and merge -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-start gap-4">
-                                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-lg
-                                            flex items-center justify-center">
-                                    <i class="fas fa-layer-group text-purple-600"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-slate-800 mb-1">Rebase and merge</h4>
-                                    <p class="text-slate-600 mb-2">
-                                        コミットをmainブランチの先頭に直線的に配置します。マージコミットが作られず、履歴が直線的になります。
-                                    </p>
-                                    <span class="px-2 py-1 bg-purple-100 text-purple-700 text-sm rounded">上級者向け</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- マージ方法の図 -->
-                    <div class="bg-slate-100 rounded-xl p-5 mb-6">
-                        <h4 class="font-semibold text-slate-700 mb-3">マージ方法の違い</h4>
-                        <div class="mermaid">
+                    <div class="mermaid bg-white rounded-lg p-4 border border-slate-200 mb-4">
 gitGraph
     commit id: "A"
     commit id: "B"
     branch feature
+    checkout feature
     commit id: "C"
     commit id: "D"
     checkout main
-    merge feature id: "Merge commit"
-    commit id: "E"
+    merge feature tag: "Fast-forward"
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">Fast-forwardマージの特徴</p>
+                                <ul class="text-emerald-800 text-sm mt-2 space-y-1">
+                                    <li>新しいマージコミットは作成されない</li>
+                                    <li>mainブランチのポインタがfeatureブランチの位置まで移動するだけ</li>
+                                    <li>履歴が一直線になり、シンプルで見やすい</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- ヒントカード -->
-                    <div class="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">3-wayマージ</h3>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>3-wayマージ</strong>は、両方のブランチが分岐後に独立して進んでいる場合に発生します。2つのブランチの変更を統合した新しいマージコミットが作成されます。
+                    </p>
+
+                    <div class="mermaid bg-white rounded-lg p-4 border border-slate-200 mb-4">
+gitGraph
+    commit id: "A"
+    commit id: "B"
+    branch feature
+    checkout feature
+    commit id: "C"
+    commit id: "D"
+    checkout main
+    commit id: "E"
+    commit id: "F"
+    merge feature id: "Merge commit"
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">3-wayマージの特徴</p>
+                                <ul class="text-emerald-800 text-sm mt-2 space-y-1">
+                                    <li>新しいマージコミットが作成される</li>
+                                    <li>マージコミットは2つの親コミットを持つ</li>
+                                    <li>並行開発の履歴が明確に残る</li>
+                                    <li>共通の祖先（分岐点）、2つのブランチの先端の3つを使って統合（3-way）</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto my-6">
+                        <table class="w-full border-collapse bg-white rounded-lg overflow-hidden shadow-sm">
+                            <thead class="bg-slate-100">
+                                <tr>
+                                    <th class="border border-slate-200 px-4 py-3 text-left text-slate-700">特徴</th>
+                                    <th class="border border-slate-200 px-4 py-3 text-left text-slate-700">Fast-forward</th>
+                                    <th class="border border-slate-200 px-4 py-3 text-left text-slate-700">3-way</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border border-slate-200 px-4 py-3 font-medium text-slate-700">発生条件</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">マージ先が分岐後に進んでいない</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">両方のブランチが進んでいる</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-200 px-4 py-3 font-medium text-slate-700">マージコミット</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">作成されない</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">作成される</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-200 px-4 py-3 font-medium text-slate-700">履歴の見た目</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">一直線</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">分岐と統合</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- セクション4: コンフリクトとは -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        9.4 コンフリクト（競合）とは
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>コンフリクト（競合、Conflict）</strong>は、2つのブランチで同じファイルの同じ場所を異なる方法で編集した場合に発生します。Gitは自動的に統合できないため、手動で解決する必要があります。
+                    </p>
+
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-red-900 font-medium break-words">コンフリクトが発生する例</p>
+                                <ul class="text-red-800 text-sm mt-2 space-y-2">
+                                    <li><strong>同じ行を異なる内容で編集</strong> - mainで「こんにちは」、featureで「Hello」に変更</li>
+                                    <li><strong>隣接する行の編集</strong> - 近い位置で異なる変更をした場合も競合する可能性がある</li>
+                                    <li><strong>一方が削除、一方が編集</strong> - mainで削除、featureで編集した場合</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mermaid bg-white rounded-lg p-4 border border-slate-200 mb-4">
+gitGraph
+    commit id: "A: ファイルの初期状態"
+    branch feature
+    checkout feature
+    commit id: "B: 同じ行をHelloに変更"
+    checkout main
+    commit id: "C: 同じ行をこんにちはに変更"
+    merge feature id: "コンフリクト発生！"
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        上記の例では、同じファイルの同じ行をmainブランチとfeatureブランチで異なる内容に編集しているため、マージ時にコンフリクトが発生します。
+                    </p>
+                </section>
+
+                <!-- セクション5: コンフリクトの発生と確認 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        9.5 コンフリクトの発生と確認方法
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        実際にコンフリクトを発生させて、その確認方法を学びましょう。
+                    </p>
+
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
                                 rounded-xl p-5 mb-6 overflow-hidden">
                         <div class="flex items-start gap-4">
-                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
                                         flex items-center justify-center">
-                                <i class="fas fa-lightbulb text-white"></i>
+                                <i class="fas fa-code text-white"></i>
                             </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-emerald-800 mb-2">初心者へのおすすめ</h3>
-                                <p class="text-emerald-900">
-                                    迷ったら「Create a merge commit」を選びましょう。履歴が全て残り、何が起きたか追跡しやすくなります。
-                                    チームで方針が決まっている場合は、その方針に従ってください。
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-4 break-words">実習: コンフリクトを発生させる</h3>
+
+                                <div class="bg-purple-100 rounded-lg p-4 mb-3">
+                                    <p class="text-purple-900 font-medium mb-2">手順1: 新しいリポジトリを作成</p>
+                                    <div class="code-block-wrapper">
+                                        <button class="copy-btn" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                        <pre><code class="language-bash">mkdir conflict-practice
+cd conflict-practice
+git init
+
+# greeting.txtを作成
+echo "おはよう" > greeting.txt
+git add greeting.txt
+git commit -m "initial greeting"</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="bg-purple-100 rounded-lg p-4 mb-3">
+                                    <p class="text-purple-900 font-medium mb-2">手順2: featureブランチで同じ行を編集</p>
+                                    <div class="code-block-wrapper">
+                                        <button class="copy-btn" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                        <pre><code class="language-bash"># featureブランチを作成
+git switch -c feature
+
+# greeting.txtを編集（内容を「Hello」に変更）
+echo "Hello" > greeting.txt
+git add greeting.txt
+git commit -m "change to English"</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="bg-purple-100 rounded-lg p-4 mb-3">
+                                    <p class="text-purple-900 font-medium mb-2">手順3: mainブランチでも同じ行を編集</p>
+                                    <div class="code-block-wrapper">
+                                        <button class="copy-btn" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                        <pre><code class="language-bash"># mainブランチに戻る
+git switch main
+
+# greeting.txtを編集（内容を「こんにちは」に変更）
+echo "こんにちは" > greeting.txt
+git add greeting.txt
+git commit -m "change to polite Japanese"</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="bg-purple-100 rounded-lg p-4">
+                                    <p class="text-purple-900 font-medium mb-2">手順4: マージを試みる（コンフリクト発生）</p>
+                                    <div class="code-block-wrapper">
+                                        <button class="copy-btn" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                        <pre><code class="language-bash"># featureブランチをマージ
+git merge feature
+
+# コンフリクトが発生し、以下のようなメッセージが表示される
+# Auto-merging greeting.txt
+# CONFLICT (content): Merge conflict in greeting.txt
+# Automatic merge failed; fix conflicts and then commit the result.</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">コンフリクトの状態を確認する</h3>
+
+                    <div class="code-block-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <pre><code class="language-bash"># コンフリクトが発生しているファイルを確認
+git status
+
+# 以下のような出力が表示される
+# On branch main
+# You have unmerged paths.
+#   (fix conflicts and run "git commit")
+#   (use "git merge --abort" to abort the merge)
+#
+# Unmerged paths:
+#   (use "git add <file>..." to mark resolution)
+#         both modified:   greeting.txt</code></pre>
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed mt-4">
+                        <code class="text-red-600 bg-red-50 px-1 py-0.5 rounded">both modified</code>は、両方のブランチで同じファイルが編集されたことを示しています。
+                    </p>
+                </section>
+
+                <!-- セクション6: コンフリクトマーカーの読み方 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        9.6 コンフリクトマーカーの読み方
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        コンフリクトが発生すると、Gitはファイル内に特殊なマーカーを挿入します。これを<strong>コンフリクトマーカー</strong>と呼びます。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3">コンフリクトマーカーの構造</h3>
+
+                    <div class="code-block-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <pre><code class="language-txt"><<<<<<< HEAD
+こんにちは
+=======
+Hello
+>>>>>>> feature</code></pre>
+                    </div>
+
+                    <div class="bg-slate-100 border border-slate-200 rounded-lg p-4 my-4">
+                        <h4 class="font-semibold text-slate-900 mb-2">マーカーの意味</h4>
+                        <ul class="text-slate-700 text-sm space-y-2">
+                            <li><code class="text-red-600 bg-red-50 px-1 py-0.5 rounded">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code> - 現在のブランチ（HEAD）の内容の開始</li>
+                            <li><code class="text-red-600 bg-red-50 px-1 py-0.5 rounded">=======</code> - 2つの変更内容の区切り</li>
+                            <li><code class="text-red-600 bg-red-50 px-1 py-0.5 rounded">&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature</code> - マージしようとしているブランチの内容の終了</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">読み方のポイント</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>と<code>=======</code>の間が「現在のブランチの変更」、
+                                    <code>=======</code>と<code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>の間が「マージしようとしているブランチの変更」です。
                                 </p>
                             </div>
                         </div>
                     </div>
-
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3">マージ後のブランチ削除</h3>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        マージが完了すると、「Delete branch」ボタンが表示されます。作業が完了したブランチは削除してリポジトリを整理しましょう。
-                        削除しても、プルリクエストの履歴やコミット履歴は残ります。
-                    </p>
                 </section>
 
-                <!-- セクション7: ドラフトプルリクエスト -->
+                <!-- セクション7: コンフリクトの解決手順 -->
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        9.7 ドラフトプルリクエストの活用
+                        9.7 コンフリクトの解決手順
                     </h2>
 
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        <strong>ドラフトプルリクエスト（Draft Pull Request）</strong>は、「まだ作業中」であることを示すプルリクエストです。
-                        正式なレビューを依頼する前に、早い段階でフィードバックを得たい場合に便利です。
+                        コンフリクトを解決するには、マーカーを手動で編集し、どちらの変更を採用するかを決定します。
                     </p>
 
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3">ドラフトPRの使いどころ</h3>
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3">解決方法の3つの選択肢</h3>
 
-                    <div class="grid md:grid-cols-2 gap-4 mb-6">
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-comments text-slate-600"></i>
-                                </div>
-                                <h4 class="font-bold text-slate-800">早期フィードバック</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i class="fas fa-arrow-left text-blue-600"></i>
+                                <h4 class="font-semibold text-blue-900">現在のブランチを採用</h4>
                             </div>
-                            <p class="text-slate-600 text-sm">
-                                実装の方向性が正しいか、完成前に確認したい場合。大きな手戻りを防げます。
-                            </p>
-                        </div>
-
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-tasks text-slate-600"></i>
-                                </div>
-                                <h4 class="font-bold text-slate-800">作業の可視化</h4>
-                            </div>
-                            <p class="text-slate-600 text-sm">
-                                チームに「今この作業をしている」ことを共有したい場合。進捗の見える化に役立ちます。
-                            </p>
-                        </div>
-                    </div>
-
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3">ドラフトPRの作成方法</h3>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        プルリクエスト作成時に、「Create pull request」ボタンの横にある矢印をクリックし、
-                        「Create draft pull request」を選択します。
-                    </p>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        作業が完了したら、「Ready for review」ボタンをクリックして正式なプルリクエストに変更できます。
-                    </p>
-                </section>
-
-                <!-- セクション8: ベストプラクティス -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        9.8 プルリクエストのベストプラクティス
-                    </h2>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        効果的なプルリクエストを作成するためのポイントをまとめます。
-                    </p>
-
-                    <div class="space-y-4 mb-6">
-                        <!-- ベストプラクティス1 -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-start gap-4">
-                                <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg
-                                            flex items-center justify-center">
-                                    <span class="font-bold text-blue-600">1</span>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-slate-800 mb-1">小さく保つ</h4>
-                                    <p class="text-slate-600 text-sm">
-                                        1つのプルリクエストは1つの目的に絞りましょう。大きなPRはレビューが難しく、バグの見落としが増えます。
-                                        目安として、変更行数は200-400行程度が適切です。
-                                    </p>
-                                </div>
+                            <p class="text-blue-800 text-sm">mainブランチの変更を残す</p>
+                            <div class="code-block-wrapper mt-2">
+                                <pre><code class="language-txt">こんにちは</code></pre>
                             </div>
                         </div>
 
-                        <!-- ベストプラクティス2 -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-start gap-4">
-                                <div class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-lg
-                                            flex items-center justify-center">
-                                    <span class="font-bold text-green-600">2</span>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-slate-800 mb-1">わかりやすいタイトル</h4>
-                                    <p class="text-slate-600 text-sm">
-                                        タイトルを見ただけで何のPRかわかるようにしましょう。
-                                        「修正」「更新」ではなく、「ログイン画面にパスワード表示切替ボタンを追加」のように具体的に。
-                                    </p>
-                                </div>
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i class="fas fa-arrow-right text-green-600"></i>
+                                <h4 class="font-semibold text-green-900">相手のブランチを採用</h4>
+                            </div>
+                            <p class="text-green-800 text-sm">featureブランチの変更を残す</p>
+                            <div class="code-block-wrapper mt-2">
+                                <pre><code class="language-txt">Hello</code></pre>
                             </div>
                         </div>
 
-                        <!-- ベストプラクティス3 -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-start gap-4">
-                                <div class="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-lg
-                                            flex items-center justify-center">
-                                    <span class="font-bold text-purple-600">3</span>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-slate-800 mb-1">セルフレビューをする</h4>
-                                    <p class="text-slate-600 text-sm">
-                                        PRを作成したら、まず自分で「Files changed」を確認しましょう。
-                                        デバッグ用のコードや、不要なファイルが含まれていないかチェックします。
-                                    </p>
-                                </div>
+                        <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i class="fas fa-edit text-purple-600"></i>
+                                <h4 class="font-semibold text-purple-900">両方を組み合わせる</h4>
                             </div>
-                        </div>
-
-                        <!-- ベストプラクティス4 -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-start gap-4">
-                                <div class="flex-shrink-0 w-10 h-10 bg-amber-100 rounded-lg
-                                            flex items-center justify-center">
-                                    <span class="font-bold text-amber-600">4</span>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-slate-800 mb-1">レビューに感謝する</h4>
-                                    <p class="text-slate-600 text-sm">
-                                        レビューは時間と労力がかかります。指摘を受けたら、感謝の気持ちを伝えましょう。
-                                        建設的なコミュニケーションがチームの雰囲気を良くします。
-                                    </p>
-                                </div>
+                            <p class="text-purple-800 text-sm">両方の変更を取り入れる</p>
+                            <div class="code-block-wrapper mt-2">
+                                <pre><code class="language-txt">こんにちは / Hello</code></pre>
                             </div>
                         </div>
                     </div>
 
-                    <!-- やってはいけないことカード -->
-                    <div class="bg-gradient-to-r from-rose-50 to-red-50 border border-rose-200
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
                                 rounded-xl p-5 mb-6 overflow-hidden">
                         <div class="flex items-start gap-4">
-                            <div class="flex-shrink-0 w-10 h-10 bg-rose-500 rounded-lg
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
                                         flex items-center justify-center">
-                                <i class="fas fa-exclamation-triangle text-white"></i>
+                                <i class="fas fa-code text-white"></i>
                             </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-rose-800 mb-2">避けるべきこと</h3>
-                                <ul class="space-y-2 text-rose-900">
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-times-circle text-rose-500 mt-1 flex-shrink-0"></i>
-                                        <span>「いろいろ修正」のような曖昧なタイトル</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-times-circle text-rose-500 mt-1 flex-shrink-0"></i>
-                                        <span>説明なしのプルリクエスト</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-times-circle text-rose-500 mt-1 flex-shrink-0"></i>
-                                        <span>複数の無関係な変更を1つのPRにまとめる</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-times-circle text-rose-500 mt-1 flex-shrink-0"></i>
-                                        <span>レビュー指摘を無視する</span>
-                                    </li>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-4 break-words">実習: コンフリクトを解決する</h3>
+
+                                <div class="bg-purple-100 rounded-lg p-4 mb-3">
+                                    <p class="text-purple-900 font-medium mb-2">手順1: ファイルを開いてコンフリクトマーカーを確認</p>
+                                    <div class="code-block-wrapper">
+                                        <button class="copy-btn" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                        <pre><code class="language-bash"># VS Codeやテキストエディタでgreeting.txtを開く
+cat greeting.txt
+
+# 以下のような内容が表示される
+# <<<<<<< HEAD
+# こんにちは
+# =======
+# Hello
+# >>>>>>> feature</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="bg-purple-100 rounded-lg p-4 mb-3">
+                                    <p class="text-purple-900 font-medium mb-2">手順2: マーカーを削除し、望む内容に編集</p>
+                                    <p class="text-purple-800 text-sm mb-2">ここでは両方を組み合わせてみましょう。</p>
+                                    <div class="code-block-wrapper">
+                                        <button class="copy-btn" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                        <pre><code class="language-bash"># greeting.txtを編集して以下の内容に変更
+echo "こんにちは / Hello" > greeting.txt</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="bg-purple-100 rounded-lg p-4 mb-3">
+                                    <p class="text-purple-900 font-medium mb-2">手順3: 変更をステージングしてコミット</p>
+                                    <div class="code-block-wrapper">
+                                        <button class="copy-btn" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                        <pre><code class="language-bash"># 解決したファイルをステージング
+git add greeting.txt
+
+# マージコミットを作成
+git commit -m "resolve conflict: combine greetings"</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="bg-purple-100 rounded-lg p-4">
+                                    <p class="text-purple-900 font-medium mb-2">手順4: マージが完了したか確認</p>
+                                    <div class="code-block-wrapper">
+                                        <button class="copy-btn" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                        <pre><code class="language-bash"># ステータスを確認
+git status
+
+# ログを確認
+git log --oneline --graph</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">コンフリクト解決のポイント</p>
+                                <ul class="text-emerald-800 text-sm mt-2 space-y-1">
+                                    <li>コンフリクトマーカー（&lt;&lt;&lt;, ===, &gt;&gt;&gt;）は必ず削除する</li>
+                                    <li>どちらの変更を残すか、慎重に判断する</li>
+                                    <li>解決後は必ず<code>git add</code>でステージングする</li>
+                                    <li>複数ファイルでコンフリクトが発生した場合は、全て解決してからコミット</li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- まとめカード -->
-                <div class="bg-gradient-to-r from-slate-100 to-slate-50 border border-slate-300
-                            rounded-xl p-5 mb-6 overflow-hidden">
-                    <div class="flex items-start gap-4">
-                        <div class="flex-shrink-0 w-10 h-10 bg-slate-600 rounded-lg
-                                    flex items-center justify-center">
-                            <i class="fas fa-flag-checkered text-white"></i>
+                <!-- セクション8: マージを取り消す -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        9.8 マージを取り消す方法
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        コンフリクトが複雑で解決が難しい場合、または間違ってマージを開始してしまった場合は、マージを取り消すことができます。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3">git merge --abort</h3>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        マージ中（コンフリクト発生中）の状態から、マージ前の状態に戻すことができます。
+                    </p>
+
+                    <div class="code-block-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <pre><code class="language-bash"># マージを中止して元の状態に戻す
+git merge --abort
+
+# ステータスを確認
+git status</code></pre>
+                    </div>
+
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-red-900 font-medium break-words">注意</p>
+                                <p class="text-red-800 text-sm mt-1 break-words">
+                                    <code>git merge --abort</code>は、マージ中（コンフリクト発生中）にのみ使用できます。マージが完了してコミットされた後は使えません。
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 class="text-lg font-semibold text-slate-800 mb-3">第9章のまとめ</h2>
-                            <ul class="space-y-2">
-                                <li class="flex items-start gap-2 text-slate-700">
-                                    <i class="fas fa-check text-slate-500 mt-1 flex-shrink-0"></i>
-                                    <span><strong>プルリクエスト</strong>は、変更をプロジェクトに取り込む依頼で、チーム開発の中心的な機能</span>
-                                </li>
-                                <li class="flex items-start gap-2 text-slate-700">
-                                    <i class="fas fa-check text-slate-500 mt-1 flex-shrink-0"></i>
-                                    <span><strong>説明文</strong>には「何を」「なぜ」「どうやって」変更したかを書く</span>
-                                </li>
-                                <li class="flex items-start gap-2 text-slate-700">
-                                    <i class="fas fa-check text-slate-500 mt-1 flex-shrink-0"></i>
-                                    <span><strong>レビュー</strong>ではApprove（承認）、Request changes（修正依頼）、Comment（コメント）が選べる</span>
-                                </li>
-                                <li class="flex items-start gap-2 text-slate-700">
-                                    <i class="fas fa-check text-slate-500 mt-1 flex-shrink-0"></i>
-                                    <span><strong>マージ</strong>方法は3種類あり、初心者は「Create a merge commit」がおすすめ</span>
-                                </li>
-                                <li class="flex items-start gap-2 text-slate-700">
-                                    <i class="fas fa-check text-slate-500 mt-1 flex-shrink-0"></i>
-                                    <span><strong>ドラフトPR</strong>は作業中に早期フィードバックを得るのに便利</span>
-                                </li>
-                            </ul>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">完了したマージを取り消す</h3>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        マージが完了してしまった後に取り消したい場合は、<code class="text-red-600 bg-red-50 px-1 py-0.5 rounded">git reset</code>を使用します。
+                    </p>
+
+                    <div class="code-block-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <pre><code class="language-bash"># マージ前の状態に戻す（直前のコミットに戻す）
+git reset --hard HEAD~1
+
+# または、特定のコミットIDに戻す
+git reset --hard コミットID</code></pre>
+                    </div>
+
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-red-900 font-medium break-words">警告</p>
+                                <p class="text-red-800 text-sm mt-1 break-words">
+                                    <code>git reset --hard</code>は危険なコマンドです。作業ディレクトリの変更も全て失われます。リモートにプッシュ済みの場合は使用しないでください。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- トラブルシューティング -->
+                <div class="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200
+                            rounded-xl p-5 my-6 overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-orange-500 rounded-lg
+                                    flex items-center justify-center">
+                            <i class="fas fa-tools text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-orange-800 mb-4 break-words">よくあるトラブルと対処法</h3>
+
+                            <div class="space-y-4">
+                                <div class="bg-orange-100 rounded-lg p-4">
+                                    <h4 class="font-semibold text-orange-900 mb-2 break-words">Q: マージ後にファイルが意図した内容になっていない</h4>
+                                    <p class="text-orange-800 text-sm break-words">
+                                        <strong>A:</strong> コンフリクトマーカーを削除し忘れている可能性があります。ファイルを開いて、<code>&lt;&lt;&lt;</code>、<code>===</code>、<code>&gt;&gt;&gt;</code>が残っていないか確認してください。
+                                    </p>
+                                </div>
+
+                                <div class="bg-orange-100 rounded-lg p-4">
+                                    <h4 class="font-semibold text-orange-900 mb-2 break-words">Q: git commitができない（コンフリクト未解決）</h4>
+                                    <p class="text-orange-800 text-sm break-words">
+                                        <strong>A:</strong> コンフリクトが解決されていません。<code>git status</code>で「both modified」と表示されているファイルを全て解決し、<code>git add</code>でステージングしてからコミットしてください。
+                                    </p>
+                                </div>
+
+                                <div class="bg-orange-100 rounded-lg p-4">
+                                    <h4 class="font-semibold text-orange-900 mb-2 break-words">Q: どちらの変更を残すべきか判断できない</h4>
+                                    <p class="text-orange-800 text-sm break-words">
+                                        <strong>A:</strong> チームメンバーに相談するか、<code>git log</code>や<code>git show</code>でコミット履歴を確認して、変更の意図を理解しましょう。必要であれば、両方の変更を組み合わせる方法も検討してください。
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1049,42 +892,66 @@ gitGraph
                             <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
                             <ol class="space-y-4">
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2 break-words">Q1. プルリクエストを使うメリットを3つ挙げてください。</p>
+                                    <p class="font-medium mb-2 break-words">Q1. マージとは何ですか？簡潔に説明してください。</p>
                                     <details class="mt-2">
                                         <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
-                                            1. <strong>コードレビュー</strong>：他の人に変更内容を確認してもらえる<br>
-                                            2. <strong>変更の可視化</strong>：何が変更されたか一覧で見られる<br>
-                                            3. <strong>議論の場</strong>：コードの特定の行についてコメントでき、議論の履歴が残る<br>
-                                            4. <strong>品質の担保</strong>：レビューを経ないとマージできない設定にできる
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            マージとは、2つのブランチの変更履歴を統合する操作です。例えば、新機能を開発したfeatureブランチをmainブランチに統合する際に使用します。
                                         </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2 break-words">Q2. レビューの3種類（Approve、Request changes、Comment）はそれぞれどのような場合に使いますか？</p>
+                                    <p class="font-medium mb-2 break-words">Q2. Fast-forwardマージと3-wayマージの違いを説明してください。</p>
                                     <details class="mt-2">
                                         <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
-                                            <strong>Approve（承認）</strong>：問題がなく、マージしてOKな場合<br>
-                                            <strong>Request changes（修正依頼）</strong>：修正が必要な箇所がある場合<br>
-                                            <strong>Comment（コメント）</strong>：承認も却下もせず、質問や提案だけしたい場合
-                                        </p>
+                                        <div class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <p class="mb-2"><strong>Fast-forwardマージ</strong>: マージ先のブランチが分岐後に進んでいない場合に発生します。ブランチポインタを前に移動させるだけで、新しいマージコミットは作成されません。</p>
+                                            <p><strong>3-wayマージ</strong>: 両方のブランチが分岐後に進んでいる場合に発生します。2つのブランチの変更を統合した新しいマージコミットが作成されます。</p>
+                                        </div>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2 break-words">Q3. ドラフトプルリクエストはどのような場合に使うと便利ですか？</p>
+                                    <p class="font-medium mb-2 break-words">Q3. コンフリクトが発生する原因を2つ挙げてください。</p>
                                     <details class="mt-2">
                                         <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
-                                            1. <strong>早期フィードバック</strong>：実装の方向性が正しいか、完成前に確認したい場合<br>
-                                            2. <strong>作業の可視化</strong>：チームに「今この作業をしている」ことを共有したい場合<br>
-                                            作業が完了したら「Ready for review」で正式なPRに変更できます。
+                                        <div class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <ul class="list-disc list-inside space-y-1">
+                                                <li>同じファイルの同じ行を異なる内容で編集した場合</li>
+                                                <li>一方のブランチでファイルを削除し、もう一方で編集した場合</li>
+                                                <li>隣接する行を異なる方法で編集した場合（Gitが自動統合できない場合）</li>
+                                            </ul>
+                                        </div>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q4. コンフリクトマーカーの3つの記号とその意味を説明してください。</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <div class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <ul class="list-disc list-inside space-y-1">
+                                                <li><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code>: 現在のブランチ（HEAD）の変更内容の開始</li>
+                                                <li><code>=======</code>: 2つの変更内容の区切り</li>
+                                                <li><code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; ブランチ名</code>: マージしようとしているブランチの変更内容の終了</li>
+                                            </ul>
+                                        </div>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q5. マージ中にコンフリクトが発生した場合、マージを取り消すコマンドは何ですか？</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <code>git merge --abort</code> - このコマンドでマージ前の状態に戻すことができます。ただし、マージ中（コンフリクト発生中）にのみ使用できます。
                                         </p>
                                     </details>
                                 </li>
@@ -1093,26 +960,53 @@ gitGraph
                     </div>
                 </div>
 
+                <!-- 章のまとめ -->
+                <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6 my-6">
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-book text-primary-500"></i>
+                        第9章のまとめ
+                    </h3>
+                    <ul class="space-y-2 text-slate-700">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>マージは2つのブランチの変更履歴を統合する操作</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>Fast-forwardマージは新しいコミットを作らず、3-wayマージはマージコミットを作成する</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>コンフリクトは同じファイルの同じ場所を異なる方法で編集した場合に発生する</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>コンフリクトマーカー（&lt;&lt;&lt;, ===, &gt;&gt;&gt;）を手動で編集して解決する</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>マージを取り消すには<code>git merge --abort</code>を使用する</span>
+                        </li>
+                    </ul>
+                </div>
+
                 <!-- 章間ナビゲーション -->
                 <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
-                    <!-- 前章 -->
                     <a href="git-github-learning-material-08.html"
                        class="group flex items-center gap-3 px-4 py-3 rounded-xl
-                              bg-slate-100 hover:bg-slate-200 transition-colors">
-                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
-                                  transition-transform group-hover:-translate-x-1"></i>
+                              bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+                        <i class="fas fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
                         <div>
                             <span class="text-xs text-slate-500 block">前の章</span>
-                            <span class="text-slate-700 font-medium">マージとコンフリクト</span>
+                            <span class="font-medium">ブランチの基本</span>
                         </div>
                     </a>
-                    <!-- 次章 -->
                     <a href="git-github-learning-material-10.html"
                        class="group flex items-center gap-3 px-4 py-3 rounded-xl
                               bg-primary-500 hover:bg-primary-600 text-white transition-colors">
                         <div class="text-right">
                             <span class="text-xs text-primary-100 block">次の章</span>
-                            <span class="font-medium">実践Git/GitHub</span>
+                            <span class="font-medium">プルリクエスト</span>
                         </div>
                         <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
                     </a>

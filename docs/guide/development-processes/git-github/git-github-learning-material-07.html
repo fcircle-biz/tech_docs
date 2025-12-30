@@ -3,7 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
-    <title>Git/GitHub学習教材 第7章 - ブランチ入門</title>
+    <title>Git/GitHub学習教材 第7章 - リモートリポジトリとの連携</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,7 +23,7 @@
             theme: {
                 extend: {
                     colors: {
-                        // Git/GitHub - Slate (GitHub Dark)
+                        // Git/GitHub - Slate カラー
                         primary: {
                             50: '#f8fafc',
                             100: '#f1f5f9',
@@ -55,7 +66,7 @@
 <body class="font-sans bg-slate-50 text-slate-800 antialiased">
     <!-- ヘッダー/ナビゲーションバー -->
     <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
-        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <nav class="w-full px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="flex items-center justify-between py-3">
                 <!-- 左側: ロゴとタイトルセクション -->
                 <div class="flex items-center gap-4">
@@ -83,7 +94,7 @@
                             </div>
                             <div class="hidden sm:flex items-center gap-1">
                                 <i class="fas fa-clock text-[9px]"></i>
-                                <span>推奨 45分</span>
+                                <span>推奨 40分</span>
                             </div>
                             <div class="hidden lg:flex items-center gap-1">
                                 <i class="fas fa-language text-[9px]"></i>
@@ -93,8 +104,8 @@
                     </div>
                 </div>
 
-                <!-- 右側: モバイルメニューボタン -->
-                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
                     <i class="fas fa-bars text-lg"></i>
                 </button>
             </div>
@@ -107,7 +118,7 @@
 
         <!-- メインコンテンツ -->
         <main class="flex-1 min-w-0">
-            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
                 <!-- パンくずリスト -->
                 <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
                     <a href="#" class="hover:text-primary-600 transition-colors">ホーム</a>
@@ -125,8 +136,8 @@
                             第7章
                         </span>
                     </div>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">ブランチ入門 - 並行作業の基本</h1>
-                    <p class="text-slate-600">ブランチの概念と基本的な使い方を学びます。複数の作業を安全に並行して進めるための重要な機能です。</p>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">リモートリポジトリとの連携 - clone, push, pull</h1>
+                    <p class="text-slate-600">コマンドラインでGitHubと連携する方法を学びます。ローカルで作成したリポジトリをGitHubにアップロードしたり、既存のリポジトリを複製して作業を開始する方法を習得しましょう。</p>
                 </header>
 
                 <!-- 学習目標カード -->
@@ -142,728 +153,771 @@
                             <ul class="space-y-2">
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>ブランチとは何か、なぜ必要なのかを理解する</span>
+                                    <span>git remoteでリモートリポジトリを設定する方法</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>mainブランチの役割と重要性</span>
+                                    <span>git pushでGitHubにアップロードする手順</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>コマンドラインでのブランチ操作（作成・切り替え・削除）</span>
+                                    <span>git pullでGitHubから最新の変更を取得する方法</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>GitHub Desktopでのブランチ操作</span>
+                                    <span>git cloneで既存リポジトリを複製する方法</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>ブランチ運用のベストプラクティス</span>
+                                    <span>HTTPS接続とSSH接続の認証設定を理解する</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
+                                    <span>よくあるエラーとその解決方法を知る</span>
                                 </li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
-                <!-- セクション1: ブランチとは -->
+                <!-- セクション1: リモートリポジトリとは -->
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        7.1 ブランチとは - 木の枝のイメージで理解する
+                        7.1 リモートリポジトリとは
                     </h2>
 
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        <strong>ブランチ（Branch）</strong>とは、英語で「枝」を意味します。Gitにおけるブランチは、開発の流れを「枝分かれ」させる機能です。これにより、メインの作業に影響を与えることなく、新しい機能の開発や実験的な変更を行うことができます。
+                        これまでの章では、自分のパソコン（ローカル）でGitを使ってファイルの履歴を管理してきました。しかし、ローカルだけで管理していると、以下のような問題があります：
                     </p>
 
-                    <!-- ブランチのイメージ図 -->
-                    <div class="bg-slate-100 rounded-xl p-5 mb-6">
-                        <h4 class="font-semibold text-slate-700 mb-3">ブランチのイメージ</h4>
-                        <div class="mermaid">
-gitGraph
-    commit id: "初期コミット"
-    commit id: "機能A追加"
-    branch feature-login
-    checkout feature-login
-    commit id: "ログイン画面作成"
-    commit id: "認証機能追加"
-    checkout main
-    commit id: "バグ修正"
-    checkout feature-login
-    commit id: "ログイン完成"
-    checkout main
-    merge feature-login id: "マージ"
-    commit id: "リリース"
-                        </div>
-                    </div>
-
-                    <!-- 身近な例えカード -->
-                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
-                                rounded-xl p-5 mb-6 overflow-hidden">
-                        <div class="flex items-start gap-4">
-                            <div class="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg
-                                        flex items-center justify-center">
-                                <i class="fas fa-book text-white"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-blue-800 mb-2">身近な例えで理解する</h3>
-                                <p class="text-blue-900 mb-3">
-                                    ブランチは「下書きノート」のようなものです。
-                                </p>
-                                <ul class="space-y-2 text-blue-900">
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-info-circle text-blue-500 mt-1 flex-shrink-0"></i>
-                                        <span><strong>main（本番ノート）</strong>: 完成した内容だけを書く清書用ノート</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-info-circle text-blue-500 mt-1 flex-shrink-0"></i>
-                                        <span><strong>ブランチ（下書きノート）</strong>: 試行錯誤しながら書く練習用ノート</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-info-circle text-blue-500 mt-1 flex-shrink-0"></i>
-                                        <span><strong>マージ</strong>: 下書きが完成したら、本番ノートに書き写す</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3">なぜブランチが必要なのか</h3>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        ブランチがない場合、以下のような問題が発生します。
-                    </p>
-
-                    <!-- 問題点カード -->
-                    <div class="bg-gradient-to-r from-rose-50 to-red-50 border border-rose-200
-                                rounded-xl p-5 mb-6 overflow-hidden">
-                        <div class="flex items-start gap-4">
-                            <div class="flex-shrink-0 w-10 h-10 bg-rose-500 rounded-lg
-                                        flex items-center justify-center">
-                                <i class="fas fa-exclamation-triangle text-white"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-rose-800 mb-2">ブランチなしの問題点</h3>
-                                <ul class="space-y-2 text-rose-900">
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-times-circle text-rose-500 mt-1 flex-shrink-0"></i>
-                                        <span>開発中の不完全なコードが本番環境に影響する</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-times-circle text-rose-500 mt-1 flex-shrink-0"></i>
-                                        <span>複数人が同時に作業すると、お互いの変更が競合する</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-times-circle text-rose-500 mt-1 flex-shrink-0"></i>
-                                        <span>実験的な変更を試しにくい（失敗したら全体に影響）</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-times-circle text-rose-500 mt-1 flex-shrink-0"></i>
-                                        <span>緊急のバグ修正と新機能開発を同時に進められない</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- メリットカード -->
-                    <div class="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200
-                                rounded-xl p-5 mb-6 overflow-hidden">
-                        <div class="flex items-start gap-4">
-                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg
-                                        flex items-center justify-center">
-                                <i class="fas fa-check-circle text-white"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-emerald-800 mb-2">ブランチを使うメリット</h3>
-                                <ul class="space-y-2 text-emerald-900">
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-star text-emerald-500 mt-1 flex-shrink-0"></i>
-                                        <span><strong>安全な開発</strong>: メインのコードに影響を与えずに作業できる</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-star text-emerald-500 mt-1 flex-shrink-0"></i>
-                                        <span><strong>並行作業</strong>: 複数の機能を同時に開発できる</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-star text-emerald-500 mt-1 flex-shrink-0"></i>
-                                        <span><strong>実験的な変更</strong>: 気軽に試して、ダメなら捨てられる</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-star text-emerald-500 mt-1 flex-shrink-0"></i>
-                                        <span><strong>コードレビュー</strong>: 変更をレビューしてからマージできる</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- セクション2: mainブランチ -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        7.2 mainブランチとは - 最も重要なブランチ
-                    </h2>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        <strong>main（またはmaster）ブランチ</strong>は、リポジトリを作成した時に自動的に作られるデフォルトのブランチです。これは「本番環境のコード」「リリース可能な状態のコード」を保持する最も重要なブランチです。
-                    </p>
-
-                    <!-- 用語解説カード -->
-                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6 rounded-r-lg overflow-hidden">
                         <div class="flex items-start gap-3">
-                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
                             <div class="flex-1 min-w-0">
-                                <p class="text-blue-900 font-medium break-words">mainとmasterの違い</p>
-                                <p class="text-blue-800 text-sm mt-1 break-words">
-                                    以前はデフォルトブランチの名前は「master」でしたが、2020年以降、GitHubでは「main」がデフォルトになりました。どちらも同じ役割を持ちますが、新しいリポジトリでは「main」が使われます。
-                                </p>
+                                <p class="text-red-900 font-medium break-words">ローカルのみでの管理の問題点</p>
+                                <ul class="text-red-800 text-sm mt-2 space-y-2">
+                                    <li><strong>バックアップがない</strong> - パソコンが壊れるとデータが全て失われる</li>
+                                    <li><strong>他の人と共有できない</strong> - チーム開発ができない</li>
+                                    <li><strong>別のパソコンで作業できない</strong> - 会社と自宅で同じコードを扱えない</li>
+                                    <li><strong>公開できない</strong> - オープンソースとして公開したい場合に困る</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
 
-                    <!-- mainブランチのルール -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm mb-6">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-shield-alt text-purple-600"></i>
-                            </div>
-                            <h3 class="font-bold text-slate-800">mainブランチの基本ルール</h3>
-                        </div>
-                        <ul class="space-y-3 text-slate-600">
-                            <li class="flex items-start gap-2">
-                                <span class="flex-shrink-0 w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center text-sm font-medium text-purple-700">1</span>
-                                <span><strong>常に動作する状態を保つ</strong>: mainブランチのコードは、いつでも本番環境にデプロイできる状態にする</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="flex-shrink-0 w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center text-sm font-medium text-purple-700">2</span>
-                                <span><strong>直接コミットしない</strong>: 新機能や修正は別ブランチで作業し、完成したらマージする</span>
-                            </li>
-                            <li class="flex items-start gap-2">
-                                <span class="flex-shrink-0 w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center text-sm font-medium text-purple-700">3</span>
-                                <span><strong>レビューを経てからマージ</strong>: チーム開発では、プルリクエストでレビューを受けてからマージする</span>
-                            </li>
-                        </ul>
-                    </div>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <strong>リモートリポジトリ</strong>とは、インターネット上（クラウド）に保存されるGitリポジトリのことです。GitHub、GitLab、Bitbucketなどのサービスが、リモートリポジトリのホスティング（保管・公開）機能を提供しています。
+                    </p>
 
-                    <!-- 図: ブランチの流れ -->
-                    <div class="bg-slate-100 rounded-xl p-5 mb-6">
-                        <h4 class="font-semibold text-slate-700 mb-3">開発の流れ</h4>
-                        <div class="mermaid">
+                    <div class="my-6">
+                        <h3 class="text-lg font-semibold text-slate-700 mb-3">ローカルとリモートの関係</h3>
+                        <div class="mermaid bg-white rounded-lg p-4 border border-slate-200">
 flowchart LR
-    A[mainブランチ] -->|ブランチ作成| B[featureブランチ]
-    B -->|開発作業| C[コミット]
-    C -->|テスト| D[動作確認]
-    D -->|完成| E[プルリクエスト]
-    E -->|レビュー| F[承認]
-    F -->|マージ| A
+    subgraph Local[自分のパソコン<br/>ローカル環境]
+        L1[ワーキング<br/>ディレクトリ]
+        L2[ステージング<br/>エリア]
+        L3[(ローカル<br/>リポジトリ)]
+    end
+
+    subgraph Remote[インターネット上<br/>GitHub等]
+        R1[(リモート<br/>リポジトリ)]
+    end
+
+    L1 -->|git add| L2
+    L2 -->|git commit| L3
+    L3 -->|git push| R1
+    R1 -->|git pull| L3
+
+    style L3 fill:#dbeafe,stroke:#3b82f6,stroke-width:2px
+    style R1 fill:#d1fae5,stroke:#10b981,stroke-width:3px
+    style L1 fill:#f1f5f9,stroke:#64748b
+    style L2 fill:#fef3c7,stroke:#f59e0b
                         </div>
-                    </div>
-                </section>
-
-                <!-- セクション3: ブランチ操作（コマンドライン） -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        7.3 ブランチ操作（コマンドライン）
-                    </h2>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        コマンドラインでブランチを操作する方法を学びましょう。基本的なコマンドを覚えれば、効率的にブランチを管理できます。
-                    </p>
-
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3">ブランチの一覧を確認する</h3>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        まず、現在のブランチ一覧を確認してみましょう。
-                    </p>
-
-                    <!-- コードブロック: git branch -->
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">ターミナル</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># ローカルブランチの一覧を表示
-git branch
-
-# 出力例（*は現在いるブランチ）
-# * main
-#   feature-login
-#   fix-bug
-
-# リモートブランチも含めて表示
-git branch -a</code></pre>
-                    </div>
-
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3">新しいブランチを作成する</h3>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        新しい機能を開発する時は、まずブランチを作成します。
-                    </p>
-
-                    <!-- コードブロック: git branch [name] -->
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">ターミナル</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># 方法1: ブランチを作成（作成のみ、移動はしない）
-git branch feature-login
-
-# 方法2: ブランチを作成して、すぐに移動（おすすめ）
-git checkout -b feature-login
-
-# 方法3: 新しいコマンド（Git 2.23以降）
-git switch -c feature-login</code></pre>
-                    </div>
-
-                    <!-- ヒントカード -->
-                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-lightbulb text-emerald-600 mt-1"></i>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-emerald-900 font-medium break-words">コマンドの覚え方</p>
-                                <p class="text-emerald-800 text-sm mt-1 break-words">
-                                    <code class="bg-emerald-100 px-1 rounded">git checkout -b</code>の「-b」は「branch」の略です。「checkout（移動）しながら、branch（ブランチ）を作る」と覚えましょう。
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3">ブランチを切り替える</h3>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        既存のブランチに移動する場合は、以下のコマンドを使います。
-                    </p>
-
-                    <!-- コードブロック: git checkout/switch -->
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">ターミナル</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># 方法1: checkoutコマンド（従来の方法）
-git checkout main
-git checkout feature-login
-
-# 方法2: switchコマンド（Git 2.23以降、推奨）
-git switch main
-git switch feature-login
-
-# 現在のブランチを確認
-git branch
-# * feature-login  ← 現在のブランチに*がつく
-#   main</code></pre>
-                    </div>
-
-                    <!-- checkoutとswitchの比較 -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm mb-6">
-                        <h4 class="font-bold text-slate-800 mb-3">checkout vs switch</h4>
-                        <div class="overflow-x-auto">
-                            <table class="w-full border-collapse">
-                                <thead>
-                                    <tr class="bg-slate-100">
-                                        <th class="px-4 py-2 text-left font-semibold text-slate-700 border-b">コマンド</th>
-                                        <th class="px-4 py-2 text-left font-semibold text-slate-700 border-b">特徴</th>
-                                        <th class="px-4 py-2 text-left font-semibold text-slate-700 border-b">推奨度</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="border-b">
-                                        <td class="px-4 py-2 text-slate-600"><code class="bg-slate-100 px-1 rounded">git checkout</code></td>
-                                        <td class="px-4 py-2 text-slate-600">従来のコマンド。多機能だが分かりにくい</td>
-                                        <td class="px-4 py-2 text-slate-600">まだ広く使われている</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-4 py-2 text-slate-600"><code class="bg-slate-100 px-1 rounded">git switch</code></td>
-                                        <td class="px-4 py-2 text-slate-600">ブランチ切り替え専用。シンプルで分かりやすい</td>
-                                        <td class="px-4 py-2 text-slate-600"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-sm">推奨</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3">ブランチを削除する</h3>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        マージが完了して不要になったブランチは削除しましょう。
-                    </p>
-
-                    <!-- コードブロック: git branch -d -->
-                    <div class="code-block-wrapper my-6">
-                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">ターミナル</span>
-                            <button class="copy-btn text-slate-400 hover:text-white transition-colors"
-                                    onclick="copyCode(this)">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># ブランチを削除（マージ済みのブランチのみ）
-git branch -d feature-login
-
-# 強制削除（マージしていなくても削除）
-git branch -D feature-login
-
-# 注意: 現在いるブランチは削除できません
-# 削除する前に、mainブランチなどに移動してください
-git switch main
-git branch -d feature-login</code></pre>
-                    </div>
-
-                    <!-- 注意カード -->
-                    <div class="bg-orange-50 border-l-4 border-orange-500 p-4 my-6 rounded-r-lg overflow-hidden">
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-exclamation-circle text-orange-600 mt-1"></i>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-orange-900 font-medium break-words">注意</p>
-                                <p class="text-orange-800 text-sm mt-1 break-words">
-                                    <code class="bg-orange-100 px-1 rounded">-D</code>（大文字）は強制削除です。マージしていない変更がある場合でも削除されてしまうため、慎重に使用してください。
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- セクション4: GitHub Desktopでのブランチ操作 -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        7.4 GitHub Desktopでのブランチ操作
-                    </h2>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        GitHub Desktopを使えば、コマンドを覚えなくてもGUI（マウス操作）でブランチを操作できます。
-                    </p>
-
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3">ブランチの作成</h3>
-                    <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm mb-6">
-                        <ol class="space-y-3 text-slate-600">
-                            <li class="flex items-start gap-3">
-                                <span class="flex-shrink-0 w-6 h-6 bg-slate-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
-                                <span>画面上部の「Current Branch」をクリック</span>
-                            </li>
-                            <li class="flex items-start gap-3">
-                                <span class="flex-shrink-0 w-6 h-6 bg-slate-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
-                                <span>「New Branch」ボタンをクリック</span>
-                            </li>
-                            <li class="flex items-start gap-3">
-                                <span class="flex-shrink-0 w-6 h-6 bg-slate-200 rounded-full flex items-center justify-center text-sm font-medium">3</span>
-                                <span>ブランチ名を入力（例: feature-login）</span>
-                            </li>
-                            <li class="flex items-start gap-3">
-                                <span class="flex-shrink-0 w-6 h-6 bg-slate-200 rounded-full flex items-center justify-center text-sm font-medium">4</span>
-                                <span>「Create Branch」をクリック</span>
-                            </li>
-                        </ol>
-                    </div>
-
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3">ブランチの切り替え</h3>
-                    <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm mb-6">
-                        <ol class="space-y-3 text-slate-600">
-                            <li class="flex items-start gap-3">
-                                <span class="flex-shrink-0 w-6 h-6 bg-slate-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
-                                <span>画面上部の「Current Branch」をクリック</span>
-                            </li>
-                            <li class="flex items-start gap-3">
-                                <span class="flex-shrink-0 w-6 h-6 bg-slate-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
-                                <span>ブランチ一覧から、移動したいブランチをクリック</span>
-                            </li>
-                        </ol>
-                        <p class="text-sm text-slate-500 mt-3">
-                            <i class="fas fa-info-circle mr-1"></i>
-                            現在のブランチにはチェックマークが表示されます。
+                        <p class="text-sm text-slate-600 mt-2">
+                            ローカルリポジトリは自分のパソコン上、リモートリポジトリはGitHub等のクラウド上にあります。git pushでアップロード、git pullでダウンロードします。
                         </p>
                     </div>
 
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3">ブランチの削除</h3>
-                    <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm mb-6">
-                        <ol class="space-y-3 text-slate-600">
-                            <li class="flex items-start gap-3">
-                                <span class="flex-shrink-0 w-6 h-6 bg-slate-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
-                                <span>削除したいブランチ以外に切り替える（mainなど）</span>
-                            </li>
-                            <li class="flex items-start gap-3">
-                                <span class="flex-shrink-0 w-6 h-6 bg-slate-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
-                                <span>メニューから「Branch」→「Delete...」を選択</span>
-                            </li>
-                            <li class="flex items-start gap-3">
-                                <span class="flex-shrink-0 w-6 h-6 bg-slate-200 rounded-full flex items-center justify-center text-sm font-medium">3</span>
-                                <span>確認ダイアログで「Delete」をクリック</span>
-                            </li>
-                        </ol>
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">リモートリポジトリのメリット</p>
+                                <ul class="text-emerald-800 text-sm mt-2 space-y-2">
+                                    <li><strong>安全なバックアップ</strong> - クラウド上に履歴が保存される</li>
+                                    <li><strong>チーム開発が可能</strong> - 複数人で同じリポジトリを共有できる</li>
+                                    <li><strong>どこからでもアクセス</strong> - インターネットがあればどのパソコンからでも作業できる</li>
+                                    <li><strong>コードレビュー</strong> - プルリクエスト機能で変更内容を確認してもらえる</li>
+                                    <li><strong>公開・共有</strong> - オープンソースとして世界に公開できる</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション2: git remote - リモートリポジトリの設定 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        7.2 git remote - リモートリポジトリの設定
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        ローカルリポジトリとリモートリポジトリを連携するには、まずGitHub上にリポジトリを作成し、その後ローカルから「どのリモートリポジトリに接続するか」を設定する必要があります。
+                    </p>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">リモートリポジトリの設定手順</h3>
+
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 mb-4 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 7-1: リモートリポジトリの設定</h3>
+                                <p class="text-purple-900 mb-4 break-words">既存のローカルリポジトリをGitHubのリモートリポジトリと連携させます。</p>
+
+                                <h4 class="font-medium text-purple-800 mb-2 break-words">手順</h4>
+                                <ol class="space-y-3 mb-4">
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
+                                        <span class="flex-1 min-w-0 break-words">GitHubにログインし、画面右上の「+」→「New repository」をクリック</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
+                                        <span class="flex-1 min-w-0 break-words">リポジトリ名を入力（例: my-first-repo）、「Create repository」をクリック</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">3</span>
+                                        <span class="flex-1 min-w-0 break-words">表示されたHTTPS URLをコピー（例: https://github.com/username/my-first-repo.git）</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">4</span>
+                                        <span class="flex-1 min-w-0 break-words">ローカルのGitリポジトリフォルダに移動し、以下のコマンドを実行</span>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- コマンドとの対応表 -->
-                    <div class="overflow-x-auto mb-6">
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">リモートリポジトリを追加</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># リモートリポジトリを「origin」という名前で追加
+git remote add origin https://github.com/username/my-first-repo.git
+
+# 設定されたリモートリポジトリを確認
+git remote -v</code></pre>
+                    </div>
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-4">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-500 text-lg mt-0.5"></i>
+                            <div>
+                                <h3 class="font-semibold text-blue-800 mb-2">「origin」とは？</h3>
+                                <p class="text-blue-900 text-sm mb-2">
+                                    <code class="bg-blue-100 px-2 py-0.5 rounded">origin</code>は、リモートリポジトリに付ける<strong>ニックネーム（別名）</strong>です。慣例的に、メインのリモートリポジトリには「origin」という名前を使います。
+                                </p>
+                                <p class="text-blue-900 text-sm">
+                                    複数のリモートリポジトリを設定することもできますが、通常は1つのリモート（origin）だけを使います。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">git remoteの主なコマンド</h3>
+
+                    <div class="overflow-x-auto my-6">
                         <table class="w-full border-collapse bg-white rounded-lg overflow-hidden shadow-sm">
-                            <thead>
-                                <tr class="bg-slate-100">
-                                    <th class="px-4 py-3 text-left font-semibold text-slate-700 border-b">操作</th>
-                                    <th class="px-4 py-3 text-left font-semibold text-slate-700 border-b">コマンドライン</th>
-                                    <th class="px-4 py-3 text-left font-semibold text-slate-700 border-b">GitHub Desktop</th>
+                            <thead class="bg-slate-100">
+                                <tr>
+                                    <th class="border border-slate-200 px-4 py-3 text-left text-slate-700">コマンド</th>
+                                    <th class="border border-slate-200 px-4 py-3 text-left text-slate-700">説明</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="border-b">
-                                    <td class="px-4 py-3 text-slate-600">ブランチ一覧</td>
-                                    <td class="px-4 py-3 text-slate-600"><code class="bg-slate-100 px-1 rounded">git branch</code></td>
-                                    <td class="px-4 py-3 text-slate-600">Current Branch クリック</td>
-                                </tr>
-                                <tr class="border-b">
-                                    <td class="px-4 py-3 text-slate-600">ブランチ作成</td>
-                                    <td class="px-4 py-3 text-slate-600"><code class="bg-slate-100 px-1 rounded">git checkout -b 名前</code></td>
-                                    <td class="px-4 py-3 text-slate-600">New Branch ボタン</td>
-                                </tr>
-                                <tr class="border-b">
-                                    <td class="px-4 py-3 text-slate-600">ブランチ切り替え</td>
-                                    <td class="px-4 py-3 text-slate-600"><code class="bg-slate-100 px-1 rounded">git switch 名前</code></td>
-                                    <td class="px-4 py-3 text-slate-600">ブランチ名をクリック</td>
+                                <tr>
+                                    <td class="border border-slate-200 px-4 py-3 font-mono text-sm text-slate-700">git remote -v</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">設定されているリモートリポジトリを一覧表示</td>
                                 </tr>
                                 <tr>
-                                    <td class="px-4 py-3 text-slate-600">ブランチ削除</td>
-                                    <td class="px-4 py-3 text-slate-600"><code class="bg-slate-100 px-1 rounded">git branch -d 名前</code></td>
-                                    <td class="px-4 py-3 text-slate-600">Branch → Delete...</td>
+                                    <td class="border border-slate-200 px-4 py-3 font-mono text-sm text-slate-700">git remote add origin URL</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">新しいリモートリポジトリを追加</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-200 px-4 py-3 font-mono text-sm text-slate-700">git remote remove origin</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">リモートリポジトリを削除</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-200 px-4 py-3 font-mono text-sm text-slate-700">git remote rename old new</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">リモートの名前を変更</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-200 px-4 py-3 font-mono text-sm text-slate-700">git remote show origin</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">リモートの詳細情報を表示</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </section>
 
-                <!-- セクション5: ブランチ命名規則 -->
+                <!-- セクション3: git push - GitHubにアップロード -->
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        7.5 ブランチ命名規則 - わかりやすい名前の付け方
+                        7.3 git push - GitHubにアップロード
                     </h2>
 
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        ブランチ名は、その作業内容が一目でわかるように付けることが重要です。チーム開発では、命名規則を決めておくと管理がしやすくなります。
+                        <code class="bg-slate-100 px-2 py-0.5 rounded">git push</code>は、ローカルリポジトリのコミット履歴をリモートリポジトリ（GitHub等）にアップロードするコマンドです。
                     </p>
 
-                    <!-- 命名規則カード -->
-                    <div class="grid md:grid-cols-2 gap-4 mb-6">
-                        <!-- feature -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-plus text-green-600"></i>
-                                </div>
-                                <h4 class="font-bold text-slate-800">feature/</h4>
-                            </div>
-                            <p class="text-slate-600 text-sm mb-2">新機能の開発</p>
-                            <code class="text-sm bg-slate-100 px-2 py-1 rounded block">feature/user-login</code>
-                            <code class="text-sm bg-slate-100 px-2 py-1 rounded block mt-1">feature/shopping-cart</code>
-                        </div>
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">初回のpush</h3>
 
-                        <!-- fix -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-bug text-red-600"></i>
-                                </div>
-                                <h4 class="font-bold text-slate-800">fix/</h4>
-                            </div>
-                            <p class="text-slate-600 text-sm mb-2">バグ修正</p>
-                            <code class="text-sm bg-slate-100 px-2 py-1 rounded block">fix/login-error</code>
-                            <code class="text-sm bg-slate-100 px-2 py-1 rounded block mt-1">fix/typo-header</code>
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">初回push（上流ブランチを設定）</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
                         </div>
-
-                        <!-- hotfix -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-fire text-orange-600"></i>
-                                </div>
-                                <h4 class="font-bold text-slate-800">hotfix/</h4>
-                            </div>
-                            <p class="text-slate-600 text-sm mb-2">緊急のバグ修正</p>
-                            <code class="text-sm bg-slate-100 px-2 py-1 rounded block">hotfix/security-patch</code>
-                            <code class="text-sm bg-slate-100 px-2 py-1 rounded block mt-1">hotfix/db-connection</code>
-                        </div>
-
-                        <!-- docs -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-book text-blue-600"></i>
-                                </div>
-                                <h4 class="font-bold text-slate-800">docs/</h4>
-                            </div>
-                            <p class="text-slate-600 text-sm mb-2">ドキュメントの更新</p>
-                            <code class="text-sm bg-slate-100 px-2 py-1 rounded block">docs/api-reference</code>
-                            <code class="text-sm bg-slate-100 px-2 py-1 rounded block mt-1">docs/readme-update</code>
-                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># -u オプションで上流ブランチを設定しながらpush
+git push -u origin main</code></pre>
                     </div>
 
-                    <!-- ベストプラクティス -->
-                    <div class="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200
-                                rounded-xl p-5 mb-6 overflow-hidden">
-                        <div class="flex items-start gap-4">
-                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg
-                                        flex items-center justify-center">
-                                <i class="fas fa-lightbulb text-white"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-semibold text-emerald-800 mb-2">命名のベストプラクティス</h3>
-                                <ul class="space-y-2 text-emerald-900">
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
-                                        <span><strong>小文字を使う</strong>: 大文字と小文字の混在を避ける</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
-                                        <span><strong>ハイフンで区切る</strong>: スペースの代わりにハイフン（-）を使用</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
-                                        <span><strong>簡潔に</strong>: 長すぎず、内容が伝わる名前にする</span>
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <i class="fas fa-check text-emerald-500 mt-1 flex-shrink-0"></i>
-                                        <span><strong>Issue番号を含める</strong>: feature/123-user-login のように番号を付けると追跡しやすい</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 悪い例 -->
-                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-4">
                         <div class="flex items-start gap-3">
-                            <i class="fas fa-times-circle text-red-600 mt-1"></i>
+                            <i class="fas fa-info-circle text-blue-500 text-lg mt-0.5"></i>
+                            <div>
+                                <h3 class="font-semibold text-blue-800 mb-2">-u オプションとは？</h3>
+                                <p class="text-blue-900 text-sm mb-2">
+                                    <code class="bg-blue-100 px-2 py-0.5 rounded">-u</code>（または<code class="bg-blue-100 px-2 py-0.5 rounded">--set-upstream</code>）は、ローカルブランチとリモートブランチの「紐付け」を設定するオプションです。
+                                </p>
+                                <p class="text-blue-900 text-sm">
+                                    一度設定すると、次回以降は<code class="bg-blue-100 px-2 py-0.5 rounded">git push</code>だけで同じリモートブランチにpushできるようになります。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">2回目以降のpush</h3>
+
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">2回目以降のpush</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># 上流ブランチ設定後は、これだけでOK
+git push</code></pre>
+                    </div>
+
+                    <div class="my-6">
+                        <h3 class="text-lg font-semibold text-slate-700 mb-3">pushの流れ</h3>
+                        <div class="mermaid bg-white rounded-lg p-4 border border-slate-200">
+sequenceDiagram
+    participant W as ワーキング<br/>ディレクトリ
+    participant S as ステージング<br/>エリア
+    participant L as ローカル<br/>リポジトリ
+    participant R as リモート<br/>リポジトリ<br/>GitHub
+
+    W->>S: git add
+    S->>L: git commit
+    L->>R: git push
+    Note over R: GitHubに履歴が<br/>アップロードされる
+                        </div>
+                        <p class="text-sm text-slate-600 mt-2">
+                            git addでステージング、git commitでローカルに記録、git pushでリモートにアップロードする流れです。
+                        </p>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5 mb-4 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-play text-white"></i>
+                            </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-red-900 font-medium break-words">避けるべき命名</p>
-                                <div class="text-red-800 text-sm mt-1 space-y-1">
-                                    <p><code class="bg-red-100 px-1 rounded">test</code> - 何のテストか不明</p>
-                                    <p><code class="bg-red-100 px-1 rounded">fix</code> - 何の修正か不明</p>
-                                    <p><code class="bg-red-100 px-1 rounded">work</code> - 作業内容が不明</p>
-                                    <p><code class="bg-red-100 px-1 rounded">tanaka-branch</code> - 人名だけでは内容が不明</p>
+                                <h3 class="text-lg font-semibold text-emerald-800 mb-3 break-words">動作確認</h3>
+                                <p class="text-emerald-900 mb-4 break-words">GitHubのWebサイトでリポジトリのページを開き、pushした内容が反映されているか確認しましょう。</p>
+                                <h4 class="font-medium text-emerald-800 mb-2 break-words">
+                                    <i class="fas fa-check-circle mr-2"></i>期待される結果
+                                </h4>
+                                <div class="bg-emerald-100 rounded-lg p-4 border border-emerald-200">
+                                    <ul class="text-emerald-900 text-sm space-y-1 list-disc list-inside">
+                                        <li>GitHubのリポジトリページにファイルが表示される</li>
+                                        <li>コミット履歴が「XX commits」として表示される</li>
+                                        <li>最新のコミットメッセージが表示される</li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- 実習カード -->
-                <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
-                            rounded-xl p-5 my-6 overflow-hidden">
-                    <div class="flex items-start gap-4">
-                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
-                                    flex items-center justify-center">
-                            <i class="fas fa-code text-white"></i>
+                <!-- セクション4: git pull - GitHubから取得 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        7.4 git pull - GitHubから最新の変更を取得
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <code class="bg-slate-100 px-2 py-0.5 rounded">git pull</code>は、リモートリポジトリの最新の変更をローカルリポジトリにダウンロード・統合するコマンドです。
+                    </p>
+
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">リモートから最新の変更を取得</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">
-                                実習 7-1: ブランチを作成して作業する
-                            </h3>
-                            <p class="text-purple-900 mb-4 break-words">実際にブランチを作成し、そこで作業してみましょう。</p>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># リモートの変更をローカルに取り込む
+git pull</code></pre>
+                    </div>
 
-                            <h4 class="font-medium text-purple-800 mb-2">手順</h4>
-                            <ol class="space-y-3 mb-4">
-                                <li class="flex items-start gap-3 text-purple-900">
-                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                 flex items-center justify-center text-sm font-medium">1</span>
-                                    <span class="flex-1 min-w-0 break-words">練習用リポジトリに移動（または新規作成）</span>
-                                </li>
-                                <li class="flex items-start gap-3 text-purple-900">
-                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                 flex items-center justify-center text-sm font-medium">2</span>
-                                    <span class="flex-1 min-w-0 break-words">新しいブランチを作成して移動</span>
-                                </li>
-                                <li class="flex items-start gap-3 text-purple-900">
-                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                 flex items-center justify-center text-sm font-medium">3</span>
-                                    <span class="flex-1 min-w-0 break-words">ファイルを編集してコミット</span>
-                                </li>
-                                <li class="flex items-start gap-3 text-purple-900">
-                                    <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full
-                                                 flex items-center justify-center text-sm font-medium">4</span>
-                                    <span class="flex-1 min-w-0 break-words">mainブランチに戻って、変更が反映されていないことを確認</span>
-                                </li>
-                            </ol>
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">pullが必要な場面</h3>
 
-                            <h4 class="font-medium text-purple-800 mb-2">実行例</h4>
-                            <div class="code-block-wrapper">
-                                <button onclick="copyCode(this)" class="copy-btn px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white text-sm rounded-lg transition-colors">
-                                    <i class="fas fa-copy mr-1"></i>コピー
-                                </button>
-                                <pre class="!bg-slate-800 !rounded-lg overflow-x-auto"><code class="language-bash"># 1. リポジトリに移動
-cd ~/my-git-practice
+                    <ul class="space-y-2 text-slate-600 mb-4">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-users text-primary-500 mt-1"></i>
+                            <span><strong>チーム開発</strong> - 他の人がpushした変更を取り込む</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-laptop text-primary-500 mt-1"></i>
+                            <span><strong>別のパソコン</strong> - 会社でpushした内容を自宅のパソコンで取得</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-globe text-primary-500 mt-1"></i>
+                            <span><strong>GitHub上で編集</strong> - GitHub Webエディタで変更した内容をローカルに反映</span>
+                        </li>
+                    </ul>
 
-# 2. 新しいブランチを作成して移動
-git checkout -b feature/add-greeting
-
-# 3. ファイルを編集
-echo "こんにちは！" >> greeting.txt
-
-# 4. 変更をコミット
-git add greeting.txt
-git commit -m "挨拶メッセージを追加"
-
-# 5. mainブランチに戻る
-git switch main
-
-# 6. greeting.txtを確認（変更が反映されていない）
-cat greeting.txt</code></pre>
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-4">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-500 text-lg mt-0.5"></i>
+                            <div>
+                                <h3 class="font-semibold text-blue-800 mb-2">git pull = git fetch + git merge</h3>
+                                <p class="text-blue-900 text-sm mb-2">
+                                    実は、<code class="bg-blue-100 px-2 py-0.5 rounded">git pull</code>は以下の2つの操作を同時に行っています：
+                                </p>
+                                <ol class="text-blue-900 text-sm space-y-1 list-decimal list-inside">
+                                    <li><code class="bg-blue-100 px-2 py-0.5 rounded">git fetch</code> - リモートの変更をダウンロード</li>
+                                    <li><code class="bg-blue-100 px-2 py-0.5 rounded">git merge</code> - ダウンロードした変更をローカルブランチに統合</li>
+                                </ol>
+                                <p class="text-blue-900 text-sm mt-2">
+                                    通常は<code class="bg-blue-100 px-2 py-0.5 rounded">git pull</code>を使えば十分ですが、慎重に確認してからマージしたい場合は、fetchとmergeを分けて実行することもできます。
+                                </p>
                             </div>
-
-                            <h4 class="font-medium text-purple-800 mt-4 mb-2">確認ポイント</h4>
-                            <ul class="space-y-2 text-purple-900">
-                                <li class="flex items-start gap-2">
-                                    <i class="fas fa-check-circle text-purple-500 mt-1 flex-shrink-0"></i>
-                                    <span>feature/add-greetingブランチでの変更が、mainブランチには反映されていない</span>
-                                </li>
-                                <li class="flex items-start gap-2">
-                                    <i class="fas fa-check-circle text-purple-500 mt-1 flex-shrink-0"></i>
-                                    <span><code class="bg-purple-100 px-1 rounded">git branch</code>で両方のブランチが表示される</span>
-                                </li>
-                            </ul>
                         </div>
                     </div>
-                </div>
 
-                <!-- まとめカード -->
-                <div class="bg-gradient-to-r from-slate-100 to-slate-50 border border-slate-300
-                            rounded-xl p-5 mb-6 overflow-hidden">
-                    <div class="flex items-start gap-4">
-                        <div class="flex-shrink-0 w-10 h-10 bg-slate-600 rounded-lg
-                                    flex items-center justify-center">
-                            <i class="fas fa-flag-checkered text-white"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-lg font-semibold text-slate-800 mb-3">第7章のまとめ</h2>
-                            <ul class="space-y-2">
-                                <li class="flex items-start gap-2 text-slate-700">
-                                    <i class="fas fa-check text-slate-500 mt-1 flex-shrink-0"></i>
-                                    <span><strong>ブランチ</strong>は、開発の流れを「枝分かれ」させる機能</span>
-                                </li>
-                                <li class="flex items-start gap-2 text-slate-700">
-                                    <i class="fas fa-check text-slate-500 mt-1 flex-shrink-0"></i>
-                                    <span><strong>mainブランチ</strong>は、本番環境のコードを保持する最重要ブランチ</span>
-                                </li>
-                                <li class="flex items-start gap-2 text-slate-700">
-                                    <i class="fas fa-check text-slate-500 mt-1 flex-shrink-0"></i>
-                                    <span><strong>git checkout -b</strong>または<strong>git switch -c</strong>でブランチを作成・移動</span>
-                                </li>
-                                <li class="flex items-start gap-2 text-slate-700">
-                                    <i class="fas fa-check text-slate-500 mt-1 flex-shrink-0"></i>
-                                    <span>GitHub Desktopでも同じ操作がGUIで可能</span>
-                                </li>
-                                <li class="flex items-start gap-2 text-slate-700">
-                                    <i class="fas fa-check text-slate-500 mt-1 flex-shrink-0"></i>
-                                    <span>ブランチ名は<strong>feature/</strong>、<strong>fix/</strong>などの接頭辞を付けると分かりやすい</span>
-                                </li>
-                            </ul>
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">pullとpushの使い分け</h3>
+
+                    <div class="overflow-x-auto my-6">
+                        <table class="w-full border-collapse bg-white rounded-lg overflow-hidden shadow-sm">
+                            <thead class="bg-slate-100">
+                                <tr>
+                                    <th class="border border-slate-200 px-4 py-3 text-left text-slate-700">コマンド</th>
+                                    <th class="border border-slate-200 px-4 py-3 text-left text-slate-700">方向</th>
+                                    <th class="border border-slate-200 px-4 py-3 text-left text-slate-700">タイミング</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border border-slate-200 px-4 py-3 font-mono text-sm text-slate-700">git push</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">ローカル → リモート（アップロード）</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">自分が変更をコミットした後</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-200 px-4 py-3 font-mono text-sm text-slate-700">git pull</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">リモート → ローカル（ダウンロード）</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">作業を始める前、他の人の変更を取り込むとき</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">ベストプラクティス</p>
+                                <p class="text-emerald-800 text-sm mt-1 break-words">
+                                    作業を始める前に<code class="bg-emerald-100 px-2 py-0.5 rounded">git pull</code>で最新の状態を取得する習慣をつけましょう。これにより、他の人の変更と競合するリスクを減らせます。
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </section>
+
+                <!-- セクション5: git clone - 既存リポジトリの複製 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        7.5 git clone - 既存リポジトリの複製
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        <code class="bg-slate-100 px-2 py-0.5 rounded">git clone</code>は、GitHub上に既に存在するリポジトリを、自分のパソコンに丸ごとコピーするコマンドです。全てのコミット履歴も一緒にダウンロードされます。
+                    </p>
+
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">リポジトリをクローン</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># GitHubのリポジトリをクローン
+git clone https://github.com/username/repository-name.git
+
+# クローンしたフォルダに移動
+cd repository-name
+
+# リモートが自動的に設定されている
+git remote -v</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">cloneとremote addの違い</h3>
+
+                    <div class="overflow-x-auto my-6">
+                        <table class="w-full border-collapse bg-white rounded-lg overflow-hidden shadow-sm">
+                            <thead class="bg-slate-100">
+                                <tr>
+                                    <th class="border border-slate-200 px-4 py-3 text-left text-slate-700">項目</th>
+                                    <th class="border border-slate-200 px-4 py-3 text-left text-slate-700">git clone</th>
+                                    <th class="border border-slate-200 px-4 py-3 text-left text-slate-700">git init + git remote add</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border border-slate-200 px-4 py-3 font-medium text-slate-700">使う場面</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">既存のリモートリポジトリを複製する</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">ローカルで新規作成してからリモートと連携</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-200 px-4 py-3 font-medium text-slate-700">初期状態</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">全てのファイルと履歴がダウンロード済み</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">空のリポジトリから開始</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-200 px-4 py-3 font-medium text-slate-700">リモート設定</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">自動的に「origin」として設定される</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">手動でgit remote addが必要</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-200 px-4 py-3 font-medium text-slate-700">よくある例</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">オープンソースプロジェクトに参加、チーム開発開始</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">新しいプロジェクトを自分で立ち上げる</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 mb-4 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 7-2: 公開リポジトリをクローン</h3>
+                                <p class="text-purple-900 mb-4 break-words">GitHubの公開リポジトリをクローンして、中身を確認してみましょう。</p>
+
+                                <h4 class="font-medium text-purple-800 mb-2 break-words">手順</h4>
+                                <ol class="space-y-3 mb-4">
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
+                                        <span class="flex-1 min-w-0 break-words">任意のGitHubリポジトリページを開く（例: 有名なOSSプロジェクト）</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
+                                        <span class="flex-1 min-w-0 break-words">緑色の「Code」ボタンをクリックし、HTTPS URLをコピー</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">3</span>
+                                        <span class="flex-1 min-w-0 break-words">ターミナルでgit cloneコマンドを実行</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">4</span>
+                                        <span class="flex-1 min-w-0 break-words">クローンしたフォルダに移動し、git logで履歴を確認</span>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション6: 認証設定（HTTPS/SSH） -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        7.6 認証設定 - HTTPS接続とSSH接続
+                    </h2>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        GitHubにpushやpullをする際、GitHubが「本当にあなたか」を確認するための認証が必要です。認証方式には主に<strong>HTTPS</strong>と<strong>SSH</strong>の2種類があります。
+                    </p>
+
+                    <div class="overflow-x-auto my-6">
+                        <table class="w-full border-collapse bg-white rounded-lg overflow-hidden shadow-sm">
+                            <thead class="bg-slate-100">
+                                <tr>
+                                    <th class="border border-slate-200 px-4 py-3 text-left text-slate-700">項目</th>
+                                    <th class="border border-slate-200 px-4 py-3 text-left text-slate-700">HTTPS</th>
+                                    <th class="border border-slate-200 px-4 py-3 text-left text-slate-700">SSH</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border border-slate-200 px-4 py-3 font-medium text-slate-700">URL形式</td>
+                                    <td class="border border-slate-200 px-4 py-3 font-mono text-sm text-slate-600">https://github.com/...</td>
+                                    <td class="border border-slate-200 px-4 py-3 font-mono text-sm text-slate-600">git@github.com:...</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-200 px-4 py-3 font-medium text-slate-700">認証方法</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">Personal Access Token（PAT）</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">SSH鍵ペア</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-200 px-4 py-3 font-medium text-slate-700">初心者向け</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">◎ 設定が簡単</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">△ 鍵生成の知識が必要</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-200 px-4 py-3 font-medium text-slate-700">パスワード入力</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">都度必要（キャッシュ可）</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">不要</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-200 px-4 py-3 font-medium text-slate-700">セキュリティ</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">高（トークンに有効期限設定可）</td>
+                                    <td class="border border-slate-200 px-4 py-3 text-slate-600">高（秘密鍵の管理が重要）</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">HTTPS認証 - Personal Access Token（PAT）の作成</h3>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        GitHubは2021年8月以降、HTTPSでのパスワード認証を廃止しました。代わりに<strong>Personal Access Token（PAT）</strong>を使います。
+                    </p>
+
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 mb-4 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 7-3: Personal Access Tokenの作成</h3>
+
+                                <h4 class="font-medium text-purple-800 mb-2 break-words">手順</h4>
+                                <ol class="space-y-3 mb-4">
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
+                                        <span class="flex-1 min-w-0 break-words">GitHubにログイン → 右上のアイコン → Settings</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
+                                        <span class="flex-1 min-w-0 break-words">左メニュー最下部の「Developer settings」をクリック</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">3</span>
+                                        <span class="flex-1 min-w-0 break-words">「Personal access tokens」→「Tokens (classic)」→「Generate new token (classic)」</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">4</span>
+                                        <span class="flex-1 min-w-0 break-words">Note（メモ）に「Git CLI」などと入力、有効期限を選択</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">5</span>
+                                        <span class="flex-1 min-w-0 break-words">「repo」にチェックを入れる（リポジトリへのフルアクセス権限）</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">6</span>
+                                        <span class="flex-1 min-w-0 break-words">「Generate token」をクリック</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">7</span>
+                                        <span class="flex-1 min-w-0 break-words">表示されたトークン（ghp_xxxxx...）をコピーして安全な場所に保存</span>
+                                    </li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-red-900 font-medium break-words">重要: トークンの保管</p>
+                                <p class="text-red-800 text-sm mt-1 break-words">
+                                    Personal Access Tokenは<strong>一度しか表示されません</strong>。必ずコピーして安全な場所（パスワードマネージャー等）に保存してください。紛失した場合は新しいトークンを再発行する必要があります。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">トークンを使ったpush</h3>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        git pushを実行すると、ユーザー名とパスワードを求められます。パスワードの欄に<strong>PATを貼り付け</strong>てください。
+                    </p>
+
+                    <div class="code-block-wrapper mb-4">
+                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                            <span class="text-slate-400 text-sm">PATを使ったpush</span>
+                            <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># pushを実行
+git push -u origin main
+
+# プロンプトが表示される
+# Username: あなたのGitHubユーザー名
+# Password: (ここにPATを貼り付け) ← 画面には表示されません</code></pre>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">SSH認証の設定（参考）</h3>
+
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        SSH認証を使うと、毎回トークンを入力せずにpush/pullできます。ただし、SSH鍵の生成と登録が必要です。
+                    </p>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">初心者へのアドバイス</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    最初はHTTPS（PAT）を使うことをお勧めします。SSH鍵の設定は、Gitの基本操作に慣れてから学習しても遅くありません。SSH設定の詳細は、GitHubの公式ドキュメントを参照してください。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション7: トラブルシューティング -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        7.7 よくあるエラーと解決方法
+                    </h2>
+
+                    <div class="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-xl overflow-hidden mb-4">
+                        <div class="bg-orange-100 px-6 py-3 border-b border-orange-200">
+                            <h3 class="font-semibold text-orange-800 flex items-center gap-2">
+                                <i class="fas fa-tools"></i>
+                                トラブルシューティング
+                            </h3>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <details class="group">
+                                <summary class="flex items-center gap-3 cursor-pointer list-none p-3 rounded-lg bg-white border border-orange-200 hover:bg-orange-50 transition-colors">
+                                    <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                    <span class="font-medium text-orange-800">error: failed to push some refs</span>
+                                    <i class="fas fa-chevron-down ml-auto text-orange-400 transition-transform group-open:rotate-180"></i>
+                                </summary>
+                                <div class="mt-3 pl-10 text-orange-900">
+                                    <p class="mb-2"><strong>原因:</strong> リモートに自分のローカルにない変更がある（他の人がpushした、または別のパソコンで変更した）</p>
+                                    <p class="mb-2"><strong>解決方法:</strong></p>
+                                    <div class="code-block-wrapper mb-2">
+                                        <pre class="!mt-0"><code class="language-bash"># まずpullして最新の状態を取得
+git pull
+
+# コンフリクトがあれば解決して、再度コミット
+# その後、改めてpush
+git push</code></pre>
+                                    </div>
+                                </div>
+                            </details>
+
+                            <details class="group">
+                                <summary class="flex items-center gap-3 cursor-pointer list-none p-3 rounded-lg bg-white border border-orange-200 hover:bg-orange-50 transition-colors">
+                                    <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                    <span class="font-medium text-orange-800">fatal: remote origin already exists</span>
+                                    <i class="fas fa-chevron-down ml-auto text-orange-400 transition-transform group-open:rotate-180"></i>
+                                </summary>
+                                <div class="mt-3 pl-10 text-orange-900">
+                                    <p class="mb-2"><strong>原因:</strong> 既に「origin」という名前のリモートが設定されている</p>
+                                    <p class="mb-2"><strong>解決方法:</strong></p>
+                                    <div class="code-block-wrapper mb-2">
+                                        <pre class="!mt-0"><code class="language-bash"># 既存のoriginを削除
+git remote remove origin
+
+# 改めて追加
+git remote add origin https://github.com/username/repo.git
+
+# または、URLを変更
+git remote set-url origin https://github.com/username/repo.git</code></pre>
+                                    </div>
+                                </div>
+                            </details>
+
+                            <details class="group">
+                                <summary class="flex items-center gap-3 cursor-pointer list-none p-3 rounded-lg bg-white border border-orange-200 hover:bg-orange-50 transition-colors">
+                                    <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                    <span class="font-medium text-orange-800">Authentication failed（認証失敗）</span>
+                                    <i class="fas fa-chevron-down ml-auto text-orange-400 transition-transform group-open:rotate-180"></i>
+                                </summary>
+                                <div class="mt-3 pl-10 text-orange-900">
+                                    <p class="mb-2"><strong>原因:</strong> Personal Access Token（PAT）が正しくない、または期限切れ</p>
+                                    <p class="mb-2"><strong>解決方法:</strong></p>
+                                    <ul class="list-disc list-inside space-y-1">
+                                        <li>GitHubでPATを新規作成または再発行</li>
+                                        <li>Passwordの欄に正しいPATを貼り付ける</li>
+                                        <li>キャッシュされた古い認証情報をクリア（credential helperの設定を確認）</li>
+                                    </ul>
+                                </div>
+                            </details>
+
+                            <details class="group">
+                                <summary class="flex items-center gap-3 cursor-pointer list-none p-3 rounded-lg bg-white border border-orange-200 hover:bg-orange-50 transition-colors">
+                                    <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                    <span class="font-medium text-orange-800">fatal: refusing to merge unrelated histories</span>
+                                    <i class="fas fa-chevron-down ml-auto text-orange-400 transition-transform group-open:rotate-180"></i>
+                                </summary>
+                                <div class="mt-3 pl-10 text-orange-900">
+                                    <p class="mb-2"><strong>原因:</strong> ローカルとリモートのコミット履歴が完全に異なる（別々に作られた）</p>
+                                    <p class="mb-2"><strong>解決方法:</strong></p>
+                                    <div class="code-block-wrapper mb-2">
+                                        <pre class="!mt-0"><code class="language-bash"># 無関係な履歴の統合を許可してpull
+git pull origin main --allow-unrelated-histories
+
+# コンフリクトがあれば解決してコミット
+# その後、push
+git push -u origin main</code></pre>
+                                    </div>
+                                </div>
+                            </details>
+
+                            <details class="group">
+                                <summary class="flex items-center gap-3 cursor-pointer list-none p-3 rounded-lg bg-white border border-orange-200 hover:bg-orange-50 transition-colors">
+                                    <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                    <span class="font-medium text-orange-800">Permission denied (publickey)</span>
+                                    <i class="fas fa-chevron-down ml-auto text-orange-400 transition-transform group-open:rotate-180"></i>
+                                </summary>
+                                <div class="mt-3 pl-10 text-orange-900">
+                                    <p class="mb-2"><strong>原因:</strong> SSH接続でSSH鍵が正しく設定されていない</p>
+                                    <p class="mb-2"><strong>解決方法:</strong></p>
+                                    <ul class="list-disc list-inside space-y-1">
+                                        <li>SSH鍵をGitHubに登録しているか確認</li>
+                                        <li>または、HTTPS URLに変更して接続（PATを使用）</li>
+                                        <li>git remote set-url origin https://github.com/username/repo.git</li>
+                                    </ul>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </section>
 
                 <!-- 理解度確認クイズ -->
                 <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
@@ -877,57 +931,66 @@ cat greeting.txt</code></pre>
                             <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
                             <ol class="space-y-4">
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2 break-words">Q1. ブランチを使う主なメリットを2つ挙げてください。</p>
+                                    <p class="font-medium mb-2 break-words">Q1. リモートリポジトリを使うメリットを3つ挙げてください。</p>
                                     <details class="mt-2">
                                         <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
-                                            1. <strong>安全な開発</strong>: メインのコードに影響を与えずに新機能の開発や実験ができる<br>
-                                            2. <strong>並行作業</strong>: 複数の機能を同時に開発できる<br>
-                                            その他: 実験的な変更が気軽にできる、コードレビューしてからマージできる、など
+                                        <div class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <p class="mb-2">以下のようなメリットがあります（3つ挙げる）：</p>
+                                            <ul class="list-disc list-inside space-y-1">
+                                                <li>クラウド上に安全なバックアップが取られる</li>
+                                                <li>複数人でリポジトリを共有してチーム開発ができる</li>
+                                                <li>どのパソコンからでもアクセスして作業できる</li>
+                                                <li>プルリクエストでコードレビューができる</li>
+                                                <li>オープンソースとして世界に公開できる</li>
+                                            </ul>
+                                        </div>
+                                    </details>
+                                </li>
+                                <li class="text-blue-900">
+                                    <p class="font-medium mb-2 break-words">Q2. git push と git pull の違いを説明してください。</p>
+                                    <details class="mt-2">
+                                        <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
+                                            回答を表示
+                                        </summary>
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>git push</strong>は、ローカルリポジトリのコミット履歴をリモートリポジトリ（GitHub等）にアップロードするコマンドです。自分が変更をコミットした後に使います。<br><br>
+                                            <strong>git pull</strong>は、リモートリポジトリの最新の変更をローカルリポジトリにダウンロード・統合するコマンドです。作業を始める前や、他の人の変更を取り込むときに使います。
                                         </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2 break-words">Q2. 新しいブランチを作成して、そのブランチに移動するコマンドは何ですか？</p>
+                                    <p class="font-medium mb-2 break-words">Q3. git clone と git init + git remote add の違いは何ですか？</p>
                                     <details class="mt-2">
                                         <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
-                                            <code class="bg-blue-100 px-1 rounded">git checkout -b ブランチ名</code><br>
-                                            または<br>
-                                            <code class="bg-blue-100 px-1 rounded">git switch -c ブランチ名</code>（Git 2.23以降）
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>git clone</strong>は、GitHub上に既に存在するリポジトリを自分のパソコンに丸ごとコピーします。全てのファイルとコミット履歴がダウンロードされ、リモートも自動的に設定されます。<br><br>
+                                            <strong>git init + git remote add</strong>は、ローカルで新規にリポジトリを作成してから、後でリモートリポジトリと連携します。空のリポジトリから開始し、リモート設定は手動で行う必要があります。
                                         </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2 break-words">Q3. mainブランチの役割と、守るべきルールを説明してください。</p>
+                                    <p class="font-medium mb-2 break-words">Q4. HTTPS認証でパスワードの代わりに何を使いますか？</p>
                                     <details class="mt-2">
                                         <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
-                                            <strong>役割</strong>: 本番環境のコード、リリース可能な状態のコードを保持する最重要ブランチ<br><br>
-                                            <strong>守るべきルール</strong>:<br>
-                                            1. 常に動作する状態を保つ<br>
-                                            2. 直接コミットせず、別ブランチで作業してからマージする<br>
-                                            3. チーム開発では、レビューを経てからマージする
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>Personal Access Token（PAT）</strong>を使います。GitHubは2021年8月以降、HTTPSでの通常のパスワード認証を廃止しました。GitHubの設定画面でPATを生成し、git pushやpull時のパスワード欄に貼り付けて認証します。
                                         </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2 break-words">Q4. 「feature/user-login」というブランチ名が良い理由を説明してください。</p>
+                                    <p class="font-medium mb-2 break-words">Q5. 「origin」とは何ですか？</p>
                                     <details class="mt-2">
                                         <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
-                                            1. <strong>feature/</strong>接頭辞により、新機能の開発であることが明確<br>
-                                            2. <strong>user-login</strong>により、ユーザーログイン機能の開発だと具体的にわかる<br>
-                                            3. 小文字とハイフンを使用し、命名規則に従っている<br>
-                                            4. 簡潔で、ブランチの目的が一目でわかる
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            「origin」は、リモートリポジトリに付ける<strong>ニックネーム（別名）</strong>です。慣例的に、メインのリモートリポジトリには「origin」という名前を使います。git remote add origin URLで設定し、以降はoriginという名前でリモートを参照できます。
                                         </p>
                                     </details>
                                 </li>
@@ -936,26 +999,57 @@ cat greeting.txt</code></pre>
                     </div>
                 </div>
 
+                <!-- 章のまとめ -->
+                <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6 my-6">
+                    <h3 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-book text-primary-500"></i>
+                        第7章のまとめ
+                    </h3>
+                    <ul class="space-y-2 text-slate-700">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>リモートリポジトリはクラウド上に保存されるGitリポジトリで、バックアップやチーム開発に役立つ</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>git remote add origin URLでリモートリポジトリを設定する</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>git pushでローカルの変更をGitHubにアップロード、git pullでGitHubから最新の変更を取得</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>git cloneで既存のリポジトリを丸ごと複製できる</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>HTTPS認証ではPersonal Access Token（PAT）を使う</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-check text-primary-500 mt-1 flex-shrink-0"></i>
+                            <span>よくあるエラーは落ち着いてメッセージを読み、適切な対処をすれば解決できる</span>
+                        </li>
+                    </ul>
+                </div>
+
                 <!-- 章間ナビゲーション -->
                 <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
-                    <!-- 前章 -->
                     <a href="git-github-learning-material-06.html"
                        class="group flex items-center gap-3 px-4 py-3 rounded-xl
                               bg-slate-100 hover:bg-slate-200 transition-colors">
-                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
-                                  transition-transform group-hover:-translate-x-1"></i>
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600 transition-transform group-hover:-translate-x-1"></i>
                         <div>
                             <span class="text-xs text-slate-500 block">前の章</span>
-                            <span class="text-slate-700 font-medium">リモート操作</span>
+                            <span class="text-slate-700 font-medium">リポジトリの作成と基本操作</span>
                         </div>
                     </a>
-                    <!-- 次章 -->
                     <a href="git-github-learning-material-08.html"
                        class="group flex items-center gap-3 px-4 py-3 rounded-xl
                               bg-primary-500 hover:bg-primary-600 text-white transition-colors">
                         <div class="text-right">
                             <span class="text-xs text-primary-100 block">次の章</span>
-                            <span class="font-medium">マージとコンフリクト</span>
+                            <span class="font-medium">ブランチの基本</span>
                         </div>
                         <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
                     </a>

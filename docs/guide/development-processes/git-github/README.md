@@ -1,6 +1,6 @@
 # Git/GitHub入門 学習ガイドライン
 
-このガイドラインでは、Git/GitHubの基礎を入門者向けに段階的に学習するためのカリキュラムを提供しています。プログラミングを始めたばかりの方、バージョン管理を初めて学ぶ方を対象に、専門用語を丁寧に解説しながら、GitとGitHubの違いから実践的な操作まで、GUIツール（GitHub Desktop等）とコマンドラインの両方をカバーして学習を進めます。
+このガイドラインでは、Git/GitHubの基礎を完全な初心者向けに段階的に学習するためのカリキュラムを提供しています。バージョン管理の概念を理解することから始め、コマンドラインでの操作を一通り習得した後、Visual Studio Code（VS Code）での操作方法を学ぶ構成となっています。
 
 ## GitとGitHubの違い
 
@@ -25,15 +25,14 @@
 - **ブラウザ**: Chrome、Firefox、Edge、Safari等の最新版
 - **ソフトウェア**（学習中にインストール）:
   - Git（バージョン管理ソフト）
-  - GitHub Desktop（GUIツール、初心者推奨）
-  - テキストエディタ（VS Code推奨、無料）
+  - Visual Studio Code（VS Code、無料のテキストエディタ）
 
 ### 参考リソース
 - [Git公式ドキュメント（日本語）](https://git-scm.com/book/ja/v2)
 - [GitHub公式ドキュメント（日本語）](https://docs.github.com/ja)
-- [GitHub Desktop公式サイト](https://desktop.github.com/)
 - [Pro Git Book（無料オンライン書籍）](https://git-scm.com/book/ja/v2)
 - [GitHub Skills（公式学習コース）](https://skills.github.com/)
+- [Visual Studio Code公式サイト](https://code.visualstudio.com/)
 
 ### 前提知識
 - **必須**:
@@ -48,47 +47,73 @@
 
 ## 学習コンテンツ
 
+本ガイドは3つのパートで構成されています：
+- **Part 1（第1章〜第4章）**: Git/GitHubの概念理解と環境構築
+- **Part 2（第5章〜第12章）**: コマンドラインでのGit操作の習得
+- **Part 3（第13章〜第15章）**: VS Codeでの操作方法
+
+---
+
+### Part 1: 概念理解と環境構築
+
 ### [1. はじめてのバージョン管理 - なぜGitが必要なのか](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-01.html)
 バージョン管理の必要性とGitの基本概念を学びます。「なぜファイル名に日付をつけて保存するのは良くないのか」という身近な問題から始め、バージョン管理システムとは何か、Gitが生まれた背景と歴史（Linuxカーネル開発から誕生）、Gitの特徴（分散型バージョン管理）、GitとGitHubの違いの詳細解説、バージョン管理がもたらすメリット（履歴の追跡、ミスからの復旧、チーム開発の効率化）について解説します。専門用語（リポジトリ、コミット、ブランチ等）の日本語での丁寧な説明も含みます。
 
-### [2. 環境構築 - GitとGitHub Desktopのインストール](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-02.html)
-GitとGitHub Desktopを自分のパソコンにインストールします。Windows、Mac、Linuxそれぞれの環境でのGitインストール手順、GitHub Desktopのインストールと初期設定、GitHubアカウントの作成方法、Git Bashとターミナルの基本的な使い方、VS Codeのインストールと連携設定、初期設定（ユーザー名とメールアドレスの登録）、インストールが正常に完了したかの確認方法について、スクリーンショット付きで解説します。
+### [2. 環境構築 - GitとVS Codeのインストール](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-02.html)
+Gitと開発環境を自分のパソコンにインストールします。Windows、Mac、Linuxそれぞれの環境でのGitインストール手順、GitHubアカウントの作成方法、VS Codeのインストールと基本設定、Git Bashとターミナルの基本的な使い方、初期設定（ユーザー名とメールアドレスの登録）、インストールが正常に完了したかの確認方法について、スクリーンショット付きで解説します。
 
-### [3. GitHub Desktop入門 - GUIで学ぶ基本操作](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-03.html)
-GitHub Desktopを使って、マウス操作でGitの基本を学びます。GitHub Desktopの画面構成と各部の説明、新しいリポジトリの作成（Create New Repository）、ファイルの変更を記録する（コミット）、変更履歴の確認（History表示）、過去の状態に戻す操作、リモートリポジトリ（GitHub）へのプッシュとプル、簡単なブランチ操作について、実際の画面を見ながらステップバイステップで解説します。コマンドを使わずにGitの概念を理解できます。
+### [3. GitHubの基本 - アカウント作成とWebインターフェース](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-03.html)
+GitHubのWebサイトの使い方と基本機能を学びます。GitHubアカウントの作成とプロフィール設定、GitHubのダッシュボードと画面構成、新しいリポジトリの作成（Webから）、README.mdファイルの作成と編集、パブリックリポジトリとプライベートリポジトリの違い、他の人のリポジトリを見る・フォークする、Starとウォッチ機能について解説します。
 
-### [4. GitHubの基本 - リモートリポジトリと公開・共有](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-04.html)
-GitHubのWebサイトの使い方と、リモートリポジトリの概念を学びます。GitHubのダッシュボードと画面構成、新しいリポジトリの作成（Webから）、README.mdファイルの作成と編集、ローカルとリモートの関係（push/pull/fetch）、パブリックリポジトリとプライベートリポジトリの違い、他の人のリポジトリを見る・フォークする、Starとウォッチ機能、GitHubプロフィールのカスタマイズについて解説します。GitHubの基本的な使い方をマスターできます。
+### [4. Gitの仕組み - ローカルとリモートの関係](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-04.html)
+Gitの内部構造とデータの流れを図解で理解します。ワーキングディレクトリ、ステージングエリア、ローカルリポジトリの3つの領域、ローカルリポジトリとリモートリポジトリの関係、push/pull/fetchの概念理解、Gitオブジェクト（blob、tree、commit）の基礎、HEADとブランチポインタの仕組み、.gitディレクトリの役割について、図解を多用して視覚的に理解できるよう解説します。
 
-### [5. コマンドライン入門 - ターミナルでのGit操作の基礎](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-05.html)
-コマンドライン（ターミナル）でのGit操作を一から学びます。コマンドラインとは何か（なぜ必要か）、ターミナル/Git Bashの起動と基本操作（cd, ls, pwd, mkdir）、git initでリポジトリを作成、git statusで状態を確認、git addでステージング、git commitで変更を記録、git logで履歴を確認、git diffで差分を確認、各コマンドの意味と使いどころを詳しく解説します。GUIで学んだ概念をコマンドで実行できるようになります。
+---
 
-### [6. リモート操作 - コマンドラインでのGitHub連携](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-06.html)
-コマンドラインでGitHubと連携する方法を学びます。git remoteでリモートリポジトリを設定、git pushでGitHubにアップロード、git pullでGitHubから取得、git cloneで既存リポジトリを複製、SSH認証の設定（パスワードなしで接続）、HTTPS vs SSH接続の違い、認証情報の管理、よくあるエラーとその解決方法について解説します。コマンドラインでGitHubを操作できるようになります。
+### Part 2: コマンドラインでのGit操作
 
-### [7. ブランチ入門 - 並行作業の基本](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-07.html)
-ブランチの概念と基本的な使い方を学びます。ブランチとは何か（木の枝のイメージで解説）、なぜブランチが必要か（並行開発、実験的な変更）、mainブランチとは、新しいブランチの作成（git branch, git checkout -b）、ブランチの切り替え（git checkout, git switch）、ブランチの一覧確認と削除、GitHub Desktopでのブランチ操作、ブランチ運用のベストプラクティス（命名規則等）について解説します。複数の作業を並行して進められるようになります。
+### [5. コマンドライン入門 - ターミナルの基本操作](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-05.html)
+コマンドライン（ターミナル）の基本を一から学びます。コマンドラインとは何か（なぜ必要か）、ターミナル/Git Bashの起動方法、カレントディレクトリとパスの概念、基本コマンド（cd, ls/dir, pwd, mkdir, rm, cp, mv）、コマンドのオプションと引数の使い方、Tab補完とコマンド履歴の活用、よくあるエラーと対処法について、実際に手を動かしながら学習します。
 
-### [8. マージとコンフリクト - 変更の統合](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-08.html)
-ブランチを統合（マージ）する方法と、コンフリクト（競合）の解決方法を学びます。マージとは何か（ブランチを一つにまとめる）、git mergeコマンドの使い方、Fast-forwardマージと3-wayマージの違い、コンフリクト（競合）とは何か（同じ場所を別々に編集した場合）、コンフリクトの発生と確認方法、コンフリクトの解決手順（手動での編集）、GitHub Desktopでのマージとコンフリクト解決、マージを取り消す方法（git merge --abort）について、実際のシナリオを使って解説します。
+### [6. リポジトリの作成と基本操作 - git init, add, commit](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-06.html)
+コマンドラインでGitの基本操作を学びます。git initでリポジトリを作成、git statusで状態を確認、git addでステージング（変更の準備）、git commitで変更を記録、git logで履歴を確認、git diffで差分を確認、各コマンドの意味と使いどころを詳しく解説します。実際にサンプルプロジェクトを作成しながら一連の流れを体験します。
 
-### [9. プルリクエスト入門 - チーム開発の第一歩](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-09.html)
-GitHubのプルリクエスト機能を学び、チーム開発の基本を理解します。プルリクエスト（Pull Request）とは何か、なぜプルリクエストを使うのか（コードレビュー、変更の可視化）、プルリクエストの作成方法、プルリクエストの説明の書き方、レビューとコメント機能、変更の追加とレビューへの対応、プルリクエストのマージ、ドラフトプルリクエストの活用、プルリクエストのベストプラクティスについて解説します。チーム開発のワークフローを体験できます。
+### [7. リモートリポジトリとの連携 - clone, push, pull](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-07.html)
+コマンドラインでGitHubと連携する方法を学びます。git remoteでリモートリポジトリを設定、git pushでGitHubにアップロード、git pullでGitHubから取得、git cloneで既存リポジトリを複製、HTTPS接続での認証設定、Personal Access Token（PAT）の作成と使用、SSH認証の設定（パスワードなしで接続）、よくあるエラーとその解決方法について解説します。
 
-### [10. 実践Git/GitHub - 個人プロジェクトでの活用](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-10.html)
-これまで学んだ内容を統合し、実際の個人プロジェクトでGit/GitHubを活用する方法を学びます。.gitignoreファイルの作成と設定、READMEの書き方とMarkdown記法、ライセンスの選び方と追加、効果的なコミットメッセージの書き方、タグとリリースの作成、GitHubのIssues機能の活用、GitHub Pagesでの静的サイト公開、日常的なGitワークフローの実践について解説します。自分のプロジェクトで実際にGit/GitHubを使いこなせるようになります。
+### [8. ブランチの基本 - 並行作業の概念と操作](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-08.html)
+ブランチの概念と基本的な使い方を学びます。ブランチとは何か（木の枝のイメージで解説）、なぜブランチが必要か（並行開発、実験的な変更）、mainブランチとは、git branchでブランチ一覧と作成、git checkout/git switchでブランチ切り替え、git checkout -b/git switch -cで作成と切り替えを同時に、ブランチの削除と名前変更、ブランチ運用のベストプラクティス（命名規則等）について解説します。
 
-### [11. トラブルシューティング - よくある問題と解決方法](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-11.html)
-Git/GitHubでよく発生する問題とその解決方法を学びます。「変更が消えた！」と思った時の対処法（git reflog）、間違えてコミットした時の修正方法（git commit --amend）、コミットを取り消したい時（git reset, git revert）、プッシュできない時のエラー対処、プル時のコンフリクト解決、認証エラーの解決方法、「detached HEAD」状態からの復帰、リポジトリの状態がおかしくなった時の対処、よくあるエラーメッセージの意味と対処法について、具体例と共に解説します。
+### [9. マージとコンフリクト - 変更の統合と競合解決](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-09.html)
+ブランチを統合（マージ）する方法と、コンフリクト（競合）の解決方法を学びます。マージとは何か（ブランチを一つにまとめる）、git mergeコマンドの使い方、Fast-forwardマージと3-wayマージの違い、コンフリクト（競合）とは何か（同じ場所を別々に編集した場合）、コンフリクトの発生と確認方法、コンフリクトマーカーの読み方、コンフリクトの解決手順（手動での編集）、マージを取り消す方法（git merge --abort）について、実際のシナリオを使って解説します。
 
-### [12. 次のステップへ - Git/GitHub中級への橋渡し](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-12.html)
-入門レベルを卒業し、次のステップに進むための知識を学びます。git rebaseの基本（履歴を整理する）、git stashの活用（作業を一時退避）、git cherry-pickの使い方（特定のコミットだけ取り込む）、Git Flowとは（ブランチ戦略の紹介）、GitHub Flow（よりシンプルなワークフロー）、GitHub Actions入門（自動化の世界への第一歩）、チーム開発でのGit運用ルール、学習リソースと次に学ぶべきこと（DevOps、CI/CD等）について解説します。
+### [10. プルリクエスト - チーム開発の基本ワークフロー](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-10.html)
+GitHubのプルリクエスト機能を学び、チーム開発の基本を理解します。プルリクエスト（Pull Request）とは何か、なぜプルリクエストを使うのか（コードレビュー、変更の可視化）、ブランチをプッシュしてプルリクエストを作成、プルリクエストの説明の書き方、レビューとコメント機能、変更の追加とレビューへの対応、プルリクエストのマージ方法（Merge, Squash, Rebase）、ドラフトプルリクエストの活用について解説します。
+
+### [11. 実践的なGit操作 - 履歴の操作とトラブル対処](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-11.html)
+より実践的なGit操作とトラブルシューティングを学びます。git commit --amendで直前のコミットを修正、git resetで変更を取り消し（soft, mixed, hard）、git revertでコミットを打ち消し、git stashで作業を一時退避、git reflogで失った変更を復元、git cherry-pickで特定のコミットを取り込む、よくあるエラーメッセージと対処法、「detached HEAD」状態からの復帰について解説します。
+
+### [12. プロジェクト管理 - .gitignore、タグ、リリース](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-12.html)
+実際のプロジェクトでGit/GitHubを活用するための知識を学びます。.gitignoreファイルの作成と設定（除外パターンの書き方）、効果的なコミットメッセージの書き方、git tagでバージョン番号を付ける、GitHubのリリース機能の活用、READMEの書き方とMarkdown記法、ライセンスの選び方と追加、GitHubのIssues機能の活用、GitHub Pagesでの静的サイト公開について解説します。
+
+---
+
+### Part 3: VS Codeでの操作
+
+### [13. VS CodeでのGit操作入門 - GUI環境の活用](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-13.html)
+VS Codeの統合Git機能を使った操作を学びます。VS CodeのSource Control（ソース管理）パネルの使い方、ファイルの変更状態の確認（色分け表示の意味）、ステージングとコミットをGUIで実行、変更差分（Diff）の確認と比較、行単位でのステージング、VS Codeのターミナル統合機能、Git関連の設定カスタマイズについて、コマンドライン操作との対応を示しながら解説します。
+
+### [14. VS Codeでのブランチとマージ - GUIでの分岐作業](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-14.html)
+VS Codeでブランチ操作とマージを行う方法を学びます。ステータスバーでのブランチ確認と切り替え、コマンドパレットでのブランチ作成、ブランチのマージ操作、コンフリクト発生時の3-wayマージエディタ、マージコンフリクトの視覚的な解決、GitLens拡張機能の導入と活用、その他おすすめのGit関連拡張機能について解説します。
+
+### [15. VS CodeでのGitHub連携 - リモート操作とプルリクエスト](https://fcircle-biz.github.io/tech_docs/guide/development-processes/git-github/git-github-learning-material-15.html)
+VS CodeからGitHubとシームレスに連携する方法を学びます。GitHub認証の設定（VS Code内でのサインイン）、リモートリポジトリへのpush/pull操作、GitHub Pull Requests拡張機能のインストールと設定、VS Code内でのプルリクエスト作成、プルリクエストのレビューとコメント、VS Codeでのコードレビューワークフロー、GitHub Copilotとの連携（紹介）、日常的な開発ワークフローのベストプラクティスについて解説します。
 
 ## 学習の進め方
 
 1. **順番に学習する**: 必ず第1章から順番に進めてください。後の章は前の章の知識を前提としています。
 2. **実際に手を動かす**: 読むだけでなく、必ず自分のパソコンで同じ操作を実行してください。Gitは「やってみる」ことで理解が深まります。
-3. **GUIから始める**: 最初はGitHub Desktopで概念を理解し、慣れてからコマンドラインに挑戦しましょう。
+3. **コマンドを先に習得**: Part 2でコマンドライン操作を十分に理解してからPart 3のVS Code操作に進んでください。コマンドを理解していると、GUIツールでも「何が起きているか」を把握できます。
 4. **エラーを恐れない**: エラーが出ても大丈夫です。Gitは「やり直し」が得意なツールです。エラーメッセージをよく読んで対処法を学びましょう。
 5. **練習用リポジトリを活用**: 大切なファイルではなく、練習用のフォルダで自由に試してください。
 6. **分からない用語は都度確認**: 専門用語が出てきたら、飛ばさずにその場で意味を確認しましょう。
@@ -96,21 +121,21 @@ Git/GitHubでよく発生する問題とその解決方法を学びます。「�
 
 ## 推奨学習期間
 
-- **基礎理解コース** (1-4章): 1-2週間
-  - Git/GitHubの概念理解、環境構築、GUIでの基本操作
-  - 1日30分-1時間の学習で、GitHubを使い始められます
+- **Part 1: 概念理解と環境構築** (1-4章): 1週間
+  - Git/GitHubの概念理解、環境構築
+  - 1日30分-1時間の学習を想定
 
-- **コマンドライン習得コース** (5-8章): 2-3週間
-  - コマンドラインでのGit操作、ブランチとマージ
+- **Part 2: コマンドライン操作の習得** (5-12章): 3-4週間
+  - コマンドラインでのGit操作、ブランチ、マージ、プルリクエスト
   - 実際のプロジェクトで基本的な操作ができるようになります
 
-- **実践活用コース** (9-12章): 2-3週間
-  - プルリクエスト、実践的なワークフロー、トラブルシューティング
-  - チーム開発に参加できる基礎力が身につきます
+- **Part 3: VS Codeでの操作** (13-15章): 1-2週間
+  - VS Codeの統合Git機能、GitHub連携
+  - 日常の開発作業を効率化できるようになります
 
-**合計学習期間**: 5-8週間（1-2ヶ月、1日30分-1時間の学習を想定）
+**合計学習期間**: 5-7週間（約1.5-2ヶ月、1日30分-1時間の学習を想定）
 
-※ 既にプログラミング経験がある方、コマンドラインに慣れている方は、より短期間で学習を進められます。
+※ 既にコマンドラインに慣れている方は、Part 2をより短期間で進められます。
 
 ## 関連リソース
 
@@ -131,25 +156,31 @@ Git/GitHubでよく発生する問題とその解決方法を学びます。「�
 
 このガイドを完了すると、以下のスキルを身につけることができます：
 
+### Part 1完了時
 - **バージョン管理の理解**: なぜバージョン管理が必要か、Gitの仕組みを説明できる
-- **環境構築**: Git、GitHub Desktop、VS Codeを自分でインストール・設定できる
-- **GUI操作**: GitHub Desktopで基本的なGit操作ができる
-- **GitHub活用**: GitHubでリポジトリを作成し、コードを公開・共有できる
+- **環境構築**: Git、VS Codeを自分でインストール・設定できる
+- **GitHub活用**: GitHubでリポジトリを作成し、Webインターフェースを操作できる
+
+### Part 2完了時
 - **コマンドライン操作**: ターミナルで基本的なGitコマンドを実行できる
+- **リモート連携**: GitHubとのpush/pull操作ができる
 - **ブランチ操作**: ブランチを作成・切り替え・マージできる
 - **コンフリクト解決**: マージ時のコンフリクトを理解し、解決できる
 - **プルリクエスト**: プルリクエストを作成し、レビューに参加できる
-- **個人プロジェクト運用**: 自分のプロジェクトでGit/GitHubを活用できる
 - **トラブル対応**: よくあるGitの問題を自力で解決できる
-- **チーム開発の基礎**: チーム開発に参加するための基礎知識がある
+
+### Part 3完了時
+- **VS Code Git操作**: VS Codeの統合Git機能を使いこなせる
+- **効率的なワークフロー**: GUIとコマンドラインを状況に応じて使い分けられる
+- **GitHub連携**: VS CodeからGitHubを直接操作できる
 
 ## よくある質問（FAQ）
 
-### Q: GitとGitHubは別々に学ぶ必要がありますか？
-A: いいえ、本ガイドでは両方を一緒に学びます。Gitの基本操作を学びながら、同時にGitHubでの公開・共有も実践します。
+### Q: なぜコマンドラインを先に学ぶのですか？
+A: コマンドを理解していると、GUIツールで「何が起きているか」を正確に把握できます。また、トラブル時の対処やより高度な操作にはコマンドラインが必要になることが多いためです。
 
-### Q: コマンドラインは必須ですか？
-A: 最初はGitHub Desktop（GUI）だけでも大丈夫です。ただし、より高度な操作や、多くの開発現場ではコマンドライン操作が求められるため、徐々に習得することをお勧めします。
+### Q: VS Codeだけで学習できませんか？
+A: 本ガイドではコマンドラインを先に学ぶ構成ですが、VS Codeでの操作も丁寧に解説しています。ただし、Gitの仕組みを深く理解するためには、コマンドラインでの学習をお勧めします。
 
 ### Q: プログラミング経験がなくても大丈夫ですか？
 A: はい、大丈夫です。Git/GitHubはプログラムのソースコード管理によく使われますが、文書ファイルやデザインファイルの管理にも使えます。本ガイドはプログラミング未経験者でも理解できるよう設計されています。
@@ -158,7 +189,7 @@ A: はい、大丈夫です。Git/GitHubはプログラムのソースコード�
 A: Gitは変更履歴を記録しているため、ほとんどの場合、過去の状態に戻すことができます。第11章のトラブルシューティングで詳しく学びます。
 
 ### Q: 無料で学習できますか？
-A: はい、Git、GitHub（個人利用）、GitHub Desktop、VS Codeはすべて無料で使用できます。
+A: はい、Git、GitHub（個人利用）、VS Codeはすべて無料で使用できます。
 
 ## 次のステップ
 
@@ -169,7 +200,7 @@ A: はい、Git、GitHub（個人利用）、GitHub Desktop、VS Codeはすべ�
 - [アジャイル開発学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/development-processes/agile-development/) - チーム開発手法を学ぶ
 
 ### プログラミング言語
-- [Python学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python/) - 人気のプログラミング言語
+- [Python学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python-beginner/) - 人気のプログラミング言語
 - [JavaScript学習ガイドライン](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/) - Web開発の基礎
 
 ### クラウド・インフラ
