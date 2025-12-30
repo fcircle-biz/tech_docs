@@ -1,6 +1,6 @@
 /**
  * サイドバーコンテンツ生成JavaScript
- * 各章のHTMLから共通のサイドバー部分を動的に生成
+ * Git/GitHub入門学習ガイド
  *
  * 【使い方】
  * 1. このファイルを各技術フォルダにコピー
@@ -12,24 +12,21 @@
     'use strict';
 
     // ========================================
-    // Git/GitHub 全章定義
+    // Git/GitHub入門の章定義データ
     // ========================================
     const chapters = [
         { number: 1, title: '第1章: はじめてのバージョン管理', file: 'git-github-learning-material-01.html' },
         { number: 2, title: '第2章: 環境構築', file: 'git-github-learning-material-02.html' },
-        { number: 3, title: '第3章: GitHubの基本', file: 'git-github-learning-material-03.html' },
-        { number: 4, title: '第4章: Gitの仕組み', file: 'git-github-learning-material-04.html' },
+        { number: 3, title: '第3章: GitHub Desktop入門', file: 'git-github-learning-material-03.html' },
+        { number: 4, title: '第4章: GitHubの基本', file: 'git-github-learning-material-04.html' },
         { number: 5, title: '第5章: コマンドライン入門', file: 'git-github-learning-material-05.html' },
-        { number: 6, title: '第6章: リポジトリの作成と基本操作', file: 'git-github-learning-material-06.html' },
-        { number: 7, title: '第7章: リモートリポジトリとの連携', file: 'git-github-learning-material-07.html' },
-        { number: 8, title: '第8章: ブランチの基本', file: 'git-github-learning-material-08.html' },
-        { number: 9, title: '第9章: マージとコンフリクト', file: 'git-github-learning-material-09.html' },
-        { number: 10, title: '第10章: プルリクエスト', file: 'git-github-learning-material-10.html' },
-        { number: 11, title: '第11章: 実践的なGit操作', file: 'git-github-learning-material-11.html' },
-        { number: 12, title: '第12章: プロジェクト管理', file: 'git-github-learning-material-12.html' },
-        { number: 13, title: '第13章: VS CodeでのGit操作入門', file: 'git-github-learning-material-13.html' },
-        { number: 14, title: '第14章: VS Codeでのブランチとマージ', file: 'git-github-learning-material-14.html' },
-        { number: 15, title: '第15章: VS CodeでのGitHub連携', file: 'git-github-learning-material-15.html' }
+        { number: 6, title: '第6章: リモート操作', file: 'git-github-learning-material-06.html' },
+        { number: 7, title: '第7章: ブランチ入門', file: 'git-github-learning-material-07.html' },
+        { number: 8, title: '第8章: マージとコンフリクト', file: 'git-github-learning-material-08.html' },
+        { number: 9, title: '第9章: プルリクエスト入門', file: 'git-github-learning-material-09.html' },
+        { number: 10, title: '第10章: 実践Git/GitHub', file: 'git-github-learning-material-10.html' },
+        { number: 11, title: '第11章: トラブルシューティング', file: 'git-github-learning-material-11.html' },
+        { number: 12, title: '第12章: 次のステップへ', file: 'git-github-learning-material-12.html' }
     ];
 
     // 現在のページのファイル名を取得
@@ -77,9 +74,12 @@
 
         const sidebarHTML = `
         <!-- サイドバー -->
-        <aside id="sidebar" class="fixed lg:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
+        <aside id="sidebar" class="fixed md:sticky top-20 left-0 z-40 w-80 h-[calc(100vh-5rem)]
                                    bg-white border-r border-slate-200 overflow-y-auto flex-shrink-0
-                                   transform -translate-x-full sidebar-transition">
+                                   transform -translate-x-full md:translate-x-0 sidebar-transition sidebar-resizable"
+               style="--sidebar-width: 320px;">
+            <!-- リサイズハンドル -->
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle hidden md:block"></div>
             <div class="p-4">
                 <!-- 進捗インジケーター -->
                 <div class="mb-6 p-4 bg-primary-50 rounded-xl">
@@ -104,6 +104,13 @@ ${chapterListHTML}
             </div>
         </aside>
 
+        <!-- サイドバーオーバーレイ（モバイル用） -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
+
+        <!-- サイドバートグルボタン（PC用） -->
+        <button id="sidebar-toggle-btn" class="sidebar-toggle-btn hidden md:flex items-center justify-center w-10 h-10">
+            <i class="fas fa-chevron-left text-slate-600"></i>
+        </button>
         `;
 
         return sidebarHTML;
