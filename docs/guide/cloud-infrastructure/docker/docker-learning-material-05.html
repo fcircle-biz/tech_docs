@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
     <title>Docker学習教材 第5章 - Webサーバーを動かしてみよう</title>
 
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -12,7 +23,7 @@
             theme: {
                 extend: {
                     colors: {
-                        // Docker: Sky Blue
+                        // Docker カラーテーマ (sky)
                         primary: {
                             50: '#f0f9ff',
                             100: '#e0f2fe',
@@ -55,13 +66,13 @@
 <body class="font-sans bg-slate-50 text-slate-800 antialiased">
     <!-- ヘッダー/ナビゲーションバー -->
     <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
-        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <nav class="w-full px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="flex items-center justify-between py-3">
                 <!-- 左側: ロゴとタイトルセクション -->
                 <div class="flex items-center gap-4">
                     <!-- アイコン -->
                     <div class="relative group">
-                        <div class="absolute inset-0 bg-gradient-to-br from-cyan-400/30 to-blue-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
                         <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
                             <i class="fab fa-docker text-3xl icon-rotate-hover drop-shadow-lg"></i>
                         </div>
@@ -78,7 +89,7 @@
                         </div>
                         <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
                             <div class="flex items-center gap-1">
-                                <i class="fas fa-code text-[9px]"></i>
+                                <i class="fas fa-server text-[9px]"></i>
                                 <span>クラウド・インフラ</span>
                             </div>
                             <div class="hidden sm:flex items-center gap-1">
@@ -93,8 +104,8 @@
                     </div>
                 </div>
 
-                <!-- 右側: モバイルメニューボタン -->
-                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
                     <i class="fas fa-bars text-lg"></i>
                 </button>
             </div>
@@ -107,14 +118,14 @@
 
         <!-- メインコンテンツ -->
         <main class="flex-1 min-w-0">
-            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
                 <!-- パンくずリスト -->
                 <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
-                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <a href="/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
                     <i class="fas fa-chevron-right text-xs"></i>
                     <a href="../" class="hover:text-primary-600 transition-colors">クラウド・インフラ</a>
                     <i class="fas fa-chevron-right text-xs"></i>
-                    <a href="./" class="hover:text-primary-600 transition-colors">Docker</a>
+                    <span class="text-slate-700">Docker入門</span>
                     <i class="fas fa-chevron-right text-xs"></i>
                     <span class="text-slate-700">第5章</span>
                 </nav>
@@ -128,7 +139,7 @@
                         </span>
                     </div>
                     <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Webサーバーを動かしてみよう - Nginxで学ぶポート設定</h1>
-                    <p class="text-slate-600">実際にNginx（エンジンエックス）というWebサーバーをコンテナで起動し、ブラウザからアクセスしてみます。「ポート」の概念を建物の部屋番号の例えで理解し、コンテナのポートとホストマシンのポートの関係を図解で学びます。</p>
+                    <p class="text-slate-600">Nginxコンテナを起動してブラウザからアクセスし、ポートマッピングの仕組みを理解します。</p>
                 </header>
 
                 <!-- 学習目標カード -->
@@ -144,399 +155,423 @@
                             <ul class="space-y-2">
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>Nginxとは何か、Webサーバーの役割を理解する</span>
+                                    <span>Nginxコンテナを起動してWebサーバーとして動かす</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>ポートの概念を日常の例えで理解する</span>
+                                    <span>ポートマッピングの概念を理解する</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>コンテナのポートマッピング（-pオプション）を習得する</span>
-                                </li>
-                                <li class="flex items-start gap-2 text-amber-900">
-                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>自分のHTMLファイルをNginxで表示する</span>
+                                    <span>自分だけのHTMLページをコンテナで表示する</span>
                                 </li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
-                <!-- セクション1: Webサーバーとは -->
+                <!-- セクション1: Nginxとは -->
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        5.1 Webサーバーとは何か - Nginxの紹介
+                        5.1 Nginxとは - 世界中で使われるWebサーバー
                     </h2>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        <strong class="text-primary-700">Webサーバー</strong>とは、ブラウザからのリクエスト（要求）を受け取って、HTMLファイルや画像などを返してくれるソフトウェアです。
-                    </p>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        <strong class="text-primary-700">Nginx（エンジンエックス）</strong>は、世界中で広く使われているWebサーバーソフトウェアの一つです。高速で軽量なことが特徴で、多くの人気Webサイトで採用されています。
+                    <p class="text-slate-600 leading-relaxed">
+                        <strong>Nginx</strong>（エンジンエックス）は、世界中で広く使われているWebサーバーソフトウェアです。軽量で高速、かつ安定しているため、多くのWebサイトで採用されています。
                     </p>
 
-                    <!-- 図解: Webサーバーの役割 -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-6 my-6">
-                        <h3 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
-                            <i class="fas fa-diagram-project text-primary-500"></i>
-                            Webサーバーの役割
-                        </h3>
-                        <div class="mermaid">
-sequenceDiagram
-    participant B as ブラウザ
-    participant W as Webサーバー<br/>(Nginx)
-    participant F as HTMLファイル
-
-    B->>W: ページを見せて!
-    W->>F: ファイルを読み込む
-    F-->>W: HTMLファイル
-    W-->>B: ページを表示
-                        </div>
-                        <p class="text-sm text-slate-600 mt-4">
-                            ブラウザからのリクエストに応じて、WebサーバーがHTMLファイルを返します
-                        </p>
-                    </div>
-                </section>
-
-                <!-- セクション2: ポートを理解しよう -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        5.2 「ポート」を理解しよう - 建物の部屋番号の例え
-                    </h2>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        コンピュータの世界で「ポート」とは、<strong>建物の部屋番号</strong>のようなものです。
-                    </p>
-
-                    <!-- 例えカード -->
-                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-6 my-6">
-                        <h3 class="text-lg font-semibold text-blue-800 mb-4 flex items-center gap-2">
-                            <i class="fas fa-building text-blue-500"></i>
-                            建物の部屋番号の例
-                        </h3>
-                        <div class="space-y-3 text-blue-900">
-                            <div class="flex items-start gap-3">
-                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">1</div>
-                                <div>
-                                    <strong>建物 = コンピュータ本体</strong>
-                                    <p class="text-sm mt-1">あなたのパソコンは、一つの大きなマンションだと考えてください</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-3">
-                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">2</div>
-                                <div>
-                                    <strong>部屋番号 = ポート番号</strong>
-                                    <p class="text-sm mt-1">各サービスは、それぞれ異なる部屋番号を持っています</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-3">
-                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">3</div>
-                                <div>
-                                    <strong>訪問者 = 外部からのアクセス</strong>
-                                    <p class="text-sm mt-1">Webブラウザなどは、特定の部屋番号を訪ねてきます</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        たとえば、Webサーバーは通常<strong class="text-primary-700">80番ポート</strong>（HTTP）や<strong class="text-primary-700">443番ポート</strong>（HTTPS）を使います。これは「Web用の部屋は80号室ですよ」と決まっているようなものです。
-                    </p>
-
-                    <!-- 図解: ポートの概念 -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-6 my-6">
-                        <h3 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
-                            <i class="fas fa-network-wired text-primary-500"></i>
-                            ポートの仕組み
-                        </h3>
-                        <div class="mermaid">
-flowchart LR
-    subgraph computer[あなたのPC<br/>IPアドレス: 192.168.1.10]
-        port80[80番ポート<br/>Webサーバー]
-        port22[22番ポート<br/>SSH]
-        port3306[3306番ポート<br/>MySQL]
-    end
-
-    browser[ブラウザ] -->|80番にアクセス| port80
-
-    style computer fill:#e0f2fe,stroke:#0ea5e9,stroke-width:2px
-    style port80 fill:#d1fae5,stroke:#10b981
-    style browser fill:#fef3c7,stroke:#f59e0b
-                        </div>
-                        <p class="text-sm text-slate-600 mt-4">
-                            一つのコンピュータ上で、複数のサービスが異なるポート番号で動作します
-                        </p>
-                    </div>
-                </section>
-
-                <!-- セクション3: Nginxコンテナを起動する -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        5.3 Nginxコンテナを起動する
-                    </h2>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        それでは実際に、NginxのWebサーバーをDockerコンテナで起動してみましょう。
-                    </p>
-
-                    <!-- 実習カード -->
-                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 mb-6 overflow-hidden">
-                        <div class="flex items-start gap-4">
-                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-code text-white"></i>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 5-1: Nginxコンテナの起動</h3>
-                                <p class="text-purple-900 mb-4 break-words">ターミナルで以下のコマンドを実行してください</p>
-
-                                <div class="bg-slate-800 rounded-lg p-4 mb-4">
-                                    <pre class="text-slate-100 text-sm overflow-x-auto"><code class="language-bash"># Nginxコンテナを起動（ポート80を公開）
-docker run -d -p 80:80 --name my-nginx nginx</code></pre>
-                                </div>
-
-                                <h4 class="font-medium text-purple-800 mb-2 break-words">コマンドの意味</h4>
-                                <ul class="space-y-2 mb-4">
-                                    <li class="text-purple-900"><code class="bg-purple-100 px-2 py-0.5 rounded">-d</code>: バックグラウンドで実行（デタッチモード）</li>
-                                    <li class="text-purple-900"><code class="bg-purple-100 px-2 py-0.5 rounded">-p 80:80</code>: ポートマッピング（後で詳しく解説）</li>
-                                    <li class="text-purple-900"><code class="bg-purple-100 px-2 py-0.5 rounded">--name my-nginx</code>: コンテナに「my-nginx」という名前をつける</li>
-                                    <li class="text-purple-900"><code class="bg-purple-100 px-2 py-0.5 rounded">nginx</code>: 使用するイメージの名前</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 動作確認カード -->
-                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5 mb-6 overflow-hidden">
-                        <div class="flex items-start gap-4">
-                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-play text-white"></i>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h3 class="text-lg font-semibold text-emerald-800 mb-3 break-words">動作確認</h3>
-                                <p class="text-emerald-900 mb-4 break-words">Webブラウザで以下のURLにアクセスしてください</p>
-                                <div class="bg-white/60 rounded-lg p-4 border border-emerald-200 mb-4">
-                                    <pre class="text-emerald-900 text-sm">http://localhost</pre>
-                                </div>
-                                <h4 class="font-medium text-emerald-800 mb-2 break-words">
-                                    <i class="fas fa-check-circle mr-2"></i>期待される結果
-                                </h4>
-                                <p class="text-emerald-900">「Welcome to nginx!」というページが表示されれば成功です。Nginxのデフォルトページが表示されています。</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- セクション4: ポートマッピングの仕組み -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        5.4 ポートマッピングの仕組み - -p ホスト:コンテナ の意味
-                    </h2>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        先ほど使った<code class="bg-slate-100 px-2 py-0.5 rounded text-sm">-p 80:80</code>というオプションについて、詳しく見ていきましょう。
-                    </p>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        <strong class="text-primary-700">ポートマッピング</strong>とは、「ホストマシン（あなたのパソコン）のポート」と「コンテナ内のポート」を橋渡しすることです。
-                    </p>
-
-                    <!-- 図解: ポートマッピング -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-6 my-6">
-                        <h3 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
-                            <i class="fas fa-network-wired text-primary-500"></i>
-                            ポートマッピング: -p 80:80 の仕組み
-                        </h3>
-                        <div class="mermaid">
-flowchart LR
-    browser[Webブラウザ] -->|localhostの80番<br/>にアクセス| host[ホストマシン<br/>80番ポート]
-    host -->|マッピング| container[Dockerコンテナ<br/>80番ポート]
-    container --> nginx[Nginx<br/>Webサーバー]
-
-    style browser fill:#fef3c7,stroke:#f59e0b
-    style host fill:#bae6fd,stroke:#0ea5e9
-    style container fill:#e0f2fe,stroke:#0ea5e9
-    style nginx fill:#d1fae5,stroke:#10b981
-                        </div>
-                        <p class="text-sm text-slate-600 mt-4">
-                            ホストの80番ポートへのアクセスが、コンテナ内の80番ポートに転送されます
-                        </p>
-                    </div>
-
-                    <!-- -pオプションの書き方 -->
-                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-4">
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-info-circle text-blue-500 text-lg mt-0.5"></i>
-                            <div>
-                                <h3 class="font-semibold text-blue-800 mb-2">-pオプションの書き方</h3>
-                                <p class="text-blue-900 text-sm mb-3">基本形式: <code class="bg-blue-100 px-2 py-0.5 rounded">-p ホストのポート:コンテナのポート</code></p>
-                                <ul class="space-y-2 text-sm text-blue-900">
-                                    <li><code class="bg-blue-100 px-2 py-0.5 rounded">-p 80:80</code> - ホストの80番とコンテナの80番をつなぐ</li>
-                                    <li><code class="bg-blue-100 px-2 py-0.5 rounded">-p 8080:80</code> - ホストの8080番とコンテナの80番をつなぐ</li>
-                                    <li><code class="bg-blue-100 px-2 py-0.5 rounded">-p 3000:80</code> - ホストの3000番とコンテナの80番をつなぐ</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 異なるポート番号の例 -->
-                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-6 my-6">
-                        <h3 class="text-lg font-semibold text-blue-800 mb-4 flex items-center gap-2">
-                            <i class="fas fa-flask text-blue-500"></i>
-                            試してみよう: 異なるポート番号でアクセス
-                        </h3>
-                        <p class="text-blue-900 mb-3">既存のコンテナを停止して、別のポート番号でNginxを起動してみましょう</p>
-
-                        <div class="bg-slate-800 rounded-lg p-4 mb-3">
-                            <pre class="text-slate-100 text-sm overflow-x-auto"><code class="language-bash"># 既存のコンテナを停止・削除
-docker stop my-nginx
-docker rm my-nginx
-
-# 今度は8080番ポートで起動
-docker run -d -p 8080:80 --name my-nginx nginx</code></pre>
-                        </div>
-
-                        <p class="text-blue-900 text-sm mt-3">ブラウザで<code class="bg-blue-100 px-2 py-0.5 rounded">http://localhost:8080</code>にアクセスすると、同じNginxページが表示されます。</p>
-                    </div>
-                </section>
-
-                <!-- セクション5: 自分のHTMLを表示する -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        5.5 自分のHTMLを表示する - ボリュームマウント
-                    </h2>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        Nginxのデフォルトページではなく、自分で作成したHTMLページを表示してみましょう。そのために<strong class="text-primary-700">-vオプション</strong>を使います。
-                    </p>
-
-                    <!-- 実習カード -->
-                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 mb-6 overflow-hidden">
-                        <div class="flex items-start gap-4">
-                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-code text-white"></i>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 5-2: 自分のHTMLページを表示する</h3>
-
-                                <h4 class="font-medium text-purple-800 mb-2 break-words">手順</h4>
-                                <ol class="space-y-3 mb-4">
-                                    <li class="flex items-start gap-3 text-purple-900">
-                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
-                                        <span class="flex-1 min-w-0 break-words">自分のパソコンに、HTMLファイル用のフォルダを作成します</span>
-                                    </li>
-                                    <li class="flex items-start gap-3 text-purple-900">
-                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
-                                        <span class="flex-1 min-w-0 break-words">そのフォルダ内に、簡単なHTMLファイルを作成します</span>
-                                    </li>
-                                    <li class="flex items-start gap-3 text-purple-900">
-                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">3</span>
-                                        <span class="flex-1 min-w-0 break-words">そのフォルダをコンテナにマウントしてNginxを起動します</span>
-                                    </li>
-                                </ol>
-
-                                <h4 class="font-medium text-purple-800 mb-2 break-words">1. HTMLファイルの作成</h4>
-                                <div class="bg-slate-800 rounded-lg p-4 mb-4">
-                                    <pre class="text-slate-100 text-sm overflow-x-auto"><code class="language-bash"># ホームディレクトリに移動
-cd ~
-
-# HTMLファイル用のフォルダを作成
-mkdir my-html
-cd my-html
-
-# HTMLファイルを作成（エディタで以下の内容を保存）
-# ファイル名: index.html</code></pre>
-                                </div>
-
-                                <h4 class="font-medium text-purple-800 mb-2 break-words">2. index.html の内容</h4>
-                                <div class="bg-slate-800 rounded-lg p-4 mb-4">
-                                    <pre class="text-slate-100 text-sm overflow-x-auto"><code class="language-html">&lt;!DOCTYPE html&gt;
-&lt;html lang="ja"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;title&gt;私のページ&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;h1&gt;こんにちは！Dockerで動いています&lt;/h1&gt;
-    &lt;p&gt;これは私が作成したHTMLページです。&lt;/p&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-                                </div>
-
-                                <h4 class="font-medium text-purple-800 mb-2 break-words">3. コンテナの起動（ボリュームマウント）</h4>
-                                <div class="bg-slate-800 rounded-lg p-4 mb-4">
-                                    <pre class="text-slate-100 text-sm overflow-x-auto"><code class="language-bash"># 既存のコンテナがあれば停止・削除
-docker stop my-nginx
-docker rm my-nginx
-
-# ボリュームマウントしてNginxを起動
-docker run -d -p 80:80 \
-  -v ~/my-html:/usr/share/nginx/html \
-  --name my-nginx nginx</code></pre>
-                                </div>
-
-                                <p class="text-purple-900 text-sm mt-3">
-                                    <code class="bg-purple-100 px-2 py-0.5 rounded">-v</code>オプションで、ホストの<code class="bg-purple-100 px-2 py-0.5 rounded">~/my-html</code>フォルダを、コンテナ内の<code class="bg-purple-100 px-2 py-0.5 rounded">/usr/share/nginx/html</code>にマウント（接続）しています。
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 図解: ボリュームマウント -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-6 my-6">
-                        <h3 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
-                            <i class="fas fa-diagram-project text-primary-500"></i>
-                            ボリュームマウントの仕組み
-                        </h3>
-                        <div class="mermaid">
-flowchart LR
-    subgraph host[ホストマシン]
-        folder["~/my-html/<br/>index.html"]
-    end
-
-    subgraph container[Dockerコンテナ]
-        nginx_folder["/usr/share/nginx/html/<br/>index.html"]
-        nginx[Nginx]
-    end
-
-    folder -.マウント.-> nginx_folder
-    nginx_folder --> nginx
-
-    style host fill:#bae6fd,stroke:#0ea5e9
-    style container fill:#e0f2fe,stroke:#0ea5e9
-    style nginx fill:#d1fae5,stroke:#10b981
-                        </div>
-                        <p class="text-sm text-slate-600 mt-4">
-                            ホストのフォルダがコンテナ内にマウントされ、Nginxがそのファイルを配信します
-                        </p>
-                    </div>
-
-                    <!-- 動作確認 -->
-                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5 mb-6 overflow-hidden">
-                        <div class="flex items-start gap-4">
-                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-play text-white"></i>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h3 class="text-lg font-semibold text-emerald-800 mb-3 break-words">動作確認</h3>
-                                <p class="text-emerald-900 mb-4 break-words">ブラウザで<code class="bg-emerald-100 px-2 py-0.5 rounded">http://localhost</code>にアクセスしてください</p>
-                                <h4 class="font-medium text-emerald-800 mb-2 break-words">
-                                    <i class="fas fa-check-circle mr-2"></i>期待される結果
-                                </h4>
-                                <p class="text-emerald-900">「こんにちは！Dockerで動いています」というあなたのHTMLページが表示されれば成功です。</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ヒントカード -->
                     <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
                         <div class="flex items-start gap-3">
                             <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
                             <div class="flex-1 min-w-0">
-                                <p class="text-blue-900 font-medium break-words">ヒント: ファイルをリアルタイムで更新</p>
+                                <p class="text-blue-900 font-medium break-words">Webサーバーとは？</p>
                                 <p class="text-blue-800 text-sm mt-1 break-words">
-                                    ホストの<code class="bg-blue-100 px-2 py-0.5 rounded">index.html</code>を編集して保存すると、コンテナを再起動しなくてもブラウザをリロードするだけで変更が反映されます。これは、ホストとコンテナでファイルが共有されているためです。
+                                    Webブラウザからのリクエストを受け取り、HTMLファイルや画像などを返す役割を持つソフトウェアです。レストランで例えると、お客さんの注文を受けて料理を提供するウェイターのような存在です。
                                 </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-100 border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-star text-yellow-500"></i>
+                            Nginxの特徴
+                        </h3>
+                        <ul class="space-y-3 text-slate-700">
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-check-circle text-emerald-500 mt-1 flex-shrink-0"></i>
+                                <div>
+                                    <strong>高速</strong>: 多数のリクエストを効率的に処理できます
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-check-circle text-emerald-500 mt-1 flex-shrink-0"></i>
+                                <div>
+                                    <strong>軽量</strong>: メモリ使用量が少なく済みます
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-check-circle text-emerald-500 mt-1 flex-shrink-0"></i>
+                                <div>
+                                    <strong>多機能</strong>: リバースプロキシ、ロードバランサーとしても使えます
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- セクション2: ポートとは -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.2 ポートとは - 建物の部屋番号のようなもの
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-6">
+                        <strong>ポート</strong>は、コンピュータ上のサービスを識別するための番号です。建物に例えると、<strong>IPアドレスが住所、ポート番号が部屋番号</strong>のようなものです。
+                    </p>
+
+                    <!-- ポートの概念図 -->
+                    <div class="my-8">
+                        <pre class="mermaid">
+flowchart LR
+    A["ブラウザ"] -->|"http://localhost:8080"| B{"ホストマシン"}
+    B -->|"ポート 8080"| C["Dockerエンジン"]
+    C -->|"ポート 80<br/>にマッピング"| D["Nginxコンテナ<br/>ポート 80で待機"]
+
+    style A fill:#e0f2fe,stroke:#0284c7,stroke-width:2px
+    style B fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style C fill:#dbeafe,stroke:#0ea5e9,stroke-width:2px
+    style D fill:#d1fae5,stroke:#10b981,stroke-width:2px
+</pre>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">よく使われるポート番号</p>
+                                <ul class="text-blue-800 text-sm mt-2 space-y-1">
+                                    <li><strong>80</strong>: HTTP（Webサイト）</li>
+                                    <li><strong>443</strong>: HTTPS（セキュアなWebサイト）</li>
+                                    <li><strong>3306</strong>: MySQL（データベース）</li>
+                                    <li><strong>5432</strong>: PostgreSQL（データベース）</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション3: Nginxコンテナを起動 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.3 Nginxコンテナを起動してみよう
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-6">
+                        それでは、実際にNginxコンテナを起動してブラウザからアクセスしてみましょう。
+                    </p>
+
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                                rounded-xl p-5 my-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                        flex items-center justify-center">
+                                <i class="fas fa-laptop-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習: Nginxコンテナの起動</h3>
+
+                                <p class="text-purple-900 mb-3 break-words">
+                                    以下のコマンドを実行して、Nginxコンテナを起動します。
+                                </p>
+
+                                <div class="code-block-wrapper">
+                                    <button class="copy-button" onclick="copyCode(this)">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                    <pre><code class="language-bash"># Nginxコンテナを起動（ポート8080でアクセス可能にする）
+docker run -d -p 8080:80 --name my-nginx nginx</code></pre>
+                                </div>
+
+                                <div class="bg-purple-100 rounded-lg p-4 mt-4">
+                                    <p class="text-purple-900 font-medium mb-2 break-words">コマンドの意味：</p>
+                                    <ul class="text-purple-800 text-sm space-y-1">
+                                        <li><code class="bg-purple-200 px-1 rounded">-d</code>: バックグラウンドで実行（デタッチモード）</li>
+                                        <li><code class="bg-purple-200 px-1 rounded">-p 8080:80</code>: ホストの8080ポートをコンテナの80ポートにマッピング</li>
+                                        <li><code class="bg-purple-200 px-1 rounded">--name my-nginx</code>: コンテナに「my-nginx」という名前をつける</li>
+                                        <li><code class="bg-purple-200 px-1 rounded">nginx</code>: 使用するイメージ名</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション4: ブラウザでアクセス -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.4 ブラウザからアクセスしてみよう
+                    </h2>
+
+                    <!-- 動作確認カード -->
+                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200
+                                rounded-xl p-5 my-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg
+                                        flex items-center justify-center">
+                                <i class="fas fa-check-circle text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-emerald-800 mb-3 break-words">動作確認</h3>
+
+                                <ol class="space-y-3 text-emerald-900">
+                                    <li class="break-words">
+                                        <strong>ステップ1:</strong> ブラウザを開く
+                                    </li>
+                                    <li class="break-words">
+                                        <strong>ステップ2:</strong> アドレスバーに以下を入力してアクセス
+                                        <div class="code-block-wrapper mt-2">
+                                            <button class="copy-button" onclick="copyCode(this)">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                            <pre><code>http://localhost:8080</code></pre>
+                                        </div>
+                                    </li>
+                                    <li class="break-words">
+                                        <strong>ステップ3:</strong> 「Welcome to nginx!」というページが表示されればOK
+                                    </li>
+                                </ol>
+
+                                <div class="bg-emerald-100 rounded-lg p-4 mt-4">
+                                    <p class="text-emerald-900 font-medium mb-2 flex items-center gap-2 break-words">
+                                        <i class="fas fa-lightbulb"></i>
+                                        成功した場合
+                                    </p>
+                                    <p class="text-emerald-800 text-sm break-words">
+                                        「Welcome to nginx!」というタイトルと、「If you see this page, the nginx web server is successfully installed and working.」というメッセージが表示されます。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-100 border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-info-circle text-blue-500"></i>
+                            何が起こっているのか？
+                        </h3>
+                        <ol class="space-y-3 text-slate-700">
+                            <li>ブラウザが <code class="bg-slate-200 px-1 rounded">localhost:8080</code> にアクセス</li>
+                            <li>ホストマシン（あなたのPC）の8080ポートがリクエストを受け取る</li>
+                            <li>Dockerがそのリクエストをコンテナの80ポートに転送</li>
+                            <li>Nginxコンテナが80ポートでリクエストを受け取り、HTMLを返す</li>
+                            <li>ブラウザにNginxのウェルカムページが表示される</li>
+                        </ol>
+                    </div>
+                </section>
+
+                <!-- セクション5: カスタムHTMLを表示 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.5 自分だけのHTMLページを表示しよう
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-6">
+                        デフォルトのウェルカムページではなく、自分で作成したHTMLファイルを表示してみましょう。
+                    </p>
+
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                                rounded-xl p-5 my-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                        flex items-center justify-center">
+                                <i class="fas fa-laptop-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習: カスタムHTMLの表示</h3>
+
+                                <p class="text-purple-900 mb-3 break-words">
+                                    <strong>ステップ1:</strong> HTMLファイルを作成する
+                                </p>
+
+                                <div class="code-block-wrapper">
+                                    <button class="copy-button" onclick="copyCode(this)">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                    <pre><code class="language-bash"># ホームディレクトリにhtmlフォルダを作成
+mkdir ~/my-html
+cd ~/my-html
+
+# index.htmlを作成
+echo '&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;私のWebサイト&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Dockerで動くWebサイト！&lt;/h1&gt;
+    &lt;p&gt;これは自分で作成したHTMLページです。&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;' &gt; index.html</code></pre>
+                                </div>
+
+                                <p class="text-purple-900 mb-3 mt-4 break-words">
+                                    <strong>ステップ2:</strong> 既存のコンテナを停止・削除
+                                </p>
+
+                                <div class="code-block-wrapper">
+                                    <button class="copy-button" onclick="copyCode(this)">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                    <pre><code class="language-bash"># コンテナを停止
+docker stop my-nginx
+
+# コンテナを削除
+docker rm my-nginx</code></pre>
+                                </div>
+
+                                <p class="text-purple-900 mb-3 mt-4 break-words">
+                                    <strong>ステップ3:</strong> HTMLフォルダをマウントしてコンテナを起動
+                                </p>
+
+                                <div class="code-block-wrapper">
+                                    <button class="copy-button" onclick="copyCode(this)">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                    <pre><code class="language-bash"># カスタムHTMLをマウントして起動
+docker run -d -p 8080:80 \
+  -v ~/my-html:/usr/share/nginx/html \
+  --name my-nginx nginx</code></pre>
+                                </div>
+
+                                <div class="bg-purple-100 rounded-lg p-4 mt-4">
+                                    <p class="text-purple-900 font-medium mb-2 break-words">-vオプションの意味：</p>
+                                    <p class="text-purple-800 text-sm break-words">
+                                        <code class="bg-purple-200 px-1 rounded">-v ~/my-html:/usr/share/nginx/html</code>は、ホストマシンの<code>~/my-html</code>フォルダをコンテナの<code>/usr/share/nginx/html</code>にマウント（接続）することを意味します。これにより、ホスト側のHTMLファイルがコンテナ内から見えるようになります。
+                                    </p>
+                                </div>
+
+                                <p class="text-purple-900 mb-3 mt-4 break-words">
+                                    <strong>ステップ4:</strong> ブラウザで <code class="bg-purple-100 px-1 rounded">http://localhost:8080</code> にアクセスして確認
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション6: ポートの競合 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.6 ポートの競合とトラブルシューティング
+                    </h2>
+
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-red-900 font-medium break-words">よくあるエラー</p>
+                                <p class="text-red-800 text-sm mt-1 break-words">
+                                    「Error starting userland proxy: listen tcp4 0.0.0.0:8080: bind: address already in use」
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed mb-6">
+                        このエラーは、<strong>指定したポート（8080）が既に他のプログラムに使われている</strong>ことを意味します。
+                    </p>
+
+                    <!-- トラブルシューティングカード -->
+                    <div class="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200
+                                rounded-xl p-5 my-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-orange-500 rounded-lg
+                                        flex items-center justify-center">
+                                <i class="fas fa-wrench text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-orange-800 mb-3 break-words">解決方法</h3>
+
+                                <div class="space-y-4">
+                                    <div>
+                                        <p class="text-orange-900 font-medium mb-2 break-words">方法1: 別のポート番号を使う</p>
+                                        <div class="code-block-wrapper">
+                                            <button class="copy-button" onclick="copyCode(this)">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                            <pre><code class="language-bash"># ポート9090を使用する例
+docker run -d -p 9090:80 --name my-nginx nginx</code></pre>
+                                        </div>
+                                        <p class="text-orange-800 text-sm mt-2 break-words">
+                                            この場合は <code class="bg-orange-100 px-1 rounded">http://localhost:9090</code> でアクセスします。
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <p class="text-orange-900 font-medium mb-2 break-words">方法2: 既存のコンテナを停止する</p>
+                                        <div class="code-block-wrapper">
+                                            <button class="copy-button" onclick="copyCode(this)">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                            <pre><code class="language-bash"># 実行中のコンテナを確認
+docker ps
+
+# 該当コンテナを停止
+docker stop my-nginx</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション7: コンテナのログ確認 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        5.7 コンテナのログを確認する
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-6">
+                        コンテナがどのようなリクエストを受け取っているかは、ログで確認できます。
+                    </p>
+
+                    <div class="code-block-wrapper">
+                        <button class="copy-button" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <pre><code class="language-bash"># コンテナのログを表示
+docker logs my-nginx
+
+# リアルタイムでログを表示（Ctrl+Cで終了）
+docker logs -f my-nginx</code></pre>
+                    </div>
+
+                    <p class="text-slate-600 leading-relaxed mt-4">
+                        ブラウザでアクセスすると、以下のようなログが表示されます。
+                    </p>
+
+                    <div class="bg-slate-100 border border-slate-200 rounded-lg p-4 my-4">
+                        <pre class="text-sm text-slate-700 overflow-x-auto"><code>172.17.0.1 - - [30/Dec/2025:10:30:15 +0000] "GET / HTTP/1.1" 200 615
+172.17.0.1 - - [30/Dec/2025:10:30:16 +0000] "GET /favicon.ico HTTP/1.1" 404 153</code></pre>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">ログの読み方</p>
+                                <ul class="text-blue-800 text-sm mt-2 space-y-1">
+                                    <li><strong>172.17.0.1</strong>: アクセス元のIPアドレス</li>
+                                    <li><strong>GET /</strong>: ルートパスへのGETリクエスト</li>
+                                    <li><strong>200</strong>: HTTPステータスコード（200は成功）</li>
+                                    <li><strong>615</strong>: レスポンスのサイズ（バイト）</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -554,35 +589,35 @@ flowchart LR
                             <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
                             <ol class="space-y-4">
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2 break-words">Q1. コマンド<code class="bg-blue-100 px-2 py-0.5 rounded">docker run -p 3000:80 nginx</code>を実行した場合、ブラウザでNginxにアクセスするにはどのURLを使いますか？</p>
+                                    <p class="font-medium mb-2 break-words">Q1. <code class="bg-blue-100 px-1 rounded">docker run -p 8080:80 nginx</code> というコマンドで、ブラウザからアクセスするURLはどれですか？</p>
                                     <details class="mt-2">
                                         <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
-                                            <code class="bg-blue-100 px-2 py-0.5 rounded">http://localhost:3000</code>です。<code class="bg-blue-100 px-2 py-0.5 rounded">-p 3000:80</code>は「ホストの3000番ポート」を「コンテナの80番ポート」にマッピングするという意味なので、ブラウザからはホスト側のポート番号（3000）でアクセスします。
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>答え:</strong> <code>http://localhost:8080</code> です。ホスト側のポート8080をコンテナの80ポートにマッピングしているため、ブラウザからはホスト側のポート番号（8080）を指定してアクセスします。
                                         </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2 break-words">Q2. 「ポート」を建物の例えで説明したとき、部屋番号に相当するのは何ですか？</p>
+                                    <p class="font-medium mb-2 break-words">Q2. ポートが既に使用中というエラーが出た場合、どのように対処すればよいですか？</p>
                                     <details class="mt-2">
                                         <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
-                                            ポート番号です。建物（コンピュータ）の中の各部屋（サービス）にアクセスするために、部屋番号（ポート番号）を指定します。例えば、Webサーバーは通常80番や443番という「部屋」で待機しています。
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>答え:</strong> 2つの方法があります。(1) 別のポート番号を使用する（例: <code>-p 9090:80</code>）、(2) 既存のコンテナを停止する（<code>docker stop コンテナ名</code>）。一般的には別のポート番号を使用する方が安全です。
                                         </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2 break-words">Q3. <code class="bg-blue-100 px-2 py-0.5 rounded">-v ~/my-html:/usr/share/nginx/html</code>というオプションは何をしていますか？</p>
+                                    <p class="font-medium mb-2 break-words">Q3. <code class="bg-blue-100 px-1 rounded">-v ~/my-html:/usr/share/nginx/html</code> というオプションの役割は何ですか？</p>
                                     <details class="mt-2">
                                         <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
-                                            ホストマシンの<code class="bg-blue-100 px-2 py-0.5 rounded">~/my-html</code>フォルダを、コンテナ内の<code class="bg-blue-100 px-2 py-0.5 rounded">/usr/share/nginx/html</code>にマウント（接続）しています。これにより、ホストで編集したHTMLファイルが、コンテナ内のNginxで配信されるようになります。ボリュームマウントと呼ばれる機能です。
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>答え:</strong> ホストマシンの<code>~/my-html</code>フォルダを、コンテナ内の<code>/usr/share/nginx/html</code>にマウント（接続）します。これにより、ホスト側で編集したHTMLファイルがコンテナ内から見えるようになり、カスタムコンテンツを表示できます。
                                         </p>
                                     </details>
                                 </li>
@@ -591,46 +626,47 @@ flowchart LR
                     </div>
                 </div>
 
-                <!-- まとめカード -->
-                <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-6 my-6">
-                    <h3 class="text-lg font-semibold text-emerald-800 mb-3 flex items-center gap-2">
-                        <i class="fas fa-check-circle text-emerald-500"></i>
+                <!-- 章のまとめ -->
+                <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6 my-8">
+                    <h2 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-check-circle text-primary-500"></i>
                         第5章のまとめ
-                    </h3>
-                    <ul class="space-y-2 text-emerald-900">
-                        <li class="flex items-start gap-2">
-                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
-                            <span>Webサーバー（Nginx）をDockerコンテナで起動できるようになった</span>
+                    </h2>
+                    <ul class="space-y-2 text-slate-700">
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-circle text-[6px] text-primary-500 mt-2"></i>
+                            <span>Nginxは軽量で高速なWebサーバーソフトウェア</span>
                         </li>
-                        <li class="flex items-start gap-2">
-                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
-                            <span>ポートとは建物の部屋番号のようなもので、サービスごとに異なる番号を使う</span>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-circle text-[6px] text-primary-500 mt-2"></i>
+                            <span>ポートはサービスを識別するための番号で、建物の部屋番号のようなもの</span>
                         </li>
-                        <li class="flex items-start gap-2">
-                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
-                            <span>-pオプションでホストとコンテナのポートをマッピングできる</span>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-circle text-[6px] text-primary-500 mt-2"></i>
+                            <span><code class="bg-slate-200 px-1 rounded">-p</code>オプションでホストのポートとコンテナのポートをマッピングできる</span>
                         </li>
-                        <li class="flex items-start gap-2">
-                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
-                            <span>-vオプションでホストのフォルダをコンテナにマウントし、自分のHTMLを配信できる</span>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-circle text-[6px] text-primary-500 mt-2"></i>
+                            <span><code class="bg-slate-200 px-1 rounded">-v</code>オプションでホストのフォルダをコンテナにマウントできる</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-circle text-[6px] text-primary-500 mt-2"></i>
+                            <span><code class="bg-slate-200 px-1 rounded">docker logs</code>コマンドでコンテナのログを確認できる</span>
                         </li>
                     </ul>
                 </div>
 
                 <!-- 章間ナビゲーション -->
                 <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
-                    <!-- 前へ -->
                     <a href="docker-learning-material-04.html"
                        class="group flex items-center gap-3 px-4 py-3 rounded-xl
-                              bg-slate-100 hover:bg-slate-200 transition-colors">
-                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
-                                  transition-transform group-hover:-translate-x-1"></i>
-                        <div>
+                              bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+                        <i class="fas fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
+                        <div class="text-left">
                             <span class="text-xs text-slate-500 block">前の章</span>
-                            <span class="text-slate-700 font-medium">第4章: Dockerイメージを理解しよう</span>
+                            <span class="font-medium">第4章: Dockerイメージを理解しよう</span>
                         </div>
                     </a>
-                    <!-- 次へ -->
                     <a href="docker-learning-material-06.html"
                        class="group flex items-center gap-3 px-4 py-3 rounded-xl
                               bg-primary-500 hover:bg-primary-600 text-white transition-colors">
@@ -654,7 +690,7 @@ flowchart LR
                     本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
                 </p>
                 <div class="flex items-center gap-4">
-                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                    <a href="https://github.com/fcircle-biz" class="hover:text-white transition-colors">
                         <i class="fab fa-github text-xl"></i>
                     </a>
                 </div>

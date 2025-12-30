@@ -9,6 +9,133 @@
     // PC環境判定（最初に実行）
     const isPC = window.innerWidth >= 1024;
 
+    // ダークモード機能
+    const DarkMode = {
+        storageKey: 'darkMode',
+
+        init: function() {
+            // 保存された設定またはシステム設定を適用
+            const savedMode = localStorage.getItem(this.storageKey);
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (savedMode === 'dark' || (savedMode === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+
+            // トグルボタンを生成
+            this.createToggleButton();
+
+            // システム設定の変更を監視
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                if (localStorage.getItem(this.storageKey) === null) {
+                    if (e.matches) {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                    }
+                    this.updateIcon();
+                }
+            });
+        },
+
+        createToggleButton: function() {
+            const self = this;
+            const isDark = document.documentElement.classList.contains('dark');
+
+            // ヘッダーの右側ボタンエリアを探す
+            const headerNav = document.querySelector('header nav .flex.items-center.justify-between');
+            if (!headerNav) return;
+
+            // 既存のサイドバートグルボタンを取得
+            const sidebarBtn = document.getElementById('sidebar-toggle-btn');
+            if (!sidebarBtn) return;
+
+            // ボタンコンテナを作成
+            const btnContainer = document.createElement('div');
+            btnContainer.className = 'flex items-center gap-2';
+
+            // ダークモードトグルボタンを作成
+            const toggleBtn = document.createElement('button');
+            toggleBtn.id = 'dark-mode-toggle';
+            toggleBtn.className = 'w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95';
+            toggleBtn.title = isDark ? 'ライトモードに切り替え' : 'ダークモードに切り替え';
+            toggleBtn.innerHTML = `<i class="fas ${isDark ? 'fa-sun' : 'fa-moon'} text-lg"></i>`;
+
+            toggleBtn.addEventListener('click', function() {
+                self.toggle();
+            });
+
+            // サイドバーボタンの前に挿入
+            sidebarBtn.parentNode.insertBefore(btnContainer, sidebarBtn);
+            btnContainer.appendChild(toggleBtn);
+            btnContainer.appendChild(sidebarBtn);
+        },
+
+        toggle: function() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem(this.storageKey, isDark ? 'dark' : 'light');
+            this.updateIcon();
+
+            // Mermaid図を再描画（ダークモード対応）
+            if (typeof mermaid !== 'undefined') {
+                this.updateMermaidTheme(isDark);
+            }
+        },
+
+        updateIcon: function() {
+            const btn = document.getElementById('dark-mode-toggle');
+            if (!btn) return;
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const icon = btn.querySelector('i');
+
+            if (isDark) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                btn.title = 'ライトモードに切り替え';
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                btn.title = 'ダークモードに切り替え';
+            }
+        },
+
+        updateMermaidTheme: async function(isDark) {
+            // Mermaid図のテーマを更新
+            mermaid.initialize({
+                startOnLoad: false,
+                theme: isDark ? 'dark' : 'default',
+                securityLevel: 'loose'
+            });
+
+            // 既存のMermaid図を再描画
+            const elements = document.querySelectorAll('.mermaid');
+            for (let i = 0; i < elements.length; i++) {
+                const el = elements[i];
+                const code = el.getAttribute('data-mermaid-code');
+                if (code) {
+                    try {
+                        // ユニークIDを生成
+                        const id = 'mermaid-' + Date.now() + '-' + i;
+                        const { svg } = await mermaid.render(id, code);
+                        el.innerHTML = svg;
+                    } catch (e) {
+                        console.error('Mermaid render error:', e);
+                    }
+                }
+            }
+        }
+    };
+
+    // ページ読み込み時にダークモードを初期化
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            DarkMode.init();
+        });
+    } else {
+        DarkMode.init();
+    }
+
     // 描画ツールバーとCanvasのHTML生成（PC環境のみ）
     function createDrawingToolbar() {
         // 非PC環境では生成しない
@@ -165,79 +292,23 @@
         hljs.highlightAll();
     }
 
-    // Mermaid.js 初期化
+    // Mermaid.js 初期化（ダークモード対応）
     if (typeof mermaid !== 'undefined') {
+        const isDarkMode = document.documentElement.classList.contains('dark');
+
+        // レンダリング前に元のコードを保存
+        document.querySelectorAll('.mermaid').forEach(function(el) {
+            if (!el.getAttribute('data-mermaid-code')) {
+                el.setAttribute('data-mermaid-code', el.textContent.trim());
+            }
+        });
+
         mermaid.initialize({
             startOnLoad: true,
-            theme: 'default',
+            theme: isDarkMode ? 'dark' : 'default',
             securityLevel: 'loose'
         });
     }
-
-    // サイドバー開閉制御（PC・モバイル共通）
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
-    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-    const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
-
-    // サイドバーの初期状態を設定
-    // 非PC環境（タブレット・スマホ）では閉じた状態
-    // PC環境では前回の状態を復元、なければ開いた状態
-    if (!isPC) {
-        // 非PC環境では閉じる
-        sidebar?.classList.add('-translate-x-full');
-        overlay?.classList.add('hidden');
-    } else {
-        // PC環境では前回の状態を復元
-        const savedSidebarState = localStorage.getItem('sidebarOpen');
-        if (savedSidebarState === 'false') {
-            sidebar?.classList.add('sidebar-closed');
-            if (sidebarToggleBtn) {
-                const icon = sidebarToggleBtn.querySelector('i');
-                icon?.classList.remove('fa-chevron-left');
-                icon?.classList.add('fa-chevron-right');
-            }
-        }
-    }
-
-    // サイドバー開閉関数
-    function toggleSidebar() {
-        if (!isPC) {
-            // モバイル：スライドイン/アウト
-            sidebar?.classList.toggle('-translate-x-full');
-            overlay?.classList.toggle('hidden');
-        } else {
-            // PC：表示/非表示（幅を変更）
-            const isClosed = sidebar?.classList.toggle('sidebar-closed');
-
-            // アイコン変更
-            if (sidebarToggleBtn) {
-                const icon = sidebarToggleBtn.querySelector('i');
-                if (isClosed) {
-                    icon?.classList.remove('fa-chevron-left');
-                    icon?.classList.add('fa-chevron-right');
-                } else {
-                    icon?.classList.remove('fa-chevron-right');
-                    icon?.classList.add('fa-chevron-left');
-                }
-            }
-
-            // 状態を保存
-            localStorage.setItem('sidebarOpen', isClosed ? 'false' : 'true');
-        }
-    }
-
-    // モバイルメニューボタン
-    mobileMenuBtn?.addEventListener('click', toggleSidebar);
-
-    // PCサイドバートグルボタン
-    sidebarToggleBtn?.addEventListener('click', toggleSidebar);
-
-    // オーバーレイクリック
-    overlay?.addEventListener('click', () => {
-        sidebar?.classList.add('-translate-x-full');
-        overlay?.classList.add('hidden');
-    });
 
     // スクロールトップボタン表示制御
     const scrollTopBtn = document.getElementById('scroll-top-btn');
@@ -274,79 +345,43 @@
         });
     };
 
-    // サイドバーリサイズ機能（タブレット・PC対応）
-    const resizeHandle = document.getElementById('sidebar-resize-handle');
-    let isResizing = false;
-    let startX, startWidth;
+    // サイドバートグル機能
+    function initSidebarToggle() {
+        const toggleBtn = document.getElementById('sidebar-toggle-btn');
+        const sidebar = document.getElementById('sidebar');
 
-    // リサイズ開始処理（共通）
-    function startResize(clientX) {
-        // タブレット・PC（768px以上）でのみリサイズ可能
-        if (window.innerWidth < 768) return;
+        if (!toggleBtn || !sidebar) return;
 
-        isResizing = true;
-        startX = clientX;
-        startWidth = sidebar.offsetWidth;
-        resizeHandle.classList.add('resizing');
-        document.body.style.cursor = 'ew-resize';
-        document.body.style.userSelect = 'none';
-    }
+        // サイドバーの表示状態を管理（PC環境ではデフォルト表示）
+        let isSidebarVisible = isPC;
 
-    // リサイズ中の処理（共通）
-    function doResize(clientX) {
-        if (!isResizing) return;
-        const diff = clientX - startX;
-        const newWidth = Math.min(Math.max(startWidth + diff, 240), 480);
-        sidebar.style.width = newWidth + 'px';
-    }
-
-    // リサイズ終了処理（共通）
-    function endResize() {
-        if (isResizing) {
-            isResizing = false;
-            resizeHandle.classList.remove('resizing');
-            document.body.style.cursor = '';
-            document.body.style.userSelect = '';
-            // サイドバー幅をローカルストレージに保存
-            localStorage.setItem('sidebarWidth', sidebar.offsetWidth);
+        // 初期状態を設定
+        if (isPC) {
+            sidebar.classList.remove('-translate-x-full');
+            sidebar.classList.add('translate-x-0');
+            sidebar.style.width = '20rem'; // w-80 = 320px
         }
+
+        toggleBtn.addEventListener('click', () => {
+            isSidebarVisible = !isSidebarVisible;
+
+            if (isSidebarVisible) {
+                // サイドバーを表示
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+                sidebar.style.width = '20rem';
+                sidebar.style.overflow = 'auto';
+            } else {
+                // サイドバーを非表示
+                sidebar.classList.add('-translate-x-full');
+                sidebar.classList.remove('translate-x-0');
+                sidebar.style.width = '0';
+                sidebar.style.overflow = 'hidden';
+            }
+        });
     }
 
-    // マウスイベント（PC・タブレット）
-    resizeHandle?.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-        startResize(e.clientX);
-    });
-
-    document.addEventListener('mousemove', (e) => {
-        doResize(e.clientX);
-    });
-
-    document.addEventListener('mouseup', () => {
-        endResize();
-    });
-
-    // タッチイベント（タブレット・スマホ）
-    resizeHandle?.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        const touch = e.touches[0];
-        startResize(touch.clientX);
-    });
-
-    document.addEventListener('touchmove', (e) => {
-        if (!isResizing) return;
-        const touch = e.touches[0];
-        doResize(touch.clientX);
-    });
-
-    document.addEventListener('touchend', () => {
-        endResize();
-    });
-
-    // ページ読み込み時にサイドバー幅を復元（タブレット・PC）
-    const savedWidth = localStorage.getItem('sidebarWidth');
-    if (savedWidth && window.innerWidth >= 768) {
-        sidebar.style.width = savedWidth + 'px';
-    }
+    // DOM読み込み後にサイドバートグルを初期化（sidebar-content.jsの後に実行されるよう遅延）
+    setTimeout(initSidebarToggle, 100);
 
 })();

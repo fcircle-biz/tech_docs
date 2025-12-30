@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
     <title>Docker学習教材 第6章 - Dockerfileを書いてみよう</title>
 
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -12,7 +23,7 @@
             theme: {
                 extend: {
                     colors: {
-                        // Docker: Sky Blue
+                        // Docker カラーテーマ (sky)
                         primary: {
                             50: '#f0f9ff',
                             100: '#e0f2fe',
@@ -55,13 +66,13 @@
 <body class="font-sans bg-slate-50 text-slate-800 antialiased">
     <!-- ヘッダー/ナビゲーションバー -->
     <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
-        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <nav class="w-full px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="flex items-center justify-between py-3">
                 <!-- 左側: ロゴとタイトルセクション -->
                 <div class="flex items-center gap-4">
                     <!-- アイコン -->
                     <div class="relative group">
-                        <div class="absolute inset-0 bg-gradient-to-br from-cyan-400/30 to-blue-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
                         <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
                             <i class="fab fa-docker text-3xl icon-rotate-hover drop-shadow-lg"></i>
                         </div>
@@ -78,7 +89,7 @@
                         </div>
                         <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
                             <div class="flex items-center gap-1">
-                                <i class="fas fa-code text-[9px]"></i>
+                                <i class="fas fa-server text-[9px]"></i>
                                 <span>クラウド・インフラ</span>
                             </div>
                             <div class="hidden sm:flex items-center gap-1">
@@ -93,8 +104,8 @@
                     </div>
                 </div>
 
-                <!-- 右側: モバイルメニューボタン -->
-                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
                     <i class="fas fa-bars text-lg"></i>
                 </button>
             </div>
@@ -107,14 +118,14 @@
 
         <!-- メインコンテンツ -->
         <main class="flex-1 min-w-0">
-            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
                 <!-- パンくずリスト -->
                 <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
-                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <a href="/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
                     <i class="fas fa-chevron-right text-xs"></i>
                     <a href="../" class="hover:text-primary-600 transition-colors">クラウド・インフラ</a>
                     <i class="fas fa-chevron-right text-xs"></i>
-                    <a href="./" class="hover:text-primary-600 transition-colors">Docker</a>
+                    <span class="text-slate-700">Docker入門</span>
                     <i class="fas fa-chevron-right text-xs"></i>
                     <span class="text-slate-700">第6章</span>
                 </nav>
@@ -148,15 +159,11 @@
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>FROM, COPY, RUN, CMD などの基本命令を習得する</span>
+                                    <span>Dockerfileの基本的な命令（FROM、COPY、RUN、CMD）を学ぶ</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>自分だけのオリジナルイメージを作成する</span>
-                                </li>
-                                <li class="flex items-start gap-2 text-amber-900">
-                                    <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>docker buildコマンドでイメージをビルドする</span>
+                                    <span>オリジナルのWebサーバーイメージを作成して実行する</span>
                                 </li>
                             </ul>
                         </div>
@@ -167,549 +174,446 @@
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        6.1 Dockerfileとは何か
+                        6.1 Dockerfileとは - イメージの設計図を自分で書く
                     </h2>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        <strong class="text-primary-700">Dockerfile（ドッカーファイル）</strong>は、Dockerイメージを作成するための「レシピ」です。料理のレシピと同じように、材料（ベースイメージ）と手順（命令）を記述することで、誰でも同じイメージを作ることができます。
-                    </p>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        第4章・第5章では、Docker Hubにある既存のイメージを使ってきました。しかし、実際の開発では、自分のアプリケーションを含むオリジナルのイメージを作る必要があります。そのときにDockerfileが必要になります。
+                    <p class="text-slate-600 leading-relaxed">
+                        これまでDocker Hubから既存のイメージを使ってきましたが、<strong>Dockerfile</strong>を使えば、自分だけのオリジナルイメージを作成できます。
                     </p>
 
-                    <!-- 図解: 料理レシピの例え -->
-                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-6 my-6">
-                        <h3 class="text-lg font-semibold text-blue-800 mb-4 flex items-center gap-2">
-                            <i class="fas fa-utensils text-blue-500"></i>
-                            Dockerfileは料理のレシピと同じ
-                        </h3>
-                        <div class="space-y-3 text-blue-900">
-                            <div class="flex items-start gap-3">
-                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">1</div>
-                                <div>
-                                    <strong>材料を用意（FROM）</strong>
-                                    <p class="text-sm mt-1">ベースとなるイメージを指定します（例: nginx, python, node.js）</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-3">
-                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">2</div>
-                                <div>
-                                    <strong>材料を追加（COPY）</strong>
-                                    <p class="text-sm mt-1">自分のファイル（HTMLやソースコード）をコンテナ内にコピーします</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-3">
-                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">3</div>
-                                <div>
-                                    <strong>調理する（RUN）</strong>
-                                    <p class="text-sm mt-1">パッケージのインストールなど、必要な準備作業を実行します</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-3">
-                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">4</div>
-                                <div>
-                                    <strong>完成したら実行（CMD）</strong>
-                                    <p class="text-sm mt-1">コンテナ起動時にどのコマンドを実行するかを指定します</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        Dockerfileを一度作っておけば、チームメンバーや将来の自分が同じイメージを簡単に再現できます。これがDockerfileの最大のメリットです。
-                    </p>
-                </section>
-
-                <!-- セクション2: 基本的な命令を学ぶ -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        6.2 基本的な命令を学ぶ
-                    </h2>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        Dockerfileで使える命令はたくさんありますが、まずは以下の6つの基本命令を覚えましょう。
-                    </p>
-
-                    <!-- 命令一覧カード -->
-                    <div class="grid md:grid-cols-2 gap-4 my-6">
-                        <!-- FROM -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-layer-group text-white"></i>
-                                </div>
-                                <h3 class="font-semibold text-slate-800">FROM</h3>
-                            </div>
-                            <p class="text-sm text-slate-600 mb-2">
-                                ベースとなるイメージを指定します。<strong>必ず最初に記述</strong>する必要があります。
-                            </p>
-                            <div class="bg-slate-100 rounded-lg p-2 text-xs font-mono text-slate-700">
-                                FROM nginx:latest
-                            </div>
-                        </div>
-
-                        <!-- COPY -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-copy text-white"></i>
-                                </div>
-                                <h3 class="font-semibold text-slate-800">COPY</h3>
-                            </div>
-                            <p class="text-sm text-slate-600 mb-2">
-                                ホストマシンのファイルをコンテナ内にコピーします。
-                            </p>
-                            <div class="bg-slate-100 rounded-lg p-2 text-xs font-mono text-slate-700">
-                                COPY index.html /usr/share/nginx/html/
-                            </div>
-                        </div>
-
-                        <!-- RUN -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-terminal text-white"></i>
-                                </div>
-                                <h3 class="font-semibold text-slate-800">RUN</h3>
-                            </div>
-                            <p class="text-sm text-slate-600 mb-2">
-                                イメージ作成時にコマンドを実行します（パッケージインストールなど）。
-                            </p>
-                            <div class="bg-slate-100 rounded-lg p-2 text-xs font-mono text-slate-700">
-                                RUN apt-get update && apt-get install -y curl
-                            </div>
-                        </div>
-
-                        <!-- CMD -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-play text-white"></i>
-                                </div>
-                                <h3 class="font-semibold text-slate-800">CMD</h3>
-                            </div>
-                            <p class="text-sm text-slate-600 mb-2">
-                                コンテナ起動時に実行するデフォルトコマンドを指定します。
-                            </p>
-                            <div class="bg-slate-100 rounded-lg p-2 text-xs font-mono text-slate-700">
-                                CMD ["nginx", "-g", "daemon off;"]
-                            </div>
-                        </div>
-
-                        <!-- WORKDIR -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-folder text-white"></i>
-                                </div>
-                                <h3 class="font-semibold text-slate-800">WORKDIR</h3>
-                            </div>
-                            <p class="text-sm text-slate-600 mb-2">
-                                作業ディレクトリを指定します。以降の命令はこのディレクトリで実行されます。
-                            </p>
-                            <div class="bg-slate-100 rounded-lg p-2 text-xs font-mono text-slate-700">
-                                WORKDIR /app
-                            </div>
-                        </div>
-
-                        <!-- EXPOSE -->
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-network-wired text-white"></i>
-                                </div>
-                                <h3 class="font-semibold text-slate-800">EXPOSE</h3>
-                            </div>
-                            <p class="text-sm text-slate-600 mb-2">
-                                コンテナが使用するポート番号を宣言します（ドキュメントとしての役割）。
-                            </p>
-                            <div class="bg-slate-100 rounded-lg p-2 text-xs font-mono text-slate-700">
-                                EXPOSE 80
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 重要ポイント -->
-                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
-                        <div class="flex items-start gap-3">
-                            <i class="fas fa-star text-emerald-600 mt-1"></i>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-emerald-900 font-medium break-words">重要ポイント</p>
-                                <p class="text-emerald-800 text-sm mt-1 break-words">
-                                    <strong>RUN</strong>はイメージ作成時、<strong>CMD</strong>はコンテナ起動時に実行されます。この違いをしっかり理解しましょう。
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- セクション3: はじめてのDockerfileを作成する -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        6.3 はじめてのDockerfileを作成する
-                    </h2>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        それでは、実際にシンプルなDockerfileを作成してみましょう。ここでは、自分のHTMLページを表示するWebサーバーイメージを作成します。
-                    </p>
-
-                    <!-- 実習カード -->
-                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 mb-4 overflow-hidden">
-                        <div class="flex items-start gap-4">
-                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-code text-white"></i>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 6-1: オリジナルWebページイメージの作成</h3>
-                                <p class="text-purple-900 mb-4 break-words">自分のHTMLページを表示するDockerイメージを作成します。</p>
-                                <h4 class="font-medium text-purple-800 mb-2 break-words">手順</h4>
-                                <ol class="space-y-3 mb-4">
-                                    <li class="flex items-start gap-3 text-purple-900">
-                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
-                                        <span class="flex-1 min-w-0 break-words">作業用フォルダを作成します</span>
-                                    </li>
-                                    <li class="flex items-start gap-3 text-purple-900">
-                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
-                                        <span class="flex-1 min-w-0 break-words">HTMLファイルを作成します</span>
-                                    </li>
-                                    <li class="flex items-start gap-3 text-purple-900">
-                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">3</span>
-                                        <span class="flex-1 min-w-0 break-words">Dockerfileを作成します</span>
-                                    </li>
-                                </ol>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ステップ1: フォルダ作成 -->
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">ステップ1: 作業用フォルダを作成</h3>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        まず、作業用のフォルダを作成して移動します。
-                    </p>
-                    <div class="bg-slate-800 rounded-lg overflow-hidden mb-4">
-                        <div class="flex items-center justify-between bg-slate-700 px-4 py-2">
-                            <span class="text-slate-300 text-sm">ターミナル</span>
-                        </div>
-                        <pre class="!mt-0 !bg-slate-800"><code class="language-bash"># 作業用フォルダを作成
-mkdir my-web-app
-cd my-web-app</code></pre>
-                    </div>
-
-                    <!-- ステップ2: HTMLファイル作成 -->
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">ステップ2: HTMLファイルを作成</h3>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        次に、表示したいHTMLファイルを作成します。テキストエディタで<code class="bg-slate-100 px-2 py-1 rounded text-sm">index.html</code>というファイルを作成し、以下の内容を保存してください。
-                    </p>
-                    <div class="bg-slate-800 rounded-lg overflow-hidden mb-4">
-                        <div class="flex items-center justify-between bg-slate-700 px-4 py-2">
-                            <span class="text-slate-300 text-sm">index.html</span>
-                        </div>
-                        <pre class="!mt-0 !bg-slate-800"><code class="language-html">&lt;!DOCTYPE html&gt;
-&lt;html lang="ja"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;title&gt;私のDockerページ&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;h1&gt;Dockerfileで作った私のWebページ！&lt;/h1&gt;
-    &lt;p&gt;Dockerfileを使って、オリジナルイメージを作成しました。&lt;/p&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-                    </div>
-
-                    <!-- ステップ3: Dockerfile作成 -->
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">ステップ3: Dockerfileを作成</h3>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        次に、Dockerfileを作成します。<strong>ファイル名は必ず「Dockerfile」</strong>（拡張子なし）にしてください。
-                    </p>
-                    <div class="bg-slate-800 rounded-lg overflow-hidden mb-4">
-                        <div class="flex items-center justify-between bg-slate-700 px-4 py-2">
-                            <span class="text-slate-300 text-sm">Dockerfile</span>
-                        </div>
-                        <pre class="!mt-0 !bg-slate-800"><code class="language-bash"># ベースイメージとしてNginxを使用
-FROM nginx:latest
-
-# 作成したHTMLファイルをNginxのドキュメントルートにコピー
-COPY index.html /usr/share/nginx/html/
-
-# ポート80を公開
-EXPOSE 80
-
-# Nginxを起動（デフォルトのままでOK）
-CMD ["nginx", "-g", "daemon off;"]</code></pre>
-                    </div>
-
-                    <!-- ヒント -->
                     <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
                         <div class="flex items-start gap-3">
                             <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
                             <div class="flex-1 min-w-0">
-                                <p class="text-blue-900 font-medium break-words">ヒント</p>
+                                <p class="text-blue-900 font-medium break-words">Dockerfileとは？</p>
                                 <p class="text-blue-800 text-sm mt-1 break-words">
-                                    Dockerfileの各行は、上から順番に実行されます。<code class="bg-white px-2 py-1 rounded">#</code>で始まる行はコメントです。
+                                    <strong>Dockerfile</strong>は、Dockerイメージの設計図を記述したテキストファイルです。料理で例えると、レシピを自分で書くようなものです。「どのベースイメージを使うか」「どんなファイルをコピーするか」「どんなコマンドを実行するか」といった手順を記述します。
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- ファイル構成 -->
-                    <div class="bg-slate-100 border border-slate-200 rounded-xl p-6 my-6">
-                        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                            <i class="fas fa-folder-tree text-slate-500"></i>
-                            現在のフォルダ構成
-                        </h3>
-                        <pre class="bg-slate-800 text-slate-100 rounded-lg p-4 text-sm overflow-x-auto"><code>my-web-app/
-├── Dockerfile        ← イメージのレシピ
-└── index.html        ← 表示したいHTMLファイル</code></pre>
+                    <div class="my-8">
+                        <pre class="mermaid">
+flowchart LR
+    A["Dockerfile<br/>(設計図)"] -->|"docker build"| B["Dockerイメージ<br/>(完成品)"]
+    B -->|"docker run"| C["コンテナ<br/>(実行環境)"]
+
+    style A fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style B fill:#e0f2fe,stroke:#0ea5e9,stroke-width:2px
+    style C fill:#d1fae5,stroke:#10b981,stroke-width:2px
+</pre>
                     </div>
                 </section>
 
-                <!-- セクション4: docker buildでイメージを作成する -->
+                <!-- セクション2: なぜDockerfileが必要なのか -->
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        6.4 docker buildでイメージを作成する
+                        6.2 なぜDockerfileが必要なのか
                     </h2>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        Dockerfileを作成したら、<code class="bg-slate-100 px-2 py-1 rounded text-sm">docker build</code>コマンドでイメージをビルドします。
-                    </p>
 
-                    <!-- ビルドコマンド -->
-                    <div class="bg-slate-800 rounded-lg overflow-hidden mb-4">
-                        <div class="flex items-center justify-between bg-slate-700 px-4 py-2">
-                            <span class="text-slate-300 text-sm">ターミナル</span>
-                        </div>
-                        <pre class="!mt-0 !bg-slate-800"><code class="language-bash"># イメージをビルド（-t でイメージ名を指定、. は現在のフォルダを指定）
-docker build -t my-web-app .</code></pre>
-                    </div>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        ビルドが成功すると、以下のような出力が表示されます。
-                    </p>
-
-                    <!-- ビルド出力例 -->
-                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5 mb-4 overflow-hidden">
-                        <div class="flex items-start gap-4">
-                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-check text-white"></i>
+                    <div class="grid md:grid-cols-2 gap-4 my-6">
+                        <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-lg">
+                            <div class="flex items-start gap-3">
+                                <i class="fas fa-code text-emerald-600 mt-1"></i>
+                                <div>
+                                    <h3 class="text-emerald-900 font-semibold mb-1">再現性</h3>
+                                    <p class="text-emerald-800 text-sm">手順をコードで記述するため、誰でも同じイメージを作成できます。</p>
+                                </div>
                             </div>
-                            <div class="flex-1 min-w-0">
-                                <h3 class="text-lg font-semibold text-emerald-800 mb-3 break-words">ビルド成功時の出力例</h3>
-                                <div class="bg-white/60 rounded-lg p-4 border border-emerald-200">
-                                    <pre class="text-emerald-900 text-sm whitespace-pre-wrap">[+] Building 2.3s (8/8) FINISHED
- => [1/2] FROM docker.io/library/nginx:latest
- => [2/2] COPY index.html /usr/share/nginx/html/
- => exporting to image
- => => naming to docker.io/library/my-web-app
-Successfully built 8f3e9a2b1c4d
-Successfully tagged my-web-app:latest</pre>
+                        </div>
+
+                        <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-lg">
+                            <div class="flex items-start gap-3">
+                                <i class="fas fa-history text-emerald-600 mt-1"></i>
+                                <div>
+                                    <h3 class="text-emerald-900 font-semibold mb-1">バージョン管理</h3>
+                                    <p class="text-emerald-800 text-sm">Dockerfileをgitで管理すれば、イメージの変更履歴を追跡できます。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-lg">
+                            <div class="flex items-start gap-3">
+                                <i class="fas fa-share-alt text-emerald-600 mt-1"></i>
+                                <div>
+                                    <h3 class="text-emerald-900 font-semibold mb-1">共有が簡単</h3>
+                                    <p class="text-emerald-800 text-sm">チームメンバーにテキストファイルを渡すだけで環境を共有できます。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-lg">
+                            <div class="flex items-start gap-3">
+                                <i class="fas fa-wrench text-emerald-600 mt-1"></i>
+                                <div>
+                                    <h3 class="text-emerald-900 font-semibold mb-1">カスタマイズ自由</h3>
+                                    <p class="text-emerald-800 text-sm">既存イメージをベースに必要な環境を自由に構築できます。</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- docker buildコマンドの解説 -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-6 my-6">
-                        <h3 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
-                            <i class="fas fa-info-circle text-primary-500"></i>
-                            docker buildコマンドの解説
-                        </h3>
-                        <div class="mermaid">
-flowchart LR
-    A[docker build] --> B[-t my-web-app]
-    B --> C[.]
-
-    A -->|コマンド| D[イメージを<br/>ビルドする]
-    B -->|オプション| E[イメージ名を<br/>指定]
-    C -->|引数| F[Dockerfileの<br/>場所]
-
-    style A fill:#e0f2fe,stroke:#0ea5e9
-    style B fill:#bae6fd,stroke:#0284c7
-    style C fill:#bae6fd,stroke:#0284c7
-                        </div>
-                    </div>
-
-                    <!-- イメージ確認 -->
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">作成したイメージを確認</h3>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        <code class="bg-slate-100 px-2 py-1 rounded text-sm">docker images</code>コマンドで、イメージが作成されたことを確認できます。
-                    </p>
-                    <div class="bg-slate-800 rounded-lg overflow-hidden mb-4">
-                        <div class="flex items-center justify-between bg-slate-700 px-4 py-2">
-                            <span class="text-slate-300 text-sm">ターミナル</span>
-                        </div>
-                        <pre class="!mt-0 !bg-slate-800"><code class="language-bash"># イメージ一覧を表示
-docker images
-
-# 出力例:
-# REPOSITORY      TAG       IMAGE ID       CREATED         SIZE
-# my-web-app      latest    8f3e9a2b1c4d   2 minutes ago   187MB
-# nginx           latest    4f380adfc10f   3 days ago      187MB</code></pre>
-                    </div>
                 </section>
 
-                <!-- セクション5: 作成したイメージを実行する -->
+                <!-- セクション3: Dockerfileの基本構造 -->
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        6.5 作成したイメージを実行する
+                        6.3 Dockerfileの基本構造
                     </h2>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        それでは、作成したイメージからコンテナを起動してみましょう。
+                    <p class="text-slate-600 leading-relaxed mb-6">
+                        Dockerfileは<strong>命令</strong>の集まりです。主要な命令を見てみましょう。
                     </p>
 
-                    <!-- 実行コマンド -->
-                    <div class="bg-slate-800 rounded-lg overflow-hidden mb-4">
-                        <div class="flex items-center justify-between bg-slate-700 px-4 py-2">
-                            <span class="text-slate-300 text-sm">ターミナル</span>
+                    <div class="bg-slate-100 border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="font-semibold text-slate-800 mb-4">主要な命令一覧</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="border-b border-slate-300">
+                                        <th class="text-left py-2 px-3 font-semibold text-slate-700">命令</th>
+                                        <th class="text-left py-2 px-3 font-semibold text-slate-700">説明</th>
+                                        <th class="text-left py-2 px-3 font-semibold text-slate-700">例</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-slate-600">
+                                    <tr class="border-b border-slate-200">
+                                        <td class="py-2 px-3 font-mono font-medium text-primary-600">FROM</td>
+                                        <td class="py-2 px-3">ベースとなるイメージを指定</td>
+                                        <td class="py-2 px-3 font-mono text-xs">FROM nginx:alpine</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-200">
+                                        <td class="py-2 px-3 font-mono font-medium text-primary-600">COPY</td>
+                                        <td class="py-2 px-3">ホストからコンテナへファイルコピー</td>
+                                        <td class="py-2 px-3 font-mono text-xs">COPY index.html /usr/share/nginx/html/</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-200">
+                                        <td class="py-2 px-3 font-mono font-medium text-primary-600">RUN</td>
+                                        <td class="py-2 px-3">イメージビルド時にコマンド実行</td>
+                                        <td class="py-2 px-3 font-mono text-xs">RUN apt-get update</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-200">
+                                        <td class="py-2 px-3 font-mono font-medium text-primary-600">CMD</td>
+                                        <td class="py-2 px-3">コンテナ起動時のデフォルトコマンド</td>
+                                        <td class="py-2 px-3 font-mono text-xs">CMD ["nginx", "-g", "daemon off;"]</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-200">
+                                        <td class="py-2 px-3 font-mono font-medium text-primary-600">WORKDIR</td>
+                                        <td class="py-2 px-3">作業ディレクトリを設定</td>
+                                        <td class="py-2 px-3 font-mono text-xs">WORKDIR /app</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 font-mono font-medium text-primary-600">EXPOSE</td>
+                                        <td class="py-2 px-3">公開するポート番号を宣言</td>
+                                        <td class="py-2 px-3 font-mono text-xs">EXPOSE 80</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <pre class="!mt-0 !bg-slate-800"><code class="language-bash"># コンテナを起動（ポート8080で公開）
-docker run -d -p 8080:80 --name my-app my-web-app</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション4: シンプルなDockerfileを書いてみよう -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.4 シンプルなDockerfileを書いてみよう
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-6">
+                        オリジナルのHTMLページを表示するNginxサーバーを作成してみます。
+                    </p>
+
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
+                                rounded-xl p-5 my-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg
+                                        flex items-center justify-center">
+                                <i class="fas fa-laptop-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-4 break-words">実習: オリジナルWebサーバーイメージを作成</h3>
+
+                                <h4 class="font-semibold text-purple-900 mb-2 break-words">手順1: 作業ディレクトリの作成</h4>
+                                <div class="code-block-wrapper mb-4">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Terminal</span>
+                                        <button class="copy-button" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre><code class="language-bash"># 作業用のディレクトリを作成
+mkdir my-web-server
+cd my-web-server</code></pre>
+                                </div>
+
+                                <h4 class="font-semibold text-purple-900 mb-2 break-words">手順2: HTMLファイルを作成</h4>
+                                <p class="text-purple-800 text-sm mb-2 break-words">お好きなテキストエディタでindex.htmlを作成します。</p>
+                                <div class="code-block-wrapper mb-4">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">index.html</span>
+                                        <button class="copy-button" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;私のDockerサーバー&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;こんにちは、Docker！&lt;/h1&gt;
+    &lt;p&gt;これは私が作った初めてのDockerイメージです。&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                                </div>
+
+                                <h4 class="font-semibold text-purple-900 mb-2 break-words">手順3: Dockerfileを作成</h4>
+                                <p class="text-purple-800 text-sm mb-2 break-words">同じディレクトリに<code class="px-1 py-0.5 bg-purple-100 rounded">Dockerfile</code>という名前のファイルを作成します（拡張子なし）。</p>
+                                <div class="code-block-wrapper mb-4">
+                                    <div class="code-block-header">
+                                        <span class="code-block-title">Dockerfile</span>
+                                        <button class="copy-button" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre><code class="language-dockerfile"># ベースイメージとしてNginx（Alpine版）を使用
+FROM nginx:alpine
+
+# 作成したHTMLファイルをNginxのドキュメントルートにコピー
+COPY index.html /usr/share/nginx/html/
+
+# ポート80を公開（ドキュメント目的）
+EXPOSE 80
+
+# Nginxをフォアグラウンドで起動（デフォルトのCMDを使用）</code></pre>
+                                </div>
+
+                                <div class="bg-purple-100 rounded-lg p-3 mb-4">
+                                    <p class="text-purple-900 text-sm font-semibold mb-1 break-words">各行の解説:</p>
+                                    <ul class="text-purple-800 text-sm space-y-1">
+                                        <li class="break-words"><strong>FROM nginx:alpine</strong>: 軽量なNginxイメージをベースにします</li>
+                                        <li class="break-words"><strong>COPY index.html ...</strong>: 作成したHTMLをNginxが読める場所にコピー</li>
+                                        <li class="break-words"><strong>EXPOSE 80</strong>: ポート80を使うことを明示（情報提供のみ）</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション5: イメージのビルド -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.5 イメージをビルドする - docker build
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-6">
+                        Dockerfileからイメージを作成するには<code class="px-1 py-0.5 bg-slate-200 rounded">docker build</code>コマンドを使います。
+                    </p>
+
+                    <div class="code-block-wrapper mb-4">
+                        <div class="code-block-header">
+                            <span class="code-block-title">イメージをビルド</span>
+                            <button class="copy-button" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre><code class="language-bash"># -t でイメージに名前とタグを付ける
+# . はDockerfileがあるディレクトリ（カレントディレクトリ）
+docker build -t my-web-server:1.0 .</code></pre>
                     </div>
 
-                    <!-- 動作確認 -->
-                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5 mb-4 overflow-hidden">
+                    <div class="bg-slate-100 border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="font-semibold text-slate-800 mb-3">ビルド時の出力</h3>
+                        <div class="code-block-wrapper">
+                            <pre><code class="language-plaintext">[+] Building 1.2s (7/7) FINISHED
+ => [internal] load build definition from Dockerfile
+ => => transferring dockerfile: 245B
+ => [internal] load .dockerignore
+ => [internal] load metadata for docker.io/library/nginx:alpine
+ => [1/2] FROM docker.io/library/nginx:alpine
+ => [internal] load build context
+ => => transferring context: 312B
+ => [2/2] COPY index.html /usr/share/nginx/html/
+ => exporting to image
+ => => writing image sha256:abc123...
+ => => naming to docker.io/library/my-web-server:1.0</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">docker buildコマンドの構文</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    <code class="px-1 py-0.5 bg-blue-100 rounded">-t</code>オプションで「名前:タグ」を指定します。最後の<code class="px-1 py-0.5 bg-blue-100 rounded">.</code>はDockerfileがあるディレクトリのパス（ここではカレントディレクトリ）を示します。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション6: イメージの実行 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.6 作成したイメージを実行する
+                    </h2>
+
+                    <div class="code-block-wrapper mb-4">
+                        <div class="code-block-header">
+                            <span class="code-block-title">コンテナを起動</span>
+                            <button class="copy-button" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <pre><code class="language-bash"># 作成したイメージからコンテナを起動
+docker run -d -p 8080:80 --name my-server my-web-server:1.0</code></pre>
+                    </div>
+
+                    <!-- 動作確認カード -->
+                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200
+                                rounded-xl p-5 my-6 overflow-hidden">
                         <div class="flex items-start gap-4">
-                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-play text-white"></i>
+                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg
+                                        flex items-center justify-center">
+                                <i class="fas fa-check-circle text-white"></i>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h3 class="text-lg font-semibold text-emerald-800 mb-3 break-words">動作確認</h3>
-                                <p class="text-emerald-900 mb-4 break-words">
-                                    ブラウザで<code class="bg-white px-2 py-1 rounded">http://localhost:8080</code>にアクセスしてください。
-                                </p>
-                                <h4 class="font-medium text-emerald-800 mb-2 break-words">
-                                    <i class="fas fa-check-circle mr-2"></i>期待される結果
-                                </h4>
-                                <div class="bg-white/60 rounded-lg p-4 border border-emerald-200">
-                                    <p class="text-emerald-900 text-sm">自分が作成したHTMLページが表示されます。「Dockerfileで作った私のWebページ！」という見出しが表示されれば成功です。</p>
+                                <p class="text-emerald-900 mb-3 break-words">ブラウザで以下にアクセスしてみましょう：</p>
+                                <div class="bg-emerald-100 rounded-lg p-3 mb-3">
+                                    <code class="text-emerald-900 break-words">http://localhost:8080</code>
                                 </div>
+                                <p class="text-emerald-800 text-sm break-words">
+                                    あなたが作成したHTMLページが表示されれば成功です！
+                                </p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- プロセス図 -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-6 my-6">
-                        <h3 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
-                            <i class="fas fa-diagram-project text-primary-500"></i>
-                            Dockerfileからコンテナ起動までの流れ
-                        </h3>
-                        <div class="mermaid">
-flowchart LR
-    A[Dockerfile] -->|docker build| B[Dockerイメージ<br/>my-web-app]
-    B -->|docker run| C[コンテナ]
-    C -->|ブラウザでアクセス| D[Webページ表示]
-
-    style A fill:#dbeafe,stroke:#3b82f6
-    style B fill:#bae6fd,stroke:#0284c7
-    style C fill:#e0f2fe,stroke:#0ea5e9
-    style D fill:#d1fae5,stroke:#10b981
+                    <div class="code-block-wrapper mb-4">
+                        <div class="code-block-header">
+                            <span class="code-block-title">コンテナを停止・削除</span>
+                            <button class="copy-button" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
                         </div>
-                        <p class="text-sm text-slate-600 mt-4">
-                            Dockerfileは設計図、イメージは実体、コンテナは実行中のプロセスです。
-                        </p>
-                    </div>
+                        <pre><code class="language-bash"># コンテナを停止
+docker stop my-server
 
-                    <!-- クリーンアップ -->
-                    <h3 class="text-lg font-semibold text-slate-700 mb-3 mt-6">後片付け</h3>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        確認が終わったら、コンテナを停止・削除しましょう。
-                    </p>
-                    <div class="bg-slate-800 rounded-lg overflow-hidden mb-4">
-                        <div class="flex items-center justify-between bg-slate-700 px-4 py-2">
-                            <span class="text-slate-300 text-sm">ターミナル</span>
-                        </div>
-                        <pre class="!mt-0 !bg-slate-800"><code class="language-bash"># コンテナを停止して削除
-docker stop my-app
-docker rm my-app</code></pre>
+# コンテナを削除
+docker rm my-server</code></pre>
                     </div>
                 </section>
 
-                <!-- セクション6: Dockerfileのベストプラクティス -->
+                <!-- セクション7: もう少し実用的なDockerfile -->
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        6.6 Dockerfileのベストプラクティス（基本）
+                        6.7 もう少し実用的なDockerfile
                     </h2>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        Dockerfileを書くときに覚えておきたい基本的なベストプラクティスを紹介します。
+                    <p class="text-slate-600 leading-relaxed mb-6">
+                        RUN命令を使って、イメージビルド時にパッケージをインストールする例を見てみましょう。
                     </p>
 
-                    <!-- ベストプラクティス一覧 -->
-                    <div class="space-y-4 my-6">
-                        <div class="bg-white border-l-4 border-primary-500 p-5 rounded-r-xl shadow-sm">
-                            <h3 class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
-                                <i class="fas fa-check-circle text-primary-500"></i>
-                                1. 軽量なベースイメージを選ぶ
-                            </h3>
-                            <p class="text-sm text-slate-600">
-                                できるだけ小さいイメージを使うと、ダウンロードやビルドが速くなります。例: <code class="bg-slate-100 px-2 py-1 rounded">nginx:alpine</code>は<code class="bg-slate-100 px-2 py-1 rounded">nginx:latest</code>より小さいです。
-                            </p>
+                    <div class="code-block-wrapper mb-4">
+                        <div class="code-block-header">
+                            <span class="code-block-title">Python Webアプリのイメージ例</span>
+                            <button class="copy-button" onclick="copyCode(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
                         </div>
+                        <pre><code class="language-dockerfile"># Python 3.11をベースイメージに
+FROM python:3.11-slim
 
-                        <div class="bg-white border-l-4 border-primary-500 p-5 rounded-r-xl shadow-sm">
-                            <h3 class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
-                                <i class="fas fa-check-circle text-primary-500"></i>
-                                2. .dockerignoreファイルを活用する
-                            </h3>
-                            <p class="text-sm text-slate-600">
-                                不要なファイル（.git、node_modulesなど）をコピーしないように、<code class="bg-slate-100 px-2 py-1 rounded">.dockerignore</code>ファイルに記述します。イメージサイズの削減につながります。
-                            </p>
-                        </div>
+# 作業ディレクトリを設定
+WORKDIR /app
 
-                        <div class="bg-white border-l-4 border-primary-500 p-5 rounded-r-xl shadow-sm">
-                            <h3 class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
-                                <i class="fas fa-check-circle text-primary-500"></i>
-                                3. レイヤーを意識する
-                            </h3>
-                            <p class="text-sm text-slate-600">
-                                Dockerfileの各命令（FROM、COPY、RUNなど）は1つのレイヤーを作ります。変更の少ない命令を先に書くと、ビルドが速くなります。
-                            </p>
-                        </div>
+# 依存関係ファイルをコピー
+COPY requirements.txt .
 
-                        <div class="bg-white border-l-4 border-primary-500 p-5 rounded-r-xl shadow-sm">
-                            <h3 class="font-semibold text-slate-800 mb-2 flex items-center gap-2">
-                                <i class="fas fa-check-circle text-primary-500"></i>
-                                4. 1つのRUNで複数のコマンドを実行する
-                            </h3>
-                            <p class="text-sm text-slate-600">
-                                <code class="bg-slate-100 px-2 py-1 rounded">&&</code>で繋げることで、レイヤー数を減らせます。例: <code class="bg-slate-100 px-2 py-1 rounded">RUN apt-get update && apt-get install -y curl</code>
-                            </p>
-                        </div>
+# 依存パッケージをインストール
+RUN pip install --no-cache-dir -r requirements.txt
+
+# アプリケーションコードをコピー
+COPY . .
+
+# ポート8000を公開
+EXPOSE 8000
+
+# アプリケーションを起動
+CMD ["python", "app.py"]</code></pre>
                     </div>
 
-                    <!-- 良い例と悪い例 -->
-                    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden my-6">
-                        <div class="bg-slate-100 px-6 py-3 border-b border-slate-200">
-                            <h3 class="font-semibold text-slate-700 flex items-center gap-2">
-                                <i class="fas fa-code-compare"></i>
-                                良い例と悪い例
-                            </h3>
-                        </div>
-                        <div class="p-6">
-                            <div class="grid md:grid-cols-2 gap-4">
-                                <!-- 悪い例 -->
+                    <div class="bg-slate-100 border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="font-semibold text-slate-800 mb-3">ベストプラクティス</h3>
+                        <ul class="space-y-2 text-slate-700">
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-check-circle text-emerald-500 mt-1 flex-shrink-0"></i>
                                 <div>
-                                    <p class="font-semibold text-red-700 mb-2 flex items-center gap-2">
-                                        <i class="fas fa-times-circle"></i>悪い例
-                                    </p>
-                                    <div class="bg-slate-800 rounded-lg p-3 text-xs">
-                                        <pre class="text-white"><code># レイヤーが増える
-RUN apt-get update
-RUN apt-get install -y curl
-RUN apt-get install -y git</code></pre>
-                                    </div>
+                                    <strong>軽量なベースイメージを選ぶ</strong>: alpineやslim版を使うとイメージサイズが小さくなります
                                 </div>
-                                <!-- 良い例 -->
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-check-circle text-emerald-500 mt-1 flex-shrink-0"></i>
                                 <div>
-                                    <p class="font-semibold text-emerald-700 mb-2 flex items-center gap-2">
-                                        <i class="fas fa-check-circle"></i>良い例
-                                    </p>
-                                    <div class="bg-slate-800 rounded-lg p-3 text-xs">
-                                        <pre class="text-white"><code># 1つのレイヤーで完結
-RUN apt-get update && \
-    apt-get install -y curl git</code></pre>
-                                    </div>
+                                    <strong>レイヤーを意識する</strong>: 変更頻度が低いものを先に書くとビルドが速くなります
                                 </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-check-circle text-emerald-500 mt-1 flex-shrink-0"></i>
+                                <div>
+                                    <strong>.dockerignoreを活用</strong>: 不要なファイルをビルドコンテキストから除外します
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-check-circle text-emerald-500 mt-1 flex-shrink-0"></i>
+                                <div>
+                                    <strong>1つの命令に1つの役割</strong>: わかりやすく保守しやすいDockerfileになります
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- セクション8: Dockerビルドキャッシュ -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        6.8 ビルドキャッシュを理解する
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-6">
+                        Dockerはビルド時に<strong>レイヤーキャッシュ</strong>という仕組みを使います。変更がない命令は再利用されるので、2回目以降のビルドが高速化されます。
+                    </p>
+
+                    <div class="my-8">
+                        <pre class="mermaid">
+flowchart TB
+    A["Dockerfile"] --> B{"変更あり？"}
+    B -->|なし| C["キャッシュを使用<br/>(高速)"]
+    B -->|あり| D["再ビルド<br/>(時間がかかる)"]
+    C --> E["イメージ完成"]
+    D --> E
+
+    style A fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style C fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style D fill:#fecaca,stroke:#ef4444,stroke-width:2px
+    style E fill:#e0f2fe,stroke:#0ea5e9,stroke-width:2px
+</pre>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">キャッシュを活かすコツ</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    変更が少ない部分（依存関係のインストールなど）を先に書き、変更が多い部分（アプリケーションコード）は後に書くと、ビルドが速くなります。
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -727,35 +631,35 @@ RUN apt-get update && \
                             <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
                             <ol class="space-y-4">
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2 break-words">Q1. Dockerfileの最初に必ず書かなければならない命令は何ですか？</p>
+                                    <p class="font-medium mb-2 break-words">Q1. Dockerfileの役割は何ですか？</p>
                                     <details class="mt-2">
                                         <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
-                                            <strong>FROM</strong>命令です。FROMはベースとなるイメージを指定する命令で、Dockerfileの最初に記述する必要があります。これがないとイメージを作成できません。
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>答え:</strong> Dockerfileは、Dockerイメージを作成するための設計図（レシピ）です。ベースイメージの指定、ファイルのコピー、コマンドの実行など、イメージをどのように構築するかを記述したテキストファイルです。
                                         </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2 break-words">Q2. RUN命令とCMD命令の違いは何ですか？</p>
+                                    <p class="font-medium mb-2 break-words">Q2. FROM命令とCOPY命令の違いは何ですか？</p>
                                     <details class="mt-2">
                                         <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
-                                            <strong>RUN</strong>はイメージをビルドする際（docker build時）に実行され、<strong>CMD</strong>はコンテナを起動する際（docker run時）に実行されます。RUNはパッケージのインストールなど環境準備に使い、CMDはアプリケーションの起動コマンドを指定します。
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>答え:</strong> FROM命令はベースとなるイメージを指定します（例: FROM nginx:alpine）。COPY命令はホストマシン上のファイルをコンテナ内にコピーします（例: COPY index.html /usr/share/nginx/html/）。FROMは必ず最初に書き、COPYはファイルを追加したいときに使います。
                                         </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2 break-words">Q3. docker build -t my-app . コマンドの最後の「.（ドット）」は何を意味しますか？</p>
+                                    <p class="font-medium mb-2 break-words">Q3. Dockerfileからイメージを作成するコマンドは何ですか？</p>
                                     <details class="mt-2">
                                         <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
-                                            「.（ドット）」は<strong>現在のディレクトリ</strong>を意味します。つまり、「現在のディレクトリにあるDockerfileを使ってイメージをビルドする」という意味になります。また、このディレクトリがビルドコンテキスト（COPYやADD命令でコピーできるファイルの範囲）になります。
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>答え:</strong> <code class="px-1 py-0.5 bg-blue-200 rounded">docker build</code>コマンドです。例: <code class="px-1 py-0.5 bg-blue-200 rounded">docker build -t イメージ名:タグ .</code> のように使います。-tオプションでイメージに名前を付け、最後の.はDockerfileがあるディレクトリを指定します。
                                         </p>
                                     </details>
                                 </li>
@@ -764,46 +668,47 @@ RUN apt-get update && \
                     </div>
                 </div>
 
-                <!-- まとめカード -->
-                <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-6 my-6">
-                    <h3 class="text-lg font-semibold text-emerald-800 mb-3 flex items-center gap-2">
-                        <i class="fas fa-check-circle text-emerald-500"></i>
+                <!-- 章のまとめ -->
+                <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6 my-8">
+                    <h2 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-check-circle text-primary-500"></i>
                         第6章のまとめ
-                    </h3>
-                    <ul class="space-y-2 text-emerald-900">
-                        <li class="flex items-start gap-2">
-                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
-                            <span>Dockerfileはイメージを作成するための「レシピ」で、料理のレシピのように手順を記述する</span>
+                    </h2>
+                    <ul class="space-y-2 text-slate-700">
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-circle text-[6px] text-primary-500 mt-2"></i>
+                            <span>Dockerfileは、Dockerイメージを作成するためのテキストベースの設計図</span>
                         </li>
-                        <li class="flex items-start gap-2">
-                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
-                            <span>基本命令: FROM（ベースイメージ）、COPY（ファイルコピー）、RUN（ビルド時実行）、CMD（起動時実行）など</span>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-circle text-[6px] text-primary-500 mt-2"></i>
+                            <span>FROM、COPY、RUN、CMD、WORKDIR、EXPOSEなどの命令を使って構成する</span>
                         </li>
-                        <li class="flex items-start gap-2">
-                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
-                            <span>docker build -t イメージ名 . でイメージをビルドできる</span>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-circle text-[6px] text-primary-500 mt-2"></i>
+                            <span>docker buildコマンドでDockerfileからイメージを作成できる</span>
                         </li>
-                        <li class="flex items-start gap-2">
-                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
-                            <span>ベストプラクティスを意識することで、効率的で保守しやすいDockerfileが書ける</span>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-circle text-[6px] text-primary-500 mt-2"></i>
+                            <span>ビルドキャッシュを意識した書き方で、効率的にイメージを構築できる</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-circle text-[6px] text-primary-500 mt-2"></i>
+                            <span>オリジナルのWebサーバーイメージを作成し、実際に動かすことができた</span>
                         </li>
                     </ul>
                 </div>
 
                 <!-- 章間ナビゲーション -->
                 <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
-                    <!-- 前へ -->
                     <a href="docker-learning-material-05.html"
                        class="group flex items-center gap-3 px-4 py-3 rounded-xl
-                              bg-slate-100 hover:bg-slate-200 transition-colors">
-                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
-                                  transition-transform group-hover:-translate-x-1"></i>
-                        <div>
+                              bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+                        <i class="fas fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
+                        <div class="text-left">
                             <span class="text-xs text-slate-500 block">前の章</span>
-                            <span class="text-slate-700 font-medium">第5章: Webサーバーを動かしてみよう</span>
+                            <span class="font-medium">第5章: Webサーバーを動かしてみよう</span>
                         </div>
                     </a>
-                    <!-- 次へ -->
                     <a href="docker-learning-material-07.html"
                        class="group flex items-center gap-3 px-4 py-3 rounded-xl
                               bg-primary-500 hover:bg-primary-600 text-white transition-colors">
@@ -827,7 +732,7 @@ RUN apt-get update && \
                     本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
                 </p>
                 <div class="flex items-center gap-4">
-                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                    <a href="https://github.com/fcircle-biz" class="hover:text-white transition-colors">
                         <i class="fab fa-github text-xl"></i>
                     </a>
                 </div>

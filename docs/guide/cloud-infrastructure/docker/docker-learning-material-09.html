@@ -3,7 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
-    <title>Docker学習教材 第9章 - 実践プロジェクト</title>
+    <title>Docker学習教材 第9章 - 実践プロジェクト: Webアプリをコンテナ化しよう</title>
+
+    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (saved === null && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,7 +23,7 @@
             theme: {
                 extend: {
                     colors: {
-                        // Docker: Sky Blue
+                        // Docker カラーテーマ (sky)
                         primary: {
                             50: '#f0f9ff',
                             100: '#e0f2fe',
@@ -55,13 +66,13 @@
 <body class="font-sans bg-slate-50 text-slate-800 antialiased">
     <!-- ヘッダー/ナビゲーションバー -->
     <header class="fixed top-0 left-0 right-0 z-50 text-white header-rich header-rich-shadow">
-        <nav class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <nav class="w-full px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="flex items-center justify-between py-3">
                 <!-- 左側: ロゴとタイトルセクション -->
                 <div class="flex items-center gap-4">
                     <!-- アイコン -->
                     <div class="relative group">
-                        <div class="absolute inset-0 bg-gradient-to-br from-cyan-400/30 to-blue-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
+                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-400/30 rounded-2xl blur-lg group-hover:blur-xl transition-all"></div>
                         <div class="relative w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/20">
                             <i class="fab fa-docker text-3xl icon-rotate-hover drop-shadow-lg"></i>
                         </div>
@@ -78,12 +89,12 @@
                         </div>
                         <div class="flex items-center gap-3 text-[11px] text-white/90 font-medium">
                             <div class="flex items-center gap-1">
-                                <i class="fas fa-code text-[9px]"></i>
+                                <i class="fas fa-server text-[9px]"></i>
                                 <span>クラウド・インフラ</span>
                             </div>
                             <div class="hidden sm:flex items-center gap-1">
                                 <i class="fas fa-clock text-[9px]"></i>
-                                <span>推奨 30分</span>
+                                <span>推奨 90分</span>
                             </div>
                             <div class="hidden lg:flex items-center gap-1">
                                 <i class="fas fa-language text-[9px]"></i>
@@ -93,8 +104,8 @@
                     </div>
                 </div>
 
-                <!-- 右側: モバイルメニューボタン -->
-                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                <!-- 右側: サイドバートグルボタン -->
+                <button id="sidebar-toggle-btn" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all active:scale-95" title="サイドバーの表示/非表示">
                     <i class="fas fa-bars text-lg"></i>
                 </button>
             </div>
@@ -107,14 +118,14 @@
 
         <!-- メインコンテンツ -->
         <main class="flex-1 min-w-0">
-            <div class="max-w-5xl px-4 sm:px-6 lg:px-10 py-6">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6">
                 <!-- パンくずリスト -->
                 <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6">
-                    <a href="https://fcircle-biz.github.io/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
+                    <a href="/tech_docs/" class="hover:text-primary-600 transition-colors">ホーム</a>
                     <i class="fas fa-chevron-right text-xs"></i>
                     <a href="../" class="hover:text-primary-600 transition-colors">クラウド・インフラ</a>
                     <i class="fas fa-chevron-right text-xs"></i>
-                    <a href="./" class="hover:text-primary-600 transition-colors">Docker</a>
+                    <span class="text-slate-700">Docker入門</span>
                     <i class="fas fa-chevron-right text-xs"></i>
                     <span class="text-slate-700">第9章</span>
                 </nav>
@@ -128,7 +139,7 @@
                         </span>
                     </div>
                     <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">実践プロジェクト - シンプルなWebアプリをコンテナ化しよう</h1>
-                    <p class="text-slate-600">これまで学んだ知識を総動員して、シンプルなTodoアプリをコンテナ化します。フロントエンド、バックエンド、データベースの3層構成を実際に構築し、開発環境としてのDockerの便利さを体感します。</p>
+                    <p class="text-slate-600">これまで学んだ知識を総動員して、フロントエンド、バックエンド、データベースの3層構成をDockerで構築します。</p>
                 </header>
 
                 <!-- 学習目標カード -->
@@ -144,15 +155,15 @@
                             <ul class="space-y-2">
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>3層アーキテクチャ（フロントエンド、バックエンド、DB）を理解する</span>
+                                    <span>3層構成のWebアプリケーションの構造を理解する</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>シンプルなWebアプリのDocker化を体験する</span>
+                                    <span>フロントエンド・バックエンド・データベースをそれぞれコンテナ化する</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
-                                    <span>複数のDockerfileとdocker-compose.ymlを組み合わせる</span>
+                                    <span>Docker Composeで複数コンテナを連携させて動作させる</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-check-circle text-amber-500 mt-1 flex-shrink-0"></i>
@@ -167,407 +178,689 @@
                 <section class="prose prose-slate max-w-none mb-8">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-4">
-                        9.1 実践プロジェクトの概要
+                        9.1 今回作るアプリケーション - シンプルなTodoアプリ
                     </h2>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        この章では、<strong class="text-primary-700">シンプルなTodoアプリ</strong>を題材に、これまで学んだDockerの知識を統合して実践的なプロジェクトを構築します。
+                    <p class="text-slate-600 leading-relaxed">
+                        この章では、<strong>シンプルなTodoアプリ</strong>を作成します。基本的な機能だけを持つアプリですが、実際のWebアプリケーションと同じ3層構成で構築します。
                     </p>
 
-                    <!-- アプリの機能 -->
-                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-6 my-6">
-                        <h3 class="text-lg font-semibold text-blue-800 mb-4 flex items-center gap-2">
-                            <i class="fas fa-list-check text-blue-500"></i>
-                            構築するTodoアプリの機能
+                    <div class="bg-slate-100 border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-check-square text-primary-500"></i>
+                            Todoアプリの機能
                         </h3>
-                        <div class="space-y-3 text-blue-900">
-                            <div class="flex items-start gap-3">
-                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white">
-                                    <i class="fas fa-plus text-sm"></i>
-                                </div>
-                                <div>
-                                    <strong>Todoの追加</strong>
-                                    <p class="text-sm mt-1">テキストを入力して新しいTodoを追加できます</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-3">
-                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white">
-                                    <i class="fas fa-list text-sm"></i>
-                                </div>
-                                <div>
-                                    <strong>Todoの一覧表示</strong>
-                                    <p class="text-sm mt-1">登録されているTodoをリスト形式で表示します</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-3">
-                                <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white">
-                                    <i class="fas fa-trash text-sm"></i>
-                                </div>
-                                <div>
-                                    <strong>Todoの削除</strong>
-                                    <p class="text-sm mt-1">不要になったTodoを削除できます</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        機能はシンプルですが、フロントエンド・バックエンド・データベースの3層構成を学ぶには十分です。
-                    </p>
-                </section>
-
-                <!-- セクション2: プロジェクト構成の設計 -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        9.2 プロジェクト構成の設計（3層アーキテクチャ）
-                    </h2>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        Todoアプリは<strong>3つの層</strong>で構成されます。各層を独立したコンテナにすることで、保守性と拡張性が高まります。
-                    </p>
-
-                    <!-- 3層構成の図解 -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-6 my-6">
-                        <h3 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
-                            <i class="fas fa-layer-group text-primary-500"></i>
-                            3層アーキテクチャの全体像
-                        </h3>
-                        <div class="mermaid">
-flowchart TB
-    subgraph frontend[フロントエンド<br/>HTMLフォーム]
-        html[HTML/CSS/JavaScript<br/>ユーザーインターフェース]
-    end
-
-    subgraph backend[バックエンド<br/>APIサーバー]
-        api[Python Flask API<br/>ビジネスロジック]
-    end
-
-    subgraph database[データベース<br/>永続化層]
-        db[MySQL<br/>Todoデータ保存]
-    end
-
-    html -->|HTTPリクエスト| api
-    api -->|SQLクエリ| db
-
-    style frontend fill:#dbeafe,stroke:#3b82f6
-    style backend fill:#dcfce7,stroke:#22c55e
-    style database fill:#fef3c7,stroke:#f59e0b
-                        </div>
-                        <p class="text-sm text-slate-600 mt-4">
-                            各層が独立したコンテナとして動作し、ネットワークを通じて連携します
-                        </p>
-                    </div>
-
-                    <!-- ディレクトリ構成 -->
-                    <div class="bg-slate-800 text-slate-100 rounded-xl p-4 my-6">
-                        <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
-                            <i class="fas fa-folder-tree text-primary-400"></i>
-                            プロジェクトのディレクトリ構成
-                        </h3>
-                        <pre class="text-sm overflow-x-auto"><code>todo-app/
-├── frontend/              # フロントエンド
-│   ├── Dockerfile
-│   ├── index.html
-│   └── nginx.conf
-├── backend/               # バックエンド
-│   ├── Dockerfile
-│   ├── app.py            # Flask APIアプリ
-│   └── requirements.txt  # Python依存関係
-└── docker-compose.yml     # 全体の構成定義</code></pre>
-                    </div>
-                </section>
-
-                <!-- セクション3: バックエンドのDocker化 -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        9.3 バックエンドのDocker化（Flask API）
-                    </h2>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        まず、PythonのFlaskフレームワークを使ったシンプルなAPIサーバーを作成します。
-                    </p>
-
-                    <!-- app.py -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-4 my-6">
-                        <h3 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                            <i class="fas fa-code text-primary-500"></i>
-                            backend/app.py
-                        </h3>
-                        <pre class="bg-slate-800 text-slate-100 rounded-lg p-4 overflow-x-auto"><code class="language-python"># Flask APIサーバー（シンプル版）
-from flask import Flask, jsonify, request
-import mysql.connector
-
-app = Flask(__name__)
-
-# データベース接続設定
-db_config = {
-    'host': 'db',  # docker-composeのサービス名
-    'user': 'root',
-    'password': 'rootpass',
-    'database': 'todoapp'
-}
-
-@app.route('/todos', methods=['GET'])
-def get_todos():
-    # Todo一覧を取得
-    conn = mysql.connector.connect(**db_config)
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM todos")
-    todos = cursor.fetchall()
-    return jsonify(todos)
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)</code></pre>
-                    </div>
-
-                    <!-- backend/Dockerfile -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-4 my-6">
-                        <h3 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                            <i class="fas fa-file-code text-primary-500"></i>
-                            backend/Dockerfile
-                        </h3>
-                        <pre class="bg-slate-800 text-slate-100 rounded-lg p-4 overflow-x-auto"><code class="language-dockerfile"># Python公式イメージを使用
-FROM python:3.11-slim
-
-# 作業ディレクトリを設定
-WORKDIR /app
-
-# 依存関係ファイルをコピー
-COPY requirements.txt .
-
-# 依存関係をインストール
-RUN pip install --no-cache-dir -r requirements.txt
-
-# アプリケーションコードをコピー
-COPY app.py .
-
-# ポート5000で起動
-EXPOSE 5000
-CMD ["python", "app.py"]</code></pre>
-                        <p class="text-sm text-slate-600 mt-3">
-                            <i class="fas fa-info-circle text-primary-500"></i>
-                            Pythonの公式イメージをベースに、FlaskとMySQLドライバをインストールします
-                        </p>
-                    </div>
-                </section>
-
-                <!-- セクション4: フロントエンドのDocker化 -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        9.4 フロントエンドのDocker化（Nginx + HTML）
-                    </h2>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        シンプルなHTMLフォームを作成し、Nginxで配信します。
-                    </p>
-
-                    <!-- frontend/index.html -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-4 my-6">
-                        <h3 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                            <i class="fas fa-file-code text-primary-500"></i>
-                            frontend/index.html（抜粋）
-                        </h3>
-                        <pre class="bg-slate-800 text-slate-100 rounded-lg p-4 overflow-x-auto"><code class="language-html">&lt;!-- シンプルなTodoフォーム --&gt;
-&lt;div class="container"&gt;
-  &lt;h1&gt;Todo アプリ&lt;/h1&gt;
-  &lt;form id="todoForm"&gt;
-    &lt;input type="text" id="todoInput" placeholder="新しいTodo"&gt;
-    &lt;button type="submit"&gt;追加&lt;/button&gt;
-  &lt;/form&gt;
-  &lt;ul id="todoList"&gt;&lt;/ul&gt;
-&lt;/div&gt;
-
-&lt;script&gt;
-  // バックエンドAPIを呼び出す
-  fetch('http://localhost:5000/todos')
-    .then(res => res.json())
-    .then(data => { /* リスト表示 */ });
-&lt;/script&gt;</code></pre>
-                    </div>
-
-                    <!-- frontend/Dockerfile -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-4 my-6">
-                        <h3 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                            <i class="fas fa-file-code text-primary-500"></i>
-                            frontend/Dockerfile
-                        </h3>
-                        <pre class="bg-slate-800 text-slate-100 rounded-lg p-4 overflow-x-auto"><code class="language-dockerfile"># Nginx公式イメージを使用
-FROM nginx:alpine
-
-# HTMLファイルをコピー
-COPY index.html /usr/share/nginx/html/
-
-# Nginx設定をコピー（オプション）
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# ポート80で公開
-EXPOSE 80</code></pre>
-                        <p class="text-sm text-slate-600 mt-3">
-                            <i class="fas fa-info-circle text-primary-500"></i>
-                            軽量なNginx Alpineイメージを使用し、HTMLを配信します
-                        </p>
-                    </div>
-                </section>
-
-                <!-- セクション5: データベースの設定 -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        9.5 データベースの設定（MySQL + ボリューム）
-                    </h2>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        MySQL公式イメージを使い、データを永続化するためにボリュームを設定します。
-                    </p>
-
-                    <!-- データベース初期化 -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-4 my-6">
-                        <h3 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                            <i class="fas fa-database text-primary-500"></i>
-                            データベースの初期設定
-                        </h3>
-                        <pre class="bg-slate-800 text-slate-100 rounded-lg p-4 overflow-x-auto"><code class="language-sql">-- Todoテーブルの作成
-CREATE TABLE todos (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  title VARCHAR(255) NOT NULL,
-  completed BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);</code></pre>
-                    </div>
-
-                    <!-- ボリュームの重要性 -->
-                    <div class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl p-5 my-6">
-                        <h3 class="text-lg font-semibold text-amber-800 mb-3 flex items-center gap-2">
-                            <i class="fas fa-exclamation-triangle text-amber-500"></i>
-                            ボリュームを使う理由
-                        </h3>
-                        <p class="text-sm text-amber-900">
-                            データベースコンテナを削除すると、保存されているTodoデータも消えてしまいます。
-                            <strong>ボリュームを使うことで、コンテナを削除してもデータが残ります。</strong>
-                            これにより、安心してコンテナの更新や再起動ができます。
-                        </p>
-                    </div>
-                </section>
-
-                <!-- セクション6: Docker Composeで統合 -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        9.6 docker-compose.ymlで全体を統合
-                    </h2>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        3つのコンテナを1つのコマンドで起動できるように、docker-compose.ymlを作成します。
-                    </p>
-
-                    <!-- docker-compose.yml -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-4 my-6">
-                        <h3 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                            <i class="fas fa-file-code text-primary-500"></i>
-                            docker-compose.yml
-                        </h3>
-                        <pre class="bg-slate-800 text-slate-100 rounded-lg p-4 overflow-x-auto"><code class="language-yaml">version: '3.8'
-
-services:
-  # フロントエンド（Nginx）
-  frontend:
-    build: ./frontend
-    ports:
-      - "8080:80"  # ホストの8080番をコンテナの80番に
-    depends_on:
-      - backend
-
-  # バックエンド（Flask API）
-  backend:
-    build: ./backend
-    ports:
-      - "5000:5000"
-    depends_on:
-      - db
-
-  # データベース（MySQL）
-  db:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: todoapp
-    volumes:
-      - todo_data:/var/lib/mysql  # データ永続化
-
-volumes:
-  todo_data:  # 名前付きボリューム定義</code></pre>
-                        <p class="text-sm text-slate-600 mt-3">
-                            <i class="fas fa-info-circle text-primary-500"></i>
-                            depends_onで起動順序を制御し、volumesでデータを永続化します
-                        </p>
-                    </div>
-                </section>
-
-                <!-- セクション7: 動作確認と開発フロー -->
-                <section class="prose prose-slate max-w-none mb-8">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-4">
-                        9.7 動作確認と開発フローの体験
-                    </h2>
-                    <p class="text-slate-600 leading-relaxed mb-4">
-                        すべての準備ができたら、アプリを起動して動作確認をします。
-                    </p>
-
-                    <!-- 起動コマンド -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-4 my-6">
-                        <h3 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                            <i class="fas fa-terminal text-primary-500"></i>
-                            アプリの起動
-                        </h3>
-                        <pre class="bg-slate-800 text-slate-100 rounded-lg p-4 overflow-x-auto"><code class="language-bash"># プロジェクトディレクトリに移動
-cd todo-app
-
-# すべてのコンテナをビルド・起動
-docker compose up --build
-
-# バックグラウンドで起動する場合
-docker compose up -d</code></pre>
-                    </div>
-
-                    <!-- アクセス方法 -->
-                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5 my-6">
-                        <h3 class="text-lg font-semibold text-emerald-800 mb-3 flex items-center gap-2">
-                            <i class="fas fa-browser text-emerald-500"></i>
-                            ブラウザでアクセス
-                        </h3>
-                        <ul class="space-y-2 text-emerald-900">
-                            <li class="flex items-start gap-2">
-                                <i class="fas fa-check-circle text-emerald-500 mt-1"></i>
-                                <span><strong>フロントエンド:</strong> http://localhost:8080</span>
+                        <ul class="space-y-2 text-slate-700">
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-circle text-[6px] text-primary-500 mt-2"></i>
+                                <span>Todoの一覧表示</span>
                             </li>
-                            <li class="flex items-start gap-2">
-                                <i class="fas fa-check-circle text-emerald-500 mt-1"></i>
-                                <span><strong>バックエンドAPI:</strong> http://localhost:5000/todos</span>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-circle text-[6px] text-primary-500 mt-2"></i>
+                                <span>新しいTodoの追加</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-circle text-[6px] text-primary-500 mt-2"></i>
+                                <span>Todoの完了状態の切り替え</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="fas fa-circle text-[6px] text-primary-500 mt-2"></i>
+                                <span>Todoの削除</span>
                             </li>
                         </ul>
                     </div>
 
-                    <!-- 開発フロー -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-6 my-6">
-                        <h3 class="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
-                            <i class="fas fa-rotate text-primary-500"></i>
-                            Dockerを使った開発フロー
-                        </h3>
-                        <div class="mermaid">
-flowchart LR
-    A[コード編集] --> B[docker compose up]
-    B --> C[ブラウザで確認]
-    C --> D{問題あり?}
-    D -->|Yes| A
-    D -->|No| E[完成]
+                    <!-- システム構成図 -->
+                    <div class="my-8">
+                        <h3 class="font-semibold text-slate-800 mb-4">システム構成</h3>
+                        <pre class="mermaid">
+flowchart TB
+    subgraph Client[フロントエンド]
+        F["Nginx<br/>(静的HTML/CSS/JS配信)"]
+    end
 
-    style A fill:#dbeafe,stroke:#3b82f6
-    style B fill:#dcfce7,stroke:#22c55e
-    style C fill:#fef3c7,stroke:#f59e0b
-    style E fill:#d1fae5,stroke:#10b981
-                        </div>
-                        <p class="text-sm text-slate-600 mt-4">
-                            コード変更後は<code>docker compose restart</code>で素早く反映できます
-                        </p>
+    subgraph Backend[バックエンド]
+        B["Node.js API<br/>(Express)"]
+    end
+
+    subgraph Database[データベース]
+        D[("PostgreSQL<br/>(Todoデータ保存)")]
+    end
+
+    Client --> Backend
+    Backend --> Database
+
+    style Client fill:#e0f2fe,stroke:#0ea5e9,stroke-width:2px
+    style Backend fill:#dbeafe,stroke:#3b82f6,stroke-width:2px
+    style Database fill:#ddd6fe,stroke:#8b5cf6,stroke-width:2px
+</pre>
                     </div>
                 </section>
+
+                <!-- セクション2: プロジェクトの準備 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        9.2 プロジェクトの準備 - フォルダ構成を作ろう
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        まずは、プロジェクトのフォルダ構成を作成します。フロントエンド、バックエンド、データベースの設定を分けて管理します。
+                    </p>
+
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 mb-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 9-1: プロジェクトフォルダを作成</h3>
+                                <p class="text-purple-900 mb-4 break-words">フォルダ構成を作成して、各層のファイルを配置できるようにします。</p>
+                                <h4 class="font-medium text-purple-800 mb-2 break-words">手順</h4>
+                                <ol class="space-y-3 mb-4">
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
+                                        <span class="flex-1 min-w-0 break-words">ターミナルで作業用フォルダを作成し、移動します</span>
+                                    </li>
+                                    <li class="flex items-start gap-3 text-purple-900">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-purple-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
+                                        <span class="flex-1 min-w-0 break-words">フロントエンド、バックエンド用のフォルダを作成します</span>
+                                    </li>
+                                </ol>
+
+                                <!-- コードブロック -->
+                                <div class="code-block-wrapper">
+                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                        <span class="text-slate-400 text-sm">ターミナル</span>
+                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># プロジェクトフォルダを作成
+mkdir todo-app
+cd todo-app
+
+# 各層のフォルダを作成
+mkdir frontend backend</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ファイル構成 -->
+                    <div class="bg-slate-100 border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-folder-tree text-slate-500"></i>
+                            プロジェクト構成
+                        </h3>
+                        <pre class="bg-slate-800 text-slate-100 rounded-lg p-4 text-sm overflow-x-auto"><code>todo-app/
+├── frontend/           # フロントエンド (HTML/CSS/JS)
+│   ├── index.html
+│   ├── style.css
+│   ├── app.js
+│   └── Dockerfile
+├── backend/            # バックエンド (Node.js API)
+│   ├── server.js
+│   ├── package.json
+│   └── Dockerfile
+└── docker-compose.yml  # 全体の設定ファイル</code></pre>
+                    </div>
+                </section>
+
+                <!-- セクション3: フロントエンド作成 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        9.3 フロントエンドの作成 - Nginxで静的ファイルを配信
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        まずはフロントエンドを作成します。シンプルなHTML/CSS/JavaScriptでTodoアプリのUIを作り、Nginxコンテナで配信します。
+                    </p>
+
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 mb-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 9-2: フロントエンドのファイルを作成</h3>
+                                <p class="text-purple-900 mb-4 break-words">TodoアプリのUIを作成します。</p>
+
+                                <!-- index.html -->
+                                <h4 class="font-medium text-purple-800 mb-2 break-words">1. frontend/index.html を作成</h4>
+                                <div class="code-block-wrapper mb-4">
+                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                        <span class="text-slate-400 text-sm">frontend/index.html</span>
+                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre class="!mt-0 !rounded-t-none"><code class="language-xml">&lt;!DOCTYPE html&gt;
+&lt;html lang="ja"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;シンプルTodoアプリ&lt;/title&gt;
+    &lt;link rel="stylesheet" href="style.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="container"&gt;
+        &lt;h1&gt;Todo リスト&lt;/h1&gt;
+        &lt;input type="text" id="todo-input" placeholder="新しいタスクを入力"&gt;
+        &lt;button onclick="addTodo()"&gt;追加&lt;/button&gt;
+        &lt;ul id="todo-list"&gt;&lt;/ul&gt;
+    &lt;/div&gt;
+    &lt;script src="app.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                                </div>
+
+                                <!-- app.js -->
+                                <h4 class="font-medium text-purple-800 mb-2 break-words">2. frontend/app.js を作成</h4>
+                                <div class="code-block-wrapper mb-4">
+                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                        <span class="text-slate-400 text-sm">frontend/app.js</span>
+                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre class="!mt-0 !rounded-t-none"><code class="language-javascript">// APIのベースURL (バックエンドのアドレス)
+const API_URL = 'http://localhost:3000';
+
+// ページ読み込み時にTodoリストを取得
+window.onload = () => {
+    loadTodos();
+};
+
+// Todoリストを取得して表示
+async function loadTodos() {
+    const response = await fetch(`${API_URL}/todos`);
+    const todos = await response.json();
+    displayTodos(todos);
+}</code></pre>
+                                </div>
+
+                                <!-- Dockerfile -->
+                                <h4 class="font-medium text-purple-800 mb-2 break-words">3. frontend/Dockerfile を作成</h4>
+                                <div class="code-block-wrapper">
+                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                        <span class="text-slate-400 text-sm">frontend/Dockerfile</span>
+                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre class="!mt-0 !rounded-t-none"><code class="language-plaintext"># Nginxの公式イメージを使用
+FROM nginx:alpine
+
+# HTMLファイルをNginxのドキュメントルートにコピー
+COPY index.html /usr/share/nginx/html/
+COPY style.css /usr/share/nginx/html/
+COPY app.js /usr/share/nginx/html/
+
+# ポート80を公開
+EXPOSE 80</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">フロントエンドのポイント</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    フロントエンドはNginxコンテナで静的ファイル(HTML/CSS/JS)を配信します。JavaScriptからバックエンドAPIにアクセスしてデータを取得・更新します。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション4: バックエンド作成 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        9.4 バックエンドの作成 - Node.js APIサーバー
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        次にバックエンドAPIを作成します。Node.js + ExpressでシンプルなREST APIを作り、PostgreSQLデータベースに接続します。
+                    </p>
+
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 mb-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 9-3: バックエンドAPIを作成</h3>
+                                <p class="text-purple-900 mb-4 break-words">Node.js + ExpressでTodoのCRUD APIを作成します。</p>
+
+                                <!-- package.json -->
+                                <h4 class="font-medium text-purple-800 mb-2 break-words">1. backend/package.json を作成</h4>
+                                <div class="code-block-wrapper mb-4">
+                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                        <span class="text-slate-400 text-sm">backend/package.json</span>
+                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre class="!mt-0 !rounded-t-none"><code class="language-json">{
+  "name": "todo-backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.18.0",
+    "pg": "^8.11.0",
+    "cors": "^2.8.5"
+  }
+}</code></pre>
+                                </div>
+
+                                <!-- server.js -->
+                                <h4 class="font-medium text-purple-800 mb-2 break-words">2. backend/server.js を作成</h4>
+                                <div class="code-block-wrapper mb-4">
+                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                        <span class="text-slate-400 text-sm">backend/server.js</span>
+                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre class="!mt-0 !rounded-t-none"><code class="language-javascript">const express = require('express');
+const cors = require('cors');
+const { Pool } = require('pg');
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// PostgreSQL接続設定 (環境変数から取得)
+const pool = new Pool({
+  host: process.env.DB_HOST || 'db',
+  database: process.env.DB_NAME || 'todos',
+  user: process.env.DB_USER || 'postgres',
+  password: process.env.DB_PASS || 'password',
+  port: 5432
+});</code></pre>
+                                </div>
+
+                                <!-- Dockerfile -->
+                                <h4 class="font-medium text-purple-800 mb-2 break-words">3. backend/Dockerfile を作成</h4>
+                                <div class="code-block-wrapper">
+                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                        <span class="text-slate-400 text-sm">backend/Dockerfile</span>
+                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre class="!mt-0 !rounded-t-none"><code class="language-plaintext"># Node.jsの公式イメージを使用
+FROM node:18-alpine
+
+# 作業ディレクトリを作成
+WORKDIR /app
+
+# package.jsonをコピーして依存関係をインストール
+COPY package.json .
+RUN npm install
+
+# アプリケーションファイルをコピー
+COPY server.js .
+
+# ポート3000を公開
+EXPOSE 3000
+
+# サーバー起動
+CMD ["node", "server.js"]</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション5: Docker Compose設定 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        9.5 Docker Composeで3層を連携 - すべてを一度に起動
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        最後に、フロントエンド・バックエンド・データベースの3つのコンテナを<strong>Docker Compose</strong>で連携させます。
+                    </p>
+
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 mb-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 9-4: docker-compose.yml を作成</h3>
+                                <p class="text-purple-900 mb-4 break-words">3層すべてを定義して、一度に起動できるようにします。</p>
+
+                                <div class="code-block-wrapper">
+                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                        <span class="text-slate-400 text-sm">docker-compose.yml</span>
+                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre class="!mt-0 !rounded-t-none"><code class="language-yaml">version: '3.8'
+
+services:
+  # データベース (PostgreSQL)
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: todos
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  # バックエンド (Node.js API)
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: db
+      DB_NAME: todos
+    depends_on:
+      - db
+
+  # フロントエンド (Nginx)
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  db-data:</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-star text-emerald-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-emerald-900 font-medium break-words">Docker Composeの重要ポイント</p>
+                                <p class="text-emerald-800 text-sm mt-1 break-words">
+                                    <strong>depends_on</strong>で起動順序を制御しています。データベースが起動してからバックエンドが起動し、バックエンドが起動してからフロントエンドが起動します。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション6: アプリケーションの起動 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        9.6 アプリケーションの起動と動作確認
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        すべての準備が整いました。Docker Composeで3層すべてを一度に起動してみましょう。
+                    </p>
+
+                    <!-- 実習カード -->
+                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-5 mb-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-purple-800 mb-3 break-words">実習 9-5: アプリケーションを起動</h3>
+                                <p class="text-purple-900 mb-4 break-words">Docker Composeでアプリケーション全体を起動します。</p>
+
+                                <div class="code-block-wrapper mb-4">
+                                    <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                        <span class="text-slate-400 text-sm">ターミナル</span>
+                                        <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># プロジェクトルートで実行
+cd todo-app
+
+# 3層すべてをビルド・起動
+docker-compose up --build
+
+# バックグラウンドで起動する場合
+docker-compose up -d --build</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 動作確認カード -->
+                    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-5 mb-6 overflow-hidden">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-play text-white"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-semibold text-emerald-800 mb-3 break-words">動作確認</h3>
+                                <ol class="space-y-3 mb-4 text-emerald-900">
+                                    <li class="flex items-start gap-3">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-emerald-200 rounded-full flex items-center justify-center text-sm font-medium">1</span>
+                                        <span class="flex-1 min-w-0 break-words">ブラウザで <code class="bg-emerald-100 px-2 py-0.5 rounded text-sm">http://localhost:8080</code> にアクセス</span>
+                                    </li>
+                                    <li class="flex items-start gap-3">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-emerald-200 rounded-full flex items-center justify-center text-sm font-medium">2</span>
+                                        <span class="flex-1 min-w-0 break-words">Todoアプリの画面が表示されることを確認</span>
+                                    </li>
+                                    <li class="flex items-start gap-3">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-emerald-200 rounded-full flex items-center justify-center text-sm font-medium">3</span>
+                                        <span class="flex-1 min-w-0 break-words">新しいTodoを追加できるか試してみる</span>
+                                    </li>
+                                    <li class="flex items-start gap-3">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-emerald-200 rounded-full flex items-center justify-center text-sm font-medium">4</span>
+                                        <span class="flex-1 min-w-0 break-words">Todoの完了状態を切り替えてみる</span>
+                                    </li>
+                                </ol>
+                                <h4 class="font-medium text-emerald-800 mb-2 break-words">
+                                    <i class="fas fa-check-circle mr-2"></i>期待される動作
+                                </h4>
+                                <div class="bg-emerald-100 rounded-lg p-4 border border-emerald-200">
+                                    <ul class="text-emerald-900 text-sm space-y-1">
+                                        <li class="flex items-start gap-2">
+                                            <i class="fas fa-circle text-[6px] mt-1.5"></i>
+                                            <span>Todoアプリの画面が正常に表示される</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <i class="fas fa-circle text-[6px] mt-1.5"></i>
+                                            <span>Todoの追加・完了・削除がすべて動作する</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <i class="fas fa-circle text-[6px] mt-1.5"></i>
+                                            <span>ページをリロードしてもデータが保持されている</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション7: コンテナの連携を理解する -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        9.7 コンテナの連携を理解する - ネットワークと通信
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Docker Composeは、各コンテナを同じネットワークに配置して相互通信を可能にします。コンテナ名がホスト名として使えるため、簡単に接続できます。
+                    </p>
+
+                    <!-- ネットワーク図 -->
+                    <div class="my-8">
+                        <h3 class="font-semibold text-slate-800 mb-4">コンテナ間通信の仕組み</h3>
+                        <pre class="mermaid">
+flowchart LR
+    subgraph Network["Docker Composeネットワーク"]
+        direction TB
+        F["frontend<br/>(Nginx)<br/>ポート: 8080→80"]
+        B["backend<br/>(Node.js)<br/>ポート: 3000→3000"]
+        D["db<br/>(PostgreSQL)<br/>ポート: 5432"]
+
+        F -->|"http://backend:3000"| B
+        B -->|"postgres://db:5432"| D
+    end
+
+    User["ブラウザ"] -->|"http://localhost:8080"| F
+
+    style F fill:#e0f2fe,stroke:#0ea5e9,stroke-width:2px
+    style B fill:#dbeafe,stroke:#3b82f6,stroke-width:2px
+    style D fill:#ddd6fe,stroke:#8b5cf6,stroke-width:2px
+</pre>
+                    </div>
+
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg overflow-hidden">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-blue-900 font-medium break-words">コンテナ名でアクセスできる理由</p>
+                                <p class="text-blue-800 text-sm mt-1 break-words">
+                                    Docker Composeは、サービス名(frontend, backend, db)を自動的にDNSとして解決します。そのため、コンテナ内から「backend」「db」という名前でアクセスできるのです。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション8: 開発時の便利な機能 -->
+                <section class="prose prose-slate max-w-none mb-8">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-4">
+                        9.8 開発環境としての便利さを体感する
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Dockerを使った開発環境の便利さを体感してみましょう。
+                    </p>
+
+                    <div class="grid md:grid-cols-2 gap-4 my-6">
+                        <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-lg">
+                            <div class="flex items-start gap-3">
+                                <i class="fas fa-rocket text-emerald-600 mt-1"></i>
+                                <div>
+                                    <h3 class="text-emerald-900 font-semibold mb-1">1コマンドで全環境起動</h3>
+                                    <p class="text-emerald-800 text-sm"><code class="bg-emerald-100 px-1 rounded">docker-compose up</code>だけで、データベースからWebサーバーまですべてが起動します。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-lg">
+                            <div class="flex items-start gap-3">
+                                <i class="fas fa-sync text-emerald-600 mt-1"></i>
+                                <div>
+                                    <h3 class="text-emerald-900 font-semibold mb-1">チームメンバーも同じ環境</h3>
+                                    <p class="text-emerald-800 text-sm">docker-compose.ymlを共有すれば、誰でも同じ環境を再現できます。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-lg">
+                            <div class="flex items-start gap-3">
+                                <i class="fas fa-broom text-emerald-600 mt-1"></i>
+                                <div>
+                                    <h3 class="text-emerald-900 font-semibold mb-1">簡単なクリーンアップ</h3>
+                                    <p class="text-emerald-800 text-sm"><code class="bg-emerald-100 px-1 rounded">docker-compose down</code>で全コンテナを停止・削除。PCが汚れません。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-lg">
+                            <div class="flex items-start gap-3">
+                                <i class="fas fa-layer-group text-emerald-600 mt-1"></i>
+                                <div>
+                                    <h3 class="text-emerald-900 font-semibold mb-1">複数プロジェクトの切り替え</h3>
+                                    <p class="text-emerald-800 text-sm">異なるバージョンのデータベースを使うプロジェクトも、コンテナで簡単に切り替えられます。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- よく使うコマンド -->
+                    <div class="bg-slate-100 border border-slate-200 rounded-xl p-6 my-6">
+                        <h3 class="font-semibold text-slate-800 mb-4">開発時によく使うコマンド</h3>
+                        <div class="code-block-wrapper">
+                            <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
+                                <span class="text-slate-400 text-sm">ターミナル</span>
+                                <button class="copy-btn text-slate-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># すべてのコンテナを起動
+docker-compose up
+
+# バックグラウンドで起動
+docker-compose up -d
+
+# ログを表示
+docker-compose logs -f
+
+# 特定サービスのログを表示
+docker-compose logs -f backend
+
+# すべて停止・削除
+docker-compose down
+
+# ボリュームも含めて削除
+docker-compose down -v</code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- トラブルシューティング -->
+                <div class="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-xl overflow-hidden mb-8">
+                    <div class="bg-orange-100 px-6 py-3 border-b border-orange-200">
+                        <h3 class="font-semibold text-orange-800 flex items-center gap-2">
+                            <i class="fas fa-tools"></i>
+                            トラブルシューティング
+                        </h3>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <details class="group">
+                            <summary class="flex items-center gap-3 cursor-pointer list-none p-3 rounded-lg bg-white border border-orange-200 hover:bg-orange-50 transition-colors">
+                                <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                <span class="font-medium text-orange-800">フロントエンドからバックエンドに接続できない</span>
+                                <i class="fas fa-chevron-down ml-auto text-orange-400 transition-transform group-open:rotate-180"></i>
+                            </summary>
+                            <div class="mt-3 pl-10 text-orange-900">
+                                <p class="mb-2"><strong>原因:</strong> APIのURLが間違っているか、バックエンドが起動していない可能性があります。</p>
+                                <p><strong>解決方法:</strong> <code class="bg-orange-100 px-1 rounded">docker-compose ps</code>でバックエンドが起動しているか確認。ログを<code class="bg-orange-100 px-1 rounded">docker-compose logs backend</code>で確認してエラーをチェック。</p>
+                            </div>
+                        </details>
+
+                        <details class="group">
+                            <summary class="flex items-center gap-3 cursor-pointer list-none p-3 rounded-lg bg-white border border-orange-200 hover:bg-orange-50 transition-colors">
+                                <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                <span class="font-medium text-orange-800">データベースに接続できない</span>
+                                <i class="fas fa-chevron-down ml-auto text-orange-400 transition-transform group-open:rotate-180"></i>
+                            </summary>
+                            <div class="mt-3 pl-10 text-orange-900">
+                                <p class="mb-2"><strong>原因:</strong> データベースの起動が遅く、バックエンドが接続を試みた時にまだ準備ができていない可能性があります。</p>
+                                <p><strong>解決方法:</strong> バックエンドに再接続ロジックを追加するか、<code class="bg-orange-100 px-1 rounded">depends_on</code>に加えてヘルスチェックを設定します。</p>
+                            </div>
+                        </details>
+
+                        <details class="group">
+                            <summary class="flex items-center gap-3 cursor-pointer list-none p-3 rounded-lg bg-white border border-orange-200 hover:bg-orange-50 transition-colors">
+                                <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                <span class="font-medium text-orange-800">ポート8080が既に使用されている</span>
+                                <i class="fas fa-chevron-down ml-auto text-orange-400 transition-transform group-open:rotate-180"></i>
+                            </summary>
+                            <div class="mt-3 pl-10 text-orange-900">
+                                <p class="mb-2"><strong>原因:</strong> 他のアプリケーションがポート8080を使用している可能性があります。</p>
+                                <p><strong>解決方法:</strong> docker-compose.ymlのフロントエンドのポートを<code class="bg-orange-100 px-1 rounded">"8081:80"</code>などに変更し、ブラウザで<code class="bg-orange-100 px-1 rounded">http://localhost:8081</code>にアクセスします。</p>
+                            </div>
+                        </details>
+                    </div>
+                </div>
 
                 <!-- 理解度確認クイズ -->
                 <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200
@@ -581,35 +874,35 @@ flowchart LR
                             <h3 class="text-lg font-semibold text-blue-800 mb-4 break-words">理解度確認クイズ</h3>
                             <ol class="space-y-4">
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2 break-words">Q1. 3層アーキテクチャにおいて、各層（フロントエンド、バックエンド、データベース）を独立したコンテナにするメリットは何ですか？</p>
+                                    <p class="font-medium mb-2 break-words">Q1. この実践プロジェクトでは何層構成のアプリケーションを作りましたか？それぞれの役割を説明してください。</p>
                                     <details class="mt-2">
                                         <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
-                                            各層を独立したコンテナにすることで、保守性・拡張性・スケーラビリティが向上します。例えば、フロントエンドだけを更新したい場合、バックエンドやデータベースに影響を与えずに変更できます。また、負荷に応じてバックエンドコンテナだけを複数起動することも可能です。
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>答え:</strong> 3層構成です。①フロントエンド層(Nginx): 静的ファイル(HTML/CSS/JS)を配信しユーザーインターフェースを提供。②バックエンド層(Node.js): REST APIを提供しビジネスロジックを実装。③データベース層(PostgreSQL): Todoデータを永続化して保存。
                                         </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2 break-words">Q2. データベースコンテナにボリュームを設定する理由は何ですか？</p>
+                                    <p class="font-medium mb-2 break-words">Q2. Docker Composeを使うメリットは何ですか？</p>
                                     <details class="mt-2">
                                         <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
-                                            コンテナを削除すると、その中のデータも消えてしまいます。ボリュームを使うことで、コンテナとは独立してデータを保存でき、コンテナを削除・再作成してもデータが保持されます。これにより、安心してコンテナのアップデートや再起動ができます。
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>答え:</strong> 複数のコンテナを一つのファイル(docker-compose.yml)で管理できるため、①1コマンドで全環境を起動・停止できる、②依存関係を明確に定義できる(depends_on)、③ネットワーク設定が自動で行われる、④チーム内で同じ環境を簡単に共有できる、などのメリットがあります。
                                         </p>
                                     </details>
                                 </li>
                                 <li class="text-blue-900">
-                                    <p class="font-medium mb-2 break-words">Q3. docker-compose.ymlでdepends_onを設定する理由は何ですか？</p>
+                                    <p class="font-medium mb-2 break-words">Q3. コンテナ間で通信する際、なぜコンテナ名(backend, dbなど)でアクセスできるのですか？</p>
                                     <details class="mt-2">
                                         <summary class="cursor-pointer text-blue-600 hover:text-blue-700 break-words">
                                             回答を表示
                                         </summary>
-                                        <p class="mt-2 pl-4 text-blue-800 bg-white/50 rounded-lg p-3 break-words">
-                                            コンテナの起動順序を制御するためです。例えば、バックエンドはデータベースが起動していないと接続できないため、データベースを先に起動する必要があります。depends_onを設定することで、依存関係を明示し、適切な順序でコンテナが起動されます。
+                                        <p class="mt-2 pl-4 text-blue-800 bg-blue-100 rounded-lg p-3 break-words">
+                                            <strong>答え:</strong> Docker Composeは、同じComposeファイルで定義されたすべてのコンテナを同じDockerネットワークに配置し、サービス名を自動的にDNS名として登録します。そのため、IPアドレスを知らなくても、サービス名(backend, dbなど)をホスト名として使ってアクセスできます。
                                         </p>
                                     </details>
                                 </li>
@@ -618,52 +911,53 @@ flowchart LR
                     </div>
                 </div>
 
-                <!-- まとめカード -->
-                <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-6 my-6">
-                    <h3 class="text-lg font-semibold text-emerald-800 mb-3 flex items-center gap-2">
-                        <i class="fas fa-check-circle text-emerald-500"></i>
+                <!-- 章のまとめ -->
+                <div class="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-xl p-6 my-8">
+                    <h2 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-check-circle text-primary-500"></i>
                         第9章のまとめ
-                    </h3>
-                    <ul class="space-y-2 text-emerald-900">
-                        <li class="flex items-start gap-2">
-                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
-                            <span>3層アーキテクチャ（フロントエンド、バックエンド、DB）を実践的に学びました</span>
+                    </h2>
+                    <ul class="space-y-2 text-slate-700">
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-circle text-[6px] text-primary-500 mt-2"></i>
+                            <span>フロントエンド・バックエンド・データベースの3層構成アプリをDockerで構築しました</span>
                         </li>
-                        <li class="flex items-start gap-2">
-                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
-                            <span>複数のDockerfileを組み合わせて、各層を独立したコンテナとして構築しました</span>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-circle text-[6px] text-primary-500 mt-2"></i>
+                            <span>各層に適したDockerイメージ(Nginx, Node.js, PostgreSQL)を使いました</span>
                         </li>
-                        <li class="flex items-start gap-2">
-                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
-                            <span>docker-compose.ymlで全体を統合し、1つのコマンドで起動できるようにしました</span>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-circle text-[6px] text-primary-500 mt-2"></i>
+                            <span>Docker Composeで複数コンテナを連携させ、1コマンドで起動できるようにしました</span>
                         </li>
-                        <li class="flex items-start gap-2">
-                            <i class="fas fa-chevron-right text-emerald-500 mt-1"></i>
-                            <span>開発環境としてのDockerの便利さを体感しました</span>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-circle text-[6px] text-primary-500 mt-2"></i>
+                            <span>コンテナ名をDNS名として使い、簡単にコンテナ間通信を実現しました</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-circle text-[6px] text-primary-500 mt-2"></i>
+                            <span>開発環境としてのDockerの便利さ(簡単な起動・再現性・クリーンアップ)を体感しました</span>
                         </li>
                     </ul>
                 </div>
 
                 <!-- 章間ナビゲーション -->
                 <nav class="flex items-center justify-between pt-6 mt-6 border-t border-slate-200">
-                    <!-- 前へ -->
                     <a href="docker-learning-material-08.html"
                        class="group flex items-center gap-3 px-4 py-3 rounded-xl
                               bg-slate-100 hover:bg-slate-200 transition-colors">
-                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600
-                                  transition-transform group-hover:-translate-x-1"></i>
+                        <i class="fas fa-arrow-left text-slate-400 group-hover:text-slate-600 transition-transform group-hover:-translate-x-1"></i>
                         <div>
                             <span class="text-xs text-slate-500 block">前の章</span>
-                            <span class="text-slate-700 font-medium">第8章: Docker Composeで複数のコンテナを管理しよう</span>
+                            <span class="text-slate-700 font-medium">第8章: Docker Composeで複数コンテナ管理</span>
                         </div>
                     </a>
-                    <!-- 次へ -->
                     <a href="docker-learning-material-10.html"
                        class="group flex items-center gap-3 px-4 py-3 rounded-xl
                               bg-primary-500 hover:bg-primary-600 text-white transition-colors">
                         <div class="text-right">
                             <span class="text-xs text-primary-100 block">次の章</span>
-                            <span class="font-medium">第10章: トラブルシューティングと次のステップ</span>
+                            <span class="font-medium">第10章: トラブルシューティング</span>
                         </div>
                         <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
                     </a>
@@ -681,7 +975,7 @@ flowchart LR
                     本資料はAIツールを活用し、人間による編集・監修のもと作成されています。
                 </p>
                 <div class="flex items-center gap-4">
-                    <a href="https://github.com/fcircle-biz/tech_docs" class="hover:text-white transition-colors">
+                    <a href="https://github.com/fcircle-biz" class="hover:text-white transition-colors">
                         <i class="fab fa-github text-xl"></i>
                     </a>
                 </div>
