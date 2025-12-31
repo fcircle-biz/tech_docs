@@ -43,6 +43,9 @@ tech-knowledge-map.mdに基づく技術分野別の学習教材インデック�
 #### COBOL Ecosystem
 - [COBOL](./programming-languages/cobol-ecosystem/cobol/) - COBOL、メインフレーム、バッチ処理、VSAM
 
+#### C/C++ Ecosystem
+- [C/C++ Beginner](./programming-languages/c-cpp-ecosystem/cpp-beginner/) - C/C++入門、ポインタ、メモリ管理、オブジェクト指向、STL
+
 ---
 
 ### 2. Web技術 (Web Technologies)
@@ -164,7 +167,8 @@ docs/guide/
 │   ├── dotnet-ecosystem/           # VB.NET Beginner, ASP.NET (VB), ASP.NET Core (VB)
 │   ├── php-ecosystem/              # PHP
 │   ├── r-ecosystem/                # R Language Beginner
-│   └── cobol-ecosystem/            # COBOL
+│   ├── cobol-ecosystem/            # COBOL
+│   └── c-cpp-ecosystem/            # C/C++ Beginner
 ├── web-technologies/                # Web基礎技術
 │   ├── html-css/                   # HTML/CSS
 │   ├── bootstrap/                  # Bootstrap
