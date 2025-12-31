@@ -29,7 +29,10 @@ tech-knowledge-map.mdに基づく技術分野別の学習教材インデック�
 - [React](./programming-languages/javascript-ecosystem/react/) - React、コンポーネント、Hooks、状態管理
 - [Next.js](./programming-languages/javascript-ecosystem/nextjs/) - Next.js、SSR、SSG、App Router、API Routes
 
-#### .NET Ecosystem
+#### C# Ecosystem
+- [C# Beginner](./programming-languages/csharp-ecosystem/csharp-beginner/) - C#入門、基本文法、制御構文、オブジェクト指向基礎
+
+#### .NET Ecosystem (VB.NET)
 - [VB.NET Beginner](./programming-languages/dotnet-ecosystem/vbnet-beginner/) - VB.NET基礎、オブジェクト指向、.NET Framework
 - [ASP.NET (VB)](./programming-languages/dotnet-ecosystem/aspnet-vb/) - ASP.NET WebForms、VB.NET、イベント駆動
 - [ASP.NET Core (VB)](./programming-languages/dotnet-ecosystem/aspnetcore-vb/) - ASP.NET Core、VB.NET、MVC、Razor Pages
@@ -161,6 +164,7 @@ docs/guide/
 │   ├── python-ecosystem/           # Python Beginner, Django, FastAPI, Streamlit, SQLAlchemy, SQLModel
 │   ├── java-ecosystem/             # Java, Spring, JSP, JDBC, Struts, JUnit
 │   ├── javascript-ecosystem/       # JavaScript Beginner, TypeScript, React, Next.js
+│   ├── csharp-ecosystem/           # C# Beginner
 │   ├── dotnet-ecosystem/           # VB.NET Beginner, ASP.NET (VB), ASP.NET Core (VB)
 │   ├── php-ecosystem/              # PHP
 │   ├── r-ecosystem/                # R Language Beginner
