@@ -128,13 +128,14 @@
 
 - **[アジャイル開発学習ガイド](docs/guide/development-processes/agile-development/README.md)** - アジャイル開発の基礎から実践的なScrum、Kanbanまで10章完成カリキュラム
 - **[ウォーターフォール開発学習ガイド](docs/guide/development-processes/waterfall-development/README.md)** - ウォーターフォール開発の基礎から実践的なプロジェクト管理まで10章完成カリキュラム。要件定義、基本設計、詳細設計、実装、テスト、リリース・運用、品質管理、アジャイルとの比較まで体系的に学習
-- **[DevOps学習ガイド](docs/guide/development-processes/devops/README.md)** - DevOpsの基礎からCI/CD、Infrastructure as Codeまで10章完成カリキュラム
+- **[DevOps入門学習ガイド](docs/guide/development-processes/devops-beginner/README.md)** - プログラミング未経験者向けDevOps入門12章構成カリキュラム。ITとソフトウェアの世界、DevOpsの基本概念、コンピュータの仕組み、コマンドライン基礎、バージョン管理、インターネット・サーバー・開発プロセス、自動化の考え方、コンテナ技術、クラウドサービス、キャリアパスまで、身近な例を使いながら丁寧に解説
 - **[Git/GitHub学習ガイド](docs/guide/development-processes/git-github/README.md)** - Git/GitHubの基礎から実践的なバージョン管理まで15章完成カリキュラム。バージョン管理の概念理解、環境構築、コマンドライン操作（基本操作、ブランチ、マージ、プルリクエスト、トラブルシューティング）、VS Codeでの統合Git機能まで完全未経験者向けに段階的に習得
 
 ### 設計手法・モデリング
 
 - **[UML学習ガイド](docs/guide/design-modeling/software-design/uml/README.md)** - UML（統一モデリング言語）の基礎から実践的なシステム設計まで14章完成カリキュラム。無料ツール（draw.io、PlantUML）の使い方、ユースケース図、クラス図、シーケンス図、アクティビティ図、ステートマシン図、コンポーネント図、デプロイメント図、実践演習、チーム開発での活用まで完全未経験者向けに段階的に習得
 - **[ER図入門学習ガイド](docs/guide/design-modeling/data-modeling/er-diagram/README.md)** - ER図（Entity-Relationship Diagram）によるデータベース設計の基礎から実践まで15章完成カリキュラム。無料ツールdraw.ioを使用した実践的なER図作成手法、エンティティ・属性・リレーションシップの基本概念、カーディナリティ、IE記法、正規化、物理設計まで完全未経験者向けに段階的に習得
+- **[ドメイン駆動設計（DDD）入門学習ガイド](docs/guide/design-modeling/software-design/ddd/README.md)** - ドメイン駆動設計の基礎を初心者向けに段階的に学習するための16章完成カリキュラム。ユビキタス言語、ドメインモデル、エンティティ、値オブジェクト、集約、リポジトリ、ドメインサービス、ファクトリなどの戦術的パターンから、境界づけられたコンテキスト、コンテキストマップ、レイヤードアーキテクチャ、ドメインイベントなどの戦略的パターンまで、実践的な例とともに習得
 - **[要求工学学習ガイド](docs/guide/design-modeling/software-design/requirements-engineering/README.md)** - 要求工学の基礎理論から実践的な要求分析・管理まで10章完成カリキュラム
 
 ### SaaS／PaaS／アプリケーション
@@ -147,8 +148,8 @@
 
 ### 業務知識・ドメイン
 
-- **[財務・管理会計学習ガイド](docs/guide/business-domain-knowledge/finance-accounting/README.md)** - 財務・管理会計の基礎を入門者向けに段階的に学習するためのカリキュラム。会計の基本概念、取引と仕訳の基礎、財務諸表の構造、決算と会計処理、財務分析の基本、ビジネスでの活用まで6章完成。経理部門でなくても、企業活動を数字で理解し、財務諸表を正しく読み取る力を身につけることができる実践的なカリキュラム
-- **[ビジネス文書作成学習ガイド](docs/guide/business-domain-knowledge/business-docs/README.md)** - ビジネス文書作成の基礎から実践的なドキュメント作成まで10章完成カリキュラム。報告書、提案書、議事録等のビジネス文書作成スキルを体系的に習得
+- **[財務・管理会計学習ガイド](docs/guide/business-domain-knowledge/finance-accounting/README.md)** - 財務・管理会計の基礎を入門者向けに段階的に学習するための10章完成カリキュラム。会計の基本概念、簿記の基本と仕訳、財務三表（貸借対照表・損益計算書・キャッシュ・フロー計算書）の構造と読み方、決算処理と会計サイクル、財務分析（収益性・安全性・効率性・成長性）、管理会計の基礎（原価計算・予算管理）、ビジネスでの活用（損益分岐点分析・投資判断・プレゼンテーション）まで、経理部門以外の方でも企業活動を数字で理解できる実践的なカリキュラム
+- **[ビジネス文書入門学習ガイド](docs/guide/business-domain-knowledge/business-docs-intro/README.md)** - ビジネス文書作成の基礎を入門者向けに段階的に学習するための10章完成カリキュラム。ビジネス文書とは何か、敬語と言葉遣い、基本構造（5W1H、PREP法）、社内連絡・報告の書き方、ビジネスメールの基本と実践、報告書・議事録・提案書の作成、実践演習と総まとめまで、社会人1年目の方や初めてビジネス文書を書く方でも安心して取り組める内容
 
 ### 資格・認定試験
 
