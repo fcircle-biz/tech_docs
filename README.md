@@ -53,12 +53,14 @@
 #### JavaScript/Node.js
 
 - **[JavaScript学習ガイド](docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/README.md)** - プログラミング未経験者向けJavaScript入門12章構成カリキュラム
+- **[Node.js入門学習ガイド](docs/guide/programming-languages/javascript-ecosystem/nodejs-beginner/README.md)** - Node.jsの基礎をJavaScript基礎知識を持つ初心者向けに段階的に学習するためのカリキュラム。サーバーサイドJavaScriptの世界に踏み出し、モジュールシステム、非同期処理、Express、REST APIまで12章で習得
 - **[TypeScript学習ガイド](docs/guide/programming-languages/javascript-ecosystem/typescript/README.md)** - TypeScriptの基礎をプログラミング完全未経験者向けに段階的に学習するためのカリキュラム。型システムを活用した安全なコード作成を15章で完全習得
 - **[React学習ガイド](docs/guide/programming-languages/javascript-ecosystem/react/README.md)** - Reactライブラリを使用したモダンなWebアプリケーション開発の基礎を入門者向けに段階的に学習するためのカリキュラム（12章構成）
 - **[Next.js学習ガイド](docs/guide/programming-languages/javascript-ecosystem/nextjs/README.md)** - Next.jsフレームワークを使用したモダンなReactアプリケーション開発の基礎を入門者向けに段階的に学習するためのカリキュラム（15章構成）
 
 #### .NET
 
+- **[C#入門学習ガイド](docs/guide/programming-languages/csharp-ecosystem/csharp-beginner/README.md)** - プログラミング完全未経験者向けC#入門13章構成カリキュラム。Visual Studioの使い方、変数、演算子、条件分岐、繰り返し、配列、メソッド、クラス、オブジェクト指向、例外処理まで段階的に学習し、家計簿アプリ開発の総合演習で実践力を習得
 - **[VB.NET入門学習ガイド](docs/guide/programming-languages/dotnet-ecosystem/vbnet-beginner/README.md)** - プログラミング完全未経験者向けVB.NET入門12章構成カリキュラム。変数、条件分岐、繰り返し、配列、関数、クラス、オブジェクト指向など、VB.NETの基礎を段階的に学習
 - **[ASP.NET(VB.NET)学習ガイド](docs/guide/programming-languages/dotnet-ecosystem/aspnet-vb/README.md)** - ASP.NET Web Forms基礎から実践的なユーザー管理システム開発まで10章完成カリキュラム
 - **[ASP.NET Core(VB.NET)学習ガイド](docs/guide/programming-languages/dotnet-ecosystem/aspnetcore-vb/README.md)** - ASP.NET Core MVCとEntity Framework Coreを使用したモダンWebアプリケーション開発11章完成カリキュラム
@@ -67,9 +69,17 @@
 
 - **[PHP学習ガイド](docs/guide/programming-languages/php-ecosystem/php/README.md)** - PHP基礎から実践的なWebアプリケーション開発まで10章完成カリキュラム
 
+#### Ruby
+
+- **[Ruby入門学習ガイド](docs/guide/programming-languages/ruby-ecosystem/ruby/README.md)** - プログラミング完全未経験者向けRuby入門12章構成カリキュラム。変数、演算子、条件分岐、繰り返し、配列、ハッシュ、メソッド、ファイル操作、クラス、オブジェクト指向の基礎まで段階的に学習し、じゃんけんゲーム・ToDoリストなど実用的なプログラム作成で実践力を習得
+
 #### R
 
 - **[R言語入門学習ガイド](docs/guide/programming-languages/r-ecosystem/r-language-beginner/README.md)** - プログラミング未経験者向けR言語入門12章構成カリキュラム。RStudioの使い方、変数、ベクトル、データフレーム、条件分岐、繰り返し、関数、グラフ作成、ファイル操作まで段階的に学習
+
+#### C/C++
+
+- **[C/C++入門学習ガイド](docs/guide/programming-languages/c-cpp-ecosystem/cpp-beginner/README.md)** - プログラミング完全未経験者向けC/C++入門15章構成カリキュラム。C言語の基礎（変数、演算子、条件分岐、繰り返し、配列、関数、ポインタ、構造体）からC++の特徴（クラス、オブジェクト指向、STL、ファイル入出力）まで段階的に学習し、実践プログラミングで総合力を習得
 
 #### COBOL
 
@@ -106,7 +116,7 @@
 
 #### 機械学習
 
-- **[機械学習学習ガイド](docs/guide/data-ai-category/data-ai/machine-learning/README.md)** - 機械学習の基礎から実践的なモデル構築まで10章完成カリキュラム
+- **[機械学習入門学習ガイド](docs/guide/data-ai-category/data-ai/ml-beginner/README.md)** - プログラミング未経験者向け機械学習入門12章構成カリキュラム。AIの仕組み、データの見方、予測・分類・グループ分けの基礎、ノーコードAI体験、データ品質、評価指標、ビジネス活用事例、AIの限界まで段階的に学習し、機械学習の全体像を習得
 
 #### SAS
 
