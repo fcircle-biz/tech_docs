@@ -48,7 +48,7 @@ IT技術、業務知識、資格試験を網羅した包括的な学習ドメイ
 |  | **SAS** | Viya・SAS Studio・Visual Analytics | 高信頼の統計解析／ML、Python・R 連携 |
 | **生成AI／LLM** | **LLM活用基盤** | OpenAI API・Azure OpenAI・Gemini・Claude | 生成AI活用の中心技術 |
 |  | **RAG／検索** | Vector DB（FAISS・Pinecone・Weaviate） | 企業向けAIの要となる検索技術 |
-|  | **LLMアプリ開発** | LangChain・LlamaIndex | エージェント／AIアプリ構築 |
+|  | **LLMアプリ開発** | LangChain・LlamaIndex・Dify | エージェント／AIアプリ構築 |
 |  | **MLOps for LLM** | MLflow・Model registry | 運用・評価の標準化 |
 | **IoT／エッジ** | **IoT基盤技術** | MQTT・CoAP・OPC-UA | デバイス連携の基本 |
 |  | **エッジデバイス** | Raspberry Pi・Arduino | センサー／制御の実装基礎 |
@@ -76,6 +76,7 @@ IT技術、業務知識、資格試験を網羅した包括的な学習ドメイ
 | **SaaS／PaaS／アプリケーション** | **SAP** | ABAP・HANA・Fiori | 大企業 ERP のデファクト |
 |  | **Salesforce** | Apex・Lightning・AppExchange | CRM 中心にノーコード拡張 |
 |  | **Power Platform** | Power Apps・Power Automate・Dataverse | Microsoft 365 連携、市民開発 |
+|  | **ノーコード自動化** | n8n・Zapier・Make（Integromat） | ワークフロー自動化、アプリ連携 |
 |  | **Microsoft Office** | Excel／Word／Access・VBA・Office Scripts | 業務マクロからクラウド化まで一気通貫 |
 |  | **OutSystems** | Service Studio・Integration Studio・LifeTime | ローコード開発プラットフォーム |
 | **業務知識・ドメイン** | **会計・財務** | 簿記・財務諸表・管理会計・税務・IFRS | 企業の経営数値を扱う必須知識、ERP連携 |
