@@ -57,7 +57,7 @@
                                       bg-primary-100 text-primary-700 font-medium">
                                 <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
                                              bg-primary-500 text-white text-xs rounded-full">${chapter.number}</span>
-                                <span class="truncate">${chapter.title}</span>
+                                <span class="truncate">${chapter.title.replace(/^第\d+章[：:]\s*/, '')}</span>
                             </a>
                         </li>`;
             } else {
@@ -69,7 +69,7 @@
                                       text-slate-600 hover:bg-slate-100 transition-colors">
                                 <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center
                                              bg-slate-200 text-slate-600 text-xs rounded-full">${chapter.number}</span>
-                                <span class="truncate">${chapter.title}</span>
+                                <span class="truncate">${chapter.title.replace(/^第\d+章[：:]\s*/, '')}</span>
                             </a>
                         </li>`;
             }
