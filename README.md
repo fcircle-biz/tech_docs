@@ -124,6 +124,12 @@
 -   [**SAS中級学習ガイド**](docs/guide/data-ai-category/data-ai/sas-intermediate/README.md) - SAS入門修了者向け。大規模データ処理、高度な統計手法、マクロプログラミングなど実務で即戦力となる中級テクニックを10章で習得
 -   [**SAS Viya学習ガイド**](docs/guide/data-ai-category/data-ai/sas-viya/README.md) - SAS Viyaのクラウドネイティブアーキテクチャ、CASエンジン、Visual Analytics、Model Studioによる機械学習、Python/R連携、API活用まで15章完成カリキュラム
 
+#### 生成AI／LLM
+
+-   [**生成AI入門学習ガイド**](docs/guide/data-ai-category/generative-ai/README.md) - プログラミング未経験者向け生成AI入門15章構成カリキュラム。生成AIの基礎概念、ChatGPT活用、プロンプトエンジニアリング、ビジネス文書作成、画像生成AI、ハルシネーション対策、セキュリティ、倫理的利用、業務効率化の実践まで段階的に学習し、生成AIを安全かつ効果的に活用するスキルを習得
+-   [**Dify入門学習ガイド**](docs/guide/data-ai-category/data-ai/dify/README.md) - Difyを使ったノーコード/ローコードAIアプリ開発18章完成カリキュラム。Dify基礎、チャットボット作成、プロンプトオーケストレーション、RAG実装、ワークフロー設計、エージェント機能、外部API連携、アプリ公開・運用まで段階的に学習し、実務で使えるAIアプリケーション開発スキルを習得
+-   [**LangChain入門学習ガイド**](docs/guide/data-ai-category/data-ai/langchain/README.md) - LangChainを使ったLLMアプリ開発18章完成カリキュラム。LangChain基礎、プロンプトテンプレート、LCEL、Document Loaders、Embeddings、Vector Stores、RAG実装、Memory、Agent、Toolsまで段階的に学習し、Pythonで実用的なLLMアプリケーションを開発するスキルを習得
+
 ### 開発手法・プロセス
 
 -   [**アジャイル開発学習ガイド**](docs/guide/development-processes/agile-development/README.md) - アジャイル開発の基礎から実践的なScrum、Kanbanまで10章完成カリキュラム
