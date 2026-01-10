@@ -211,6 +211,7 @@ PDF形式のスライド教材をブラウザで閲覧できる教材です。
 
 -   [**React実践チュートリアル**](docs/tutorial/javascript-ecosystem/react/README.md) - Reactライブラリを使用したモダンなWebアプリケーション開発の実践的なチュートリアル（12章構成）
 -   [**Next.js実践チュートリアル**](docs/tutorial/javascript-ecosystem/nextjs/README.md) - Next.jsフレームワークを使用したモダンなReactアプリケーション開発の実践的なチュートリアル（10章構成）
+-   [**Next.js + FastAPI + PostgreSQL Todoアプリ実践チュートリアル**](docs/tutorial/javascript-ecosystem/nextjs-fastapi-todo/README.md) - Next.js（フロントエンド）、FastAPI（バックエンド）、PostgreSQL（データベース）を使用したフルスタックWebアプリケーション開発の実践的なチュートリアル。Docker環境でのデータベース構築からCRUD操作まで、Windows環境で一からTodoアプリを開発（8章構成）
 
 #### .NET
 
