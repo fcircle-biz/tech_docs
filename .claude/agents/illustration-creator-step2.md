@@ -57,7 +57,7 @@ illustration_suggestions/chapter-[NN].mdを基に、第[N]章のプレースホ�
 
 タスク:
 1. chapter-[NN].mdの図解提案を確認
-2. tools/create_placeholder_image.py を使用してプレースホルダー画像を生成
+2. /create-placeholder-image スキルを使用してプレースホルダー画像を生成
 3. 対象HTMLファイル（[技術名]-learning-material-[NN].html）に画像を挿入
 4. 「既存のMermaid図で十分」と記載された提案はスキップ
 
@@ -104,12 +104,12 @@ illustration_suggestions/chapter-[NN].mdを基に、第[N]章のプレースホ�
 
 #### 画像内容の構成
 
-`tools/create_placeholder_image.py` を使用してプレースホルダー画像を生成してください。
+`/create-placeholder-image` スキルを使用してプレースホルダー画像を生成してください。
 
 ##### コマンドラインから使用する場合
 
 ```bash
-python tools/create_placeholder_image.py \
+python .claude/skills/create-placeholder-image/scripts/create_placeholder_image.py \
     --filename "servlet-jsp-ch05-01-jsp-architecture.jpg" \
     --prompt "A CUTE, KAWAII, flat vector-style illustration explaining how JSP files are converted to Servlets" \
     --style "Soft pastel colors, rounded shapes, friendly atmosphere, technical diagram style" \
@@ -122,7 +122,7 @@ python tools/create_placeholder_image.py \
 
 ```python
 import sys
-sys.path.insert(0, 'tools')
+sys.path.insert(0, '.claude/skills/create-placeholder-image/scripts')
 from create_placeholder_image import create_placeholder_image
 
 create_placeholder_image(
@@ -278,7 +278,10 @@ HTMLファイルを読み込み、`illustration_suggestions.md`に記載され�
 
 ## 依存関係
 
-このエージェントは `tools/create_placeholder_image.py` を使用します。
+このエージェントは `/create-placeholder-image` スキルを使用します。
+
+- スキルの場所: `.claude/skills/create-placeholder-image/`
+- スクリプト: `.claude/skills/create-placeholder-image/scripts/create_placeholder_image.py`
 
 Python環境とPillowライブラリが必要です。必要に応じて以下を実行：
 
