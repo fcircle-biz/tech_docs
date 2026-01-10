@@ -13,7 +13,7 @@ color: cyan
 
 以下の2ステップを順番に実行し、完全な図解セットを生成してHTMLに挿入します：
 
-1. **step1**: HTMLガイドを分析し、`illustration_suggestions.md`を生成
+1. **step1**: HTMLガイドを分析し、`illustration_suggestions/`フォルダに章別mdファイルを生成
 2. **step2**: 各章ごとにサブエージェントを並列起動し、プレースホルダー画像生成＆HTML挿入
 
 ## 入力形式
@@ -28,7 +28,7 @@ color: cyan
 
 ## 実行手順
 
-### Step 1: illustration_suggestions.md 作成
+### Step 1: illustration_suggestions/フォルダ作成
 
 **Task toolを使用してstep1エージェントを起動：**
 
@@ -39,16 +39,16 @@ Task tool:
   prompt: "[ディレクトリパス]"
 ```
 
-**待機**: step1が完了し、`illustration_suggestions.md`が生成されるまで待つ
+**待機**: step1が完了し、`illustration_suggestions/`フォルダと章別mdファイルが生成されるまで待つ
 
-**確認**: 生成されたファイルのパスを取得（例: `/home/ichimaru/git/tech_docs/docs/guide/programming-languages/java-ecosystem/jsp/illustration_suggestions.md`）
+**確認**: 生成されたフォルダのパスを取得（例: `/home/ichimaru/git/tech_docs/docs/guide/programming-languages/java-ecosystem/jsp/illustration_suggestions`）
 
 ### Step 2: 章一覧の取得
 
-生成された`illustration_suggestions.md`を読み込み、対象となる章番号の一覧を抽出：
+生成された`illustration_suggestions/`フォルダ内のファイル一覧を取得：
 
-- `## ファイル: [技術名]-learning-material-XX.html` の形式で章を特定
-- 「既存のMermaid図で十分」のみの章はスキップ対象として記録
+- `chapter-XX.md`ファイルを検索し、対象となる章番号の一覧を抽出
+- 各章のmdファイルを確認し、「既存のMermaid図で十分」のみの章はスキップ対象として記録
 
 ### Step 3: 各章を並列でプレースホルダー生成＆HTML挿入
 
@@ -60,17 +60,17 @@ Task tool:
 Task tool 1:
   subagent_type: "illustration-creator-step2"
   description: "第2章図解生成"
-  prompt: "[illustration_suggestions.mdのフルパス] 2"
+  prompt: "[illustration_suggestionsフォルダのフルパス] 2"
 
 Task tool 2:
   subagent_type: "illustration-creator-step2"
   description: "第3章図解生成"
-  prompt: "[illustration_suggestions.mdのフルパス] 3"
+  prompt: "[illustration_suggestionsフォルダのフルパス] 3"
 
 Task tool 3:
   subagent_type: "illustration-creator-step2"
   description: "第4章図解生成"
-  prompt: "[illustration_suggestions.mdのフルパス] 4"
+  prompt: "[illustration_suggestionsフォルダのフルパス] 4"
 
 ... (最終章まで続ける)
 ```
@@ -101,8 +101,11 @@ Globツールで生成されたファイル一覧を確認し、最終報告を�
 
 ### 生成ファイル一覧
 
-#### 提案レポート
-- illustration_suggestions.md
+#### 提案レポート（illustration_suggestions/フォルダ）
+- README.md（全体サマリー）
+- chapter-01.md
+- chapter-02.md
+- ...
 
 #### プレースホルダー画像（img/フォルダ）
 - [技術名]-ch02-01-xxx.jpg
@@ -124,4 +127,4 @@ Globツールで生成されたファイル一覧を確認し、最終報告を�
 - step1完了前にstep2を開始すること
 - step2で章を1つずつ順次実行すること（必ず並列で実行）
 - 「これから実行します」と報告して終了すること（実際に完了するまで継続）
-- illustration_suggestions.mdが存在しない状態でstep2を実行すること
+- illustration_suggestions/フォルダが存在しない状態でstep2を実行すること
