@@ -1,4 +1,4 @@
-# Next.js フロントエンド学習パス
+# Next.js フルスタック学習パス
 
 このドキュメントは、Next.js + FastAPI + PostgreSQL Todoアプリチュートリアルを効果的に学習するためのロードマップです。
 
@@ -44,6 +44,33 @@
 ## Step 2: 各技術を深掘り学習
 
 チュートリアル完了後、「もっと知りたい」と思った技術から順に学習してください。
+
+### 共通基礎（全員におすすめ）
+
+| 優先度 | ガイド | 章数 | 学習期間目安 | URL |
+|--------|--------|------|-------------|-----|
+| ⭐⭐⭐ | **Webアプリ開発入門** | 全14章 | 3-5週間 | [webapp-intro/](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/webapp-intro/webapp-intro-learning-material-01.html) |
+
+チュートリアルで「なんとなく動いた」部分の理解を深める基礎知識ガイドです。
+
+#### Webアプリ開発入門 学習ガイド内容
+
+1. インターネットとWebの仕組み
+2. ネットワークの基礎知識（IPアドレス、DNS、TCP/IP）
+3. URLの構造を理解しよう
+4. クライアントとサーバー
+5. HTTPプロトコルの基本
+6. HTTPメソッドを理解しよう（GET, POST, PUT, DELETE）
+7. データ形式（JSON）
+8. REST APIの基本
+9. データベースの役割
+10. Webアプリの3層構造
+11. ローカル開発環境（localhost、ポート番号）
+12. CORSとセキュリティ基礎
+13. 開発者ツールでWebを観察しよう
+14. Webアプリ開発の全体像
+
+---
 
 ### バックエンド系（Python側をもっと理解したい場合）
 
@@ -212,6 +239,14 @@
 
 | チュートリアルで出てくる概念 | 参照先 |
 |---------------------------|--------|
+| HTTPって何？ | Webアプリ開発入門 第5章 |
+| GET/POSTって何？ | Webアプリ開発入門 第6章 |
+| JSONって何？ | Webアプリ開発入門 第7章 |
+| APIって何？ | Webアプリ開発入門 第8章 |
+| なぜデータベースが必要？ | Webアプリ開発入門 第9章 |
+| フロントエンド/バックエンドって？ | Webアプリ開発入門 第10章 |
+| `localhost:3000` の意味は？ | Webアプリ開発入門 第11章 |
+| CORSエラーが出た | Webアプリ開発入門 第12章 |
 | `docker-compose up -d` って何？ | Docker入門 第8章 |
 | `SELECT * FROM todos` の意味は？ | SQL入門 第5章 |
 | `CREATE TABLE` の書き方は？ | SQL入門 第3章 |
@@ -235,6 +270,8 @@
 ```
 チュートリアル完了
     ↓
+Webアプリ開発入門（全14章）★基礎固め
+    ↓
 JavaScript入門（全12章）
     ↓
 TypeScript（基礎 1-10章）
@@ -253,6 +290,8 @@ Next.js（全15章）
 ```
 チュートリアル完了
     ↓
+Webアプリ開発入門（全14章）★基礎固め
+    ↓
 SQL入門（全12章）
     ↓
 FastAPI（全10章）
@@ -266,6 +305,8 @@ Docker入門（全10章）
 
 ```
 チュートリアル完了
+    ↓
+Webアプリ開発入門（全14章）★基礎固め
     ↓
 JavaScript入門（全12章）
     ↓
@@ -286,6 +327,7 @@ Next.js（全15章）
 - [Next.js + FastAPI + PostgreSQL Todoアプリチュートリアル](https://fcircle-biz.github.io/tech_docs/tutorial/javascript-ecosystem/nextjs-fastapi-todo/nextjs-fastapi-todo-tutorial-01.html)
 
 ### 学習ガイド
+- [Webアプリ開発入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/webapp-intro/) ★共通基礎
 - [JavaScript入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/)
 - [TypeScript学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/)
 - [React学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/)
