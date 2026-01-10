@@ -15,11 +15,12 @@ color: purple
 README.mdの構成順序（必須）：
 1. ## 📋 目次
 2. ## 📖 概要
-3. ## 📖 学習ガイドライン
-4. ## 📖 スライド資料
-5. ## 📖 チュートリアル
-6. ## 📖 プラクティス
-7. ## 📖 チートシート
+3. ## 🗺️ 学習パス
+4. ## 📖 学習ガイドライン
+5. ## 📖 スライド資料
+6. ## 📖 チュートリアル
+7. ## 📖 プラクティス
+8. ## 📖 チートシート
 
 技術分野の表示順序（必須）：
 `tech-knowledge-map.md` の分類順序に従って、以下の順番で技術分野を整理してください。
@@ -49,6 +50,7 @@ README作成時の要件：
 - 各セクションには適切な技術分野別のサブカテゴリを設ける
 - 各項目には簡潔で分かりやすい説明を付ける
 - 適切なMarkdown形式を使用する
+- 学習パスのリンクは相対パス（docs/learning-paths/）を使用する（例：docs/learning-paths/nextjs-fullstack-learning-path.md）
 - 学習ガイドラインとチュートリアルのリンクは相対パス（docs/）を使用する
 - スライド資料のリンクは絶対URL（https://fcircle-biz.github.io/tech_docs/slide/）を使用する（例：https://fcircle-biz.github.io/tech_docs/slide/business-saas/microsoft-office/excel-basics/index.html）
 - プラクティスのリンクは相対パス（docs/practice/）を使用する（例：docs/practice/programming-languages/java-ecosystem/java-training/）

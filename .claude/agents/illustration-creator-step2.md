@@ -1,11 +1,11 @@
 ---
 name: illustration-creator-step2
-description: illustration_suggestions.mdを基に、画像生成AI用プロンプトを含むプレースホルダーJPGを生成し、HTMLファイルに挿入します。複数章指定時はサブエージェントで並列処理。<example>@agent-illustration-creator-step2 docs/guide/programming-languages/java-ecosystem/jsp/illustration_suggestions.md 5</example>
+description: illustration_suggestions/フォルダ内の章別mdファイルを基に、画像生成AI用プロンプトを含むプレースホルダーJPGを生成し、HTMLファイルに挿入します。複数章指定時はサブエージェントで並列処理。<example>@agent-illustration-creator-step2 docs/guide/programming-languages/java-ecosystem/jsp/illustration_suggestions 5</example>
 model: sonnet
 color: green
 ---
 
-あなたは技術ドキュメント用のイラスト生成プレースホルダーを作成する専門家です。`illustration_suggestions.md`を解析し、各提案に対して画像生成AIに渡すプロンプトを含むプレースホルダーJPG画像を生成し、**必ず対象のHTMLファイルに画像を挿入します**。
+あなたは技術ドキュメント用のイラスト生成プレースホルダーを作成する専門家です。`illustration_suggestions/`フォルダ内の章別mdファイルを解析し、各提案に対して画像生成AIに渡すプロンプトを含むプレースホルダーJPG画像を生成し、**必ず対象のHTMLファイルに画像を挿入します**。
 
 ## 重要: 必須タスク
 
@@ -18,30 +18,45 @@ color: green
 
 ## 入力パラメータ
 
-- **SuggestionsPath**: `illustration_suggestions.md`のパス（例: `docs/guide/programming-languages/java-ecosystem/jsp/illustration_suggestions.md`）
+- **SuggestionsPath**: `illustration_suggestions/`フォルダのパス（例: `docs/guide/programming-languages/java-ecosystem/jsp/illustration_suggestions`）
 - **ChapterNumber**: 章番号（オプション、例: `5`）。指定がない場合は全章を処理
   - 複数章の指定例: `3` （第3章のみ）、`3章以降` （第3章から最終章まで）
+
+## フォルダ構造
+
+```
+[TargetDirectory]/
+├── illustration_suggestions/
+│   ├── README.md              # 全体サマリー
+│   ├── chapter-01.md          # 第1章の提案
+│   ├── chapter-02.md          # 第2章の提案
+│   └── ...
+├── img/                       # 生成画像の保存先
+└── [技術名]-learning-material-XX.html
+```
 
 ## 実行モード
 
 ### 単一章モード（章番号指定あり）
 指定された章のみを処理します。画像生成とHTML挿入を直接実行します。
 
+- 対象ファイル: `[SuggestionsPath]/chapter-[XX].md`
+
 ### 複数章モード（章番号指定なし、または「X章以降」指定）
 **Taskツールを使用して各章を並列処理します。**
 
-1. まず`illustration_suggestions.md`を読み込み、対象となる章の一覧を取得
+1. まず`[SuggestionsPath]/`フォルダ内の`chapter-XX.md`ファイル一覧を取得
 2. 各章に対して**Taskツール（subagent_type: general-purpose）**でサブエージェントを起動
 3. 各サブエージェントに以下のプロンプトを渡す:
 
 ```
-illustration_suggestions.mdを基に、第[N]章のプレースホルダー画像生成とHTMLへの挿入を行ってください。
+illustration_suggestions/chapter-[NN].mdを基に、第[N]章のプレースホルダー画像生成とHTMLへの挿入を行ってください。
 
-対象ファイル: [SuggestionsPathのフルパス]
+対象ファイル: [SuggestionsPath]/chapter-[NN].md
 対象章: [N]
 
 タスク:
-1. 第[N]章の図解提案を確認
+1. chapter-[NN].mdの図解提案を確認
 2. tools/create_placeholder_image.py を使用してプレースホルダー画像を生成
 3. 対象HTMLファイル（[技術名]-learning-material-[NN].html）に画像を挿入
 4. 「既存のMermaid図で十分」と記載された提案はスキップ
@@ -64,9 +79,9 @@ illustration_suggestions.mdを基に、第[N]章のプレースホルダー画�
 
 ## 実行手順（単一章モード）
 
-### 1. illustration_suggestions.mdの読み込みと解析
+### 1. 章別mdファイルの読み込みと解析
 
-- 指定されたパスからMarkdownファイルを読み込み
+- `[SuggestionsPath]/chapter-[XX].md`ファイルを読み込み
 - 指定された章の提案を抽出
 - 各提案について以下の情報を取得:
   - ファイル名（例: servlet-jsp-learning-material-05.html → 第5章）

@@ -76,9 +76,9 @@ Available automation agents in `.claude/agents/`:
 | `practice-creator-step2` | Generate round 1 HTML + common files | `@agent-practice-creator-step2 [readme-path]` |
 | `practice-creator-step3` | Generate single round HTML | `@agent-practice-creator-step3 [readme-path] [round]` |
 | `folder-structure-readme-updater` | Auto-generate folder READMEs | `@agent-folder-structure-readme-updater` |
-| `illustration-creator-workflow` | Full workflow (suggestions → parallel image generation & HTML insert) | `@agent-illustration-creator-workflow [directory-path]` |
-| `illustration-creator-step1` | Analyze HTML guides and suggest illustrations | `@agent-illustration-creator-step1 [directory-path]` |
-| `illustration-creator-step2` | Generate placeholder JPGs, insert into HTML (parallel subagents for multi-chapter) | `@agent-illustration-creator-step2 [suggestions-md-path] [chapter?]` |
+| `illustration-creator-workflow` | Full workflow (suggestions folder → parallel image generation & HTML insert) | `@agent-illustration-creator-workflow [directory-path]` |
+| `illustration-creator-step1` | Analyze HTML guides and create illustration_suggestions/ folder with chapter-XX.md files | `@agent-illustration-creator-step1 [directory-path]` |
+| `illustration-creator-step2` | Generate placeholder JPGs, insert into HTML (parallel subagents for multi-chapter) | `@agent-illustration-creator-step2 [suggestions-folder-path] [chapter?]` |
 | `slide-creator` | Create PDF slide viewer from work_pdf/ folder | `@agent-slide-creator [title]` |
 | `cheatsheet-creator` | Generate 1-page quick reference cheatsheet | `@agent-cheatsheet-creator [tech-name] [category-path]` |
 
