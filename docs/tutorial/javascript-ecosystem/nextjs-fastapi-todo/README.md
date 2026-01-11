@@ -231,7 +231,7 @@ backend/
 データベースからタスクを取得して返すAPIを実装します。
 
 **学ぶこと:**
-- SQLAlchemyでのデータベース接続
+- SQLModelでのデータベース接続
 - ORM（オブジェクト関係マッピング）の基本
 - GETリクエストの処理
 - クエリパラメータによるフィルタリング
@@ -611,7 +611,7 @@ docker-compose up -d
 | Step 1 | 環境構築 | 開発ツールのセットアップ |
 | Step 2 | データベース設計 | Docker、PostgreSQL |
 | Step 3 | バックエンド基礎 | FastAPI、API |
-| Step 4 | データ取得 | SQLAlchemy、ORM |
+| Step 4 | データ取得 | SQLModel、ORM |
 | Step 5 | CRUD操作 | 作成・更新・削除 |
 | Step 6 | フロントエンド基礎 | Next.js、React |
 | Step 7 | 連携 | API通信、状態管理 |
