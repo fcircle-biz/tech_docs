@@ -16,8 +16,11 @@ const steps = [
     { number: 4, title: 'ステップ4', subtitle: 'タスク一覧表示機能', file: 'nextjs-fastapi-todo-tutorial-04.html' },
     { number: 5, title: 'ステップ5', subtitle: 'CRUD機能実装', file: 'nextjs-fastapi-todo-tutorial-05.html' },
     { number: 6, title: 'ステップ6', subtitle: 'Next.jsフロントエンド基礎', file: 'nextjs-fastapi-todo-tutorial-06.html' },
-    { number: 7, title: 'ステップ7', subtitle: 'フロント・バックエンド連携', file: 'nextjs-fastapi-todo-tutorial-07.html' },
-    { number: 8, title: 'ステップ8', subtitle: 'アプリの仕上げとまとめ', file: 'nextjs-fastapi-todo-tutorial-08.html' }
+    { number: 7, title: 'ステップ7', subtitle: 'CORS設定とタスク一覧表示', file: 'nextjs-fastapi-todo-tutorial-07.html' },
+    { number: 8, title: 'ステップ8', subtitle: 'タスク追加機能', file: 'nextjs-fastapi-todo-tutorial-08.html' },
+    { number: 9, title: 'ステップ9', subtitle: '完了切替・削除機能', file: 'nextjs-fastapi-todo-tutorial-09.html' },
+    { number: 10, title: 'ステップ10', subtitle: 'フィルター機能', file: 'nextjs-fastapi-todo-tutorial-10.html' },
+    { number: 11, title: 'ステップ11', subtitle: 'アプリの仕上げとまとめ', file: 'nextjs-fastapi-todo-tutorial-11.html' }
 ];
 
 // 現在のページを判定

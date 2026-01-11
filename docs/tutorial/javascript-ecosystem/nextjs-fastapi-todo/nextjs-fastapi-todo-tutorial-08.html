@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
-    <title>Next.js + FastAPI + PostgreSQL Todoアプリチュートリアル ステップ8 - アプリの仕上げとまとめ</title>
+    <title>Next.js + FastAPI + PostgreSQL Todoアプリチュートリアル ステップ8 - タスク追加機能</title>
 
-    <!-- ダークモード早期適用（フラッシュ防止） -->
+    <!-- ダークモード早期適用(フラッシュ防止) -->
     <script>
         (function() {
             const saved = localStorage.getItem('darkMode');
@@ -94,7 +94,7 @@
                             </div>
                             <div class="hidden sm:flex items-center gap-1">
                                 <i class="fas fa-clock text-[9px]"></i>
-                                <span>推奨 2時間</span>
+                                <span>推奨 1時間</span>
                             </div>
                             <div class="hidden lg:flex items-center gap-1">
                                 <i class="fas fa-language text-[9px]"></i>
@@ -138,11 +138,11 @@
                             ステップ8
                         </span>
                         <span class="text-sm text-slate-500">
-                            <i class="fas fa-clock mr-1"></i>所要時間: 約2時間
+                            <i class="fas fa-clock mr-1"></i>所要時間: 約1時間
                         </span>
                     </div>
-                    <h1 class="text-3xl font-bold text-slate-900 mb-2">アプリの仕上げとまとめ</h1>
-                    <p class="text-slate-600">UIを整え、エラー処理を追加して、アプリケーションを完成させます。次のステップへの案内も提供します。</p>
+                    <h1 class="text-3xl font-bold text-slate-900 mb-2">タスク追加機能</h1>
+                    <p class="text-slate-600">新しいタスクを入力して追加できる機能を実装します。</p>
                 </header>
 
                 <!-- このステップの目標 -->
@@ -158,57 +158,77 @@
                             <ul class="space-y-2">
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-caret-right text-amber-500 mt-1"></i>
-                                    <span>エラーメッセージの表示機能を追加</span>
+                                    <span>新しいタスクを入力して追加できるようにする</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-caret-right text-amber-500 mt-1"></i>
-                                    <span>ローディング状態の表示とスピナーアニメーション</span>
+                                    <span>POSTリクエストでバックエンドにデータを送信</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-caret-right text-amber-500 mt-1"></i>
-                                    <span>UIの改善（ホバーエフェクト、トランジションアニメーション）</span>
-                                </li>
-                                <li class="flex items-start gap-2 text-amber-900">
-                                    <i class="fas fa-caret-right text-amber-500 mt-1"></i>
-                                    <span>アプリ全体の動作確認とデバッグ</span>
+                                    <span>追加後に一覧を再取得して更新</span>
                                 </li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
-                <!-- 前提条件 -->
-                <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-8">
-                    <div class="flex items-start gap-3">
-                        <i class="fas fa-info-circle text-blue-500 text-lg mt-0.5"></i>
-                        <div>
-                            <h3 class="font-semibold text-blue-800 mb-2">前提条件</h3>
-                            <ul class="space-y-1 text-blue-900 text-sm">
-                                <li class="flex items-center gap-2">
-                                    <i class="fas fa-check text-blue-500"></i>
-                                    <span>ステップ7までの実装が完了していること</span>
-                                </li>
-                                <li class="flex items-center gap-2">
-                                    <i class="fas fa-check text-blue-500"></i>
-                                    <span>フロントエンドとバックエンドの連携が動作していること</span>
-                                </li>
-                                <li class="flex items-center gap-2">
-                                    <i class="fas fa-check text-blue-500"></i>
-                                    <span>基本的なCRUD操作が実装済みであること</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- セクション1: エラー表示の実装 -->
+                <!-- セクション1: タスク追加の流れ -->
                 <section class="mb-10">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-6">
-                        8.1 エラー表示の実装
+                        8.1 タスク追加の流れ
                     </h2>
                     <p class="text-slate-600 leading-relaxed mb-6">
-                        ユーザーにわかりやすくエラーを通知するために、エラーメッセージ表示機能を追加します。API呼び出しが失敗したときや、入力内容に問題があるときに表示されます。
+                        ユーザーがフォームに入力したタスクをPOSTリクエストでバックエンドに送信し、データベースに保存します。保存が成功したら、タスク一覧を再取得して画面を更新します。
+                    </p>
+
+                    <!-- Mermaid図 -->
+                    <div class="bg-white border border-slate-200 rounded-lg p-6 mb-6">
+                        <pre class="mermaid">
+sequenceDiagram
+    participant User as ユーザー
+    participant Next as Next.js<br/>フロントエンド<br/>localhost:3000
+    participant FastAPI as FastAPI<br/>バックエンド<br/>localhost:8000
+    participant DB as PostgreSQL<br/>データベース
+
+    User->>Next: タスクを入力して「追加」をクリック
+    Next->>Next: 入力チェック（空文字でないか）
+    Next->>FastAPI: POST /api/todos<br/>（title: "牛乳を買う"）
+    FastAPI->>DB: INSERT INTO todos
+    DB-->>FastAPI: 保存完了（新規タスクID返却）
+    FastAPI-->>Next: 作成したタスクを返す（JSON）
+    Next->>Next: フォームをクリア
+    Next->>FastAPI: GET /api/todos<br/>（一覧再取得）
+    FastAPI->>DB: SELECT * FROM todos
+    DB-->>FastAPI: 全タスク取得
+    FastAPI-->>Next: タスク一覧を返す（JSON）
+    Next-->>User: 更新された一覧を表示
+                        </pre>
+                    </div>
+
+                    <!-- ヒントカード -->
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-3 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-lightbulb text-blue-600 mt-1"></i>
+                            <div class="flex-1">
+                                <p class="text-blue-900 font-medium">ポイント</p>
+                                <p class="text-blue-800 text-sm mt-1">
+                                    タスクを追加したら、画面に反映するために一覧を再取得します。これにより、データベースに保存された最新の状態が画面に表示されます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- セクション2: TodoFormコンポーネントの作成 -->
+                <section class="mb-10">
+                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
+                               border-l-4 border-primary-500 pl-4 mb-6">
+                        8.2 TodoFormコンポーネントの作成
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed mb-6">
+                        タスクを入力するフォームを作成し、POSTリクエストでバックエンドに送信する機能を実装します。
                     </p>
 
                     <!-- 実装手順カード -->
@@ -217,12 +237,10 @@
                         <div class="bg-purple-100 px-6 py-3 border-b border-purple-200">
                             <h3 class="font-semibold text-purple-800 flex items-center gap-2">
                                 <i class="fas fa-hammer"></i>
-                                実装 8-1: エラー通知コンポーネントの作成
+                                実装 8-1: TodoFormコンポーネントの実装
                             </h3>
                         </div>
                         <div class="p-6">
-                            <p class="text-purple-900 mb-6">エラーメッセージを表示するコンポーネントを作成します。</p>
-
                             <!-- 手順リスト -->
                             <div class="space-y-6">
                                 <!-- 手順1 -->
@@ -230,123 +248,102 @@
                                     <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
                                                 flex items-center justify-center text-white font-bold text-sm">1</div>
                                     <div class="flex-1">
-                                        <h4 class="font-medium text-purple-800 mb-2">ErrorMessage.tsxを作成</h4>
+                                        <h4 class="font-medium text-purple-800 mb-2">TodoForm.tsxを開く</h4>
                                         <p class="text-purple-900 text-sm mb-3">
-                                            <code class="bg-purple-100 px-1 rounded">frontend/components/ErrorMessage.tsx</code> を作成します。
+                                            VS Codeで <code class="bg-purple-100 px-1 rounded">frontend/components/TodoForm.tsx</code> を開きます。
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- 手順2 -->
+                                <div class="flex gap-4">
+                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
+                                                flex items-center justify-center text-white font-bold text-sm">2</div>
+                                    <div class="flex-1">
+                                        <h4 class="font-medium text-purple-800 mb-2">フォームとPOST処理を実装</h4>
+                                        <p class="text-purple-900 text-sm mb-3">
+                                            以下のコードを実装します。フォーム送信時にAPIにPOSTリクエストを送り、成功したら一覧を再取得します。
                                         </p>
                                         <div class="code-block-wrapper">
                                             <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                                                <span class="text-slate-400 text-sm">frontend/components/ErrorMessage.tsx</span>
+                                                <span class="text-slate-400 text-sm">frontend/components/TodoForm.tsx</span>
                                                 <button class="copy-btn text-slate-400 hover:text-white" onclick="copyCode(this)">
                                                     <i class="fas fa-copy"></i>
                                                 </button>
                                             </div>
-                                            <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">// エラーメッセージ表示コンポーネント
-interface ErrorMessageProps {
-  message: string | null;
-  onClose: () => void;
+                                            <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">'use client'
+
+import { useState } from 'react'
+
+const API_BASE_URL = 'http://localhost:8000/api'
+
+type TodoFormProps = {
+  onAdd: () => void  // タスク追加後に呼び出すコールバック
 }
 
-export default function ErrorMessage({ message, onClose }: ErrorMessageProps) {
-  if (!message) return null;
+export default function TodoForm({ onAdd }: TodoFormProps) {
+  const [title, setTitle] = useState('')  // 入力されたタスクタイトル
+  const [submitting, setSubmitting] = useState(false)  // 送信中かどうか
+
+  // フォーム送信時の処理
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()  // ページリロードを防ぐ
+
+    // 入力チェック
+    if (!title.trim()) {
+      alert('タスクを入力してください')
+      return
+    }
+
+    setSubmitting(true)
+    try {
+      // POSTリクエストでタスクを追加
+      const response = await fetch(`${API_BASE_URL}/todos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title: title.trim() }),
+      })
+
+      if (!response.ok) {
+        throw new Error('タスクの追加に失敗しました')
+      }
+
+      setTitle('')  // フォームをクリア
+      onAdd()  // 一覧を再取得
+    } catch (error) {
+      console.error('エラー:', error)
+      alert('タスクの追加に失敗しました')
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
-    &lt;div className="fixed top-20 right-4 max-w-md bg-red-50 border border-red-200 rounded-lg shadow-lg p-4 animate-slide-in-right"&gt;
-      &lt;div className="flex items-start gap-3"&gt;
-        &lt;i className="fas fa-exclamation-circle text-red-500 text-lg mt-0.5"&gt;&lt;/i&gt;
-        &lt;div className="flex-1"&gt;
-          &lt;p className="text-red-800 font-medium"&gt;エラー&lt;/p&gt;
-          &lt;p className="text-red-700 text-sm mt-1"&gt;{message}&lt;/p&gt;
-        &lt;/div&gt;
+    &lt;form onSubmit={handleSubmit} className="mb-6"&gt;
+      &lt;div className="flex gap-2"&gt;
+        &lt;input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="新しいタスクを入力..."
+          className="flex-1 px-4 py-2 border border-slate-300 rounded-lg
+                     focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          disabled={submitting}
+        /&gt;
         &lt;button
-          onClick={onClose}
-          className="text-red-400 hover:text-red-600 transition-colors"
+          type="submit"
+          disabled={submitting}
+          className="px-6 py-2 bg-emerald-500 text-white rounded-lg
+                     hover:bg-emerald-600 disabled:bg-slate-300
+                     transition-colors font-medium"
         &gt;
-          &lt;i className="fas fa-times"&gt;&lt;/i&gt;
+          {submitting ? '追加中...' : '追加'}
         &lt;/button&gt;
       &lt;/div&gt;
-    &lt;/div&gt;
-  );
-}</code></pre>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 手順2 -->
-                                <div class="flex gap-4">
-                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
-                                                flex items-center justify-center text-white font-bold text-sm">2</div>
-                                    <div class="flex-1">
-                                        <h4 class="font-medium text-purple-800 mb-2">page.tsxにエラー状態を追加</h4>
-                                        <p class="text-purple-900 text-sm mb-3">
-                                            メインページにエラー状態管理を追加します。
-                                        </p>
-                                        <div class="code-block-wrapper">
-                                            <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                                                <span class="text-slate-400 text-sm">frontend/app/page.tsx（一部抜粋）</span>
-                                                <button class="copy-btn text-slate-400 hover:text-white" onclick="copyCode(this)">
-                                                    <i class="fas fa-copy"></i>
-                                                </button>
-                                            </div>
-                                            <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">// エラーメッセージコンポーネントをインポート
-import ErrorMessage from '@/components/ErrorMessage';
-
-export default function Home() {
-  const [error, setError] = useState&lt;string | null&gt;(null);
-
-  // API呼び出し時にエラーハンドリング
-  const fetchTodos = async () => {
-    try {
-      const response = await fetch('http://localhost:8000/api/todos');
-      if (!response.ok) throw new Error('タスクの取得に失敗しました');
-      const data = await response.json();
-      setTodos(data);
-      setError(null); // 成功時はエラーをクリア
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '不明なエラーが発生しました');
-    }
-  };
-
-  return (
-    &lt;&gt;
-      &lt;ErrorMessage message={error} onClose={() => setError(null)} /&gt;
-      {/* 既存のコンテンツ */}
-    &lt;/&gt;
-  );
-}</code></pre>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 手順3 -->
-                                <div class="flex gap-4">
-                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
-                                                flex items-center justify-center text-white font-bold text-sm">3</div>
-                                    <div class="flex-1">
-                                        <h4 class="font-medium text-purple-800 mb-2">アニメーションを追加</h4>
-                                        <p class="text-purple-900 text-sm mb-3">
-                                            <code class="bg-purple-100 px-1 rounded">frontend/app/globals.css</code> にスライドインアニメーションを追加します。
-                                        </p>
-                                        <div class="code-block-wrapper">
-                                            <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                                                <span class="text-slate-400 text-sm">frontend/app/globals.css（追加部分）</span>
-                                                <button class="copy-btn text-slate-400 hover:text-white" onclick="copyCode(this)">
-                                                    <i class="fas fa-copy"></i>
-                                                </button>
-                                            </div>
-                                            <pre class="!mt-0 !rounded-t-none"><code class="language-css">@keyframes slide-in-right {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-.animate-slide-in-right {
-  animation: slide-in-right 0.3s ease-out;
+    &lt;/form&gt;
+  )
 }</code></pre>
                                         </div>
                                     </div>
@@ -354,16 +351,33 @@ export default function Home() {
                             </div>
                         </div>
                     </div>
+
+                    <!-- 解説カード -->
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <div class="flex-1">
+                                <p class="text-blue-900 font-medium">コードのポイント</p>
+                                <ul class="text-blue-800 text-sm mt-2 space-y-1">
+                                    <li><strong>useState:</strong> 入力値（title）と送信中フラグ（submitting）の状態管理</li>
+                                    <li><strong>handleSubmit:</strong> フォーム送信時にPOSTリクエストを送信</li>
+                                    <li><strong>入力チェック:</strong> 空文字の場合はアラートを表示して送信しない</li>
+                                    <li><strong>onAdd():</strong> 追加成功後にページ側で一覧を再取得する</li>
+                                    <li><strong>disabled:</strong> 送信中はボタンと入力欄を無効化（二重送信防止）</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </section>
 
-                <!-- セクション2: ローディング表示の追加 -->
+                <!-- セクション3: page.tsxの更新 -->
                 <section class="mb-10">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-6">
-                        8.2 ローディング表示の追加
+                        8.3 page.tsxの更新
                     </h2>
                     <p class="text-slate-600 leading-relaxed mb-6">
-                        データ取得中であることをユーザーに知らせるために、ローディングスピナーを表示します。
+                        TodoFormコンポーネントをページに組み込み、タスク追加後に一覧を再取得する処理を追加します。
                     </p>
 
                     <!-- 実装手順カード -->
@@ -372,7 +386,7 @@ export default function Home() {
                         <div class="bg-purple-100 px-6 py-3 border-b border-purple-200">
                             <h3 class="font-semibold text-purple-800 flex items-center gap-2">
                                 <i class="fas fa-hammer"></i>
-                                実装 8-2: ローディングスピナーの実装
+                                実装 8-2: page.tsxにTodoFormを組み込む
                             </h3>
                         </div>
                         <div class="p-6">
@@ -383,27 +397,10 @@ export default function Home() {
                                     <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
                                                 flex items-center justify-center text-white font-bold text-sm">1</div>
                                     <div class="flex-1">
-                                        <h4 class="font-medium text-purple-800 mb-2">Loading.tsxを作成</h4>
+                                        <h4 class="font-medium text-purple-800 mb-2">page.tsxを開く</h4>
                                         <p class="text-purple-900 text-sm mb-3">
-                                            ローディングスピナーコンポーネントを作成します。
+                                            VS Codeで <code class="bg-purple-100 px-1 rounded">frontend/app/page.tsx</code> を開きます。
                                         </p>
-                                        <div class="code-block-wrapper">
-                                            <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                                                <span class="text-slate-400 text-sm">frontend/components/Loading.tsx</span>
-                                                <button class="copy-btn text-slate-400 hover:text-white" onclick="copyCode(this)">
-                                                    <i class="fas fa-copy"></i>
-                                                </button>
-                                            </div>
-                                            <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">// ローディングスピナーコンポーネント
-export default function Loading() {
-  return (
-    &lt;div className="flex flex-col items-center justify-center py-12"&gt;
-      &lt;div className="w-16 h-16 border-4 border-emerald-200 border-t-emerald-500 rounded-full animate-spin"&gt;&lt;/div&gt;
-      &lt;p className="mt-4 text-slate-600"&gt;読み込み中...&lt;/p&gt;
-    &lt;/div&gt;
-  );
-}</code></pre>
-                                        </div>
                                     </div>
                                 </div>
 
@@ -412,46 +409,81 @@ export default function Loading() {
                                     <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
                                                 flex items-center justify-center text-white font-bold text-sm">2</div>
                                     <div class="flex-1">
-                                        <h4 class="font-medium text-purple-800 mb-2">ローディング状態を管理</h4>
+                                        <h4 class="font-medium text-purple-800 mb-2">TodoFormを組み込む</h4>
                                         <p class="text-purple-900 text-sm mb-3">
-                                            page.tsxでローディング状態を管理し、表示を切り替えます。
+                                            以下のコードに更新します。TodoFormコンポーネントを追加し、onAddプロパティにfetchTodos関数を渡します。
                                         </p>
                                         <div class="code-block-wrapper">
                                             <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                                                <span class="text-slate-400 text-sm">frontend/app/page.tsx（一部抜粋）</span>
+                                                <span class="text-slate-400 text-sm">frontend/app/page.tsx</span>
                                                 <button class="copy-btn text-slate-400 hover:text-white" onclick="copyCode(this)">
                                                     <i class="fas fa-copy"></i>
                                                 </button>
                                             </div>
-                                            <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">import Loading from '@/components/Loading';
+                                            <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">'use client'
+
+import { useState, useEffect } from 'react'
+import TodoList from '@/components/TodoList'
+import TodoForm from '@/components/TodoForm'
+
+const API_BASE_URL = 'http://localhost:8000/api'
+
+type Todo = {
+  id: number
+  title: string
+  completed: boolean
+  created_at: string
+  updated_at: string
+}
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [todos, setTodos] = useState&lt;Todo[]&gt;([])
+  const [loading, setLoading] = useState(true)
 
+  // タスク一覧を取得する関数
   const fetchTodos = async () => {
-    setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/api/todos');
-      if (!response.ok) throw new Error('タスクの取得に失敗しました');
-      const data = await response.json();
-      setTodos(data);
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '不明なエラーが発生しました');
+      const response = await fetch(`${API_BASE_URL}/todos`)
+      if (!response.ok) {
+        throw new Error('タスク一覧の取得に失敗しました')
+      }
+      const data = await response.json()
+      setTodos(data)
+    } catch (error) {
+      console.error('エラー:', error)
+      alert('タスク一覧の取得に失敗しました')
     } finally {
-      setIsLoading(false);
+      setLoading(false)
     }
-  };
+  }
+
+  // 初回レンダリング時にタスク一覧を取得
+  useEffect(() => {
+    fetchTodos()
+  }, [])
 
   return (
-    &lt;div&gt;
-      {isLoading ? (
-        &lt;Loading /&gt;
-      ) : (
-        &lt;TodoList todos={todos} /&gt;
-      )}
+    &lt;div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4"&gt;
+      &lt;div className="max-w-2xl mx-auto"&gt;
+        &lt;h1 className="text-3xl font-bold text-center text-slate-800 mb-8"&gt;
+          Todoリスト
+        &lt;/h1&gt;
+
+        {/* タスク追加フォーム */}
+        &lt;TodoForm onAdd={fetchTodos} /&gt;
+
+        {/* ローディング表示 */}
+        {loading ? (
+          &lt;div className="text-center py-8"&gt;
+            &lt;div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-500 border-t-transparent"&gt;&lt;/div&gt;
+            &lt;p className="text-slate-600 mt-2"&gt;読み込み中...&lt;/p&gt;
+          &lt;/div&gt;
+        ) : (
+          &lt;TodoList todos={todos} /&gt;
+        )}
+      &lt;/div&gt;
     &lt;/div&gt;
-  );
+  )
 }</code></pre>
                                         </div>
                                     </div>
@@ -459,124 +491,29 @@ export default function Home() {
                             </div>
                         </div>
                     </div>
-                </section>
 
-                <!-- セクション3: UIの改善 -->
-                <section class="mb-10">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-6">
-                        8.3 UIの改善（アニメーションとホバーエフェクト）
-                    </h2>
-                    <p class="text-slate-600 leading-relaxed mb-6">
-                        より使いやすく魅力的なUIにするため、アニメーションとホバーエフェクトを追加します。
-                    </p>
-
-                    <!-- 実装手順カード -->
-                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
-                                rounded-xl overflow-hidden mb-8">
-                        <div class="bg-purple-100 px-6 py-3 border-b border-purple-200">
-                            <h3 class="font-semibold text-purple-800 flex items-center gap-2">
-                                <i class="fas fa-hammer"></i>
-                                実装 8-3: UI改善の適用
-                            </h3>
-                        </div>
-                        <div class="p-6">
-                            <!-- 手順リスト -->
-                            <div class="space-y-6">
-                                <!-- 手順1 -->
-                                <div class="flex gap-4">
-                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
-                                                flex items-center justify-center text-white font-bold text-sm">1</div>
-                                    <div class="flex-1">
-                                        <h4 class="font-medium text-purple-800 mb-2">TodoItemにホバーエフェクトを追加</h4>
-                                        <p class="text-purple-900 text-sm mb-3">
-                                            タスクアイテムにマウスを乗せたときの効果を追加します。
-                                        </p>
-                                        <div class="code-block-wrapper">
-                                            <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                                                <span class="text-slate-400 text-sm">frontend/components/TodoItem.tsx（一部抜粋）</span>
-                                                <button class="copy-btn text-slate-400 hover:text-white" onclick="copyCode(this)">
-                                                    <i class="fas fa-copy"></i>
-                                                </button>
-                                            </div>
-                                            <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">export default function TodoItem({ todo, onUpdate, onDelete }: TodoItemProps) {
-  return (
-    &lt;div className="flex items-center gap-3 p-4 bg-white rounded-lg border border-slate-200
-                    hover:shadow-md hover:border-emerald-300 transition-all duration-200"&gt;
-      {/* チェックボックス */}
-      &lt;input
-        type="checkbox"
-        checked={todo.completed}
-        onChange={() => onUpdate(todo.id, { completed: !todo.completed })}
-        className="w-5 h-5 text-emerald-500 rounded focus:ring-emerald-500 cursor-pointer"
-      /&gt;
-
-      {/* タスクタイトル */}
-      &lt;p className={`flex-1 ${todo.completed ? 'line-through text-slate-400' : 'text-slate-700'}`}&gt;
-        {todo.title}
-      &lt;/p&gt;
-
-      {/* 削除ボタン */}
-      &lt;button
-        onClick={() => onDelete(todo.id)}
-        className="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-      &gt;
-        &lt;i className="fas fa-trash"&gt;&lt;/i&gt;
-      &lt;/button&gt;
-    &lt;/div&gt;
-  );
-}</code></pre>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 手順2 -->
-                                <div class="flex gap-4">
-                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
-                                                flex items-center justify-center text-white font-bold text-sm">2</div>
-                                    <div class="flex-1">
-                                        <h4 class="font-medium text-purple-800 mb-2">フェードインアニメーションを追加</h4>
-                                        <p class="text-purple-900 text-sm mb-3">
-                                            タスクリスト表示時にフェードイン効果を追加します。
-                                        </p>
-                                        <div class="code-block-wrapper">
-                                            <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                                                <span class="text-slate-400 text-sm">frontend/app/globals.css（追加部分）</span>
-                                                <button class="copy-btn text-slate-400 hover:text-white" onclick="copyCode(this)">
-                                                    <i class="fas fa-copy"></i>
-                                                </button>
-                                            </div>
-                                            <pre class="!mt-0 !rounded-t-none"><code class="language-css">@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.4s ease-out;
-}</code></pre>
-                                        </div>
-                                    </div>
-                                </div>
+                    <!-- 解説カード -->
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                            <div class="flex-1">
+                                <p class="text-blue-900 font-medium">コードのポイント</p>
+                                <ul class="text-blue-800 text-sm mt-2 space-y-1">
+                                    <li><strong>fetchTodos:</strong> タスク一覧を取得する関数（TodoFormのonAddに渡す）</li>
+                                    <li><strong>&lt;TodoForm onAdd={fetchTodos} /&gt;:</strong> タスク追加後にfetchTodosが呼ばれる</li>
+                                    <li><strong>loading:</strong> 初回読み込み中はローディング表示</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- セクション4: 動作確認とデバッグ -->
+                <!-- セクション4: 動作確認 -->
                 <section class="mb-10">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-6">
-                        8.4 動作確認とデバッグ
+                        8.4 動作確認
                     </h2>
-                    <p class="text-slate-600 leading-relaxed mb-6">
-                        完成したアプリケーション全体の動作を確認し、問題がないかチェックします。
-                    </p>
 
                     <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200
                                 rounded-xl p-6 mb-6">
@@ -586,123 +523,117 @@ export default function Home() {
                                 <i class="fas fa-play text-white"></i>
                             </div>
                             <div class="flex-1">
-                                <h3 class="text-lg font-semibold text-emerald-800 mb-3">完成したTodoアプリの動作確認</h3>
-                                <p class="text-emerald-900 mb-4">以下の手順で、すべての機能が正しく動作することを確認してください。</p>
+                                <h3 class="text-lg font-semibold text-emerald-800 mb-3">タスク追加機能の動作確認</h3>
+                                <p class="text-emerald-900 mb-4">フロントエンドとバックエンドが起動していることを確認してから、ブラウザで動作を確認します。</p>
 
                                 <div class="space-y-4">
-                                    <div class="bg-emerald-100 rounded-lg p-4 border border-emerald-200">
-                                        <h4 class="font-medium text-emerald-800 mb-2">
-                                            <i class="fas fa-check-circle mr-2"></i>確認項目
-                                        </h4>
-                                        <ol class="list-decimal pl-5 space-y-2 text-emerald-900 text-sm">
-                                            <li>新しいタスクを追加できる</li>
-                                            <li>タスクの完了/未完了を切り替えられる</li>
-                                            <li>タスクを削除できる</li>
-                                            <li>フィルター機能が動作する（すべて/未完了/完了済み）</li>
-                                            <li>エラーが発生したときにエラーメッセージが表示される</li>
-                                            <li>データ読み込み中にローディングスピナーが表示される</li>
-                                            <li>タスクにマウスを乗せたときにホバーエフェクトが表示される</li>
-                                        </ol>
+                                    <div>
+                                        <h4 class="font-medium text-emerald-800 mb-2">1. 開発サーバーが起動していることを確認</h4>
+                                        <ul class="list-disc pl-5 text-emerald-900 text-sm space-y-1">
+                                            <li>バックエンド: <code class="bg-emerald-100 px-1 rounded">http://localhost:8000</code></li>
+                                            <li>フロントエンド: <code class="bg-emerald-100 px-1 rounded">http://localhost:3000</code></li>
+                                        </ul>
                                     </div>
+
+                                    <div>
+                                        <h4 class="font-medium text-emerald-800 mb-2">2. ブラウザで確認</h4>
+                                        <p class="text-emerald-900 text-sm mb-2">
+                                            <code class="bg-emerald-100 px-1 rounded">http://localhost:3000</code> を開いて以下を確認します。
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <h4 class="font-medium text-emerald-800 mb-2 mt-6">
+                                    <i class="fas fa-check-circle mr-2"></i>確認項目
+                                </h4>
+                                <div class="bg-emerald-100 rounded-lg p-4 border border-emerald-200">
+                                    <ul class="space-y-2 text-emerald-900 text-sm">
+                                        <li>✓ 入力欄に「牛乳を買う」と入力して「追加」ボタンをクリック</li>
+                                        <li>✓ タスクが一覧に追加される</li>
+                                        <li>✓ 入力欄がクリアされる</li>
+                                        <li>✓ 空文字で追加しようとするとアラートが表示される</li>
+                                        <li>✓ 追加中は「追加中...」と表示され、ボタンが無効化される</li>
+                                        <li>✓ ページをリロードしても追加したタスクが表示される</li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- 次のステップへの案内 -->
+                <!-- トラブルシューティング -->
                 <section class="mb-10">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-6">
-                        8.5 次のステップへの案内
-                    </h2>
-                    <p class="text-slate-600 leading-relaxed mb-6">
-                        おめでとうございます！Todoアプリが完成しました。ここからさらに学習を進めるためのアイデアを紹介します。
-                    </p>
-
-                    <div class="grid md:grid-cols-2 gap-6 mb-6">
-                        <!-- 機能追加のアイデア -->
-                        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
-                            <div class="flex items-center gap-3 mb-4">
-                                <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-lightbulb text-white"></i>
+                    <div class="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200
+                                rounded-xl overflow-hidden">
+                        <div class="bg-orange-100 px-6 py-3 border-b border-orange-200">
+                            <h3 class="font-semibold text-orange-800 flex items-center gap-2">
+                                <i class="fas fa-tools"></i>
+                                トラブルシューティング
+                            </h3>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <!-- エラー1 -->
+                            <details class="group">
+                                <summary class="flex items-center gap-3 cursor-pointer list-none
+                                               p-3 rounded-lg bg-white border border-orange-200
+                                               hover:bg-orange-50 transition-colors">
+                                    <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                    <span class="font-medium text-orange-800">「追加」ボタンをクリックしても反応しない</span>
+                                    <i class="fas fa-chevron-down ml-auto text-orange-400
+                                              transition-transform group-open:rotate-180"></i>
+                                </summary>
+                                <div class="mt-3 pl-10 text-orange-900">
+                                    <p class="mb-2"><strong>原因:</strong> バックエンドが起動していない、またはCORS設定が正しくありません。</p>
+                                    <p class="mb-2"><strong>解決方法:</strong></p>
+                                    <ol class="list-decimal pl-5 space-y-1 text-sm">
+                                        <li>FastAPIサーバーが起動しているか確認（http://localhost:8000/docs）</li>
+                                        <li>ブラウザのコンソール（F12キー）でエラーメッセージを確認</li>
+                                        <li>main.pyにCORS設定が追加されているか確認</li>
+                                    </ol>
                                 </div>
-                                <h3 class="font-semibold text-blue-800">機能を追加してみる</h3>
-                            </div>
-                            <ul class="space-y-2 text-blue-900 text-sm">
-                                <li class="flex items-start gap-2">
-                                    <i class="fas fa-caret-right text-blue-500 mt-1"></i>
-                                    <span>期限（締め切り日）を追加</span>
-                                </li>
-                                <li class="flex items-start gap-2">
-                                    <i class="fas fa-caret-right text-blue-500 mt-1"></i>
-                                    <span>カテゴリ分け機能を追加</span>
-                                </li>
-                                <li class="flex items-start gap-2">
-                                    <i class="fas fa-caret-right text-blue-500 mt-1"></i>
-                                    <span>検索機能を追加</span>
-                                </li>
-                                <li class="flex items-start gap-2">
-                                    <i class="fas fa-caret-right text-blue-500 mt-1"></i>
-                                    <span>優先度の設定機能</span>
-                                </li>
-                            </ul>
-                        </div>
+                            </details>
 
-                        <!-- デザインの改善 -->
-                        <div class="bg-gradient-to-br from-purple-50 to-fuchsia-50 border border-purple-200 rounded-xl p-6">
-                            <div class="flex items-center gap-3 mb-4">
-                                <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-palette text-white"></i>
+                            <!-- エラー2 -->
+                            <details class="group">
+                                <summary class="flex items-center gap-3 cursor-pointer list-none
+                                               p-3 rounded-lg bg-white border border-orange-200
+                                               hover:bg-orange-50 transition-colors">
+                                    <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                    <span class="font-medium text-orange-800">タスクを追加しても一覧に表示されない</span>
+                                    <i class="fas fa-chevron-down ml-auto text-orange-400
+                                              transition-transform group-open:rotate-180"></i>
+                                </summary>
+                                <div class="mt-3 pl-10 text-orange-900">
+                                    <p class="mb-2"><strong>原因:</strong> onAdd()が呼ばれていない、またはfetchTodosに問題があります。</p>
+                                    <p class="mb-2"><strong>解決方法:</strong></p>
+                                    <ol class="list-decimal pl-5 space-y-1 text-sm">
+                                        <li>TodoFormコンポーネントでonAdd()が呼ばれているか確認</li>
+                                        <li>page.tsxのfetchTodos関数が正しく実装されているか確認</li>
+                                        <li>ブラウザをリロードして一覧が更新されるか確認（手動で確認）</li>
+                                    </ol>
                                 </div>
-                                <h3 class="font-semibold text-purple-800">デザインを変更してみる</h3>
-                            </div>
-                            <ul class="space-y-2 text-purple-900 text-sm">
-                                <li class="flex items-start gap-2">
-                                    <i class="fas fa-caret-right text-purple-500 mt-1"></i>
-                                    <span>テーマカラーを変更</span>
-                                </li>
-                                <li class="flex items-start gap-2">
-                                    <i class="fas fa-caret-right text-purple-500 mt-1"></i>
-                                    <span>ダークモードを実装</span>
-                                </li>
-                                <li class="flex items-start gap-2">
-                                    <i class="fas fa-caret-right text-purple-500 mt-1"></i>
-                                    <span>レスポンシブデザインの改善</span>
-                                </li>
-                                <li class="flex items-start gap-2">
-                                    <i class="fas fa-caret-right text-purple-500 mt-1"></i>
-                                    <span>アニメーションを追加</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                            </details>
 
-                    <!-- 次に学ぶべき技術 -->
-                    <div class="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-xl p-6">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-graduation-cap text-white"></i>
-                            </div>
-                            <h3 class="font-semibold text-orange-800">次に学ぶべき技術</h3>
-                        </div>
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <h4 class="font-medium text-orange-800 mb-2">ユーザー認証</h4>
-                                <p class="text-orange-900 text-sm">NextAuth.jsを使ったログイン機能の実装</p>
-                            </div>
-                            <div>
-                                <h4 class="font-medium text-orange-800 mb-2">TypeScript</h4>
-                                <p class="text-orange-900 text-sm">型を使った安全な開発手法</p>
-                            </div>
-                            <div>
-                                <h4 class="font-medium text-orange-800 mb-2">テスト</h4>
-                                <p class="text-orange-900 text-sm">JestやPytestを使った自動テスト</p>
-                            </div>
-                            <div>
-                                <h4 class="font-medium text-orange-800 mb-2">デプロイ</h4>
-                                <p class="text-orange-900 text-sm">VercelやAWSへの公開方法</p>
-                            </div>
+                            <!-- エラー3 -->
+                            <details class="group">
+                                <summary class="flex items-center gap-3 cursor-pointer list-none
+                                               p-3 rounded-lg bg-white border border-orange-200
+                                               hover:bg-orange-50 transition-colors">
+                                    <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                                    <span class="font-medium text-orange-800">「タスクの追加に失敗しました」と表示される</span>
+                                    <i class="fas fa-chevron-down ml-auto text-orange-400
+                                              transition-transform group-open:rotate-180"></i>
+                                </summary>
+                                <div class="mt-3 pl-10 text-orange-900">
+                                    <p class="mb-2"><strong>原因:</strong> バックエンドのPOSTエンドポイントに問題があります。</p>
+                                    <p class="mb-2"><strong>解決方法:</strong></p>
+                                    <ol class="list-decimal pl-5 space-y-1 text-sm">
+                                        <li>Swagger UI（http://localhost:8000/docs）でPOST /api/todosが動作するか確認</li>
+                                        <li>リクエストボディが正しいJSON形式か確認</li>
+                                        <li>FastAPIのターミナルでエラーログを確認</li>
+                                    </ol>
+                                </div>
+                            </details>
                         </div>
                     </div>
                 </section>
@@ -726,7 +657,7 @@ export default function Home() {
                                                class="w-5 h-5 rounded border-blue-300 text-blue-500
                                                       focus:ring-blue-500 cursor-pointer">
                                         <label for="check1" class="text-blue-900 cursor-pointer">
-                                            エラーメッセージが正しく表示される
+                                            TodoFormコンポーネントが実装されている
                                         </label>
                                     </li>
                                     <li class="checkbox-item flex items-center gap-3">
@@ -734,7 +665,7 @@ export default function Home() {
                                                class="w-5 h-5 rounded border-blue-300 text-blue-500
                                                       focus:ring-blue-500 cursor-pointer">
                                         <label for="check2" class="text-blue-900 cursor-pointer">
-                                            データ読み込み中にローディングスピナーが表示される
+                                            page.tsxにTodoFormが組み込まれている
                                         </label>
                                     </li>
                                     <li class="checkbox-item flex items-center gap-3">
@@ -742,7 +673,7 @@ export default function Home() {
                                                class="w-5 h-5 rounded border-blue-300 text-blue-500
                                                       focus:ring-blue-500 cursor-pointer">
                                         <label for="check3" class="text-blue-900 cursor-pointer">
-                                            タスクアイテムにホバーエフェクトが適用されている
+                                            タスクを入力して追加できる
                                         </label>
                                     </li>
                                     <li class="checkbox-item flex items-center gap-3">
@@ -750,7 +681,7 @@ export default function Home() {
                                                class="w-5 h-5 rounded border-blue-300 text-blue-500
                                                       focus:ring-blue-500 cursor-pointer">
                                         <label for="check4" class="text-blue-900 cursor-pointer">
-                                            すべての機能（追加・完了切替・削除・フィルター）が正常に動作する
+                                            追加後に一覧が更新される
                                         </label>
                                     </li>
                                     <li class="checkbox-item flex items-center gap-3">
@@ -758,7 +689,7 @@ export default function Home() {
                                                class="w-5 h-5 rounded border-blue-300 text-blue-500
                                                       focus:ring-blue-500 cursor-pointer">
                                         <label for="check5" class="text-blue-900 cursor-pointer">
-                                            次のステップで学ぶべき内容を理解した
+                                            空文字を追加しようとするとアラートが表示される
                                         </label>
                                     </li>
                                 </ul>
@@ -767,37 +698,26 @@ export default function Home() {
                     </div>
                 </section>
 
-                <!-- おめでとうございますカード -->
-                <section class="mb-10">
-                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-8 text-center">
-                        <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-trophy text-white text-4xl"></i>
-                        </div>
-                        <h2 class="text-2xl font-bold text-green-800 mb-3">おめでとうございます！</h2>
-                        <p class="text-green-900 mb-4">
-                            Next.js + FastAPI + PostgreSQL を使ったフルスタックTodoアプリが完成しました。<br>
-                            プログラミングの世界へようこそ！
-                        </p>
-                        <p class="text-green-800 text-sm">
-                            これからも学び続け、さらに素晴らしいアプリケーションを作っていきましょう。
-                        </p>
-                    </div>
-                </section>
-
                 <!-- ステップ間ナビゲーション -->
                 <nav class="flex items-center justify-between pt-8 mt-8 border-t border-slate-200">
                     <a href="nextjs-fastapi-todo-tutorial-07.html"
                        class="group flex items-center gap-3 px-5 py-3 rounded-xl
-                              bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+                              bg-white hover:bg-slate-50 text-slate-700 transition-colors border border-slate-200">
                         <i class="fas fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
-                        <div>
+                        <div class="text-left">
                             <span class="text-xs text-slate-500 block">前のステップ</span>
-                            <span class="font-medium">フロントエンドとバックエンドの連携</span>
+                            <span class="font-medium">CORS設定とタスク一覧表示</span>
                         </div>
                     </a>
-                    <div class="text-slate-400 text-sm">
-                        次のステップなし<i class="fas fa-arrow-right ml-2"></i>
-                    </div>
+                    <a href="nextjs-fastapi-todo-tutorial-09.html"
+                       class="group flex items-center gap-3 px-5 py-3 rounded-xl
+                              bg-primary-500 hover:bg-primary-600 text-white transition-colors shadow-lg shadow-primary-500/30">
+                        <div class="text-right">
+                            <span class="text-xs text-primary-100 block">次のステップ</span>
+                            <span class="font-medium">タスクの完了切替・削除機能</span>
+                        </div>
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
                 </nav>
             </div>
         </main>
