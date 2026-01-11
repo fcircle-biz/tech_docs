@@ -76,9 +76,25 @@
 
 | 優先度 | ガイド | 章数 | 学習期間目安 | URL |
 |--------|--------|------|-------------|-----|
+| ⭐⭐⭐ | **Python入門** | 全12章 | 5-7週間 | [python-beginner/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python-beginner/python-beginner-learning-material-01.html) |
 | ⭐⭐⭐ | **FastAPI** | 全10章 | 7-10週間 | [fastapi/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/fastapi/fastapi-learning-material-01.html) |
 | ⭐⭐⭐ | **SQL入門** | 全12章 | 7-9週間 | [sql/](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-01.html) |
 | ⭐⭐ | **SQLModel** | 全10章 | 7-9週間 | [sqlmodel/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/sqlmodel/sqlmodel-learning-material-01.html) |
+
+#### Python入門 学習ガイド内容
+
+1. Pythonとは？プログラミングを始めよう
+2. 環境構築 - Pythonをインストールして最初のプログラムを動かそう
+3. 変数とデータ型 - 値を入れる「箱」の使い方
+4. 演算と文字列操作 - 計算と文字の扱い方
+5. 条件分岐 - プログラムに判断をさせよう
+6. 繰り返し処理 - 同じ作業を自動化しよう
+7. リストとタプル - 複数のデータをまとめて管理
+8. 辞書 - データに名前を付けて整理しよう
+9. 関数の基本 - 処理をパーツ化して再利用しよう
+10. ファイルの読み書き - データを保存して次回も使えるように
+11. エラーへの対処法 - つまずきポイントの攻略
+12. 簡単なプログラムを作ってみよう - 実践編
 
 #### FastAPI 学習ガイド内容
 
@@ -132,6 +148,7 @@
 | ⭐⭐⭐ | **React** | 全12章 | 10-13週間 | [react/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-01.html) |
 | ⭐⭐ | **Next.js** | 全15章 | 10-13週間 | [nextjs/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nextjs/nextjs-learning-material-01.html) |
 | ⭐ | **Tailwind CSS** | 全10章 | 3-5週間 | [tailwind-css/](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-01.html) |
+| ⭐ | **Node.js入門** | 全12章 | 7-10週間 | [nodejs-beginner/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nodejs-beginner/nodejs-beginner-learning-material-01.html) |
 
 #### JavaScript入門 学習ガイド内容
 
@@ -212,6 +229,23 @@
 9. コンポーネントの作成 - よく使うUIパーツ
 10. 実践プロジェクト - ランディングページの作成
 
+#### Node.js入門 学習ガイド内容
+
+※ このチュートリアルではバックエンドにFastAPI（Python）を使用するため、Node.jsの深い理解は必須ではありません。Next.jsの実行環境として必要な基礎知識程度で十分です。
+
+1. Node.jsとは何か
+2. Node.js環境のセットアップ
+3. はじめてのNode.jsプログラム
+4. モジュールシステムを理解しよう
+5. 組み込みモジュールを活用しよう
+6. npmとパッケージ管理
+7. 非同期処理をマスターしよう
+8. ファイル操作をマスターしよう
+9. HTTPサーバーを作ってみよう
+10. Expressフレームワーク入門
+11. REST APIサーバーを構築しよう
+12. タスク管理APIを作ろう（総合演習）
+
 ---
 
 ### インフラ系（Docker/環境構築をもっと理解したい場合）
@@ -262,6 +296,12 @@
 | `className="flex"` って何？ | Tailwind CSS 第5章 |
 | TypeScriptの `: string` は何？ | TypeScript 第4-5章 |
 | `interface` って何？ | TypeScript 第10章 |
+| Pythonのインストール方法は？ | Python入門 第2章 |
+| `for` ループの使い方は？（Python） | Python入門 第6章 |
+| `def` で関数を作るには？ | Python入門 第9章 |
+| `npm install` って何？ | Node.js入門 第6章 |
+| Node.jsのモジュールって何？ | Node.js入門 第4-5章 |
+| Expressって何？ | Node.js入門 第10章 |
 
 ---
 
@@ -280,6 +320,8 @@ TypeScript（基礎 1-10章）
     ↓
 React（全12章）
     ↓
+Python入門（全12章）
+    ↓
 FastAPI（全10章）
     ↓
 SQL入門（全12章）
@@ -293,6 +335,8 @@ Next.js（全15章）
 チュートリアル完了
     ↓
 Webアプリ開発入門（全14章）★基礎固め
+    ↓
+Python入門（全12章）
     ↓
 SQL入門（全12章）
     ↓
@@ -330,7 +374,9 @@ Next.js（全15章）
 
 ### 学習ガイド
 - [Webアプリ開発入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/webapp-intro/) ★共通基礎
+- [Python入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python-beginner/)
 - [JavaScript入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/)
+- [Node.js入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nodejs-beginner/)
 - [TypeScript学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/)
 - [React学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/)
 - [Next.js学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nextjs/)
