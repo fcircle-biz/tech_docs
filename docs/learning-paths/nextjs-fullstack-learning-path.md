@@ -21,7 +21,7 @@
 | Step 1 | 環境構築 | VS Code, Node.js, Python, Docker のセットアップ |
 | Step 2 | PostgreSQL構築 | Docker Composeでデータベース起動 |
 | Step 3 | FastAPI基礎 | Python APIサーバー作成 |
-| Step 4 | データ取得API | SQLAlchemy でDB操作 |
+| Step 4 | データ取得API | SQLModel でDB操作 |
 | Step 5 | CRUD操作 | 作成・更新・削除のAPI実装 |
 | Step 6 | Next.js基礎 | React + Tailwind CSS で画面作成 |
 | Step 7 | API連携 | フロントエンドとバックエンドの接続 |
@@ -78,7 +78,7 @@
 |--------|--------|------|-------------|-----|
 | ⭐⭐⭐ | **FastAPI** | 全10章 | 7-10週間 | [fastapi/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/fastapi/fastapi-learning-material-01.html) |
 | ⭐⭐⭐ | **SQL入門** | 全12章 | 7-9週間 | [sql/](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-01.html) |
-| ⭐⭐ | **SQLAlchemy** | 全8章 | 6-8週間 | [sqlalchemy/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/sqlalchemy/python-sqlalchemy-learning-material-01.html) |
+| ⭐⭐ | **SQLModel** | 全10章 | 7-9週間 | [sqlmodel/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/sqlmodel/sqlmodel-learning-material-01.html) |
 
 #### FastAPI 学習ガイド内容
 
@@ -86,7 +86,7 @@
 2. 基本的なルーティングとHTTPメソッド
 3. リクエストとレスポンスモデル（Pydantic）
 4. パラメータと検証
-5. データベースの統合（SQLAlchemy）
+5. データベースの統合（SQLModel）
 6. 認証とセキュリティ
 7. CORSとミドルウェア
 8. 非同期処理とバックグラウンドタスク
@@ -108,16 +108,18 @@
 11. より複雑な検索をしてみよう（サブクエリ入門）
 12. 実践！簡単な管理システムを作ろう
 
-#### SQLAlchemy 学習ガイド内容
+#### SQLModel 学習ガイド内容
 
-1. SQLAlchemy入門と環境構築
-2. SQLAlchemy Core基礎
-3. SQLAlchemy ORM基礎
-4. リレーションシップとJOIN操作
-5. 高度なクエリとパフォーマンス最適化
-6. データベースマイグレーション（Alembic）
-7. トランザクション管理とエラーハンドリング
-8. 実践的なアプリケーション開発
+1. データベースとORMの基礎概念
+2. 環境構築と最初のプログラム
+3. モデルの基本 - データの型を定義する
+4. データの保存と取得（CRUD操作の基本）
+5. データの検索と絞り込み
+6. 複数のテーブルを関連付ける（リレーション入門）
+7. FastAPIで簡単なWeb APIを作る
+8. 実践！TODOアプリケーションの開発
+9. エラー処理とバリデーション
+10. パフォーマンスの基礎知識
 
 ---
 
@@ -296,7 +298,7 @@ SQL入門（全12章）
     ↓
 FastAPI（全10章）
     ↓
-SQLAlchemy（全8章）
+SQLModel（全10章）
     ↓
 Docker入門（全10章）
 ```
@@ -335,7 +337,7 @@ Next.js（全15章）
 - [Tailwind CSS学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/)
 - [FastAPI学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/fastapi/)
 - [SQL入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/)
-- [SQLAlchemy学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/sqlalchemy/)
+- [SQLModel学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/sqlmodel/)
 - [Docker入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/docker/)
 
 ### 仕様書

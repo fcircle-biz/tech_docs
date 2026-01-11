@@ -158,7 +158,7 @@
                             <ul class="space-y-2">
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-caret-right text-amber-500 mt-1"></i>
-                                    <span>SQLAlchemyでのデータベース接続設定</span>
+                                    <span>SQLModelでのデータベース接続設定</span>
                                 </li>
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-caret-right text-amber-500 mt-1"></i>
@@ -201,14 +201,14 @@
                     </div>
                 </div>
 
-                <!-- セクション1: SQLAlchemyとORMの理解 -->
+                <!-- セクション1: SQLModelとORMの理解 -->
                 <section class="mb-10">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-6">
-                        4.1 SQLAlchemyとORMの基本
+                        4.1 SQLModelとORMの基本
                     </h2>
                     <p class="text-slate-600 leading-relaxed mb-6">
-                        SQLAlchemy（エスキューエル アルケミー）は、Pythonでデータベースとやりとりするためのツールです。ORM（オブジェクト関係マッピング）という仕組みを使うと、SQL文を直接書かなくても、Pythonのコードでデータベース操作ができます。
+                        SQLModel（エスキューエル モデル）は、FastAPIの作者が開発した、Pythonでデータベースとやりとりするためのライブラリです。FastAPIとの相性が良く、ORM（オブジェクト関係マッピング）という仕組みを使って、SQL文を直接書かなくてもPythonのコードでデータベース操作ができます。
                     </p>
 
                     <!-- ORM概念図 -->
@@ -219,7 +219,7 @@
                         </h3>
                         <div class="mermaid">
 flowchart LR
-    A["Pythonコード<br/>todo = Todo<br/>title='買い物'"] --> B["ORM<br/>SQLAlchemy"]
+    A["Pythonコード<br/>todo = Todo<br/>title='買い物'"] --> B["ORM<br/>SQLModel"]
     B --> C["SQL文に変換<br/>INSERT INTO todos"]
     C --> D["PostgreSQL<br/>データベース"]
 </div>
@@ -289,9 +289,7 @@ flowchart LR
                                                     <i class="fas fa-copy"></i>
                                                 </button>
                                             </div>
-                                            <pre class="!mt-0 !rounded-t-none"><code class="language-python">from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+                                            <pre class="!mt-0 !rounded-t-none"><code class="language-python">from sqlmodel import create_engine, Session
 
 # データベース接続URL
 # 形式: postgresql://ユーザー名:パスワード@ホスト:ポート/データベース名
@@ -299,26 +297,15 @@ DATABASE_URL = "postgresql://todo_user:todo_password@localhost:5432/todo_db"
 
 # データベースエンジンの作成
 # エンジンは、データベースとの接続を管理する
-engine = create_engine(DATABASE_URL)
-
-# セッションの作成
-# セッションは、データベースとやりとりする際に使用する
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# モデルのベースクラス
-# このクラスを継承して、テーブルを表すモデルを作成する
-Base = declarative_base()
+engine = create_engine(DATABASE_URL, echo=True)
 
 # データベースセッションを取得する関数
 def get_db():
     """
     データベースセッションを取得し、使用後に自動でクローズする
     """
-    db = SessionLocal()
-    try:
-        yield db  # セッションを返す
-    finally:
-        db.close()  # 処理が終わったらセッションを閉じる</code></pre>
+    with Session(engine) as session:
+        yield session  # セッションを返す</code></pre>
                                         </div>
                                     </div>
                                 </div>
@@ -342,12 +329,8 @@ def get_db():
                                 データベースエンジンを作成。これがデータベースとの接続を管理します。
                             </div>
                             <div>
-                                <strong class="text-slate-900">SessionLocal:</strong>
-                                データベースとやりとりする際に使う「セッション」を作る工場のようなもの。
-                            </div>
-                            <div>
-                                <strong class="text-slate-900">Base:</strong>
-                                テーブルを表すモデルクラスの親となるクラス。
+                                <strong class="text-slate-900">Session:</strong>
+                                データベースとやりとりする際に使う「セッション」。with文で自動的に開閉されます。
                             </div>
                             <div>
                                 <strong class="text-slate-900">get_db:</strong>
@@ -403,11 +386,11 @@ def get_db():
                                                     <i class="fas fa-copy"></i>
                                                 </button>
                                             </div>
-                                            <pre class="!mt-0 !rounded-t-none"><code class="language-python">from sqlalchemy import Column, Integer, String, Boolean, DateTime
+                                            <pre class="!mt-0 !rounded-t-none"><code class="language-python">from sqlmodel import SQLModel, Field
 from datetime import datetime
-from database import Base
+from typing import Optional
 
-class Todo(Base):
+class Todo(SQLModel, table=True):
     """
     Todoテーブルを表すモデルクラス
     データベースの「todos」テーブルと対応する
@@ -415,11 +398,11 @@ class Todo(Base):
     __tablename__ = "todos"  # データベースのテーブル名
 
     # カラム定義
-    id = Column(Integer, primary_key=True, index=True)  # ID（主キー）
-    title = Column(String(200), nullable=False)  # タイトル（必須、最大200文字）
-    completed = Column(Boolean, default=False)  # 完了状態（デフォルトはFalse=未完了）
-    created_at = Column(DateTime, default=datetime.now)  # 作成日時
-    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)  # 更新日時</code></pre>
+    id: Optional[int] = Field(default=None, primary_key=True)  # ID（主キー）
+    title: str = Field(max_length=200)  # タイトル（必須、最大200文字）
+    completed: bool = Field(default=False)  # 完了状態（デフォルトはFalse=未完了）
+    created_at: datetime = Field(default_factory=datetime.now)  # 作成日時
+    updated_at: datetime = Field(default_factory=datetime.now)  # 更新日時</code></pre>
                                         </div>
                                     </div>
                                 </div>
@@ -524,7 +507,7 @@ class TodoResponse(TodoBase):
     updated_at: datetime  # 更新日時
 
     class Config:
-        # ORMモード: SQLAlchemyのモデルから自動変換できるようにする
+        # ORMモード: SQLModelのモデルから自動変換できるようにする
         from_attributes = True</code></pre>
                                         </div>
                                     </div>
@@ -568,7 +551,7 @@ class TodoResponse(TodoBase):
                                                     <i class="fas fa-copy"></i>
                                                 </button>
                                             </div>
-                                            <pre class="!mt-0 !rounded-t-none"><code class="language-python">from sqlalchemy.orm import Session
+                                            <pre class="!mt-0 !rounded-t-none"><code class="language-python">from sqlmodel import Session, select
 from models import Todo
 from typing import Optional
 
@@ -584,19 +567,20 @@ def get_todos(db: Session, status: Optional[str] = None):
         Todoのリスト
     """
     # 基本クエリ: todosテーブルからすべてを取得
-    query = db.query(Todo)
+    statement = select(Todo)
 
     # フィルター処理
     if status == "active":
         # 未完了（completed=False）のみ
-        query = query.filter(Todo.completed == False)
+        statement = statement.where(Todo.completed == False)
     elif status == "completed":
         # 完了済み（completed=True）のみ
-        query = query.filter(Todo.completed == True)
+        statement = statement.where(Todo.completed == True)
     # status=="all" または None の場合はフィルターなし（すべて）
 
     # 作成日時の新しい順で並べ替えて返す
-    return query.order_by(Todo.created_at.desc()).all()</code></pre>
+    statement = statement.order_by(Todo.created_at.desc())
+    return db.exec(statement).all()</code></pre>
                                         </div>
                                     </div>
                                 </div>
@@ -659,15 +643,15 @@ flowchart TD
                                                 </button>
                                             </div>
                                             <pre class="!mt-0 !rounded-t-none"><code class="language-python">from fastapi import FastAPI, Depends
-from sqlalchemy.orm import Session
+from sqlmodel import Session, SQLModel
 from typing import List, Optional
 from database import get_db, engine
-from models import Base, Todo
+from models import Todo
 import schemas
 import crud
 
 # データベースのテーブルを作成（既に存在する場合は何もしない）
-Base.metadata.create_all(bind=engine)
+SQLModel.metadata.create_all(engine)
 
 # FastAPIアプリケーションの作成
 app = FastAPI(
@@ -761,7 +745,7 @@ sequenceDiagram
                                     <pre class="!mt-0 !rounded-t-none"><code class="language-bash">cd backend
 python -m venv venv
 venv\Scripts\activate
-pip install fastapi uvicorn sqlalchemy psycopg2-binary
+pip install fastapi uvicorn sqlmodel psycopg2-binary
 uvicorn main:app --reload</code></pre>
                                 </div>
 
@@ -897,12 +881,12 @@ uvicorn main:app --reload</code></pre>
                                                p-3 rounded-lg bg-white border border-orange-200
                                                hover:bg-orange-50 transition-colors">
                                     <i class="fas fa-exclamation-triangle text-orange-500"></i>
-                                    <span class="font-medium text-orange-800">「ModuleNotFoundError: No module named 'sqlalchemy'」</span>
+                                    <span class="font-medium text-orange-800">「ModuleNotFoundError: No module named 'sqlmodel'」</span>
                                     <i class="fas fa-chevron-down ml-auto text-orange-400
                                               transition-transform group-open:rotate-180"></i>
                                 </summary>
                                 <div class="mt-3 pl-10 text-orange-900">
-                                    <p class="mb-2"><strong>原因:</strong> SQLAlchemyがインストールされていません。</p>
+                                    <p class="mb-2"><strong>原因:</strong> SQLModelがインストールされていません。</p>
                                     <p class="mb-2"><strong>解決方法:</strong> 仮想環境を有効化してからインストールしてください。</p>
                                     <div class="code-block-wrapper">
                                         <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
@@ -913,7 +897,7 @@ uvicorn main:app --reload</code></pre>
                                         </div>
                                         <pre class="!mt-0 !rounded-t-none"><code class="language-bash">cd backend
 venv\Scripts\activate
-pip install sqlalchemy psycopg2-binary</code></pre>
+pip install sqlmodel psycopg2-binary</code></pre>
                                     </div>
                                 </div>
                             </details>
