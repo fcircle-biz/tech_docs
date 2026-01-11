@@ -316,7 +316,7 @@ flowchart LR
                                     </p>
                                     <div class="code-block-wrapper">
                                         <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                                            <span class="text-slate-400 text-sm">backend/crud.py（追加）</span>
+                                            <span class="text-slate-400 text-sm">backend/crud.py（関数を追加）</span>
                                             <button class="copy-btn text-slate-400 hover:text-white" onclick="copyCode(this)">
                                                 <i class="fas fa-copy"></i>
                                             </button>
@@ -337,7 +337,7 @@ flowchart LR
         raise ValueError("タイトルは200文字以内で入力してください")
 
     # データベースモデルのインスタンスを作成
-    db_todo = models.Todo(
+    db_todo = Todo(
         title=todo.title,
         completed=False  # 新規作成時は常に未完了
     )
@@ -368,7 +368,7 @@ flowchart LR
                                                 <i class="fas fa-copy"></i>
                                             </button>
                                         </div>
-                                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">@app.post("/api/todos", response_model=schemas.Todo)
+                                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">@app.post("/api/todos", response_model=schemas.TodoResponse)
 def create_new_todo(
     todo: schemas.TodoCreate,
     db: Session = Depends(get_db)
@@ -395,46 +395,6 @@ def create_new_todo(
                                 </div>
                             </div>
 
-                            <!-- 手順3 -->
-                            <div class="flex gap-4">
-                                <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
-                                            flex items-center justify-center text-white font-bold text-sm">3</div>
-                                <div class="flex-1">
-                                    <h4 class="font-medium text-purple-800 mb-2">schemas.py にTodoCreateスキーマを追加</h4>
-                                    <p class="text-purple-900 text-sm mb-3">
-                                        backend/schemas.py にリクエスト用のスキーマを追加します。
-                                    </p>
-                                    <div class="code-block-wrapper">
-                                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                                            <span class="text-slate-400 text-sm">backend/schemas.py（追加）</span>
-                                            <button class="copy-btn text-slate-400 hover:text-white" onclick="copyCode(this)">
-                                                <i class="fas fa-copy"></i>
-                                            </button>
-                                        </div>
-                                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">from pydantic import BaseModel, Field
-from datetime import datetime
-from typing import Optional
-
-class TodoBase(BaseModel):
-    """タスクの基本情報"""
-    title: str = Field(..., min_length=1, max_length=200)
-
-class TodoCreate(TodoBase):
-    """タスク作成時のリクエストボディ"""
-    pass
-
-class Todo(TodoBase):
-    """タスクのレスポンス"""
-    id: int
-    completed: bool
-    created_at: datetime
-    updated_at: datetime
-
-    class Config:
-        from_attributes = True</code></pre>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </section>
@@ -472,9 +432,7 @@ class Todo(TodoBase):
                                                 <i class="fas fa-copy"></i>
                                             </button>
                                         </div>
-                                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">from datetime import datetime
-
-def update_todo(db: Session, todo_id: int, todo_update: schemas.TodoUpdate):
+                                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">def update_todo(db: Session, todo_id: int, todo_update: schemas.TodoUpdate):
     """
     既存のタスクを更新する
 
@@ -487,7 +445,7 @@ def update_todo(db: Session, todo_id: int, todo_update: schemas.TodoUpdate):
         更新されたタスク、見つからない場合はNone
     """
     # IDでタスクを検索
-    db_todo = db.query(models.Todo).filter(models.Todo.id == todo_id).first()
+    db_todo = db.get(Todo, todo_id)
 
     if db_todo is None:
         return None
@@ -526,7 +484,7 @@ def update_todo(db: Session, todo_id: int, todo_update: schemas.TodoUpdate):
                                                 <i class="fas fa-copy"></i>
                                             </button>
                                         </div>
-                                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">@app.put("/api/todos/{todo_id}", response_model=schemas.Todo)
+                                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">@app.put("/api/todos/{todo_id}", response_model=schemas.TodoResponse)
 def update_existing_todo(
     todo_id: int,
     todo_update: schemas.TodoUpdate,
@@ -557,26 +515,6 @@ def update_existing_todo(
                                 </div>
                             </div>
 
-                            <!-- 手順3 -->
-                            <div class="flex gap-4">
-                                <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
-                                            flex items-center justify-center text-white font-bold text-sm">3</div>
-                                <div class="flex-1">
-                                    <h4 class="font-medium text-purple-800 mb-2">schemas.py にTodoUpdateスキーマを追加</h4>
-                                    <div class="code-block-wrapper">
-                                        <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                                            <span class="text-slate-400 text-sm">backend/schemas.py（追加）</span>
-                                            <button class="copy-btn text-slate-400 hover:text-white" onclick="copyCode(this)">
-                                                <i class="fas fa-copy"></i>
-                                            </button>
-                                        </div>
-                                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">class TodoUpdate(BaseModel):
-    """タスク更新時のリクエストボディ（部分更新可能）"""
-    title: Optional[str] = Field(None, min_length=1, max_length=200)
-    completed: Optional[bool] = None</code></pre>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </section>
@@ -626,7 +564,7 @@ def update_existing_todo(
         削除されたタスク、見つからない場合はNone
     """
     # IDでタスクを検索
-    db_todo = db.query(models.Todo).filter(models.Todo.id == todo_id).first()
+    db_todo = db.get(Todo, todo_id)
 
     if db_todo is None:
         return None
@@ -653,7 +591,7 @@ def update_existing_todo(
                                                 <i class="fas fa-copy"></i>
                                             </button>
                                         </div>
-                                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">@app.delete("/api/todos/{todo_id}", response_model=schemas.Todo)
+                                        <pre class="!mt-0 !rounded-t-none"><code class="language-python">@app.delete("/api/todos/{todo_id}", response_model=schemas.TodoResponse)
 def delete_existing_todo(
     todo_id: int,
     db: Session = Depends(get_db)
@@ -740,7 +678,7 @@ python -m uvicorn main:app --reload</code></pre>
                                             </button>
                                         </div>
                                         <pre class="!mt-0 !rounded-t-none"><code class="language-json">{
-  "title": "牛乳を買う"
+  "title": "会議の資料を準備する"
 }</code></pre>
                                     </div>
                                     <p class="text-emerald-900 text-sm mt-2">「Execute」をクリックして実行</p>

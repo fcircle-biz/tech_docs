@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" id="viewport-meta">
-    <title>Next.js + FastAPI + PostgreSQL Todoアプリチュートリアル ステップ7 - フロントエンドとバックエンドの連携</title>
+    <title>Next.js + FastAPI + PostgreSQL Todoアプリチュートリアル ステップ7 - CORS設定とタスク一覧表示</title>
 
     <!-- ダークモード早期適用(フラッシュ防止) -->
     <script>
@@ -138,11 +138,11 @@
                             ステップ7
                         </span>
                         <span class="text-sm text-slate-500">
-                            <i class="fas fa-clock mr-1"></i>所要時間: 約3時間
+                            <i class="fas fa-clock mr-1"></i>所要時間: 約1時間
                         </span>
                     </div>
-                    <h1 class="text-3xl font-bold text-slate-900 mb-2">フロントエンドとバックエンドの連携</h1>
-                    <p class="text-slate-600">Next.jsからFastAPIを呼び出して、実際にデータを操作できるようにします。</p>
+                    <h1 class="text-3xl font-bold text-slate-900 mb-2">CORS設定とタスク一覧表示</h1>
+                    <p class="text-slate-600">フロントエンドとバックエンドを連携させて、タスク一覧をAPIから取得・表示します。</p>
                 </header>
 
                 <!-- このステップの目標 -->
@@ -158,23 +158,15 @@
                             <ul class="space-y-2">
                                 <li class="flex items-start gap-2 text-amber-900">
                                     <i class="fas fa-caret-right text-amber-500 mt-1"></i>
+                                    <span>CORSとは何か、なぜ必要かを理解</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-caret-right text-amber-500 mt-1"></i>
+                                    <span>FastAPIにCORS設定を追加</span>
+                                </li>
+                                <li class="flex items-start gap-2 text-amber-900">
+                                    <i class="fas fa-caret-right text-amber-500 mt-1"></i>
                                     <span>タスク一覧をAPIから取得して表示</span>
-                                </li>
-                                <li class="flex items-start gap-2 text-amber-900">
-                                    <i class="fas fa-caret-right text-amber-500 mt-1"></i>
-                                    <span>新規タスクの追加機能</span>
-                                </li>
-                                <li class="flex items-start gap-2 text-amber-900">
-                                    <i class="fas fa-caret-right text-amber-500 mt-1"></i>
-                                    <span>タスクの完了/未完了切り替え</span>
-                                </li>
-                                <li class="flex items-start gap-2 text-amber-900">
-                                    <i class="fas fa-caret-right text-amber-500 mt-1"></i>
-                                    <span>タスクの編集と削除機能</span>
-                                </li>
-                                <li class="flex items-start gap-2 text-amber-900">
-                                    <i class="fas fa-caret-right text-amber-500 mt-1"></i>
-                                    <span>フィルター機能（すべて/未完了/完了済み）</span>
                                 </li>
                             </ul>
                         </div>
@@ -230,13 +222,6 @@ sequenceDiagram
     DB-->>FastAPI: タスク一覧データ
     FastAPI-->>Next: JSON形式で返す
     Next-->>User: 画面に表示
-
-    User->>Next: 新しいタスクを追加
-    Next->>FastAPI: POST /api/todos
-    FastAPI->>DB: INSERT INTO todos
-    DB-->>FastAPI: 保存完了
-    FastAPI-->>Next: 作成したタスクを返す
-    Next-->>User: 画面に追加表示
                         </pre>
                     </div>
 
@@ -377,7 +362,7 @@ uvicorn main:app --reload</code></pre>
                         7.3 タスク一覧の取得と表示
                     </h2>
                     <p class="text-slate-600 leading-relaxed mb-6">
-                        まずは、バックエンドからタスク一覧を取得して、画面に表示する機能を実装します。
+                        まずは、バックエンドからタスク一覧を取得して、画面に表示する機能を実装します。このステップでは、シンプルにタスク一覧を取得して表示するだけで、追加や削除は次のステップで実装します。
                     </p>
 
                     <!-- 実装手順カード -->
@@ -386,7 +371,7 @@ uvicorn main:app --reload</code></pre>
                         <div class="bg-purple-100 px-6 py-3 border-b border-purple-200">
                             <h3 class="font-semibold text-purple-800 flex items-center gap-2">
                                 <i class="fas fa-hammer"></i>
-                                実装 7-2: タスク一覧取得機能の実装
+                                実装 7-2: page.tsxにタスク一覧取得機能を追加
                             </h3>
                         </div>
                         <div class="p-6">
@@ -409,9 +394,9 @@ uvicorn main:app --reload</code></pre>
                                     <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
                                                 flex items-center justify-center text-white font-bold text-sm">2</div>
                                     <div class="flex-1">
-                                        <h4 class="font-medium text-purple-800 mb-2">状態管理とAPI呼び出しを追加</h4>
+                                        <h4 class="font-medium text-purple-800 mb-2">page.tsxの内容をシンプルに書き換える</h4>
                                         <p class="text-purple-900 text-sm mb-3">
-                                            タスク一覧を保持する状態と、APIから取得する関数を追加します。
+                                            以下のコードに書き換えます。タスク一覧を取得して表示するだけのシンプルな実装です。
                                         </p>
                                         <div class="code-block-wrapper">
                                             <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
@@ -424,13 +409,9 @@ uvicorn main:app --reload</code></pre>
 
 import { useState, useEffect } from 'react'
 import TodoList from '@/components/TodoList'
-import TodoForm from '@/components/TodoForm'
-import Filter from '@/components/Filter'
 
-// APIのベースURL
 const API_BASE_URL = 'http://localhost:8000/api'
 
-// Todoの型定義
 type Todo = {
   id: number
   title: string
@@ -440,15 +421,12 @@ type Todo = {
 }
 
 export default function Home() {
-  const [todos, setTodos] = useState<Todo[]>([])
-  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all')
-  const [loading, setLoading] = useState(false)
+  const [todos, setTodos] = useState&lt;Todo[]&gt;([])
+  const [loading, setLoading] = useState(true)
 
-  // タスク一覧を取得する関数
-  const fetchTodos = async () => {
-    setLoading(true)
+  const fetchTodos = async () =&gt; {
     try {
-      const response = await fetch(`${API_BASE_URL}/todos?status=${filter}`)
+      const response = await fetch(`${API_BASE_URL}/todos`)
       if (!response.ok) {
         throw new Error('タスク一覧の取得に失敗しました')
       }
@@ -462,38 +440,27 @@ export default function Home() {
     }
   }
 
-  // 初回とフィルター変更時にタスク一覧を取得
-  useEffect(() => {
+  useEffect(() =&gt; {
     fetchTodos()
-  }, [filter])
+  }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-center text-slate-800 mb-8">
+    &lt;div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4"&gt;
+      &lt;div className="max-w-2xl mx-auto"&gt;
+        &lt;h1 className="text-3xl font-bold text-center text-slate-800 mb-8"&gt;
           Todoリスト
-        </h1>
+        &lt;/h1&gt;
 
-        {/* タスク追加フォーム */}
-        <TodoForm onAdd={fetchTodos} />
-
-        {/* フィルター */}
-        <Filter currentFilter={filter} onFilterChange={setFilter} />
-
-        {/* ローディング表示 */}
-        {loading && (
-          <div className="text-center py-8">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary-500 border-t-transparent"></div>
-            <p className="text-slate-600 mt-2">読み込み中...</p>
-          </div>
+        {loading ? (
+          &lt;div className="text-center py-8"&gt;
+            &lt;div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-500 border-t-transparent"&gt;&lt;/div&gt;
+            &lt;p className="text-slate-600 mt-2"&gt;読み込み中...&lt;/p&gt;
+          &lt;/div&gt;
+        ) : (
+          &lt;TodoList todos={todos} /&gt;
         )}
-
-        {/* タスク一覧 */}
-        {!loading && (
-          <TodoList todos={todos} onUpdate={fetchTodos} />
-        )}
-      </div>
-    </div>
+      &lt;/div&gt;
+    &lt;/div&gt;
   )
 }</code></pre>
                                         </div>
@@ -504,14 +471,14 @@ export default function Home() {
                     </div>
                 </section>
 
-                <!-- セクション3: タスクの追加 -->
+                <!-- セクション3: TodoListコンポーネントの実装 -->
                 <section class="mb-10">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-6">
-                        7.4 タスクの追加機能
+                        7.4 TodoListコンポーネントの実装
                     </h2>
                     <p class="text-slate-600 leading-relaxed mb-6">
-                        新しいタスクをフォームから入力して、バックエンドのAPIに送信する機能を実装します。
+                        取得したタスクを一覧表示するための簡易コンポーネントを実装します。このステップでは、読み取り専用のシンプルな表示のみを行います。
                     </p>
 
                     <!-- 実装手順カード -->
@@ -520,7 +487,7 @@ export default function Home() {
                         <div class="bg-purple-100 px-6 py-3 border-b border-purple-200">
                             <h3 class="font-semibold text-purple-800 flex items-center gap-2">
                                 <i class="fas fa-hammer"></i>
-                                実装 7-3: TodoFormコンポーネントの実装
+                                実装 7-3: TodoList.tsxを簡易版に書き換える
                             </h3>
                         </div>
                         <div class="p-6">
@@ -531,9 +498,9 @@ export default function Home() {
                                     <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
                                                 flex items-center justify-center text-white font-bold text-sm">1</div>
                                     <div class="flex-1">
-                                        <h4 class="font-medium text-purple-800 mb-2">TodoForm.tsxを開く</h4>
+                                        <h4 class="font-medium text-purple-800 mb-2">TodoList.tsxを開く</h4>
                                         <p class="text-purple-900 text-sm mb-3">
-                                            VS Codeで <code class="bg-purple-100 px-1 rounded">frontend/components/TodoForm.tsx</code> を開きます。
+                                            VS Codeで <code class="bg-purple-100 px-1 rounded">frontend/components/TodoList.tsx</code> を開きます。
                                         </p>
                                     </div>
                                 </div>
@@ -543,151 +510,18 @@ export default function Home() {
                                     <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
                                                 flex items-center justify-center text-white font-bold text-sm">2</div>
                                     <div class="flex-1">
-                                        <h4 class="font-medium text-purple-800 mb-2">タスク追加処理を実装</h4>
+                                        <h4 class="font-medium text-purple-800 mb-2">読み取り専用の簡易版に書き換える</h4>
                                         <p class="text-purple-900 text-sm mb-3">
-                                            フォーム送信時にAPIにPOSTリクエストを送る処理を追加します。
+                                            以下のコードに書き換えます。タスクを表示するだけのシンプルな実装です。
                                         </p>
                                         <div class="code-block-wrapper">
                                             <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                                                <span class="text-slate-400 text-sm">frontend/components/TodoForm.tsx</span>
+                                                <span class="text-slate-400 text-sm">frontend/components/TodoList.tsx</span>
                                                 <button class="copy-btn text-slate-400 hover:text-white" onclick="copyCode(this)">
                                                     <i class="fas fa-copy"></i>
                                                 </button>
                                             </div>
-                                            <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">'use client'
-
-import { useState } from 'react'
-
-const API_BASE_URL = 'http://localhost:8000/api'
-
-type TodoFormProps = {
-  onAdd: () => void
-}
-
-export default function TodoForm({ onAdd }: TodoFormProps) {
-  const [title, setTitle] = useState('')
-  const [submitting, setSubmitting] = useState(false)
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!title.trim()) {
-      alert('タスクを入力してください')
-      return
-    }
-
-    setSubmitting(true)
-    try {
-      const response = await fetch(`${API_BASE_URL}/todos`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ title: title.trim() }),
-      })
-
-      if (!response.ok) {
-        throw new Error('タスクの追加に失敗しました')
-      }
-
-      setTitle('') // フォームをクリア
-      onAdd() // 一覧を再取得
-    } catch (error) {
-      console.error('エラー:', error)
-      alert('タスクの追加に失敗しました')
-    } finally {
-      setSubmitting(false)
-    }
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="mb-6">
-      <div className="flex gap-2">
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="新しいタスクを入力..."
-          className="flex-1 px-4 py-2 border border-slate-300 rounded-lg
-                     focus:outline-none focus:ring-2 focus:ring-primary-500"
-          disabled={submitting}
-        />
-        <button
-          type="submit"
-          disabled={submitting}
-          className="px-6 py-2 bg-primary-500 text-white rounded-lg
-                     hover:bg-primary-600 disabled:bg-slate-300
-                     transition-colors font-medium"
-        >
-          {submitting ? '追加中...' : '追加'}
-        </button>
-      </div>
-    </form>
-  )
-}</code></pre>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- セクション4: タスクの更新・削除 -->
-                <section class="mb-10">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-6">
-                        7.5 タスクの更新・削除機能
-                    </h2>
-                    <p class="text-slate-600 leading-relaxed mb-6">
-                        タスクの完了/未完了を切り替えたり、削除したりする機能を実装します。
-                    </p>
-
-                    <!-- 実装手順カード -->
-                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
-                                rounded-xl overflow-hidden mb-8">
-                        <div class="bg-purple-100 px-6 py-3 border-b border-purple-200">
-                            <h3 class="font-semibold text-purple-800 flex items-center gap-2">
-                                <i class="fas fa-hammer"></i>
-                                実装 7-4: TodoItemコンポーネントの実装
-                            </h3>
-                        </div>
-                        <div class="p-6">
-                            <!-- 手順リスト -->
-                            <div class="space-y-6">
-                                <!-- 手順1 -->
-                                <div class="flex gap-4">
-                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
-                                                flex items-center justify-center text-white font-bold text-sm">1</div>
-                                    <div class="flex-1">
-                                        <h4 class="font-medium text-purple-800 mb-2">TodoItem.tsxを開く</h4>
-                                        <p class="text-purple-900 text-sm mb-3">
-                                            VS Codeで <code class="bg-purple-100 px-1 rounded">frontend/components/TodoItem.tsx</code> を開きます。
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <!-- 手順2 -->
-                                <div class="flex gap-4">
-                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
-                                                flex items-center justify-center text-white font-bold text-sm">2</div>
-                                    <div class="flex-1">
-                                        <h4 class="font-medium text-purple-800 mb-2">更新・削除機能を実装</h4>
-                                        <p class="text-purple-900 text-sm mb-3">
-                                            タスクの完了切り替えと削除の処理を実装します。
-                                        </p>
-                                        <div class="code-block-wrapper">
-                                            <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                                                <span class="text-slate-400 text-sm">frontend/components/TodoItem.tsx</span>
-                                                <button class="copy-btn text-slate-400 hover:text-white" onclick="copyCode(this)">
-                                                    <i class="fas fa-copy"></i>
-                                                </button>
-                                            </div>
-                                            <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">'use client'
-
-const API_BASE_URL = 'http://localhost:8000/api'
-
-type Todo = {
+                                            <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">type Todo = {
   id: number
   title: string
   completed: boolean
@@ -695,179 +529,37 @@ type Todo = {
   updated_at: string
 }
 
-type TodoItemProps = {
-  todo: Todo
-  onUpdate: () => void
+type TodoListProps = {
+  todos: Todo[]
 }
 
-export default function TodoItem({ todo, onUpdate }: TodoItemProps) {
-  // 完了/未完了を切り替える
-  const handleToggle = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/todos/${todo.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: todo.title,
-          completed: !todo.completed,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('タスクの更新に失敗しました')
-      }
-
-      onUpdate() // 一覧を再取得
-    } catch (error) {
-      console.error('エラー:', error)
-      alert('タスクの更新に失敗しました')
-    }
-  }
-
-  // タスクを削除する
-  const handleDelete = async () => {
-    if (!confirm('このタスクを削除しますか?')) {
-      return
-    }
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/todos/${todo.id}`, {
-        method: 'DELETE',
-      })
-
-      if (!response.ok) {
-        throw new Error('タスクの削除に失敗しました')
-      }
-
-      onUpdate() // 一覧を再取得
-    } catch (error) {
-      console.error('エラー:', error)
-      alert('タスクの削除に失敗しました')
-    }
+export default function TodoList({ todos }: TodoListProps) {
+  if (todos.length === 0) {
+    return (
+      &lt;div className="text-center py-8 text-slate-500"&gt;
+        タスクがありません
+      &lt;/div&gt;
+    )
   }
 
   return (
-    <div className="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm
-                    border border-slate-200 hover:shadow-md transition-shadow">
-      {/* チェックボックス */}
-      <input
-        type="checkbox"
-        checked={todo.completed}
-        onChange={handleToggle}
-        className="w-5 h-5 rounded border-slate-300 text-primary-500
-                   focus:ring-primary-500 cursor-pointer"
-      />
-
-      {/* タスクタイトル */}
-      <span
-        className={`flex-1 ${
-          todo.completed
-            ? 'line-through text-slate-400'
-            : 'text-slate-800'
-        }`}
-      >
-        {todo.title}
-      </span>
-
-      {/* 削除ボタン */}
-      <button
-        onClick={handleDelete}
-        className="text-red-500 hover:text-red-700 transition-colors"
-        title="削除"
-      >
-        <i className="fas fa-trash"></i>
-      </button>
-    </div>
-  )
-}</code></pre>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- セクション5: フィルター機能 -->
-                <section class="mb-10">
-                    <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
-                               border-l-4 border-primary-500 pl-4 mb-6">
-                        7.6 フィルター機能の実装
-                    </h2>
-                    <p class="text-slate-600 leading-relaxed mb-6">
-                        「すべて」「未完了」「完了済み」でタスクを絞り込むフィルター機能を実装します。
-                    </p>
-
-                    <!-- 実装手順カード -->
-                    <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-200
-                                rounded-xl overflow-hidden mb-8">
-                        <div class="bg-purple-100 px-6 py-3 border-b border-purple-200">
-                            <h3 class="font-semibold text-purple-800 flex items-center gap-2">
-                                <i class="fas fa-hammer"></i>
-                                実装 7-5: Filterコンポーネントの実装
-                            </h3>
-                        </div>
-                        <div class="p-6">
-                            <!-- 手順リスト -->
-                            <div class="space-y-6">
-                                <!-- 手順1 -->
-                                <div class="flex gap-4">
-                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
-                                                flex items-center justify-center text-white font-bold text-sm">1</div>
-                                    <div class="flex-1">
-                                        <h4 class="font-medium text-purple-800 mb-2">Filter.tsxを開く</h4>
-                                        <p class="text-purple-900 text-sm mb-3">
-                                            VS Codeで <code class="bg-purple-100 px-1 rounded">frontend/components/Filter.tsx</code> を開きます。
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <!-- 手順2 -->
-                                <div class="flex gap-4">
-                                    <div class="flex-shrink-0 w-8 h-8 bg-purple-500 rounded-full
-                                                flex items-center justify-center text-white font-bold text-sm">2</div>
-                                    <div class="flex-1">
-                                        <h4 class="font-medium text-purple-800 mb-2">フィルターボタンを実装</h4>
-                                        <p class="text-purple-900 text-sm mb-3">
-                                            3つのフィルターボタンを実装します。
-                                        </p>
-                                        <div class="code-block-wrapper">
-                                            <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                                                <span class="text-slate-400 text-sm">frontend/components/Filter.tsx</span>
-                                                <button class="copy-btn text-slate-400 hover:text-white" onclick="copyCode(this)">
-                                                    <i class="fas fa-copy"></i>
-                                                </button>
-                                            </div>
-                                            <pre class="!mt-0 !rounded-t-none"><code class="language-typescript">type FilterProps = {
-  currentFilter: 'all' | 'active' | 'completed'
-  onFilterChange: (filter: 'all' | 'active' | 'completed') => void
-}
-
-export default function Filter({ currentFilter, onFilterChange }: FilterProps) {
-  const filters: { value: 'all' | 'active' | 'completed'; label: string }[] = [
-    { value: 'all', label: 'すべて' },
-    { value: 'active', label: '未完了' },
-    { value: 'completed', label: '完了済み' },
-  ]
-
-  return (
-    <div className="flex gap-2 mb-6">
-      {filters.map((filter) => (
-        <button
-          key={filter.value}
-          onClick={() => onFilterChange(filter.value)}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-            currentFilter === filter.value
-              ? 'bg-primary-500 text-white'
-              : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300'
-          }`}
-        >
-          {filter.label}
-        </button>
+    &lt;div className="space-y-3"&gt;
+      {todos.map((todo) =&gt; (
+        &lt;div
+          key={todo.id}
+          className="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm border border-slate-200"
+        &gt;
+          &lt;span className={todo.completed ? 'line-through text-slate-400' : 'text-slate-800'}&gt;
+            {todo.title}
+          &lt;/span&gt;
+          {todo.completed &amp;&amp; (
+            &lt;span className="ml-auto text-xs text-emerald-600 bg-emerald-100 px-2 py-1 rounded"&gt;
+              完了
+            &lt;/span&gt;
+          )}
+        &lt;/div&gt;
       ))}
-    </div>
+    &lt;/div&gt;
   )
 }</code></pre>
                                         </div>
@@ -882,7 +574,7 @@ export default function Filter({ currentFilter, onFilterChange }: FilterProps) {
                 <section class="mb-10">
                     <h2 class="flex items-center gap-3 text-xl font-semibold text-slate-800
                                border-l-4 border-primary-500 pl-4 mb-6">
-                        7.7 動作確認
+                        7.5 動作確認
                     </h2>
 
                     <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200
@@ -893,8 +585,8 @@ export default function Filter({ currentFilter, onFilterChange }: FilterProps) {
                                 <i class="fas fa-play text-white"></i>
                             </div>
                             <div class="flex-1">
-                                <h3 class="text-lg font-semibold text-emerald-800 mb-3">アプリケーション全体を起動して動作確認</h3>
-                                <p class="text-emerald-900 mb-4">データベース、バックエンド、フロントエンドの3つを起動して、実際に動作することを確認します。</p>
+                                <h3 class="text-lg font-semibold text-emerald-800 mb-3">タスク一覧が表示されることを確認</h3>
+                                <p class="text-emerald-900 mb-4">データベース、バックエンド、フロントエンドの3つを起動して、タスク一覧が表示されることを確認します。</p>
 
                                 <div class="space-y-4">
                                     <div>
@@ -947,11 +639,10 @@ npm run dev</code></pre>
                                 <div class="bg-emerald-100 rounded-lg p-4 border border-emerald-200">
                                     <ul class="space-y-2 text-emerald-900 text-sm">
                                         <li>✓ ブラウザで http://localhost:3000 を開く</li>
-                                        <li>✓ タスクを追加できる</li>
-                                        <li>✓ タスクのチェックボックスで完了/未完了を切り替えられる</li>
-                                        <li>✓ タスクを削除できる</li>
-                                        <li>✓ フィルターで「すべて」「未完了」「完了済み」を切り替えられる</li>
-                                        <li>✓ ページをリロードしてもデータが保存されている</li>
+                                        <li>✓ タスク一覧が表示される（データベースにデータがある場合）</li>
+                                        <li>✓ タスクがない場合は「タスクがありません」と表示される</li>
+                                        <li>✓ 完了済みタスクには「完了」バッジが表示される</li>
+                                        <li>✓ 完了済みタスクには取り消し線が表示される</li>
                                     </ul>
                                 </div>
                             </div>
@@ -1018,27 +709,6 @@ npm run dev</code></pre>
                                                p-3 rounded-lg bg-white border border-orange-200
                                                hover:bg-orange-50 transition-colors">
                                     <i class="fas fa-exclamation-triangle text-orange-500"></i>
-                                    <span class="font-medium text-orange-800">タスクの追加・更新・削除ができない</span>
-                                    <i class="fas fa-chevron-down ml-auto text-orange-400
-                                              transition-transform group-open:rotate-180"></i>
-                                </summary>
-                                <div class="mt-3 pl-10 text-orange-900">
-                                    <p class="mb-2"><strong>原因:</strong> API呼び出しが失敗しているか、バックエンドのエンドポイントに問題があります。</p>
-                                    <p class="mb-2"><strong>解決方法:</strong></p>
-                                    <ol class="list-decimal pl-5 space-y-1 text-sm">
-                                        <li>ブラウザのコンソール（F12キー）でエラーメッセージを確認</li>
-                                        <li>FastAPIのSwagger UI（http://localhost:8000/docs）で各エンドポイントが動作するか確認</li>
-                                        <li>fetchのURL（http://localhost:8000/api/todos）が正しいか確認</li>
-                                    </ol>
-                                </div>
-                            </details>
-
-                            <!-- エラー4 -->
-                            <details class="group">
-                                <summary class="flex items-center gap-3 cursor-pointer list-none
-                                               p-3 rounded-lg bg-white border border-orange-200
-                                               hover:bg-orange-50 transition-colors">
-                                    <i class="fas fa-exclamation-triangle text-orange-500"></i>
                                     <span class="font-medium text-orange-800">画面が真っ白になる</span>
                                     <i class="fas fa-chevron-down ml-auto text-orange-400
                                               transition-transform group-open:rotate-180"></i>
@@ -1084,7 +754,7 @@ npm run dev</code></pre>
                                                class="w-5 h-5 rounded border-blue-300 text-blue-500
                                                       focus:ring-blue-500 cursor-pointer">
                                         <label for="check2" class="text-blue-900 cursor-pointer">
-                                            タスク一覧がAPIから取得されて画面に表示される
+                                            page.tsxにタスク一覧取得機能が実装されている
                                         </label>
                                     </li>
                                     <li class="checkbox-item flex items-center gap-3">
@@ -1092,7 +762,7 @@ npm run dev</code></pre>
                                                class="w-5 h-5 rounded border-blue-300 text-blue-500
                                                       focus:ring-blue-500 cursor-pointer">
                                         <label for="check3" class="text-blue-900 cursor-pointer">
-                                            新しいタスクを追加できる
+                                            TodoList.tsxが簡易版に書き換えられている
                                         </label>
                                     </li>
                                     <li class="checkbox-item flex items-center gap-3">
@@ -1100,7 +770,7 @@ npm run dev</code></pre>
                                                class="w-5 h-5 rounded border-blue-300 text-blue-500
                                                       focus:ring-blue-500 cursor-pointer">
                                         <label for="check4" class="text-blue-900 cursor-pointer">
-                                            タスクの完了/未完了を切り替えられる
+                                            ブラウザでタスク一覧が表示される
                                         </label>
                                     </li>
                                     <li class="checkbox-item flex items-center gap-3">
@@ -1108,15 +778,7 @@ npm run dev</code></pre>
                                                class="w-5 h-5 rounded border-blue-300 text-blue-500
                                                       focus:ring-blue-500 cursor-pointer">
                                         <label for="check5" class="text-blue-900 cursor-pointer">
-                                            タスクを削除できる
-                                        </label>
-                                    </li>
-                                    <li class="checkbox-item flex items-center gap-3">
-                                        <input type="checkbox" id="check6"
-                                               class="w-5 h-5 rounded border-blue-300 text-blue-500
-                                                      focus:ring-blue-500 cursor-pointer">
-                                        <label for="check6" class="text-blue-900 cursor-pointer">
-                                            フィルターが正しく動作する
+                                            完了済みタスクに「完了」バッジと取り消し線が表示される
                                         </label>
                                     </li>
                                 </ul>
@@ -1141,7 +803,7 @@ npm run dev</code></pre>
                               bg-primary-500 hover:bg-primary-600 text-white transition-colors shadow-lg shadow-primary-500/30">
                         <div class="text-right">
                             <span class="text-xs text-primary-100 block">次のステップ</span>
-                            <span class="font-medium">アプリの仕上げとまとめ</span>
+                            <span class="font-medium">タスク追加機能</span>
                         </div>
                         <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
                     </a>
