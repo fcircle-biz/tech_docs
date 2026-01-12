@@ -120,8 +120,13 @@
                     </h3>
                     <ul class="space-y-2 text-sm">
                         <li>
-                            <a href="README.md" class="text-slate-600 hover:text-primary-600 flex items-center gap-2">
-                                <i class="fas fa-file-alt text-xs"></i>システム仕様書
+                            <a href="README.pdf" target="_blank" class="text-slate-600 hover:text-primary-600 flex items-center gap-2">
+                                <i class="fas fa-file-pdf text-xs"></i>システム仕様書
+                            </a>
+                        </li>
+                        <li>
+                            <a href="database.pdf" target="_blank" class="text-slate-600 hover:text-primary-600 flex items-center gap-2">
+                                <i class="fas fa-database text-xs"></i>データベース設計
                             </a>
                         </li>
                         <li>
