@@ -391,3 +391,40 @@ Next.js（全15章）
 
 ### 仕様書
 - [Todo App v1 仕様書](https://fcircle-biz.github.io/tech_docs/specs/todo-app-v1/)
+
+---
+
+## 卒業課題: 注文管理システム
+
+チュートリアルとガイドで学んだ知識を応用して、より実践的なシステムを開発する卒業課題です。
+
+### 課題概要
+
+**[注文管理システム 仕様書](https://fcircle-biz.github.io/tech_docs/specs/order-management-v1/docs/)**
+
+飲食店向けの注文管理システムを一から開発します。Todoアプリからのステップアップとして、以下を習得できます：
+
+| 項目 | Todoアプリ | 注文管理システム |
+|------|-----------|-----------------|
+| テーブル数 | 1テーブル | 4テーブル |
+| リレーション | なし | 外部キー、1対多 |
+| データ操作 | 単純なCRUD | JOINを使った複合クエリ |
+| ステータス管理 | 完了/未完了 | 複数ステータス遷移 |
+| 集計機能 | なし | 売上集計、ダッシュボード |
+
+### 卒業課題のドキュメント
+
+| ドキュメント | 内容 |
+|-------------|------|
+| [README.md](https://fcircle-biz.github.io/tech_docs/specs/order-management-v1/docs/) | システム仕様書（機能、API設計） |
+| [database.md](https://fcircle-biz.github.io/tech_docs/specs/order-management-v1/docs/database.md) | データベース設計（ER図、SQL） |
+| [implementation-guide.md](https://fcircle-biz.github.io/tech_docs/specs/order-management-v1/docs/implementation-guide.md) | 実装ガイド（ステップバイステップ） |
+
+### 取り組み方
+
+1. **仕様を理解する**: README.md を読んで機能要件を把握
+2. **データベースを設計**: database.md を参考にテーブル設計を理解
+3. **実装する**: implementation-guide.md に沿ってコードを書く
+4. **動作確認**: 各機能をブラウザで確認しながら進める
+
+**推奨所要時間**: 約20〜30時間（1日2時間で約2週間）

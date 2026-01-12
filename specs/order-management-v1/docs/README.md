@@ -1,7 +1,16 @@
 # 注文管理システム 仕様書
 
-この資料は、Next.js フルスタック学習パスの**卒業課題**として使用します。
-Todoアプリチュートリアルで学んだ知識を応用し、より実践的なシステム開発を体験できます。
+この資料は、[Next.js フルスタック学習パス](https://fcircle-biz.github.io/tech_docs/docs/learning-paths/nextjs-fullstack-learning-path.md)の**卒業課題**として使用します。
+[Todoアプリチュートリアル](https://fcircle-biz.github.io/tech_docs/tutorial/javascript-ecosystem/nextjs-fastapi-todo/nextjs-fastapi-todo-tutorial-01.html)で学んだ知識を応用し、より実践的なシステム開発を体験できます。
+
+## ドキュメント構成
+
+| ファイル | 内容 |
+|----------|------|
+| **README.md**（本ファイル） | システム仕様書（機能、API設計、バリデーション） |
+| **[database.md](./database.md)** | データベース設計（ER図、テーブル定義、SQL） |
+| **[implementation-guide.md](./implementation-guide.md)** | 実装ガイド（ステップバイステップの作業手順） |
+| **[mockups/](./mockups/index.html)** | モック画面（完成イメージのHTML） |
 
 ## 概要
 
@@ -338,11 +347,6 @@ GET /api/dashboard/summary
 | 注文に商品がない | 1つ以上の商品を選択してください |
 | 削除不可（関連データあり） | 注文履歴があるため削除できません |
 | ステータス遷移不可 | この注文のステータスは変更できません |
-
-## ファイル構成
-
-- `README.md` - 仕様書メイン（本ファイル）
-- `database.md` - データベース設計
 
 ## 推奨チュートリアル構成
 
