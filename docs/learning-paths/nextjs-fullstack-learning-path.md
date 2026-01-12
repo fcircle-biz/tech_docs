@@ -6,6 +6,83 @@
 
 ---
 
+## 学習パス別おすすめルート
+
+### ルートA: フルスタック開発者を目指す場合
+
+**総所要時間: 約40〜48人日**（Step1: 2人日 + Step2: 24.5人日 + Step3: 14〜21人日）
+
+```
+Step 1: チュートリアル完了（2人日）
+    ↓
+Step 2: 各技術を深掘り学習（24.5人日）
+    Webアプリ開発入門（全14章）★基礎固め
+    ↓
+    JavaScript入門（全12章）
+    ↓
+    TypeScript（基礎 1-10章）
+    ↓
+    React（全12章）
+    ↓
+    Python入門（全12章）
+    ↓
+    FastAPI（全10章）
+    ↓
+    SQL入門（全12章）
+    ↓
+    Next.js（全15章）
+    ↓
+Step 3: 卒業課題 - 注文管理システム（14〜21人日）
+```
+
+### ルートB: バックエンド中心に学びたい場合
+
+**総所要時間: 約33〜40人日**（Step1: 2人日 + Step2: 17人日 + Step3: 14〜21人日）
+
+```
+Step 1: チュートリアル完了（2人日）
+    ↓
+Step 2: 各技術を深掘り学習（17人日）
+    Webアプリ開発入門（全14章）★基礎固め
+    ↓
+    Python入門（全12章）
+    ↓
+    SQL入門（全12章）
+    ↓
+    FastAPI（全10章）
+    ↓
+    SQLModel（全10章）
+    ↓
+    Docker入門（全10章）
+    ↓
+Step 3: 卒業課題 - 注文管理システム（14〜21人日）
+```
+
+### ルートC: フロントエンド中心に学びたい場合
+
+**総所要時間: 約36〜43人日**（Step1: 2人日 + Step2: 20人日 + Step3: 14〜21人日）
+
+```
+Step 1: チュートリアル完了（2人日）
+    ↓
+Step 2: 各技術を深掘り学習（20人日）
+    Webアプリ開発入門（全14章）★基礎固め
+    ↓
+    JavaScript入門（全12章）
+    ↓
+    TypeScript（全15章）
+    ↓
+    React（全12章）
+    ↓
+    Tailwind CSS（全10章）
+    ↓
+    Next.js（全15章）
+    ↓
+Step 3: 卒業課題 - 注文管理システム（14〜21人日）
+```
+
+---
+
 ## Step 1: チュートリアルで全体を体験（まずここから！）
 
 ### チュートリアル概要
@@ -32,8 +109,7 @@
 
 ### 所要時間
 
-- **総所要時間**: 約17時間
-- **1日8時間の場合**: 約2〜3日で完了
+- **総所要時間**: 約17時間（約2人日）
 
 ### 学習のポイント
 
@@ -48,11 +124,13 @@
 
 チュートリアル完了後、「もっと知りたい」と思った技術から順に学習してください。
 
+> **学習期間目安の計算式**: 1章あたり2時間 × 章数 ÷ 8時間/人日
+
 ### 共通基礎（全員におすすめ）
 
 | 優先度 | ガイド | 章数 | 学習期間目安 | URL |
 |--------|--------|------|-------------|-----|
-| ⭐⭐⭐ | **Webアプリ開発入門** | 全14章 | 4-6日 | [webapp-intro/](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/webapp-intro/webapp-intro-learning-material-01.html) |
+| ⭐⭐⭐ | **Webアプリ開発入門** | 全14章 | 3.5人日 | [webapp-intro/](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/webapp-intro/webapp-intro-learning-material-01.html) |
 
 チュートリアルで「なんとなく動いた」部分の理解を深める基礎知識ガイドです。
 
@@ -79,10 +157,10 @@
 
 | 優先度 | ガイド | 章数 | 学習期間目安 | URL |
 |--------|--------|------|-------------|-----|
-| ⭐⭐⭐ | **Python入門** | 全12章 | 6-9日 | [python-beginner/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python-beginner/python-beginner-learning-material-01.html) |
-| ⭐⭐⭐ | **FastAPI** | 全10章 | 9-13日 | [fastapi/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/fastapi/fastapi-learning-material-01.html) |
-| ⭐⭐⭐ | **SQL入門** | 全12章 | 9-12日 | [sql/](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-01.html) |
-| ⭐⭐ | **SQLModel** | 全10章 | 9-12日 | [sqlmodel/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/sqlmodel/sqlmodel-learning-material-01.html) |
+| ⭐⭐⭐ | **Python入門** | 全12章 | 3人日 | [python-beginner/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python-beginner/python-beginner-learning-material-01.html) |
+| ⭐⭐⭐ | **FastAPI** | 全10章 | 2.5人日 | [fastapi/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/fastapi/fastapi-learning-material-01.html) |
+| ⭐⭐⭐ | **SQL入門** | 全12章 | 3人日 | [sql/](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-01.html) |
+| ⭐⭐ | **SQLModel** | 全10章 | 2.5人日 | [sqlmodel/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/sqlmodel/sqlmodel-learning-material-01.html) |
 
 #### Python入門 学習ガイド内容
 
@@ -146,12 +224,12 @@
 
 | 優先度 | ガイド | 章数 | 学習期間目安 | URL |
 |--------|--------|------|-------------|-----|
-| ⭐⭐⭐ | **JavaScript入門** | 全12章 | 10-15日 | [javascript-beginner/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/javascript-learning-material-01.html) |
-| ⭐⭐⭐ | **TypeScript** | 全15章 | 13-18日 | [typescript/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/typescript-learning-material-01.html) |
-| ⭐⭐⭐ | **React** | 全12章 | 13-17日 | [react/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-01.html) |
-| ⭐⭐ | **Next.js** | 全15章 | 13-17日 | [nextjs/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nextjs/nextjs-learning-material-01.html) |
-| ⭐ | **Tailwind CSS** | 全10章 | 4-6日 | [tailwind-css/](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-01.html) |
-| ⭐ | **Node.js入門** | 全12章 | 9-13日 | [nodejs-beginner/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nodejs-beginner/nodejs-beginner-learning-material-01.html) |
+| ⭐⭐⭐ | **JavaScript入門** | 全12章 | 3人日 | [javascript-beginner/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/javascript-learning-material-01.html) |
+| ⭐⭐⭐ | **TypeScript** | 全15章 | 4人日 | [typescript/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/typescript-learning-material-01.html) |
+| ⭐⭐⭐ | **React** | 全12章 | 3人日 | [react/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-01.html) |
+| ⭐⭐ | **Next.js** | 全15章 | 4人日 | [nextjs/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nextjs/nextjs-learning-material-01.html) |
+| ⭐ | **Tailwind CSS** | 全10章 | 2.5人日 | [tailwind-css/](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-01.html) |
+| ⭐ | **Node.js入門** | 全12章 | 3人日 | [nodejs-beginner/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nodejs-beginner/nodejs-beginner-learning-material-01.html) |
 
 #### JavaScript入門 学習ガイド内容
 
@@ -255,7 +333,7 @@
 
 | 優先度 | ガイド | 章数 | 学習期間目安 | URL |
 |--------|--------|------|-------------|-----|
-| ⭐⭐⭐ | **Docker入門** | 全10章 | 4-6日 | [docker/](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/docker/docker-learning-material-01.html) |
+| ⭐⭐⭐ | **Docker入門** | 全10章 | 2.5人日 | [docker/](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/docker/docker-learning-material-01.html) |
 
 #### Docker入門 学習ガイド内容
 
@@ -272,133 +350,7 @@
 
 ---
 
-## チュートリアル中の「?」と対応ガイド
-
-チュートリアル実施中に疑問が出たら、該当ガイドの章を参照してください。
-
-| チュートリアルで出てくる概念 | 参照先 |
-|---------------------------|--------|
-| HTTPって何？ | Webアプリ開発入門 第5章 |
-| GET/POSTって何？ | Webアプリ開発入門 第6章 |
-| JSONって何？ | Webアプリ開発入門 第7章 |
-| APIって何？ | Webアプリ開発入門 第8章 |
-| なぜデータベースが必要？ | Webアプリ開発入門 第9章 |
-| フロントエンド/バックエンドって？ | Webアプリ開発入門 第10章 |
-| `localhost:3000` の意味は？ | Webアプリ開発入門 第11章 |
-| CORSエラーが出た | Webアプリ開発入門 第12章 |
-| `docker-compose up -d` って何？ | Docker入門 第8章 |
-| `SELECT * FROM todos` の意味は？ | SQL入門 第5章 |
-| `CREATE TABLE` の書き方は？ | SQL入門 第3章 |
-| `async def` って何？ | FastAPI 第8章 |
-| Pydanticモデルって何？ | FastAPI 第3章 |
-| 変数（`let`, `const`）って何？ | JavaScript入門 第4章 |
-| 関数の書き方がわからない | JavaScript入門 第7章 |
-| 配列やオブジェクトって何？ | JavaScript入門 第8章 |
-| `useState` の仕組みは？ | React 第4章 |
-| `useEffect` はいつ使う？ | React 第5章 |
-| `className="flex"` って何？ | Tailwind CSS 第5章 |
-| TypeScriptの `: string` は何？ | TypeScript 第4-5章 |
-| `interface` って何？ | TypeScript 第10章 |
-| Pythonのインストール方法は？ | Python入門 第2章 |
-| `for` ループの使い方は？（Python） | Python入門 第6章 |
-| `def` で関数を作るには？ | Python入門 第9章 |
-| `npm install` って何？ | Node.js入門 第6章 |
-| Node.jsのモジュールって何？ | Node.js入門 第4-5章 |
-| Expressって何？ | Node.js入門 第10章 |
-
----
-
-## 学習パス別おすすめルート
-
-### ルートA: フルスタック開発者を目指す場合
-
-```
-チュートリアル完了
-    ↓
-Webアプリ開発入門（全14章）★基礎固め
-    ↓
-JavaScript入門（全12章）
-    ↓
-TypeScript（基礎 1-10章）
-    ↓
-React（全12章）
-    ↓
-Python入門（全12章）
-    ↓
-FastAPI（全10章）
-    ↓
-SQL入門（全12章）
-    ↓
-Next.js（全15章）
-```
-
-### ルートB: バックエンド中心に学びたい場合
-
-```
-チュートリアル完了
-    ↓
-Webアプリ開発入門（全14章）★基礎固め
-    ↓
-Python入門（全12章）
-    ↓
-SQL入門（全12章）
-    ↓
-FastAPI（全10章）
-    ↓
-SQLModel（全10章）
-    ↓
-Docker入門（全10章）
-```
-
-### ルートC: フロントエンド中心に学びたい場合
-
-```
-チュートリアル完了
-    ↓
-Webアプリ開発入門（全14章）★基礎固め
-    ↓
-JavaScript入門（全12章）
-    ↓
-TypeScript（全15章）
-    ↓
-React（全12章）
-    ↓
-Tailwind CSS（全10章）
-    ↓
-Next.js（全15章）
-```
-
----
-
-## 関連リンク
-
-### チュートリアル
-- [Next.js + FastAPI + PostgreSQL Todoアプリチュートリアル](https://fcircle-biz.github.io/tech_docs/tutorial/javascript-ecosystem/nextjs-fastapi-todo/nextjs-fastapi-todo-tutorial-01.html)
-
-### 学習ガイド
-- [Webアプリ開発入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/webapp-intro/) ★共通基礎
-- [Python入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python-beginner/)
-- [JavaScript入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/)
-- [Node.js入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nodejs-beginner/)
-- [TypeScript学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/)
-- [React学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/)
-- [Next.js学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nextjs/)
-- [Tailwind CSS学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/)
-- [FastAPI学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/fastapi/)
-- [SQL入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/)
-- [SQLModel学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/sqlmodel/)
-- [Docker入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/docker/)
-
-### 仕様書
-- [Todo App v1 仕様書](https://fcircle-biz.github.io/tech_docs/specs/todo-app-v1/)
-- [注文管理システム 仕様書](https://fcircle-biz.github.io/tech_docs/specs/order-management-v1/docs/)
-
-### 実践課題
-- [注文管理システム実践課題](https://fcircle-biz.github.io/tech_docs/assignment/nextjs-order-management/nextjs-order-management-assignment-01.html) ★卒業課題
-
----
-
-## 卒業課題: 注文管理システム
+## Step 3: 卒業課題 - 注文管理システム
 
 チュートリアルとガイドで学んだ知識を応用して、より実践的なシステムを開発する卒業課題です。
 
@@ -429,7 +381,7 @@ Next.js（全15章）
 | Step 5 | 注文管理機能 | 複合データ操作、ステータス遷移 |
 | Step 6 | ダッシュボード | 集計クエリ、グラフ表示、データ可視化 |
 
-**推奨所要時間**: 約110〜170時間（1日8時間で約2〜3週間）
+**推奨所要時間**: 約110〜170時間（約14〜21人日）
 
 ### 仕様書（リファレンス）
 
@@ -454,3 +406,31 @@ Next.js（全15章）
 2. **データベースを設計**: database.md を参考にテーブル設計を理解
 3. **実装する**: implementation-guide.md に沿ってコードを書く
 4. **動作確認**: 各機能をブラウザで確認しながら進める
+
+---
+
+## 関連リンク
+
+### チュートリアル
+- [Next.js + FastAPI + PostgreSQL Todoアプリチュートリアル](https://fcircle-biz.github.io/tech_docs/tutorial/javascript-ecosystem/nextjs-fastapi-todo/nextjs-fastapi-todo-tutorial-01.html)
+
+### 学習ガイド
+- [Webアプリ開発入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/webapp-intro/) ★共通基礎
+- [Python入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python-beginner/)
+- [JavaScript入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/)
+- [Node.js入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nodejs-beginner/)
+- [TypeScript学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/)
+- [React学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/)
+- [Next.js学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nextjs/)
+- [Tailwind CSS学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/)
+- [FastAPI学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/fastapi/)
+- [SQL入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/)
+- [SQLModel学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/sqlmodel/)
+- [Docker入門学習ガイド](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/docker/)
+
+### 仕様書
+- [Todo App v1 仕様書](https://fcircle-biz.github.io/tech_docs/specs/todo-app-v1/)
+- [注文管理システム 仕様書](https://fcircle-biz.github.io/tech_docs/specs/order-management-v1/docs/)
+
+### 実践課題
+- [注文管理システム実践課題](https://fcircle-biz.github.io/tech_docs/assignment/nextjs-order-management/nextjs-order-management-assignment-01.html)
