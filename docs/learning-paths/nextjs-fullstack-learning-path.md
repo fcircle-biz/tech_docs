@@ -24,8 +24,11 @@
 | Step 4 | データ取得API | SQLModel でDB操作 |
 | Step 5 | CRUD操作 | 作成・更新・削除のAPI実装 |
 | Step 6 | Next.js基礎 | React + Tailwind CSS で画面作成 |
-| Step 7 | API連携 | フロントエンドとバックエンドの接続 |
-| Step 8 | 仕上げ | エラー処理、UI改善 |
+| Step 7 | CORS設定と一覧表示 | フロントエンドとバックエンドの接続 |
+| Step 8 | タスク追加 | POSTリクエストでデータ送信 |
+| Step 9 | 完了切替・削除 | PUT/DELETEリクエストの実装 |
+| Step 10 | フィルター機能 | クエリパラメータによる絞り込み |
+| Step 11 | 仕上げ | エラー処理、UI改善、まとめ |
 
 ### 所要時間
 
