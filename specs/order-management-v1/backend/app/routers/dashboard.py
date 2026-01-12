@@ -53,7 +53,7 @@ def get_summary(session: Session = Depends(get_session)):
 def get_recent_orders(limit: int = 10, session: Session = Depends(get_session)):
     statement = (
         select(Order, Customer.name)
-        .join(Customer)
+        .join(Customer, Order.customer_id == Customer.id)
         .order_by(Order.created_at.desc())
         .limit(limit)
     )
