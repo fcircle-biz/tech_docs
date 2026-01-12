@@ -20,6 +20,7 @@ No build/lint/test framework - content is static HTML/Markdown validated through
 - `/docs/guide/` - Comprehensive learning guides (theory-focused)
 - `/docs/tutorial/` - Hands-on project-based tutorials
 - `/docs/practice/` - Practice exercises and quizzes
+- `/docs/assignment/` - Programming assignments (specs-based practical exercises)
 - `/docs/slide/` - PDF slide materials with HTML viewer
 - `/docs/cheatsheet/` - Quick reference materials
 - `/templates/v2/` - HTML/CSS template standards (current)
@@ -75,6 +76,10 @@ Available automation agents in `.claude/agents/`:
 | `practice-creator-step1` | Create practice README.md | `@agent-practice-creator-step1 [tech-name]` |
 | `practice-creator-step2` | Generate round 1 HTML + common files | `@agent-practice-creator-step2 [readme-path]` |
 | `practice-creator-step3` | Generate single round HTML | `@agent-practice-creator-step3 [readme-path] [round]` |
+| `assignment-creator-workflow` | Full workflow for programming assignments (README → step1 → step2+ parallel) | `@agent-assignment-creator-workflow [specs-docs-path]` |
+| `assignment-creator-step1` | Create assignment README.md from specs | `@agent-assignment-creator-step1 [specs-docs-path]` |
+| `assignment-creator-step2` | Generate step 1 HTML + common files + mockups | `@agent-assignment-creator-step2 [readme-path]` |
+| `assignment-creator-step3` | Generate single step HTML | `@agent-assignment-creator-step3 [readme-path] [step]` |
 | `folder-structure-readme-updater` | Auto-generate folder READMEs | `@agent-folder-structure-readme-updater` |
 | `illustration-creator-workflow` | Full workflow (suggestions folder → parallel image generation & HTML insert) | `@agent-illustration-creator-workflow [directory-path]` |
 | `illustration-creator-step1` | Analyze HTML guides and create illustration_suggestions/ folder with chapter-XX.md files | `@agent-illustration-creator-step1 [directory-path]` |
@@ -130,6 +135,13 @@ HTML content must follow standards in `/templates/v2/`:
 - **sidebar-content.js** - Sidebar generation (for practice rounds)
 - **styles.css** - Common custom styles (question cards, answer toggle)
 - **main.js** - Common functionality (answer display toggle, dark mode)
+- **drawing-tool.js** - Drawing tool functionality
+
+### Template Files (`html_assignment/`) - For Programming Assignments
+- **assignment-template.html** - Assignment template (specs-based practical exercises)
+- **sidebar-content.js** - Sidebar generation (for assignment steps)
+- **styles.css** - Common custom styles (orange header for assignments)
+- **main.js** - Common functionality
 - **drawing-tool.js** - Drawing tool functionality
 
 ### Reference Documents (`reference/`)

@@ -1,6 +1,6 @@
 ---
 name: practice-creator-step2
-description: README.mdに基づいて第1回の練習問題HTMLと共通部品（JS/CSS）を生成し、練習問題フォルダの土台を作成するエージェント。<example>@agent-practice-creator-step2 docs/practice/programming-languages/python-ecosystem/python-basics/README.md</example>
+description: "[step2:] README.mdに基づいて第1回の練習問題HTMLと共通部品（JS/CSS）を生成し、練習問題フォルダの土台を作成するエージェント。<example>@agent-practice-creator-step2 docs/practice/programming-languages/python-ecosystem/python-basics/README.md</example>"
 model: sonnet
 color: blue
 ---

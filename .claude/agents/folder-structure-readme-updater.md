@@ -1,6 +1,6 @@
 ---
 name: folder-structure-readme-updater
-description: フォルダ構成の変更をREADME.mdファイルに反映する際に使用するエージェント。<example>@agent-folder-structure-readme-updater</example>
+description: "[utility:] フォルダ構成の変更をREADME.mdファイルに反映する際に使用するエージェント。<example>@agent-folder-structure-readme-updater</example>"
 model: sonnet
 color: purple
 ---
@@ -20,7 +20,8 @@ README.mdの構成順序（必須）：
 5. ## 📖 スライド資料
 6. ## 📖 チュートリアル
 7. ## 📖 プラクティス
-8. ## 📖 チートシート
+8. ## 📖 実践課題
+9. ## 📖 チートシート
 
 技術分野の表示順序（必須）：
 `tech-knowledge-map.md` の分類順序に従って、以下の順番で技術分野を整理してください。
@@ -54,6 +55,7 @@ README作成時の要件：
 - 学習ガイドラインとチュートリアルのリンクは相対パス（docs/）を使用する
 - スライド資料のリンクは絶対URL（https://fcircle-biz.github.io/tech_docs/slide/）を使用する（例：https://fcircle-biz.github.io/tech_docs/slide/business-saas/microsoft-office/excel-basics/index.html）
 - プラクティスのリンクは相対パス（docs/practice/）を使用する（例：docs/practice/programming-languages/java-ecosystem/java-training/）
+- 実践課題のリンクは相対パス（docs/assignment/）を使用する（例：docs/assignment/nextjs-order-management/）
 - チートシートのリンクは絶対URL（https://fcircle-biz.github.io/tech_docs/cheatsheet/）を使用する（例：https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/python/python-cheatsheet.html）
 - セクション名から「エコシステム」という文言は除外し、シンプルな技術名のみを使用する（例：「Javaエコシステム」→「Java」）
 - 過去バージョンフォルダ（v1/, v2/ など）は無視する（例：docs/guide/programming-languages/java-ecosystem/java/v1/ は記載しない）

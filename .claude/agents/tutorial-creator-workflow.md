@@ -1,6 +1,6 @@
 ---
 name: tutorial-creator-workflow
-description: 実践チュートリアルの全工程（README作成→第1ステップ生成→第2ステップ以降並列生成）を一括実行するワークフローエージェント。<example>@agent-tutorial-creator-workflow python-streamlit windows環境 postgresqlをdockerで構築</example>
+description: "[workflow:] 実践チュートリアルの全工程（README作成→第1ステップ生成→第2ステップ以降並列生成）を一括実行するワークフローエージェント。<example>@agent-tutorial-creator-workflow python-streamlit windows環境 postgresqlをdockerで構築</example>"
 model: opus
 color: cyan
 ---

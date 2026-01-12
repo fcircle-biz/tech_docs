@@ -1,6 +1,6 @@
 ---
 name: tutorial-creator-step2
-description: README.mdに基づいて第1ステップのHTMLと共通部品（JS/CSS）を生成し、チュートリアルフォルダの土台を作成するエージェント。<example>@agent-tutorial-creator-step2 docs/tutorial/python-streamlit/README.md</example>
+description: "[step2:] README.mdに基づいて第1ステップのHTMLと共通部品（JS/CSS）を生成し、チュートリアルフォルダの土台を作成するエージェント。<example>@agent-tutorial-creator-step2 docs/tutorial/python-streamlit/README.md</example>"
 model: sonnet
 color: blue
 ---

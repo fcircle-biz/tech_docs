@@ -1,6 +1,6 @@
 ---
 name: tutorial-creator-step1
-description: specs ディレクトリの仕様に基づいて技術チュートリアルを作成する際にこのエージェントを使用してください。<example>@agent-tutorial-creator-step1 todo-app-v1 nextjs-fastapi windows環境 postgresqlをdockerで構築</example>
+description: "[step1:] specs ディレクトリの仕様に基づいて技術チュートリアルを作成する際にこのエージェントを使用してください。<example>@agent-tutorial-creator-step1 todo-app-v1 nextjs-fastapi windows環境 postgresqlをdockerで構築</example>"
 model: opus
 color: purple
 ---

@@ -33,7 +33,7 @@
 ### 所要時間
 
 - **総所要時間**: 約17時間
-- **1日2時間の場合**: 約1〜2週間で完了
+- **1日8時間の場合**: 約2〜3日で完了
 
 ### 学習のポイント
 
@@ -52,7 +52,7 @@
 
 | 優先度 | ガイド | 章数 | 学習期間目安 | URL |
 |--------|--------|------|-------------|-----|
-| ⭐⭐⭐ | **Webアプリ開発入門** | 全14章 | 3-5週間 | [webapp-intro/](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/webapp-intro/webapp-intro-learning-material-01.html) |
+| ⭐⭐⭐ | **Webアプリ開発入門** | 全14章 | 4-6日 | [webapp-intro/](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/webapp-intro/webapp-intro-learning-material-01.html) |
 
 チュートリアルで「なんとなく動いた」部分の理解を深める基礎知識ガイドです。
 
@@ -79,10 +79,10 @@
 
 | 優先度 | ガイド | 章数 | 学習期間目安 | URL |
 |--------|--------|------|-------------|-----|
-| ⭐⭐⭐ | **Python入門** | 全12章 | 5-7週間 | [python-beginner/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python-beginner/python-beginner-learning-material-01.html) |
-| ⭐⭐⭐ | **FastAPI** | 全10章 | 7-10週間 | [fastapi/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/fastapi/fastapi-learning-material-01.html) |
-| ⭐⭐⭐ | **SQL入門** | 全12章 | 7-9週間 | [sql/](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-01.html) |
-| ⭐⭐ | **SQLModel** | 全10章 | 7-9週間 | [sqlmodel/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/sqlmodel/sqlmodel-learning-material-01.html) |
+| ⭐⭐⭐ | **Python入門** | 全12章 | 6-9日 | [python-beginner/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/python-beginner/python-beginner-learning-material-01.html) |
+| ⭐⭐⭐ | **FastAPI** | 全10章 | 9-13日 | [fastapi/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/fastapi/fastapi-learning-material-01.html) |
+| ⭐⭐⭐ | **SQL入門** | 全12章 | 9-12日 | [sql/](https://fcircle-biz.github.io/tech_docs/guide/data-ai-category/database/sql/sql-learning-material-01.html) |
+| ⭐⭐ | **SQLModel** | 全10章 | 9-12日 | [sqlmodel/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/python-ecosystem/sqlmodel/sqlmodel-learning-material-01.html) |
 
 #### Python入門 学習ガイド内容
 
@@ -146,12 +146,12 @@
 
 | 優先度 | ガイド | 章数 | 学習期間目安 | URL |
 |--------|--------|------|-------------|-----|
-| ⭐⭐⭐ | **JavaScript入門** | 全12章 | 8-12週間 | [javascript-beginner/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/javascript-learning-material-01.html) |
-| ⭐⭐⭐ | **TypeScript** | 全15章 | 10-14週間 | [typescript/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/typescript-learning-material-01.html) |
-| ⭐⭐⭐ | **React** | 全12章 | 10-13週間 | [react/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-01.html) |
-| ⭐⭐ | **Next.js** | 全15章 | 10-13週間 | [nextjs/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nextjs/nextjs-learning-material-01.html) |
-| ⭐ | **Tailwind CSS** | 全10章 | 3-5週間 | [tailwind-css/](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-01.html) |
-| ⭐ | **Node.js入門** | 全12章 | 7-10週間 | [nodejs-beginner/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nodejs-beginner/nodejs-beginner-learning-material-01.html) |
+| ⭐⭐⭐ | **JavaScript入門** | 全12章 | 10-15日 | [javascript-beginner/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/javascript-beginner/javascript-learning-material-01.html) |
+| ⭐⭐⭐ | **TypeScript** | 全15章 | 13-18日 | [typescript/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/typescript/typescript-learning-material-01.html) |
+| ⭐⭐⭐ | **React** | 全12章 | 13-17日 | [react/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/react/react-learning-material-01.html) |
+| ⭐⭐ | **Next.js** | 全15章 | 13-17日 | [nextjs/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nextjs/nextjs-learning-material-01.html) |
+| ⭐ | **Tailwind CSS** | 全10章 | 4-6日 | [tailwind-css/](https://fcircle-biz.github.io/tech_docs/guide/web-technologies/tailwind-css/tailwind-css-learning-material-01.html) |
+| ⭐ | **Node.js入門** | 全12章 | 9-13日 | [nodejs-beginner/](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/javascript-ecosystem/nodejs-beginner/nodejs-beginner-learning-material-01.html) |
 
 #### JavaScript入門 学習ガイド内容
 
@@ -255,7 +255,7 @@
 
 | 優先度 | ガイド | 章数 | 学習期間目安 | URL |
 |--------|--------|------|-------------|-----|
-| ⭐⭐⭐ | **Docker入門** | 全10章 | 3-5週間 | [docker/](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/docker/docker-learning-material-01.html) |
+| ⭐⭐⭐ | **Docker入門** | 全10章 | 4-6日 | [docker/](https://fcircle-biz.github.io/tech_docs/guide/cloud-infrastructure/docker/docker-learning-material-01.html) |
 
 #### Docker入門 学習ガイド内容
 
@@ -391,3 +391,66 @@ Next.js（全15章）
 
 ### 仕様書
 - [Todo App v1 仕様書](https://fcircle-biz.github.io/tech_docs/specs/todo-app-v1/)
+- [注文管理システム 仕様書](https://fcircle-biz.github.io/tech_docs/specs/order-management-v1/docs/)
+
+### 実践課題
+- [注文管理システム実践課題](https://fcircle-biz.github.io/tech_docs/assignment/nextjs-order-management/nextjs-order-management-assignment-01.html) ★卒業課題
+
+---
+
+## 卒業課題: 注文管理システム
+
+チュートリアルとガイドで学んだ知識を応用して、より実践的なシステムを開発する卒業課題です。
+
+### 課題概要
+
+飲食店向けの注文管理システムを一から開発します。Todoアプリからのステップアップとして、以下を習得できます：
+
+| 項目 | Todoアプリ | 注文管理システム |
+|------|-----------|-----------------|
+| テーブル数 | 1テーブル | 4テーブル |
+| リレーション | なし | 外部キー、1対多 |
+| データ操作 | 単純なCRUD | JOINを使った複合クエリ |
+| ステータス管理 | 完了/未完了 | 複数ステータス遷移 |
+| 集計機能 | なし | 売上集計、ダッシュボード |
+
+### 実践課題（ステップバイステップ教材）
+
+**[注文管理システム実践課題](https://fcircle-biz.github.io/tech_docs/assignment/nextjs-order-management/nextjs-order-management-assignment-01.html)** ⭐おすすめ
+
+仕様書とモック画面を参考に、自力でシステムを構築する実践形式の課題です。各ステップで必要な機能を段階的に実装していきます。
+
+| Step | 内容 | 習得できること |
+|------|------|--------------|
+| Step 1 | 環境構築・プロジェクトセットアップ | Docker, Next.js, FastAPI の開発環境構築 |
+| Step 2 | データベース設計・構築 | 複数テーブル設計、外部キー、リレーション |
+| Step 3 | 顧客管理機能 | 基本的なCRUD操作の実装パターン |
+| Step 4 | 商品管理機能 | カテゴリ分類、価格管理、画像対応 |
+| Step 5 | 注文管理機能 | 複合データ操作、ステータス遷移 |
+| Step 6 | ダッシュボード | 集計クエリ、グラフ表示、データ可視化 |
+
+**推奨所要時間**: 約110〜170時間（1日8時間で約2〜3週間）
+
+### 仕様書（リファレンス）
+
+実装の参考資料として、以下の仕様書も用意しています：
+
+| ドキュメント | 内容 |
+|-------------|------|
+| [README.md](https://fcircle-biz.github.io/tech_docs/specs/order-management-v1/docs/) | システム仕様書（機能、API設計） |
+| [database.md](https://fcircle-biz.github.io/tech_docs/specs/order-management-v1/docs/database.md) | データベース設計（ER図、SQL） |
+| [implementation-guide.md](https://fcircle-biz.github.io/tech_docs/specs/order-management-v1/docs/implementation-guide.md) | 実装ガイド（ステップバイステップ） |
+
+### 取り組み方
+
+**実践課題で学ぶ場合（推奨）**:
+1. 実践課題のStep 1から順番に進める
+2. 各Stepの説明とモック画面を参考に実装
+3. つまずいたら仕様書を参照
+4. 動作確認しながら次のStepへ
+
+**仕様書だけで挑戦する場合**:
+1. **仕様を理解する**: README.md を読んで機能要件を把握
+2. **データベースを設計**: database.md を参考にテーブル設計を理解
+3. **実装する**: implementation-guide.md に沿ってコードを書く
+4. **動作確認**: 各機能をブラウザで確認しながら進める
