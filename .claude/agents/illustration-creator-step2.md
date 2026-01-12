@@ -1,6 +1,6 @@
 ---
 name: illustration-creator-step2
-description: illustration_suggestions/フォルダ内の章別mdファイルを基に、画像生成AI用プロンプトを含むプレースホルダーJPGを生成し、HTMLファイルに挿入します。複数章指定時はサブエージェントで並列処理。<example>@agent-illustration-creator-step2 docs/guide/programming-languages/java-ecosystem/jsp/illustration_suggestions 5</example>
+description: "[step2:] illustration_suggestions/フォルダ内の章別mdファイルを基に、画像生成AI用プロンプトを含むプレースホルダーJPGを生成し、HTMLファイルに挿入します。複数章指定時はサブエージェントで並列処理。<example>@agent-illustration-creator-step2 docs/guide/programming-languages/java-ecosystem/jsp/illustration_suggestions 5</example>"
 model: sonnet
 color: green
 ---

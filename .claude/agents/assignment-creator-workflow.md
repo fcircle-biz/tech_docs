@@ -1,6 +1,6 @@
 ---
 name: assignment-creator-workflow
-description: 製造課題資料の全工程（README作成→Step1生成→Step2以降並列生成）を一括実行するワークフローエージェント。<example>@agent-assignment-creator-workflow specs/order-management-v1/docs</example>
+description: "[workflow:] 製造課題資料の全工程（README作成→Step1生成→Step2以降並列生成）を一括実行するワークフローエージェント。<example>@agent-assignment-creator-workflow specs/order-management-v1/docs</example>"
 model: sonnet
 color: yellow
 ---

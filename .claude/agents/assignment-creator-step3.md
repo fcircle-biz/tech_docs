@@ -1,6 +1,6 @@
 ---
 name: assignment-creator-step3
-description: README.mdに基づいて指定した1ステップ分のHTMLを生成するエージェント。step2で土台作成後に使用。<example>@agent-assignment-creator-step3 docs/assignment/order-management-v1/README.md 2</example>
+description: "[step3:] README.mdに基づいて指定した1ステップ分のHTMLを生成するエージェント。step2で土台作成後に使用。<example>@agent-assignment-creator-step3 docs/assignment/order-management-v1/README.md 2</example>"
 model: sonnet
 color: green
 ---

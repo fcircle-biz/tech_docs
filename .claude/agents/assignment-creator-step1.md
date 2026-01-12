@@ -1,6 +1,6 @@
 ---
 name: assignment-creator-step1
-description: プログラム製造課題資料のREADME.mdを作成するエージェント。specsディレクトリの設計書を分析してカリキュラムを設計します。<example>@agent-assignment-creator-step1 specs/order-management-v1/docs</example>
+description: "[step1:] プログラム製造課題資料のREADME.mdを作成するエージェント。specsディレクトリの設計書を分析してカリキュラムを設計します。<example>@agent-assignment-creator-step1 specs/order-management-v1/docs</example>"
 model: opus
 color: purple
 ---

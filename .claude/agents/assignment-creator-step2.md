@@ -1,6 +1,6 @@
 ---
 name: assignment-creator-step2
-description: README.mdに基づいてStep1のHTMLと共通部品（JS/CSS）を生成し、製造課題フォルダの土台を作成するエージェント。<example>@agent-assignment-creator-step2 docs/assignment/order-management-v1/README.md</example>
+description: "[step2:] README.mdに基づいてStep1のHTMLと共通部品（JS/CSS）を生成し、製造課題フォルダの土台を作成するエージェント。<example>@agent-assignment-creator-step2 docs/assignment/order-management-v1/README.md</example>"
 model: sonnet
 color: blue
 ---

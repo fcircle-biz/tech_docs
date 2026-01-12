@@ -1,6 +1,6 @@
 ---
 name: cheatsheet-creator
-description: 技術チートシート（1ページ完結型クイックリファレンス）を生成するエージェント。<example>@agent-cheatsheet-creator SQL data-ai-category/database</example>
+description: "[utility:] 技術チートシート（1ページ完結型クイックリファレンス）を生成するエージェント。<example>@agent-cheatsheet-creator SQL data-ai-category/database</example>"
 model: sonnet
 color: cyan
 ---

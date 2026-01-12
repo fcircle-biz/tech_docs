@@ -1,6 +1,6 @@
 ---
 name: tech-guide-creator-step2
-description: README.mdに基づいて第1章のHTMLと共通部品（JS/CSS）を生成し、技術フォルダの土台を作成するエージェント。<example>@agent-tech-guide-creator-step2 docs/guide/cloud-infrastructure/docker/README.md</example>
+description: "[step2:] README.mdに基づいて第1章のHTMLと共通部品（JS/CSS）を生成し、技術フォルダの土台を作成するエージェント。<example>@agent-tech-guide-creator-step2 docs/guide/cloud-infrastructure/docker/README.md</example>"
 model: sonnet
 color: blue
 ---

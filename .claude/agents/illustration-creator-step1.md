@@ -1,6 +1,6 @@
 ---
 name: illustration-creator-step1
-description: HTMLガイドを分析し、図解が必要な箇所を提案するMarkdownレポートを生成します。<example>@agent-illustration-creator-step1 docs/guide/programming-languages/java-ecosystem/jsp</example>
+description: "[step1:] HTMLガイドを分析し、図解が必要な箇所を提案するMarkdownレポートを生成します。<example>@agent-illustration-creator-step1 docs/guide/programming-languages/java-ecosystem/jsp</example>"
 model: sonnet
 color: blue
 ---

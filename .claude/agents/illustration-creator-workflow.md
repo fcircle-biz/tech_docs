@@ -1,6 +1,6 @@
 ---
 name: illustration-creator-workflow
-description: 図解作成の全工程（提案レポート生成→プレースホルダー画像生成＆HTML挿入）を一括実行するワークフローエージェント。<example>@agent-illustration-creator-workflow docs/guide/programming-languages/java-ecosystem/jsp</example>
+description: "[workflow:] 図解作成の全工程（提案レポート生成→プレースホルダー画像生成＆HTML挿入）を一括実行するワークフローエージェント。<example>@agent-illustration-creator-workflow docs/guide/programming-languages/java-ecosystem/jsp</example>"
 model: opus
 color: cyan
 ---

@@ -1,6 +1,6 @@
 ---
 name: practice-creator-step1
-description: 練習問題資料のREADME.mdを作成するエージェント。<example>@agent-practice-creator-step1 python-basics</example>
+description: "[step1:] 練習問題資料のREADME.mdを作成するエージェント。<example>@agent-practice-creator-step1 python-basics</example>"
 model: opus
 color: purple
 ---

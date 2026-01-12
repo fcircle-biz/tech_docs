@@ -1,6 +1,6 @@
 ---
 name: practice-creator-workflow
-description: 練習問題資料の全工程（README作成→第1回生成→第2回以降並列生成）を一括実行するワークフローエージェント。<example>@agent-practice-creator-workflow python-basics</example>
+description: "[workflow:] 練習問題資料の全工程（README作成→第1回生成→第2回以降並列生成）を一括実行するワークフローエージェント。<example>@agent-practice-creator-workflow python-basics</example>"
 model: opus
 color: cyan
 ---
