@@ -12,23 +12,23 @@
     'use strict';
 
     // ========================================
-    // TODO: プロジェクト情報をカスタマイズ
+    // プロジェクト情報
     // ========================================
     const projectInfo = {
-        title: '[課題名]',
-        description: '[課題の簡単な説明]'
+        title: '注文管理システム',
+        description: 'Next.js + FastAPI + PostgreSQLで構築する飲食店・小売店向けの注文管理システム'
     };
 
     // ========================================
-    // TODO: ステップの定義データをカスタマイズ
+    // ステップの定義データ
     // ========================================
     const steps = [
-        { number: 1, title: '環境構築', file: 'assignment-step-01.html' },
-        { number: 2, title: '顧客管理機能', file: 'assignment-step-02.html' },
-        { number: 3, title: '商品管理機能', file: 'assignment-step-03.html' },
-        { number: 4, title: '注文管理機能', file: 'assignment-step-04.html' },
-        { number: 5, title: 'ダッシュボード', file: 'assignment-step-05.html' },
-        { number: 6, title: '仕上げ', file: 'assignment-step-06.html' }
+        { number: 1, title: '環境構築', file: 'nextjs-order-management-assignment-01.html' },
+        { number: 2, title: '顧客管理機能', file: 'nextjs-order-management-assignment-02.html' },
+        { number: 3, title: '商品管理機能', file: 'nextjs-order-management-assignment-03.html' },
+        { number: 4, title: '注文管理機能', file: 'nextjs-order-management-assignment-04.html' },
+        { number: 5, title: 'ダッシュボード機能', file: 'nextjs-order-management-assignment-05.html' },
+        { number: 6, title: '仕上げ', file: 'nextjs-order-management-assignment-06.html' }
     ];
 
     // 現在のページのファイル名を取得
