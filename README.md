@@ -173,7 +173,7 @@
 
 ### フルスタック開発
 
--   [**Next.js フルスタック学習パス**](docs/learning-paths/nextjs-fullstack-learning-path.md) - Next.js + FastAPI + PostgreSQL Todoアプリチュートリアルを効果的に学習するためのロードマップ。実践→深掘り型のアプローチで、まずチュートリアルで全体を体験し、その後各技術（Webアプリ開発入門、JavaScript、TypeScript、React、Next.js、FastAPI、SQL、SQLAlchemy、Docker）を深く学習
+-   [**Next.js フルスタック学習パス**](docs/learning-paths/nextjs-fullstack-learning-path.md) - Next.js + FastAPI + PostgreSQL Todoアプリチュートリアルを効果的に学習するためのロードマップ。実践→深掘り型のアプローチで、まずチュートリアルで全体を体験し、その後各技術（Webアプリ開発入門、JavaScript、TypeScript、React、Next.js、FastAPI、SQL、SQLModel、Docker）を深く学習
 
 ------------------------------------------------------------------------
 
