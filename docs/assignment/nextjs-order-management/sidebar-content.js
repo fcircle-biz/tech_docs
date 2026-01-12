@@ -125,12 +125,12 @@
                             </a>
                         </li>
                         <li>
-                            <a href="../../../specs/nextjs-order-management/docs/README.md" class="text-slate-600 hover:text-primary-600 flex items-center gap-2">
+                            <a href="../../../specs/nextjs-order-management/docs/README.pdf" target="_blank" class="text-slate-600 hover:text-primary-600 flex items-center gap-2">
                                 <i class="fas fa-book-open text-xs"></i>システム仕様書
                             </a>
                         </li>
                         <li>
-                            <a href="../../../specs/nextjs-order-management/docs/database.md" class="text-slate-600 hover:text-primary-600 flex items-center gap-2">
+                            <a href="../../../specs/nextjs-order-management/docs/database.pdf" target="_blank" class="text-slate-600 hover:text-primary-600 flex items-center gap-2">
                                 <i class="fas fa-database text-xs"></i>データベース設計
                             </a>
                         </li>

@@ -33,7 +33,7 @@ step2により以下が作成されている必要があります：
 - `styles.css`
 - `main.js`
 - `drawing-tool.js`
-- `mockups/` フォルダ
+- `docs/` フォルダ（設計書PDF＋mockups/）
 - **Step1のHTMLファイル（[課題名]-assignment-01.html）** ← これがベーステンプレートになる
 
 ## 入力形式
@@ -56,12 +56,14 @@ step2により以下が作成されている必要があります：
 - 参照すべき設計書セクション
 - 完了条件
 
-### 2. 元の仕様書を参照
+### 2. 設計資料を参照
 
-README.mdに記載された仕様書フォルダを参照し、該当ステップの詳細情報を取得：
-- `specs/[課題名]/docs/README.md` - API設計、バリデーション等
-- `specs/[課題名]/docs/implementation-guide.md` - 実装ヒント
-- `specs/[課題名]/docs/database.md` - DB設計（必要に応じて）
+課題フォルダ内の `docs/` にコピーされた設計書を参照し、該当ステップの詳細情報を取得：
+- `docs/README.md` - API設計、バリデーション等
+- `docs/implementation-guide.md` - 実装ヒント
+- `docs/database.md` - DB設計（必要に応じて）
+
+※ HTMLからは設計書のPDF版（`docs/README.pdf` 等）にリンク
 
 ### 3. 既存ファイル確認
 
@@ -70,7 +72,7 @@ README.mdに記載された仕様書フォルダを参照し、該当ステッ�
 - `styles.css`
 - `main.js`
 - `drawing-tool.js`
-- `mockups/`
+- `docs/`（設計書PDF＋mockups/）
 - **`[課題名]-assignment-01.html`（Step1 HTML）** ← 必須
 
 **存在しない場合は、先にstep2を実行するよう報告して終了**
@@ -143,13 +145,13 @@ HTMLファイル生成が完了したら、生成されたファイルを報告
                 onclick="showMockup('edit')">編集画面</button>
     </div>
     <div id="mockup-list" class="mockup-frame">
-        <iframe src="mockups/customers.html" class="w-full h-[500px] border rounded-lg"></iframe>
+        <iframe src="docs/mockups/customers.html" class="w-full h-[500px] border rounded-lg"></iframe>
     </div>
     <div id="mockup-new" class="mockup-frame hidden">
-        <iframe src="mockups/customers-new.html" class="w-full h-[500px] border rounded-lg"></iframe>
+        <iframe src="docs/mockups/customers-new.html" class="w-full h-[500px] border rounded-lg"></iframe>
     </div>
     <div id="mockup-edit" class="mockup-frame hidden">
-        <iframe src="mockups/customers-edit.html" class="w-full h-[500px] border rounded-lg"></iframe>
+        <iframe src="docs/mockups/customers-edit.html" class="w-full h-[500px] border rounded-lg"></iframe>
     </div>
 </div>
 ```

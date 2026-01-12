@@ -51,7 +51,7 @@ color: purple
 ### 2. 出力先ディレクトリの決定
 
 - 出力先: `/docs/assignment/[課題名]/`
-- 課題名はspecsのフォルダ名から抽出（例: `order-management-v1`）
+- 課題名はspecsのフォルダ名から抽出（例: `nextjs-order-management`）
 - 既存ファイルがある場合はバージョン管理を行う（tech-guide-creator-step1と同様）
 
 ### 3. ステップ構成の設計
@@ -104,10 +104,10 @@ color: purple
 
 | 資料 | 内容 | リンク |
 |------|------|--------|
-| システム仕様書 | 機能一覧、API設計、バリデーション | [README.md](仕様書へのリンク) |
-| データベース設計 | ER図、テーブル定義、SQL | [database.md](DB設計へのリンク) |
-| 実装ガイド | 実装の進め方のヒント | [implementation-guide.md](ガイドへのリンク) |
-| モック画面 | 完成イメージのHTML | [mockups/](モック一覧へのリンク) |
+| システム仕様書 | 機能一覧、API設計、バリデーション | [README.pdf](./docs/README.pdf) |
+| データベース設計 | ER図、テーブル定義、SQL | [database.pdf](./docs/database.pdf) |
+| 実装ガイド | 実装の進め方のヒント | [implementation-guide.pdf](./docs/implementation-guide.pdf) |
+| モック画面 | 完成イメージのHTML | [mockups/](./docs/mockups/index.html) |
 
 ## 学習コンテンツ
 
@@ -148,12 +148,18 @@ color: purple
 - [学習ガイド]([リンク]) - 各技術の詳細を学びたい場合
 ```
 
-## モック画面の扱い
+## 設計資料のコピー
 
-仕様書フォルダ内の `mockups/` ディレクトリのHTMLファイルは、そのまま課題資料フォルダにコピーします：
-- コピー先: `/docs/assignment/[課題名]/mockups/`
-- README.mdからモック画面へのリンクを設定
-- 各ステップのHTML内ではiframeで表示
+仕様書フォルダ内の `docs/` ディレクトリ全体を課題資料フォルダにコピーします：
+- コピー元: `specs/[課題名]/docs/` 全体
+- コピー先: `/docs/assignment/[課題名]/docs/`
+- 含まれるファイル:
+  - `README.md` → PDF変換して `README.pdf` も生成
+  - `database.md` → PDF変換して `database.pdf` も生成
+  - `implementation-guide.md` → PDF変換して `implementation-guide.pdf` も生成
+  - `mockups/` ディレクトリ（HTMLモック画面一覧）
+- README.md・各ステップHTMLからは `./docs/` の相対パスでリンク
+- 設計書はPDF形式でリンク（ブラウザで直接閲覧可能）
 
 ## ファイル命名規則
 
@@ -170,6 +176,9 @@ color: purple
 以下を生成して報告：
 1. `/docs/assignment/[課題名]/` ディレクトリを作成
 2. `/docs/assignment/[課題名]/README.md` を生成
-3. `/docs/assignment/[課題名]/mockups/` にモック画面をコピー
+3. `/docs/assignment/[課題名]/docs/` に設計資料をコピー
+   - `specs/[課題名]/docs/` 全体をコピー
+   - 各Markdownファイル（README.md, database.md, implementation-guide.md）をPDFに変換
+   - PDF変換コマンド: `node scripts/md-to-pdf.mjs [mdファイルパス]`
 
 **HTMLファイルの生成は step2, step3 エージェントが担当します。**

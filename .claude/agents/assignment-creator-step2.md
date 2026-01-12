@@ -79,7 +79,19 @@ const steps = [
 4. **実装ヒント** - つまずきやすいポイント（コードは書かない）
 5. **完了チェックリスト** - 動作確認項目
 
+#### 設計資料へのリンク
+
+設計書（PDF）へのリンクは `./docs/` ディレクトリを参照：
+
+```html
+<a href="docs/README.pdf" target="_blank">システム仕様書</a>
+<a href="docs/database.pdf" target="_blank">データベース設計</a>
+<a href="docs/implementation-guide.pdf" target="_blank">実装ガイド</a>
+```
+
 #### モック画面のiframe表示
+
+モック画面は `docs/mockups/` ディレクトリを参照：
 
 ```html
 <section class="mb-10">
@@ -94,13 +106,13 @@ const steps = [
                 <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
                 <div class="w-3 h-3 rounded-full bg-green-400"></div>
             </div>
-            <span class="text-sm text-slate-500 ml-2">mockups/dashboard.html</span>
-            <a href="mockups/dashboard.html" target="_blank"
+            <span class="text-sm text-slate-500 ml-2">docs/mockups/dashboard.html</span>
+            <a href="docs/mockups/dashboard.html" target="_blank"
                class="ml-auto text-sm text-primary-600 hover:text-primary-700">
                 <i class="fas fa-external-link-alt mr-1"></i>別タブで開く
             </a>
         </div>
-        <iframe src="mockups/dashboard.html"
+        <iframe src="docs/mockups/dashboard.html"
                 class="w-full h-[500px] border-0"
                 title="ダッシュボード画面のモック"></iframe>
     </div>
@@ -202,11 +214,18 @@ docs/assignment/order-management-v1/
 ├── styles.css              # テンプレートからコピー（色変更済み）
 ├── main.js                 # テンプレートからコピー
 ├── drawing-tool.js         # テンプレートからコピー
-├── mockups/                # 仕様書からコピー
-│   ├── index.html
-│   ├── dashboard.html
-│   ├── customers.html
-│   └── ...
+├── docs/                   # 設計資料（step1でコピー済み）
+│   ├── README.md
+│   ├── README.pdf          # PDF変換済み
+│   ├── database.md
+│   ├── database.pdf        # PDF変換済み
+│   ├── implementation-guide.md
+│   ├── implementation-guide.pdf  # PDF変換済み
+│   └── mockups/            # モック画面一覧
+│       ├── index.html
+│       ├── dashboard.html
+│       ├── customers.html
+│       └── ...
 ├── README.md               # step1で作成済み
 └── order-management-v1-assignment-01.html  # Step1
 ```
