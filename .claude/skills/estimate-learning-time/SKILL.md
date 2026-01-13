@@ -175,7 +175,72 @@ description: 既存資料のREADME.mdを読み込み、推奨所要時間を見�
 6. **README.mdの更新**: 既存の「推奨学習期間」または「推奨所要時間」セクションを新しいテーブルで置換
    - セクションが存在しない場合は「学習の進め方」の後に追加
 
-7. **結果の報告**: 更新内容をユーザーに報告
+7. **HTMLファイルの更新**: スクリプトを使用してHTMLファイルの時間表示を更新
+   - ヘッダーの合計推奨時間
+   - 各章/ステップ/回の個別目安時間
+
+8. **結果の報告**: 更新内容をユーザーに報告
+
+## HTMLファイル更新スクリプト
+
+見積もり後、HTMLファイルの時間表示を更新するためのスクリプトを提供。
+
+### スクリプトの場所
+
+`scripts/update_html_time.py`
+
+### 基本的な使い方
+
+```bash
+# 合計時間のみ更新
+python scripts/update_html_time.py --dir docs/guide/web-technologies/html-css --total "約8〜12時間"
+
+# 合計時間と個別時間を更新
+python scripts/update_html_time.py \
+    --dir docs/guide/web-technologies/html-css \
+    --total "約8〜12時間" \
+    --times '{"01": "約30分", "02": "約45分", "03": "約45分"}'
+
+# ドライラン（実際には更新しない）
+python scripts/update_html_time.py --dir docs/guide/... --total "約8時間" --dry-run
+```
+
+### JSON形式での指定（推奨）
+
+```bash
+python scripts/update_html_time.py --json '{
+    "dir": "docs/guide/web-technologies/html-css",
+    "total": "約8〜12時間",
+    "times": {
+        "01": "約30分",
+        "02": "約45分",
+        "03": "約45分",
+        "04": "約45分",
+        "05": "約45分"
+    }
+}'
+```
+
+### パラメータ
+
+| パラメータ | 説明 |
+|-----------|------|
+| `--dir` | HTMLファイルのディレクトリパス |
+| `--total` | ヘッダーに表示する合計推奨時間（例: `約8〜12時間`） |
+| `--times` | 個別時間のJSON（キーはファイル番号、値は時間） |
+| `--json` | 全パラメータをJSON形式で指定 |
+| `--dry-run` | 実際には更新せず、対象ファイルを表示 |
+
+### 更新対象
+
+1. **ヘッダー合計時間**: `<span>推奨 約XX〜YY時間</span>`
+2. **個別目安時間**: `<i class="fas fa-clock mr-1"></i>目安: 約XX分`
+
+### ファイル番号の対応
+
+ファイル名の末尾の番号（2桁）をキーとして使用:
+- `html-css-learning-material-01.html` → キー: `"01"`
+- `html-css-learning-material-02.html` → キー: `"02"`
 
 ## 注意事項
 
