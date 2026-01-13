@@ -25,19 +25,34 @@ from pathlib import Path
 
 
 def update_total_time(content: str, total_time: str) -> str:
-    """ヘッダーの合計推奨時間を更新"""
-    # パターン: <span>推奨 約XX〜YY時間</span> または <span>推奨 約XX時間</span>
-    pattern = r'(<span>推奨 )(約[^<]+)(</span>)'
-    replacement = rf'\g<1>{total_time}\g<3>'
+    """ヘッダーの合計所要時間を更新"""
+    # パターン: <span>推奨 XX分</span> または <span>所要時間 約XX〜YY時間</span>
+    # 「推奨」を「所要時間」に統一
+    pattern = r'<span>(?:推奨|所要時間) (約?[^<]+)</span>'
+    replacement = f'<span>所要時間 {total_time}</span>'
     return re.sub(pattern, replacement, content)
 
 
 def update_individual_time(content: str, time_value: str) -> str:
-    """章/ステップ/回の個別目安時間を更新"""
-    # パターン: <i class="fas fa-clock mr-1"></i>目安: 約XX分 または 約XX時間
-    pattern = r'(<i class="fas fa-clock mr-1"></i>目安: )(約[^<]+)'
-    replacement = rf'\g<1>{time_value}'
-    return re.sub(pattern, replacement, content)
+    """章/ステップ/回の個別所要時間を更新または追加"""
+    # まず既存の所要時間/目安時間を更新を試みる
+    # パターン: <i class="fas fa-clock mr-1"></i>所要時間: または 目安: 約XX分 または 約XX時間
+    # 「目安:」を「所要時間:」に統一
+    pattern = r'<i class="fas fa-clock mr-1"></i>(?:所要時間|目安): (約?[^<]+)'
+    if re.search(pattern, content):
+        replacement = f'<i class="fas fa-clock mr-1"></i>所要時間: {time_value}'
+        return re.sub(pattern, replacement, content)
+
+    # 目安時間が存在しない場合は追加
+    # 章番号spanの閉じタグ後に目安時間spanを挿入
+    # パターン: bg-primary-100 text-primary-700"> の後の章番号とその閉じタグ
+    add_pattern = r'(bg-primary-100 text-primary-700">\s*(?:<!--[^>]*-->\s*)?(?:第\d+章|ステップ\d+|Step \d+|第\d+回)\s*</span>)(\s*</div>)'
+    time_span = f'''
+                        <span class="text-sm text-slate-500">
+                            <i class="fas fa-clock mr-1"></i>所要時間: {time_value}
+                        </span>'''
+    replacement = rf'\g<1>{time_span}\g<2>'
+    return re.sub(add_pattern, replacement, content, count=1)
 
 
 def get_html_files(directory: Path) -> list[Path]:
