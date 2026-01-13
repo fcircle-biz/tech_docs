@@ -1,26 +1,26 @@
 ---
-name: estimate-learning-time
-description: 既存資料のREADME.mdを読み込み、推奨所要時間を見積もって更新するスキル。学習ガイド、チュートリアル、練習問題、実践課題の各資料タイプに対応し、章/ステップ/回ごとの目安時間と合計時間をテーブル形式で生成する。
+name: re-estimate-learning-time
+description: 既存資料のREADME.mdを読み込み、推奨所要時間を再見積もりして更新するスキル。学習ガイド、チュートリアル、練習問題、実践課題の各資料タイプに対応し、章/ステップ/回ごとの目安時間と合計時間をテーブル形式で生成する。
 ---
 
-# Estimate Learning Time
+# Re-estimate Learning Time
 
-既存資料のREADME.mdを読み込み、推奨所要時間を見積もって更新するスキル。
+既存資料のREADME.mdを読み込み、推奨所要時間を再見積もりして更新するスキル。
 
 ## 概要
 
-このスキルは、docs/配下の各種学習資料のREADME.mdを分析し、コンテンツの複雑さと量に基づいて推奨所要時間を見積もる。見積もった時間は標準テーブル形式で出力され、README.mdの更新に使用される。
+このスキルは、docs/配下の各種学習資料のREADME.mdを分析し、コンテンツの複雑さと量に基づいて推奨所要時間を再見積もりする。見積もった時間は標準テーブル形式で出力され、README.mdとHTMLファイルの更新に使用される。
 
 ## 使用方法
 
 ```
-/estimate-learning-time [README.mdのパス]
+/re-estimate-learning-time [README.mdのパス]
 ```
 
 例:
-- `/estimate-learning-time docs/guide/web-technologies/html-css/README.md`
-- `/estimate-learning-time docs/tutorial/web-technologies/nextjs-fastapi/todo-app/README.md`
-- `/estimate-learning-time docs/practice/programming-languages/python-ecosystem/python-basics/README.md`
+- `/re-estimate-learning-time docs/guide/web-technologies/html-css/README.md`
+- `/re-estimate-learning-time docs/tutorial/web-technologies/nextjs-fastapi/todo-app/README.md`
+- `/re-estimate-learning-time docs/practice/programming-languages/python-ecosystem/python-basics/README.md`
 
 ## 資料タイプと見積もり基準
 
@@ -233,8 +233,8 @@ python scripts/update_html_time.py --json '{
 
 ### 更新対象
 
-1. **ヘッダー合計時間**: `<span>推奨 約XX〜YY時間</span>`
-2. **個別目安時間**: `<i class="fas fa-clock mr-1"></i>目安: 約XX分`
+1. **ヘッダー合計時間**: `<span>所要時間 約XX〜YY時間</span>`
+2. **個別所要時間**: `<i class="fas fa-clock mr-1"></i>所要時間: 約XX分`
 
 ### ファイル番号の対応
 
