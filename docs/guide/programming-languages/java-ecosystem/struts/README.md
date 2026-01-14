@@ -37,8 +37,6 @@ Struts 1.xとは何か、なぜフレームワークを使うのかを理解し�
 - MVCパターンの3つの役割を理解できる
 - Strutsの基本的なリクエスト処理の流れを説明できる
 
-**所要時間:** 約2時間
-
 ---
 
 ### [2. 開発環境の準備と最初のStrutsアプリケーション](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts/struts-learning-material-02.html)
@@ -48,8 +46,6 @@ Eclipse/IntelliJ IDEAでStrutsプロジェクトを作成する方法を学び�
 - Struts 1.xのライブラリをプロジェクトに追加できる
 - web.xmlにActionServletを設定できる
 - 簡単なStrutsアプリケーションを動作させられる
-
-**所要時間:** 約3時間
 
 ---
 
@@ -61,8 +57,6 @@ StrutsにおけるController役を担うActionクラスの作成方法を学び�
 - executeメソッドの引数と戻り値を理解できる
 - ActionForwardで画面遷移を制御できる
 
-**所要時間:** 約3時間
-
 ---
 
 ### [4. ActionFormの基礎 - フォームデータの管理](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts/struts-learning-material-04.html)
@@ -72,8 +66,6 @@ HTMLフォームから送信されたデータを受け取るActionFormの作成
 - ActionFormを継承してフォームBeanを作成できる
 - フォームの入力値をActionFormで受け取れる
 - DynaActionFormの使い方を理解できる
-
-**所要時間:** 約2.5時間
 
 ---
 
@@ -86,8 +78,6 @@ Strutsアプリケーションの中心となる設定ファイルstruts-config.
 - action-mappingsでURLとActionを紐付けられる
 - forwardで遷移先を設定できる
 
-**所要時間:** 約3時間
-
 ---
 
 ### [6. Strutsタグライブラリ入門 - JSPとの連携](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts/struts-learning-material-06.html)
@@ -98,8 +88,6 @@ JSPで使用するStrutsタグライブラリを学びます。html:form、html:
 - html:タグでフォーム要素を作成できる
 - bean:タグでデータを表示できる
 - logic:タグで条件分岐・繰り返し処理ができる
-
-**所要時間:** 約4時間
 
 ---
 
@@ -112,8 +100,6 @@ JSPで使用するStrutsタグライブラリを学びます。html:form、html:
 - ActionErrors/ActionMessagesでエラーを管理できる
 - html:errorsタグでエラーを表示できる
 
-**所要時間:** 約4時間
-
 ---
 
 ### [8. メッセージ管理とエラーハンドリング](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts/struts-learning-material-08.html)
@@ -124,8 +110,6 @@ JSPで使用するStrutsタグライブラリを学びます。html:form、html:
 - プロパティファイルにメッセージを定義できる
 - global-exceptionsで例外を処理できる
 - 適切なエラーページに遷移させられる
-
-**所要時間:** 約3時間
 
 ---
 
@@ -138,8 +122,6 @@ HTTPセッションを使ったユーザー状態の管理方法を学びます�
 - セッションにユーザー情報を保存・取得できる
 - ログインチェック処理を実装できる
 
-**所要時間:** 約4時間
-
 ---
 
 ### [10. データベース連携 - JDBCの知識を活かす](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts/struts-learning-material-10.html)
@@ -150,8 +132,6 @@ JDBC学習ガイドで習得した知識を活かし、Strutsアプリケーシ�
 - StrutsアプリケーションでJDBCを使用できる
 - 一覧表示、詳細表示機能を実装できる
 - データの登録・更新・削除機能を実装できる
-
-**所要時間:** 約5時間
 
 ---
 
@@ -164,8 +144,6 @@ JDBC学習ガイドで習得した知識を活かし、Strutsアプリケーシ�
 - ロケール切り替え機能を実装できる
 - bean:messageタグでメッセージを表示できる
 
-**所要時間:** 約3時間
-
 ---
 
 ### [12. 実践：タスク管理アプリケーション開発](https://fcircle-biz.github.io/tech_docs/guide/programming-languages/java-ecosystem/struts/struts-learning-material-12.html)
@@ -176,8 +154,6 @@ JDBC学習ガイドで習得した知識を活かし、Strutsアプリケーシ�
 - 実務レベルのコード構成を理解できる
 - Strutsアプリケーションの全体像を把握できる
 - 次のステップ（モダンフレームワーク）への準備ができる
-
-**所要時間:** 約6時間
 
 ---
 
@@ -203,18 +179,25 @@ JDBC学習ガイドで習得した知識を活かし、Strutsアプリケーシ�
    - Strutsのエラーは設定ミスが原因であることが多いです
    - スタックトレースから原因を特定する練習をしましょう
 
-## 推奨学習期間
+## 推奨所要時間
 
-- **基礎編**（第1章〜第5章）: 2〜3週間
-  - Strutsの基本構造、Action、ActionForm、設定ファイルを習得
+| 章 | 内容 | 目安時間 |
+|----------|------|----------|
+| 第1章 | MVCパターン入門 | 45分 |
+| 第2章 | 開発環境の準備と最初のアプリ | 1.5時間 |
+| 第3章 | Actionクラスの基礎 | 1.5時間 |
+| 第4章 | ActionFormの基礎 | 1.5時間 |
+| 第5章 | struts-config.xml設定ファイル | 1.5時間 |
+| 第6章 | Strutsタグライブラリ入門 | 2時間 |
+| 第7章 | フォーム処理とバリデーション | 2時間 |
+| 第8章 | メッセージ管理とエラーハンドリング | 1.5時間 |
+| 第9章 | セッション管理とログイン機能 | 2時間 |
+| 第10章 | データベース連携 | 2時間 |
+| 第11章 | 国際化対応（i18n） | 1.5時間 |
+| 第12章 | 総合演習 | 3時間 |
+| **合計** | | **約21時間** |
 
-- **応用編**（第6章〜第9章）: 2〜3週間
-  - タグライブラリ、バリデーション、セッション管理を習得
-
-- **実践編**（第10章〜第12章）: 2〜3週間
-  - データベース連携、国際化、総合演習
-
-**合計学習期間**: 6〜9週間（1日1〜2時間の学習を想定）
+※学習者のスキルレベルにより変動します。自分のペースで進めてください。
 
 ## 関連リソース
 
