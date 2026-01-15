@@ -67,6 +67,7 @@ Webページの基礎技術とフロントエンド開発
 - [Agile Development](./development-processes/agile-development/) - アジャイル開発（Scrum、XP、Kanban、スプリント、レトロスペクティブ）
 - [Waterfall Development](./development-processes/waterfall-development/) - ウォーターフォール開発（要件定義→設計→実装→テスト→運用保守）
 - [DevOps](./development-processes/devops/) - DevOps（CI/CD、Infrastructure as Code、自動化、監視、フィードバックループ）
+- [Software Testing](./development-processes/software-testing/) - ソフトウェアテスト入門（テストレベル、テスト技法、テストドキュメント、品質管理）
 
 ---
 
@@ -181,7 +182,8 @@ docs/guide/
 │   ├── git-github/                 # Git/GitHub入門
 │   ├── agile-development/          # アジャイル開発
 │   ├── waterfall-development/      # ウォーターフォール開発
-│   └── devops/                     # DevOps
+│   ├── devops/                     # DevOps
+│   └── software-testing/           # ソフトウェアテスト入門
 ├── design-modeling/                 # 設計手法・モデリング
 │   ├── software-design/            # ソフトウェア設計
 │   │   ├── uml/                    # UML
