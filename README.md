@@ -5,8 +5,8 @@
 ## 📋 目次
 
 -   [📖 概要](#-概要)
+-   [🗺️ 学習パス](#%EF%B8%8F-学習パス)
 -   [📖 学習ガイドライン](#-学習ガイドライン)
--   [📖 学習パス](#-学習パス)
 -   [📖 スライド資料](#-スライド資料)
 -   [📖 チュートリアル](#-チュートリアル)
 -   [📖 プラクティス](#-プラクティス)
@@ -28,6 +28,16 @@
 
 ------------------------------------------------------------------------
 
+## 🗺️ 学習パス
+
+特定の目標に向けた学習ロードマップを提供します。チュートリアルと各種学習ガイドを組み合わせた効果的な学習順序を示します。
+
+### フルスタック開発
+
+-   [**Next.js フルスタック学習パス**](docs/learning-paths/nextjs-fullstack-learning-path.md) - Next.js + FastAPI + PostgreSQL Todoアプリチュートリアルを効果的に学習するためのロードマップ。実践→深掘り型のアプローチで、まずチュートリアルで全体を体験し、その後各技術（Webアプリ開発入門、JavaScript、TypeScript、React、Next.js、FastAPI、SQL、SQLModel、Docker）を深く学習
+
+------------------------------------------------------------------------
+
 ## 📖 学習ガイドライン
 
 各技術の基礎から応用まで段階的に学べる包括的な学習ガイドです。理論的な理解と実践的なスキルを両立できるよう構成されています。
@@ -37,6 +47,7 @@
 #### Python
 
 -   [**Python入門学習ガイド**](docs/guide/programming-languages/python-ecosystem/python-beginner/README.md) - プログラミング完全未経験者向けPython入門12章構成カリキュラム。変数、条件分岐、繰り返し、関数、ファイル操作など、プログラミングの基礎を段階的に学習
+-   [**Python DB-API入門学習ガイド**](docs/guide/programming-languages/python-ecosystem/python-db-api/README.md) - Python標準のDB-API 2.0仕様に基づき、psycopg2ライブラリを使った実践的なデータベースプログラミングを12章で習得。コネクション管理、CRUD操作、パラメータ化クエリ、トランザクション制御、エラーハンドリング、接続プールまで体系的に学習
 -   [**Django学習ガイド**](docs/guide/programming-languages/python-ecosystem/django/README.md) - Djangoフレームワークを使用したWebアプリケーション開発の基礎から実践まで15章完成カリキュラム。MVCパターン、モデル、ビュー、テンプレート、フォーム処理、セキュリティ対策を習得
 -   [**FastAPI学習ガイド**](docs/guide/programming-languages/python-ecosystem/fastapi/README.md) - FastAPIを使用した高性能WebAPI開発の基礎から実践まで10章完成カリキュラム
 -   [**SQLAlchemy学習ガイド**](docs/guide/programming-languages/python-ecosystem/sqlalchemy/README.md) - SQLAlchemyを使用したPythonデータベースプログラミングの基礎から実践まで8章完成カリキュラム
@@ -97,6 +108,8 @@
 ### データベース
 
 -   [**SQL学習ガイド**](docs/guide/data-ai-category/database/sql/README.md) - SQL基本概念からPostgreSQL高度機能まで12章完成カリキュラム
+-   [**PostgreSQL入門学習ガイド**](docs/guide/data-ai-category/database/postgresql/README.md) - PostgreSQLの特徴と実践的な活用方法を12章で習得。pgAdmin操作、豊富なデータ型（配列、JSON、UUID）、インデックス詳解、トランザクション、ビュー、バックアップ、権限管理まで体系的に学習
+-   [**MySQL入門学習ガイド**](docs/guide/data-ai-category/database/mysql/README.md) - MySQLの特徴と実践的な活用方法を12章で習得。MySQL Workbench操作、データ型選択、ストレージエンジン（InnoDB/MyISAM）、インデックス、トランザクション、ビュー、ストアドプロシージャ、文字コード設定、バックアップ、権限管理まで体系的に学習
 -   [**Oracle学習ガイド**](docs/guide/data-ai-category/database/oracle/README.md) - Oracle Database入門から基本的な運用まで10章完成カリキュラム
 -   [**PL/SQL学習ガイド**](docs/guide/data-ai-category/database/plsql/README.md) - Oracle PL/SQLの基礎から応用まで12章完成カリキュラム
 -   [**DB2学習ガイド**](docs/guide/data-ai-category/database/db2/README.md) - IBM DB2データベース入門からDocker環境での運用管理まで8章完成カリキュラム
@@ -164,16 +177,6 @@
 
 -   [**ITパスポート試験学習ガイドライン**](docs/guide/certification/it-passport/README.md) - ITパスポート試験（情報処理技術者試験の入門レベル国家資格）の合格を目指す方向けに、体系的かつ効率的な学習カリキュラムを提供。ストラテジ系、マネジメント系、テクノロジ系の全分野を網羅し、過去問演習まで10章完成カリキュラム
 -   [**ITパスポート試験 練習問題集**](docs/guide/certification/it-passport-practice/README.md) - ITパスポート試験の各章・各節ごとの練習問題を4択形式で提供。コンピュータ、データベース、ネットワーク、セキュリティ、システム導入・開発、プロジェクトマネジメント、企業活動、ITの活用、法務・財務まで10章完成（約290問収録）
-
-------------------------------------------------------------------------
-
-## 📖 学習パス
-
-特定の目標に向けた学習ロードマップを提供します。チュートリアルと各種学習ガイドを組み合わせた効果的な学習順序を示します。
-
-### フルスタック開発
-
--   [**Next.js フルスタック学習パス**](docs/learning-paths/nextjs-fullstack-learning-path.md) - Next.js + FastAPI + PostgreSQL Todoアプリチュートリアルを効果的に学習するためのロードマップ。実践→深掘り型のアプローチで、まずチュートリアルで全体を体験し、その後各技術（Webアプリ開発入門、JavaScript、TypeScript、React、Next.js、FastAPI、SQL、SQLModel、Docker）を深く学習
 
 ------------------------------------------------------------------------
 
