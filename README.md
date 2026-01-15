@@ -268,37 +268,19 @@ PDF形式のスライド教材をブラウザで閲覧できる教材です。
 
 技術要素を1ページでまとめたクイックリファレンス資料です。
 
-### プログラミング言語
-
-#### Java
-
--   [**Java基礎チートシート**](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/java-ecosystem/java-basics/index.html) - Java言語の基本構文、データ型、制御構造、OOP概念を1ページにまとめたクイックリファレンス
--   [**JDBCチートシート**](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/java-ecosystem/jdbc/index.html) - JDBC接続、SQL実行、トランザクション処理を1ページにまとめたクイックリファレンス
--   [**Servlet/JSPチートシート**](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/java-ecosystem/servlet-jsp/index.html) - Servlet、JSP、EL式、JSTLを1ページにまとめたクイックリファレンス
--   [**Spring Coreチートシート**](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/java-ecosystem/spring-core/index.html) - Spring Core（DI/IoC、Bean管理、アノテーション）を1ページにまとめたクイックリファレンス
--   [**Spring Data JDBCチートシート**](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/java-ecosystem/spring-data-jdbc/index.html) - Spring Data JDBC（エンティティマッピング、リポジトリ、クエリ）を1ページにまとめたクイックリファレンス
--   [**Spring MVCチートシート**](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/java-ecosystem/spring-mvc/index.html) - Spring MVC（コントローラ、ビュー、リクエスト処理）を1ページにまとめたクイックリファレンス
-
-### Webテクノロジ
-
--   [**Bootstrapチートシート**](https://fcircle-biz.github.io/tech_docs/cheatsheet/web-technologies/frontend/bootstrap/index.html) - Bootstrapグリッドシステム、コンポーネント、ユーティリティクラスを1ページにまとめたクイックリファレンス
-
-### データベース
-
--   [**SQLチートシート**](https://fcircle-biz.github.io/tech_docs/cheatsheet/data-ai-category/database/sql/index.html) - SQL構文、関数、テクニックを1ページにまとめたクイックリファレンス
-
-### クラウド/インフラ
-
--   [**Dockerチートシート**](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infrastructure/docker/index.html) - Dockerコマンド、Dockerfile、Docker Composeを1ページにまとめたクイックリファレンス
-
-### 開発手法・プロセス
-
--   [**Gitチートシート**](https://fcircle-biz.github.io/tech_docs/cheatsheet/development-processes/git/index.html) - Git基本コマンド、ブランチ操作、リモート操作を1ページにまとめたクイックリファレンス
--   [**JUnitチートシート**](https://fcircle-biz.github.io/tech_docs/cheatsheet/development-processes/testing/junit/index.html) - JUnit 5アサーション、ライフサイクル、テストパターンを1ページにまとめたクイックリファレンス
-
-### 設計手法・モデリング
-
--   [**UMLチートシート**](https://fcircle-biz.github.io/tech_docs/cheatsheet/design-modeling/uml/index.html) - UML図（クラス図、シーケンス図、ユースケース図等）を1ページにまとめたクイックリファレンス
+| カテゴリ | チートシート |
+|---------|-------------|
+| **Python** | [Python入門](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/python-ecosystem/python-beginner/index.html) ・ [Python DB-API](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/python-ecosystem/python-db-api/index.html) ・ [FastAPI](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/python-ecosystem/fastapi/index.html) ・ [SQLModel](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/python-ecosystem/sqlmodel/index.html) |
+| **Java** | [Java基礎](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/java-ecosystem/java-basics/index.html) ・ [JDBC](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/java-ecosystem/jdbc/index.html) ・ [Servlet/JSP](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/java-ecosystem/servlet-jsp/index.html) ・ [Spring Core](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/java-ecosystem/spring-core/index.html) ・ [Spring Data JDBC](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/java-ecosystem/spring-data-jdbc/index.html) ・ [Spring MVC](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/java-ecosystem/spring-mvc/index.html) |
+| **JavaScript/Node.js** | [JavaScript入門](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/javascript-ecosystem/javascript-beginner/index.html) ・ [Node.js入門](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/javascript-ecosystem/nodejs-beginner/index.html) ・ [TypeScript](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/javascript-ecosystem/typescript/index.html) ・ [React](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/javascript-ecosystem/react/index.html) ・ [Next.js](https://fcircle-biz.github.io/tech_docs/cheatsheet/programming-languages/javascript-ecosystem/nextjs/index.html) |
+| **Webテクノロジ** | [HTML/CSS](https://fcircle-biz.github.io/tech_docs/cheatsheet/web-technologies/html-css/index.html) ・ [Tailwind CSS](https://fcircle-biz.github.io/tech_docs/cheatsheet/web-technologies/tailwind-css/index.html) ・ [Bootstrap](https://fcircle-biz.github.io/tech_docs/cheatsheet/web-technologies/bootstrap/index.html) ・ [Webアプリ開発入門](https://fcircle-biz.github.io/tech_docs/cheatsheet/web-technologies/webapp-intro/index.html) |
+| **データベース** | [SQL](https://fcircle-biz.github.io/tech_docs/cheatsheet/data-ai-category/database/sql/index.html) |
+| **クラウド/インフラ** | [Docker](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infrastructure/docker/index.html) |
+| **OS/デバイス** | [Windows](https://fcircle-biz.github.io/tech_docs/cheatsheet/cloud-infrastructure/os-basics/windows/index.html) |
+| **開発手法・プロセス** | [Git](https://fcircle-biz.github.io/tech_docs/cheatsheet/development-processes/git/index.html) |
+| **テスト/QA** | [JUnit](https://fcircle-biz.github.io/tech_docs/cheatsheet/development-processes/testing/junit/index.html) |
+| **設計手法・モデリング** | [UML](https://fcircle-biz.github.io/tech_docs/cheatsheet/design-modeling/uml/index.html) |
+| **SaaS/PaaS** | [Excel](https://fcircle-biz.github.io/tech_docs/cheatsheet/business-saas/microsoft-office/excel/index.html) |
 
 ------------------------------------------------------------------------
 
