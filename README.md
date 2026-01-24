@@ -98,6 +98,10 @@
 
 -   [**COBOL学習ガイド**](docs/guide/programming-languages/cobol-ecosystem/cobol/README.md) - COBOL基礎から実践的なビジネスロジックまで10章完成カリキュラム
 
+#### Dart/Flutter
+
+-   [**Flutter入門学習ガイド**](docs/guide/programming-languages/dart-ecosystem/flutter/README.md) - プログラミング未経験者向けFlutter入門20章構成カリキュラム。Googleが開発したクロスプラットフォーム開発フレームワークで、1つのコードからiOS、Android、Web、デスクトップアプリを作成。Dart言語の基礎（変数、条件分岐、繰り返し、関数、クラス）、ウィジェットの基本、レイアウト、状態管理、画面遷移、Material Design、HTTP通信、ローカルデータ保存まで段階的に学習し、ToDoアプリ作成の総合演習で実践力を習得
+
 ### Webテクノロジ
 
 -   [**HTML/CSS学習ガイド**](docs/guide/web-technologies/html-css/README.md) - HTML/CSSの基礎から実践的なWebページ制作まで段階的に学習するためのカリキュラム。15章構成でWebデザインの基本をマスター
@@ -236,6 +240,10 @@ PDF形式のスライド教材をブラウザで閲覧できる教材です。
 #### PHP
 
 -   [**PHP実践チュートリアル**](docs/tutorial/php-ecosystem/php/README.md) - PHPの基本文法からデータベース連携まで、初心者向けユーザー管理システム開発チュートリアル（6章構成）
+
+### クラウド/インフラ
+
+-   [**AWS サーバーレス Todoアプリ完全入門チュートリアル**](docs/tutorial/cloud-infrastructure/aws-serverless-todo/README.md) - プログラミング未経験者向けAWSサーバーレスアーキテクチャチュートリアル。AWS Amplify（Next.js）、API Gateway、Lambda、DynamoDBを使用した本格的なWebアプリケーション開発（10ステップ構成）。AWSアカウント作成、Lambda関数作成、REST API構築、Next.jsフロントエンド開発、インターネット公開まで、クラウド上で動作するTodoアプリを一から構築
 
 ### SaaS/PaaS/アプリケーション
 
