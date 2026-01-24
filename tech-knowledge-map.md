@@ -14,6 +14,7 @@ IT技術、業務知識、資格試験を網羅した包括的な学習ドメイ
 |  | **R** | CRAN・tidyverse・Shiny | 統計・データサイエンス特化 |
 |  | **C / C++** | GCC／Clang・CMake・Conan／vcpkg・Boost・Qt | 低レベル〜高性能アプリまで広範 |
 |  | **COBOL** | IBM Enterprise COBOL・Micro Focus Visual COBOL・GnuCOBOL | メインフレーム勘定系で根強い |
+|  | **Dart/Flutter** | pub.dev・Flutter・Riverpod・Bloc | iOS/Android/Web/デスクトップのクロスプラットフォーム開発 |
 | **Webテクノロジ** | **HTML／CSS** | HTML5・CSS3・Flexbox・Grid・レスポンシブデザイン | Webページの構造とスタイリングの基礎 |
 |  | **CSSフレームワーク** | Tailwind CSS・Bootstrap・Bulma | 効率的なUI構築、ユーティリティファースト |
 | **データベース** | **RDBMS** | Oracle・PostgreSQL・MySQL・SQL Server | 業務システムの基盤DB |
