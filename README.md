@@ -160,10 +160,19 @@
 
 ### 設計手法・モデリング
 
+#### ソフトウェア設計
+
 -   [**UML学習ガイド**](docs/guide/design-modeling/software-design/uml/README.md) - UML（統一モデリング言語）の基礎から実践的なシステム設計まで14章完成カリキュラム。無料ツール（draw.io、PlantUML）の使い方、ユースケース図、クラス図、シーケンス図、アクティビティ図、ステートマシン図、コンポーネント図、デプロイメント図、実践演習、チーム開発での活用まで完全未経験者向けに段階的に習得
--   [**ER図入門学習ガイド**](docs/guide/design-modeling/data-modeling/er-diagram/README.md) - ER図（Entity-Relationship Diagram）によるデータベース設計の基礎から実践まで15章完成カリキュラム。無料ツールdraw.ioを使用した実践的なER図作成手法、エンティティ・属性・リレーションシップの基本概念、カーディナリティ、IE記法、正規化、物理設計まで完全未経験者向けに段階的に習得
 -   [**ドメイン駆動設計（DDD）入門学習ガイド**](docs/guide/design-modeling/software-design/ddd/README.md) - ドメイン駆動設計の基礎を初心者向けに段階的に学習するための16章完成カリキュラム。ユビキタス言語、ドメインモデル、エンティティ、値オブジェクト、集約、リポジトリ、ドメインサービス、ファクトリなどの戦術的パターンから、境界づけられたコンテキスト、コンテキストマップ、レイヤードアーキテクチャ、ドメインイベントなどの戦略的パターンまで、実践的な例とともに習得
 -   [**要求工学学習ガイド**](docs/guide/design-modeling/software-design/requirements-engineering/README.md) - 要求工学の基礎理論から実践的な要求分析・管理まで10章完成カリキュラム
+
+#### データモデリング
+
+-   [**ER図入門学習ガイド**](docs/guide/design-modeling/data-modeling/er-diagram/README.md) - ER図（Entity-Relationship Diagram）によるデータベース設計の基礎から実践まで15章完成カリキュラム。無料ツールdraw.ioを使用した実践的なER図作成手法、エンティティ・属性・リレーションシップの基本概念、カーディナリティ、IE記法、正規化、物理設計まで完全未経験者向けに段階的に習得
+
+#### UI/UXデザイン
+
+-   [**Figma入門学習ガイド**](docs/guide/design-modeling/ui-ux-design/figma/README.md) - デザインツール未経験者向けFigma入門11章構成カリキュラム。アカウント作成、図形描画、色付け、テキスト入力、整列・配置、フレーム、画像取り込み、コンポーネント、プロトタイプ、共同編集、実践SNS画像作成まで段階的に学習し、UIデザインの基礎を習得（推奨所要時間: 約10時間）
 
 ### SaaS/PaaS/アプリケーション
 
