@@ -84,6 +84,9 @@ Webページの基礎技術とフロントエンド開発
 #### データモデリング
 - [ER図](./design-modeling/data-modeling/er-diagram/) - ER図、エンティティ、リレーションシップ、カーディナリティ、IE記法、正規化
 
+#### UI/UXデザイン
+- [Figma入門](./design-modeling/ui-ux-design/figma/) - Figma基礎、図形・テキスト操作、フレーム、コンポーネント、プロトタイプ
+
 ---
 
 ### 5. クラウド／インフラ (Cloud & Infrastructure)
@@ -192,8 +195,10 @@ docs/guide/
 │   ├── software-design/            # ソフトウェア設計
 │   │   ├── uml/                    # UML
 │   │   └── requirements-engineering/ # 要件定義
-│   └── data-modeling/              # データモデリング
-│       └── er-diagram/             # ER図
+│   ├── data-modeling/              # データモデリング
+│   │   └── er-diagram/             # ER図
+│   └── ui-ux-design/               # UI/UXデザイン
+│       └── figma/                  # Figma入門
 ├── cloud-infrastructure/            # クラウド／インフラ
 │   ├── aws-basic/                  # AWS基礎
 │   ├── aws-dva-c02-intro/          # AWS DVA-C02入門
