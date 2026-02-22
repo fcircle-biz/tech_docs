@@ -47,6 +47,7 @@
 #### Python
 
 -   [**Python入門学習ガイド**](docs/guide/programming-languages/python-ecosystem/python-beginner/README.md) - プログラミング完全未経験者向けPython入門12章構成カリキュラム。変数、条件分岐、繰り返し、関数、ファイル操作など、プログラミングの基礎を段階的に学習
+-   [**Pythonデータ分析入門学習ガイド**](docs/guide/programming-languages/python-ecosystem/python-data-analysis/README.md) - Python基礎習得者向けデータ分析入門16章構成カリキュラム。pandas・NumPy・matplotlibを使い、「データ取得 → 加工 → 分析 → 可視化」の実務に必要な一連の流れを体系的に学習（推奨所要時間: 約23時間）
 -   [**Python DB-API入門学習ガイド**](docs/guide/programming-languages/python-ecosystem/python-db-api/README.md) - Python標準のDB-API 2.0仕様に基づき、psycopg2ライブラリを使った実践的なデータベースプログラミングを12章で習得。コネクション管理、CRUD操作、パラメータ化クエリ、トランザクション制御、エラーハンドリング、接続プールまで体系的に学習
 -   [**Django学習ガイド**](docs/guide/programming-languages/python-ecosystem/django/README.md) - Djangoフレームワークを使用したWebアプリケーション開発の基礎から実践まで15章完成カリキュラム。MVCパターン、モデル、ビュー、テンプレート、フォーム処理、セキュリティ対策を習得
 -   [**FastAPI学習ガイド**](docs/guide/programming-languages/python-ecosystem/fastapi/README.md) - FastAPIを使用した高性能WebAPI開発の基礎から実践まで10章完成カリキュラム
