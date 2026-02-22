@@ -54,6 +54,7 @@
 -   [**SQLAlchemy学習ガイド**](docs/guide/programming-languages/python-ecosystem/sqlalchemy/README.md) - SQLAlchemyを使用したPythonデータベースプログラミングの基礎から実践まで8章完成カリキュラム
 -   [**SQLModel学習ガイド**](docs/guide/programming-languages/python-ecosystem/sqlmodel/README.md) - SQLModelを使用したモダンなPythonデータベースプログラミング8章完成カリキュラム
 -   [**Streamlit学習ガイド**](docs/guide/programming-languages/python-ecosystem/streamlit/README.md) - Streamlitを使用したWebアプリケーション開発の基礎から実践まで10章完成カリキュラム
+-   [**pytest入門学習ガイド**](docs/guide/programming-languages/python-ecosystem/pytest/README.md) - Python基礎習得者向けpytestテストフレームワーク入門16章構成カリキュラム。テストの書き方とテスト駆動開発の考え方を身につけるための実践的な内容。unittestとの比較も交えながら、pytestの強力な機能と簡潔な書き方を習得
 
 #### Java
 
@@ -110,47 +111,6 @@
 -   [**Tailwind CSS学習ガイド**](docs/guide/web-technologies/tailwind-css/README.md) - Tailwind CSSフレームワークを使用したユーティリティファーストのWebデザインを10章で完全習得
 -   [**Webアプリ開発入門学習ガイド**](docs/guide/web-technologies/webapp-intro/README.md) - プログラミング未経験者向けWebアプリケーション開発入門14章構成カリキュラム。インターネットとWebの仕組み、ネットワーク基礎、HTTPプロトコル、REST API、データベース、3層構造、開発者ツールまで段階的に学習し、Webアプリケーション開発の全体像を習得
 
-### データベース
-
--   [**SQL学習ガイド**](docs/guide/data-ai-category/database/sql/README.md) - SQL基本概念からPostgreSQL高度機能まで12章完成カリキュラム
--   [**PostgreSQL入門学習ガイド**](docs/guide/data-ai-category/database/postgresql/README.md) - PostgreSQLの特徴と実践的な活用方法を12章で習得。pgAdmin操作、豊富なデータ型（配列、JSON、UUID）、インデックス詳解、トランザクション、ビュー、バックアップ、権限管理まで体系的に学習
--   [**MySQL入門学習ガイド**](docs/guide/data-ai-category/database/mysql/README.md) - MySQLの特徴と実践的な活用方法を12章で習得。MySQL Workbench操作、データ型選択、ストレージエンジン（InnoDB/MyISAM）、インデックス、トランザクション、ビュー、ストアドプロシージャ、文字コード設定、バックアップ、権限管理まで体系的に学習
--   [**Oracle学習ガイド**](docs/guide/data-ai-category/database/oracle/README.md) - Oracle Database入門から基本的な運用まで10章完成カリキュラム
--   [**PL/SQL学習ガイド**](docs/guide/data-ai-category/database/plsql/README.md) - Oracle PL/SQLの基礎から応用まで12章完成カリキュラム
--   [**DB2学習ガイド**](docs/guide/data-ai-category/database/db2/README.md) - IBM DB2データベース入門からDocker環境での運用管理まで8章完成カリキュラム
-
-### クラウド/インフラ
-
--   [**AWS基礎編学習ガイド**](docs/guide/cloud-infrastructure/aws-basic/README.md) - AWS（Amazon Web Services）の基礎から実践的なクラウドサービス活用まで12章完成カリキュラム。プログラミング完全未経験者向けにクラウドの基本概念から主要サービス（EC2、S3、RDS、VPC、IAM、CloudWatch、Lambda）まで身近な例えを使いながら丁寧に解説
--   [**AWS DVA-C02入門学習ガイド**](docs/guide/cloud-infrastructure/aws-dva-c02-intro/README.md) - AWS Certified Developer - Associate（DVA-C02）資格取得に向けた知識基盤を構築するカリキュラム
--   [**AWS SAA-C03入門学習ガイド**](docs/guide/cloud-infrastructure/aws-saa-c03-intro/README.md) - AWS Certified Solutions Architect - Associate（SAA-C03）資格取得に向けた知識基盤を構築する12章完成カリキュラム。Well-Architectedフレームワーク、ELB、Auto Scaling、Route 53、VPC設計、データベース・ストレージ選択、セキュリティベストプラクティス、サーバーレスアーキテクチャまで体系的に習得
--   [**AWS SAP-C02入門学習ガイド**](docs/guide/cloud-infrastructure/aws-sap-c02-intro/README.md) - AWS Solutions Architect Professional（SAP-C02）資格取得に向けた知識基盤を構築する15章完成カリキュラム。Auto Scaling、ELB、Route 53、CloudFront、高可用性設計、災害復旧戦略など、エンタープライズ環境に求められる高度なインフラ設計手法を体系的に習得
--   [**AWS Terraform学習ガイド**](docs/guide/cloud-infrastructure/aws-terraform/README.md) - AWS上でTerraformを使用したInfrastructure as Code（IaC）の基礎から実践まで10章完成カリキュラム。HCL構文、VPC/EC2構築、ステート管理、モジュール化、CI/CD統合まで体系的に習得
--   [**クラウドコンピューティング学習ガイド**](docs/guide/cloud-infrastructure/cloud-computing/README.md) - クラウドコンピューティングの基本概念からIaaS、PaaS、SaaSまで10章完成カリキュラム
--   [**Docker学習ガイド**](docs/guide/cloud-infrastructure/docker/README.md) - Dockerの基礎から実践的なコンテナ運用まで10章完成カリキュラム。Rancher Desktopを使用してコンテナ技術の基本概念、イメージ管理、Dockerfile作成、Docker Compose、ボリューム、ネットワーク、マルチコンテナアプリケーション構築、トラブルシューティングまで初心者向けに段階的に習得
-
-### データ/AI
-
-#### 統計解析
-
--   [**統計解析学習ガイド**](docs/guide/data-ai-category/statistical-analysis/README.md) - 統計学基礎から推測統計・仮説検定まで10章完成カリキュラム
-
-#### 機械学習
-
--   [**機械学習入門学習ガイド**](docs/guide/data-ai-category/data-ai/ml-beginner/README.md) - プログラミング未経験者向け機械学習入門12章構成カリキュラム。AIの仕組み、データの見方、予測・分類・グループ分けの基礎、ノーコードAI体験、データ品質、評価指標、ビジネス活用事例、AIの限界まで段階的に学習し、機械学習の全体像を習得
-
-#### SAS
-
--   [**SAS学習ガイド**](docs/guide/data-ai-category/data-ai/sas/README.md) - SASによるデータ分析と統計処理の基礎から実践的な応用まで13章完成カリキュラム
--   [**SAS中級学習ガイド**](docs/guide/data-ai-category/data-ai/sas-intermediate/README.md) - SAS入門修了者向け。大規模データ処理、高度な統計手法、マクロプログラミングなど実務で即戦力となる中級テクニックを10章で習得
--   [**SAS Viya学習ガイド**](docs/guide/data-ai-category/data-ai/sas-viya/README.md) - SAS Viyaのクラウドネイティブアーキテクチャ、CASエンジン、Visual Analytics、Model Studioによる機械学習、Python/R連携、API活用まで15章完成カリキュラム
-
-#### 生成AI/LLM
-
--   [**生成AI入門学習ガイド**](docs/guide/data-ai-category/generative-ai/README.md) - プログラミング未経験者向け生成AI入門15章構成カリキュラム。生成AIの基礎概念、ChatGPT活用、プロンプトエンジニアリング、ビジネス文書作成、画像生成AI、ハルシネーション対策、セキュリティ、倫理的利用、業務効率化の実践まで段階的に学習し、生成AIを安全かつ効果的に活用するスキルを習得
--   [**Dify入門学習ガイド**](docs/guide/data-ai-category/data-ai/dify/README.md) - Difyを使ったノーコード/ローコードAIアプリ開発18章完成カリキュラム。Dify基礎、チャットボット作成、プロンプトオーケストレーション、RAG実装、ワークフロー設計、エージェント機能、外部API連携、アプリ公開・運用まで段階的に学習し、実務で使えるAIアプリケーション開発スキルを習得
--   [**LangChain入門学習ガイド**](docs/guide/data-ai-category/data-ai/langchain/README.md) - LangChainを使ったLLMアプリ開発18章完成カリキュラム。LangChain基礎、プロンプトテンプレート、LCEL、Document Loaders、Embeddings、Vector Stores、RAG実装、Memory、Agent、Toolsまで段階的に学習し、Pythonで実用的なLLMアプリケーションを開発するスキルを習得
-
 ### 開発手法・プロセス
 
 -   [**アジャイル開発学習ガイド**](docs/guide/development-processes/agile-development/README.md) - アジャイル開発の基礎から実践的なScrum、Kanbanまで10章完成カリキュラム
@@ -174,6 +134,47 @@
 #### UI/UXデザイン
 
 -   [**Figma入門学習ガイド**](docs/guide/design-modeling/ui-ux-design/figma/README.md) - デザインツール未経験者向けFigma入門11章構成カリキュラム。アカウント作成、図形描画、色付け、テキスト入力、整列・配置、フレーム、画像取り込み、コンポーネント、プロトタイプ、共同編集、実践SNS画像作成まで段階的に学習し、UIデザインの基礎を習得（推奨所要時間: 約10時間）
+
+### クラウド/インフラ
+
+-   [**クラウドコンピューティング学習ガイド**](docs/guide/cloud-infrastructure/cloud-computing/README.md) - クラウドコンピューティングの基本概念からIaaS、PaaS、SaaSまで10章完成カリキュラム
+-   [**AWS基礎編学習ガイド**](docs/guide/cloud-infrastructure/aws-basic/README.md) - AWS（Amazon Web Services）の基礎から実践的なクラウドサービス活用まで12章完成カリキュラム。プログラミング完全未経験者向けにクラウドの基本概念から主要サービス（EC2、S3、RDS、VPC、IAM、CloudWatch、Lambda）まで身近な例えを使いながら丁寧に解説
+-   [**AWS DVA-C02入門学習ガイド**](docs/guide/cloud-infrastructure/aws-dva-c02-intro/README.md) - AWS Certified Developer - Associate（DVA-C02）資格取得に向けた知識基盤を構築するカリキュラム
+-   [**AWS SAA-C03入門学習ガイド**](docs/guide/cloud-infrastructure/aws-saa-c03-intro/README.md) - AWS Certified Solutions Architect - Associate（SAA-C03）資格取得に向けた知識基盤を構築する12章完成カリキュラム。Well-Architectedフレームワーク、ELB、Auto Scaling、Route 53、VPC設計、データベース・ストレージ選択、セキュリティベストプラクティス、サーバーレスアーキテクチャまで体系的に習得
+-   [**AWS SAP-C02入門学習ガイド**](docs/guide/cloud-infrastructure/aws-sap-c02-intro/README.md) - AWS Solutions Architect Professional（SAP-C02）資格取得に向けた知識基盤を構築する15章完成カリキュラム。Auto Scaling、ELB、Route 53、CloudFront、高可用性設計、災害復旧戦略など、エンタープライズ環境に求められる高度なインフラ設計手法を体系的に習得
+-   [**AWS Terraform学習ガイド**](docs/guide/cloud-infrastructure/aws-terraform/README.md) - AWS上でTerraformを使用したInfrastructure as Code（IaC）の基礎から実践まで10章完成カリキュラム。HCL構文、VPC/EC2構築、ステート管理、モジュール化、CI/CD統合まで体系的に習得
+-   [**Docker学習ガイド**](docs/guide/cloud-infrastructure/docker/README.md) - Dockerの基礎から実践的なコンテナ運用まで10章完成カリキュラム。Rancher Desktopを使用してコンテナ技術の基本概念、イメージ管理、Dockerfile作成、Docker Compose、ボリューム、ネットワーク、マルチコンテナアプリケーション構築、トラブルシューティングまで初心者向けに段階的に習得
+
+### データ/AI
+
+#### データベース
+
+-   [**SQL学習ガイド**](docs/guide/data-ai-category/database/sql/README.md) - SQL基本概念からPostgreSQL高度機能まで12章完成カリキュラム
+-   [**PostgreSQL入門学習ガイド**](docs/guide/data-ai-category/database/postgresql/README.md) - PostgreSQLの特徴と実践的な活用方法を12章で習得。pgAdmin操作、豊富なデータ型（配列、JSON、UUID）、インデックス詳解、トランザクション、ビュー、バックアップ、権限管理まで体系的に学習
+-   [**MySQL入門学習ガイド**](docs/guide/data-ai-category/database/mysql/README.md) - MySQLの特徴と実践的な活用方法を12章で習得。MySQL Workbench操作、データ型選択、ストレージエンジン（InnoDB/MyISAM）、インデックス、トランザクション、ビュー、ストアドプロシージャ、文字コード設定、バックアップ、権限管理まで体系的に学習
+-   [**Oracle学習ガイド**](docs/guide/data-ai-category/database/oracle/README.md) - Oracle Database入門から基本的な運用まで10章完成カリキュラム
+-   [**PL/SQL学習ガイド**](docs/guide/data-ai-category/database/plsql/README.md) - Oracle PL/SQLの基礎から応用まで12章完成カリキュラム
+-   [**DB2学習ガイド**](docs/guide/data-ai-category/database/db2/README.md) - IBM DB2データベース入門からDocker環境での運用管理まで8章完成カリキュラム
+
+#### 統計解析
+
+-   [**統計解析学習ガイド**](docs/guide/data-ai-category/statistical-analysis/README.md) - 統計学基礎から推測統計・仮説検定まで10章完成カリキュラム
+
+#### 機械学習
+
+-   [**機械学習入門学習ガイド**](docs/guide/data-ai-category/data-ai/ml-beginner/README.md) - プログラミング未経験者向け機械学習入門12章構成カリキュラム。AIの仕組み、データの見方、予測・分類・グループ分けの基礎、ノーコードAI体験、データ品質、評価指標、ビジネス活用事例、AIの限界まで段階的に学習し、機械学習の全体像を習得
+
+#### SAS
+
+-   [**SAS学習ガイド**](docs/guide/data-ai-category/data-ai/sas/README.md) - SASによるデータ分析と統計処理の基礎から実践的な応用まで13章完成カリキュラム
+-   [**SAS中級学習ガイド**](docs/guide/data-ai-category/data-ai/sas-intermediate/README.md) - SAS入門修了者向け。大規模データ処理、高度な統計手法、マクロプログラミングなど実務で即戦力となる中級テクニックを10章で習得
+-   [**SAS Viya学習ガイド**](docs/guide/data-ai-category/data-ai/sas-viya/README.md) - SAS Viyaのクラウドネイティブアーキテクチャ、CASエンジン、Visual Analytics、Model Studioによる機械学習、Python/R連携、API活用まで15章完成カリキュラム
+
+#### 生成AI/LLM
+
+-   [**生成AI入門学習ガイド**](docs/guide/data-ai-category/generative-ai/README.md) - プログラミング未経験者向け生成AI入門15章構成カリキュラム。生成AIの基礎概念、ChatGPT活用、プロンプトエンジニアリング、ビジネス文書作成、画像生成AI、ハルシネーション対策、セキュリティ、倫理的利用、業務効率化の実践まで段階的に学習し、生成AIを安全かつ効果的に活用するスキルを習得
+-   [**Dify入門学習ガイド**](docs/guide/data-ai-category/data-ai/dify/README.md) - Difyを使ったノーコード/ローコードAIアプリ開発18章完成カリキュラム。Dify基礎、チャットボット作成、プロンプトオーケストレーション、RAG実装、ワークフロー設計、エージェント機能、外部API連携、アプリ公開・運用まで段階的に学習し、実務で使えるAIアプリケーション開発スキルを習得
+-   [**LangChain入門学習ガイド**](docs/guide/data-ai-category/data-ai/langchain/README.md) - LangChainを使ったLLMアプリ開発18章完成カリキュラム。LangChain基礎、プロンプトテンプレート、LCEL、Document Loaders、Embeddings、Vector Stores、RAG実装、Memory、Agent、Toolsまで段階的に学習し、Pythonで実用的なLLMアプリケーションを開発するスキルを習得
 
 ### SaaS/PaaS/アプリケーション
 
