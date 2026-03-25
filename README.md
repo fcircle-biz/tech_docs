@@ -109,6 +109,7 @@
 -   [**Bootstrap学習ガイド**](docs/guide/web-technologies/bootstrap/README.md) - Bootstrapフレームワークを使用したレスポンシブWebデザインの基礎から実践まで10章完成カリキュラム。グリッドシステム、UIコンポーネント、カスタマイズ方法まで体系的に習得
 -   [**Tailwind CSS学習ガイド**](docs/guide/web-technologies/tailwind-css/README.md) - Tailwind CSSフレームワークを使用したユーティリティファーストのWebデザインを10章で完全習得
 -   [**Webアプリ開発入門学習ガイド**](docs/guide/web-technologies/webapp-intro/README.md) - プログラミング未経験者向けWebアプリケーション開発入門14章構成カリキュラム。インターネットとWebの仕組み、ネットワーク基礎、HTTPプロトコル、REST API、データベース、3層構造、開発者ツールまで段階的に学習し、Webアプリケーション開発の全体像を習得
+-   [**Webhook入門学習ガイド**](docs/guide/web-technologies/webhook/README.md) - プログラミング未経験者向けWebhook入門14章構成カリキュラム。Webhookとは何か、APIとの違い（プル型/プッシュ型）、HTTPの基礎、JSONデータの読み方、Webhookの登録・設定、チャットツール/決済/GitHub等の活用事例、セキュリティ、エラーとリトライ、ノーコードツールでの活用まで段階的に学習（推奨所要時間: 約10時間）
 
 ### データベース
 
