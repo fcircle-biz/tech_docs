@@ -108,9 +108,13 @@ def create_placeholder_image(
     # 日本語ラベル
     draw.text((width // 2, y_position), f"Text in image (Japanese): {japanese_labels}", fill='#98fb98', font=font_small, anchor="mt")
 
-    # 画像を保存
+    # 画像を保存（出力パスの拡張子に応じてフォーマットを選択）
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    img.save(output_path, 'JPEG', quality=90)
+    ext = os.path.splitext(output_path)[1].lower()
+    if ext == '.png':
+        img.save(output_path, 'PNG')
+    else:
+        img.save(output_path, 'JPEG', quality=90)
     print(f"Created: {output_path}")
     return output_path
 

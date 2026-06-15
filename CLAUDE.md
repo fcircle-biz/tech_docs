@@ -25,8 +25,8 @@ No build/lint/test framework - content is static HTML/Markdown validated through
 - `/docs/cheatsheet/` - Quick reference materials
 - `/templates/v2/` - HTML/CSS template standards (current)
 - `/specs/` - System specifications for tutorial projects
-- `/work_pdf/` - Temporary folder for PDF files to be processed by slide-creator
-- `/.claude/agents/` - Claude agent definitions for automated content creation
+- `/work_pdf/` - Temporary folder for PDF files to be processed by the slide-creator skill
+- `/.claude/skills/` - Claude skill definitions for automated content creation (slash-command invoked)
 
 ### 9-Level Taxonomy (from tech-knowledge-map.md)
 
@@ -58,43 +58,49 @@ Examples:
 - `django-learning-material-01.html`
 - `python-basics-practice-01.html`
 
-## Claude Agents
+## Skills (Content Automation)
 
-Available automation agents in `.claude/agents/`:
+Content automation is implemented as **Skills** in `.claude/skills/` (migrated from the former `.claude/agents/` subagents). Invoke a skill as a slash command: `/<skill-name> [args]`. Each skill keeps a lean `SKILL.md` and pushes detailed procedures into its `references/` directory (progressive disclosure).
 
-| Agent | Purpose | Trigger |
-|-------|---------|---------|
-| `tech-guide-creator-workflow` | Full workflow (README → ch1 → ch2+ parallel) | `@agent-tech-guide-creator-workflow [tech-name]` |
-| `tech-guide-creator-step1` | Create guide README.md | `@agent-tech-guide-creator-step1 [tech-name]` |
-| `tech-guide-creator-step2` | Generate chapter 1 HTML + common files | `@agent-tech-guide-creator-step2 [readme-path]` |
-| `tech-guide-creator-step3` | Generate single chapter HTML | `@agent-tech-guide-creator-step3 [readme-path] [chapter]` |
-| `tutorial-creator-workflow` | Full workflow (README → step1 → step2+ parallel) | `@agent-tutorial-creator-workflow [tech] [env] [db]` |
-| `tutorial-creator-step1` | Create tutorial README.md | `@agent-tutorial-creator-step1 [tech] [env] [db]` |
-| `tutorial-creator-step2` | Generate step 1 HTML + common files | `@agent-tutorial-creator-step2 [readme-path]` |
-| `tutorial-creator-step3` | Generate single step HTML | `@agent-tutorial-creator-step3 [readme-path] [step]` |
-| `practice-creator-workflow` | Full workflow (README → round1 → round2+ parallel) | `@agent-practice-creator-workflow [tech-name]` |
-| `practice-creator-step1` | Create practice README.md | `@agent-practice-creator-step1 [tech-name]` |
-| `practice-creator-step2` | Generate round 1 HTML + common files | `@agent-practice-creator-step2 [readme-path]` |
-| `practice-creator-step3` | Generate single round HTML | `@agent-practice-creator-step3 [readme-path] [round]` |
-| `assignment-creator-workflow` | Full workflow for programming assignments (README → step1 → step2+ parallel) | `@agent-assignment-creator-workflow [specs-docs-path]` |
-| `assignment-creator-step1` | Create assignment README.md from specs | `@agent-assignment-creator-step1 [specs-docs-path]` |
-| `assignment-creator-step2` | Generate step 1 HTML + common files + mockups | `@agent-assignment-creator-step2 [readme-path]` |
-| `assignment-creator-step3` | Generate single step HTML | `@agent-assignment-creator-step3 [readme-path] [step]` |
-| `folder-structure-readme-updater` | Auto-generate folder READMEs | `@agent-folder-structure-readme-updater` |
-| `illustration-creator-workflow` | Full workflow (suggestions folder → parallel image generation & HTML insert) | `@agent-illustration-creator-workflow [directory-path]` |
-| `illustration-creator-step1` | Analyze HTML guides and create illustration_suggestions/ folder with chapter-XX.md files | `@agent-illustration-creator-step1 [directory-path]` |
-| `illustration-creator-step2` | Generate placeholder JPGs, insert into HTML (parallel subagents for multi-chapter) | `@agent-illustration-creator-step2 [suggestions-folder-path] [chapter?]` |
-| `slide-creator` | Create PDF slide viewer from work_pdf/ folder | `@agent-slide-creator [title]` |
-| `cheatsheet-creator` | Generate 1-page quick reference cheatsheet | `@agent-cheatsheet-creator [tech-name] [category-path]` |
+### Content creator skills (multi-agent built in)
 
-### Agent Execution Rules (IMPORTANT)
+Each of these consolidates the old `workflow + step1/step2/step3` agents into a **single skill that orchestrates multiple subagents internally**. The skill runs the **preparation phase sequentially** (README → common JS/CSS + chapter/step/round `01` HTML), then **fans out the remaining units (chapter/step/round `02..N`) in parallel** by issuing several `Agent` tool calls (`subagent_type: general-purpose`, instructed to read the skill's `references/`) in a single message, then verifies and reports.
 
-**Mandatory rules when executing agents/subagents:**
+| Skill | Purpose | Invocation |
+|-------|---------|------------|
+| `tech-guide-creator` | Learning guide set (README + common files + all chapters) | `/tech-guide-creator [tech-name]` |
+| `tutorial-creator` | Hands-on tutorial from specs (README + step HTML) | `/tutorial-creator [app-type] [env] [db]` |
+| `practice-creator` | Practice exercise set (`<details>`-toggle answers) | `/practice-creator [tech-name]` |
+| `assignment-creator` | Programming assignment from specs (hints only, PDF design docs) | `/assignment-creator [specs-docs-path]` |
+| `illustration-creator` | Add illustrations to existing guides (per-chapter parallel; replace mode is semi-automatic) | `/illustration-creator [dir] [chapter?] [mode?]` |
 
-1. **No suggestions**: Do not propose optimizations or alternative approaches during processing
-2. **No interruptions**: Do not stop processing to ask for user confirmation
-3. **Must complete**: Follow instructions in agent definition files (`.claude/agents/*.md`) and complete processing to the end
-4. **Parallel execution**: Always execute parallel processing as specified in workflows
+### Single-purpose utility skills
+
+| Skill | Purpose | Invocation |
+|-------|---------|------------|
+| `cheatsheet-creator` | 1-page quick-reference cheatsheet | `/cheatsheet-creator [tech-name] [category-path]` |
+| `slide-creator` | PDF slide viewer from `work_pdf/` | `/slide-creator [title]` |
+| `folder-structure-readme-updater` | Regenerate the root `README.md` from the on-disk structure | `/folder-structure-readme-updater` |
+
+### Multi-agent orchestration skills
+
+| Skill | Purpose | Invocation |
+|-------|---------|------------|
+| `content-reviewer` | Parallel verification of generated material against template standards; `--fix` applies corrections | `/content-reviewer [dir-or-files] [--fix]` |
+| `content-suite-creator` | Generate multiple material types for one topic in parallel, then verify with `content-reviewer` | `/content-suite-creator [tech-name] [types-csv?]` |
+
+### Supporting utility skills
+
+`create-placeholder-image`, `md-to-pdf`, `re-estimate-learning-time` — used by the creator skills (placeholder images, design-doc PDF conversion, learning-time re-estimation) and invocable directly.
+
+### Skill Execution Rules (IMPORTANT)
+
+**Mandatory rules when running a content-automation skill (and its subagents):**
+
+1. **No suggestions**: Do not propose optimizations or alternative approaches during processing.
+2. **No interruptions**: Do not stop to ask for user confirmation (sole exception: `content-suite-creator` may confirm missing specs/env/DB info during argument parsing, before generation starts).
+3. **Must complete**: Follow the skill's `SKILL.md` and `references/*.md` and finish to the end — never stop at "I will now generate…" before the files actually exist.
+4. **Parallel execution**: Issue the fan-out `Agent` calls for units `02..N` **in a single message** so they run in parallel — never one unit at a time.
 
 **Prohibited examples:**
 - "This will take time, which method would you prefer?" → Prohibited
