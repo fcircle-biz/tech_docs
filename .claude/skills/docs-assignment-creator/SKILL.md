@@ -41,7 +41,7 @@ description: 仕様書フォルダ(specs配下)からプログラム実践課題
    - Phase 2: 共通部品コピー＋オレンジ設定＋sidebar全ステップ定義＋第1ステップ(01)HTML生成 … `references/step2-foundation.md`
    - ここで 01 HTML（構造テンプレ）と全体構成が確定する。
 2. **生成フェーズ（並列ファンアウト）**
-   - Step2(02)〜最終ステップを **Agent ツールで並列生成**。各サブエージェントは `references/step3-step-html.md` と `references/global-rules.md` を読み、01 HTML（パス指定）を構造ベースに README／設計書から該当ステップ情報を抽出して1ステップ分を Write する。共通部品（JS/CSS/sidebar）は上書き禁止。 … 進行管理は `references/workflow.md`
+   - Step2(02)〜最終ステップを **Agent ツールで並列生成**（`subagent_type=general-purpose`, `model: sonnet`）。各サブエージェントは `references/step3-step-html.md` と `references/global-rules.md` を読み、01 HTML（パス指定）を構造ベースに README／設計書から該当ステップ情報を抽出して1ステップ分を Write する。共通部品（JS/CSS/sidebar）は上書き禁止。 … 進行管理は `references/workflow.md`
 3. **検証フェーズ**: `docs-reviewer` スキル、または `references/step3-step-html.md` のチェックリストで生成物を検証。
 4. **報告フェーズ**: Glob で生成物を確認し、ファイル一覧＋GitHub Pages URL を日本語で報告。
 
@@ -60,6 +60,7 @@ description: 仕様書フォルダ(specs配下)からプログラム実践課題
 
 ## 注意事項（必読）
 
+- **モデル割り当ては CLAUDE.md「エージェント編成（モデル割り当て）」に従う**。設計判断（仕様分析・README構成・ステップ設計）はオーケストレーター（Opus, 本体）が担う。specs の docs/ コピー・`md-to-pdf` 変換・共通部品コピー等の単純作業は `model: haiku` のサブエージェントに委譲してよい。HTML生成サブは `model: sonnet` を指定する。
 - **重要: 並列呼び出しは1メッセージにまとめる**。生成フェーズのStep2〜最終ステップは、1つのメッセージ内で Agent ツール呼び出しをまとめて発行し並列実行する（1つずつ順次は禁止）。
 - **コード提供禁止**: 実践課題は完成コードを出さず、考え方・設計書参照箇所のヒントのみ。
 - **日本語**で出力・コメントする。

@@ -43,7 +43,7 @@ description: 既存の学習ガイドHTMLを分析し学習効果を高める図
 `references/workflow-orchestration.md` の手順に従う。
 
 1. **準備（逐次・本体が直接実行）**: 対象HTMLを Glob で列挙（`v1/`/`v2/` 除外、章番号指定時は該当章のみ）→ 「既存のMermaid図で十分」な章をスキップ判定 → `img/` フォルダ準備。
-2. **生成（並列ファンアウト）**: 並列対象の各章について、**1メッセージ内で `Agent`（`subagent_type=general-purpose`）呼び出しをまとめて発行**し並列実行。各サブエージェントは章内で「提案md生成（`references/step1-suggestion.md`）→ プレースホルダーPNG生成（`references/step2-image-and-insert.md`・`references/image-prompt-templates.md`）→ HTMLに `<figure>` 挿入」まで完結。共通部品（JS/CSS/sidebar）は上書き禁止。
+2. **生成（並列ファンアウト）**: 並列対象の各章について、**1メッセージ内で `Agent`（`subagent_type=general-purpose`、`model: sonnet`）呼び出しをまとめて発行**し並列実行。各サブエージェントは章内で「提案md生成（`references/step1-suggestion.md`）→ プレースホルダーPNG生成（`references/step2-image-and-insert.md`・`references/image-prompt-templates.md`）→ HTMLに `<figure>` 挿入」まで完結。共通部品（JS/CSS/sidebar）は上書き禁止。なお、プレースホルダー画像生成スクリプト（`create-placeholder-image`）の実行自体は単純作業（Haiku相当）である。
 3. **検証**: `docs-reviewer` スキルの手順、または `references/workflow-orchestration.md` のチェックリストで検証。
 4. **報告**: Glob で生成物を確認し、ファイル一覧＋GitHub Pages URL を日本語で報告。
 
@@ -59,6 +59,7 @@ description: 既存の学習ガイドHTMLを分析し学習効果を高める図
 
 - **日本語出力**。例外は画像プロンプト本文（`--prompt`/`--style`/`--elements`）のみ英語、`--labels` は日本語。
 - **エージェント実行ルール（CLAUDE.md）**: 処理中の提案／確認／中断をしない（replace のファイル名不一致確認のみ例外）、最後まで完遂、並列指定は必ず並列、「これから生成します」で終了しない（実ファイル生成まで継続）。
+- **モデル割り当て**: CLAUDE.md「エージェント編成（モデル割り当て）」に従う。
 - **画像拡張子は PNG 統一**（旧 `.jpg` は是正）。Glob では `v1/`/`v2/` を除外。
 - **Mermaid 記法は CLAUDE.md 方式**（`&#40;` 等のHTMLエンティティ禁止、半角括弧は全角化かノードをダブルクォートで囲む、`&` は全角 `＆`、`<br/>` 使用時はノードをダブルクォート、dark テーマ禁止）。詳細は `templates/v2/reference/mermaid-patterns.md`。
 - **テキスト視認性**: 半透明背景（`bg-white/70` 等）禁止、内側ボックスは親と同系色の `-100` 背景＋ `-900` テキスト。

@@ -9,7 +9,7 @@ description: 生成済み教材(guide/tutorial/practice/assignment/cheatsheet/sl
 
 ## 概要
 
-対象ディレクトリまたはファイル群のHTML教材を Glob で列挙し、ファイル単位で Agent ツール（`subagent_type: general-purpose`）を並列起動して references/checklist.md の観点で検証させ、構造化された所見を集約して報告する。`--fix` 指定時は修正サブエージェントを並列起動して各自のファイルを Edit で直す。
+対象ディレクトリまたはファイル群のHTML教材を Glob で列挙し、ファイル単位で Agent ツール（`subagent_type: general-purpose`, `model: opus`）を並列起動して references/checklist.md の観点で検証させ、構造化された所見を集約して報告する。`--fix` 指定時は修正サブエージェント（`model: sonnet`）を並列起動して各自のファイルを Edit で直す。
 
 対応資料タイプ: 学習ガイド（guide）・チュートリアル（tutorial）・練習問題（practice）・実践課題（assignment）・チートシート（cheatsheet）・スライド（slide）。docs-guide-creator / docs-tutorial-creator / docs-practice-creator / docs-assignment-creator / docs-cheatsheet-creator / docs-slide-creator の各検証フェーズからも呼び出される。
 
@@ -45,7 +45,7 @@ description: 生成済み教材(guide/tutorial/practice/assignment/cheatsheet/sl
 
 検証対象の各HTML（または観点）について、**1つのメッセージ内で Agent ツール呼び出しをまとめて発行し並列実行**する。各サブエージェントへの指示は以下を最小限渡す。
 
-- `subagent_type`: `general-purpose`
+- `subagent_type`: `general-purpose`、`model`: `opus`（推論・分析サブエージェント）
 - 指示内容: 「`.claude/skills/docs-reviewer/references/checklist.md` を読み、指定された資料タイプの観点で対象HTML（フルパスを渡す）を検証せよ。第1単位HTML（フルパスを渡す）を構造継承の基準として比較せよ。所見は references/review-procedure.md の所見スキーマ（JSON）で返し、ファイルは変更するな。」
 - 各呼び出しに渡す可変情報: 対象HTMLフルパス・資料タイプ・第1単位HTMLフルパス・共通部品（styles.css）パス
 
@@ -57,7 +57,7 @@ description: 生成済み教材(guide/tutorial/practice/assignment/cheatsheet/sl
 
 ### 4. 修正フェーズ（`--fix` 指定時のみ）
 
-違反のあったファイルごとに、**1メッセージ内で修正サブエージェント（general-purpose）を並列起動**する。各サブエージェントは自分の担当ファイルのみ Edit する（ファイルが重ならないため競合しない）。共通部品（JS/CSS/sidebar）は安易に上書きしない。references/review-procedure.md「4. 修正フェーズ」を参照。
+違反のあったファイルごとに、**1メッセージ内で修正サブエージェント（`subagent_type: general-purpose`, `model: sonnet`）を並列起動**する。各サブエージェントは自分の担当ファイルのみ Edit する（ファイルが重ならないため競合しない）。軽微な定型修正（文言置換・インデント等）は `model: haiku` でも可。共通部品（JS/CSS/sidebar）は安易に上書きしない。references/review-procedure.md「4. 修正フェーズ」を参照。
 
 ### 5. 報告フェーズ
 
@@ -68,6 +68,7 @@ Glob で対象を再確認し、検証結果サマリ（合否・違反件数・
 **重要: 並列呼び出しは1メッセージにまとめる。** 検証サブエージェント・修正サブエージェントを1つずつ順次起動するのは禁止。対象が複数あるときは必ず1メッセージ内でまとめて発行する。
 
 - **日本語出力。** 応答・成果物・所見はすべて日本語。
+- **モデル割り当てはCLAUDE.md「エージェント編成（モデル割り当て）」に従う。** 検証（推論・分析）サブ=Opus、修正（コーディング）サブ=Sonnet、定型作業サブ=Haiku。
 - **エージェント実行ルール（CLAUDE.md）:** 処理中に提案・確認・中断をしない。最後まで完遂する。並列指定は必ず並列で実行する。「これから検証します」「開始しました」で終了せず、検証結果（および `--fix` 時は修正）を実際に出すまで継続する。
 - **検査と修正の既定:** 引数に `--fix` が無ければ検査＋報告のみ。ファイルは変更しない。
 - **旧バージョン除外:** Glob 検索では `v1/`・`v2/` 等の旧バージョンフォルダを除外する（過去バックアップでありアクティブコンテンツではない）。

@@ -39,7 +39,7 @@ description: 技術名から練習問題集（README・共通部品・各回HTML
 
 ### 生成フェーズ（並列ファンアウト）
 
-README から総回数を確認し、第2回〜最終回を **1つのメッセージ内で Agent ツール呼び出しをまとめて発行** し並列実行する。各サブエージェントは `subagent_type=general-purpose` とし、最小指示を渡す:
+README から総回数を確認し、第2回〜最終回を **1つのメッセージ内で Agent ツール呼び出しをまとめて発行** し並列実行する。各サブエージェントは `subagent_type=general-purpose`、`model: sonnet`（資料作成サブ）とし、最小指示を渡す:
 
 > `.claude/skills/docs-practice-creator/references/step3-round-html.md`、`references/question-components.md`、`references/shared-rules.md` を読み、第1回HTML（パスを渡す）を構造ベースとして、README.md（パスを渡す）から第N回（回番号を渡す）の情報を抽出し、その1回分のHTMLを生成して Write せよ。共通部品（sidebar-content.js / styles.css / main.js / drawing-tool.js）は上書き禁止。
 
@@ -58,6 +58,7 @@ Glob で生成物一覧を確認し、ファイル一覧と GitHub Pages URL を
 詳細な共通ルールは `references/shared-rules.md` に集約。要点は以下のとおり。
 
 - **日本語出力**: 応答・成果物はすべて日本語。
+- **モデル割り当て**: CLAUDE.md「エージェント編成（モデル割り当て）」に従う。準備フェーズの設計判断（分類・難易度カーブ・README構成）はオーケストレーター（Opus, 本体）が直接担当する。共通部品のファイルコピーやカラープレースホルダー置換などの単純作業は `model: haiku` のサブエージェントへ委譲してよい。生成フェーズ（第2回以降のHTML生成）のサブエージェントは `model: sonnet` を指定する。
 - **エージェント実行ルール（CLAUDE.md準拠）**: 処理中に提案・確認・中断をしない。最後まで完遂する。並列指定は必ず並列で実行する。「これから生成します」で終了せず、実ファイル生成まで継続する。
 - **回答形式（最重要）**: 回答は `<details>`/`<summary>` クリック展開式のみ。**textarea入力欄・「実行して確認」ボタンは使用禁止**。
 - **解説**: 「なぜそうなるか」＋よくある間違いを必ず含める。
