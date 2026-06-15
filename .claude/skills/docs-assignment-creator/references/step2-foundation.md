@@ -19,7 +19,7 @@
 
 ### 2. 共通ファイルのコピーと設定
 
-`templates/v2/html_assignment/` から以下4ファイルを課題フォルダ（`docs/assignment/[課題名]/`）にコピー:
+`templates/v3/html_assignment/` から以下4ファイルを課題フォルダ（`docs/assignment/[課題名]/`）にコピー:
 - `styles.css` - 共通カスタムスタイル（**コピー後に色を確認・修正**）
 - `main.js` - 共通機能
 - `drawing-tool.js` - 描画ツール機能
@@ -37,7 +37,7 @@
 --primary-rgb: 249, 115, 22;
 ```
 
-- `templates/v2/html_assignment/styles.css` は最初からオレンジ系の実値が設定済みの場合がある。コピー後に `{{PRIMARY_400}}` `{{PRIMARY_500}}` `{{PRIMARY_700}}` `{{PRIMARY_RGB}}` のプレースホルダーが残っていないか必ず確認し、残っていれば上記オレンジ値へ置換する（未置換は CSS 破損の原因）。
+- `templates/v3/html_assignment/styles.css` は最初からオレンジ系の実値が設定済みの場合がある。コピー後に `{{PRIMARY_300}}` `{{PRIMARY_400}}` `{{PRIMARY_500}}` `{{PRIMARY_600}}` `{{PRIMARY_700}}` `{{PRIMARY_RGB}}` のプレースホルダーが残っていないか必ず確認し、残っていれば上記オレンジ値へ置換する（未置換は CSS 破損の原因）。
 
 ### 3. sidebar-content.js の編集
 
@@ -126,11 +126,11 @@ const steps = [
 
 ### テンプレート・参照ファイル
 
-- ベーステンプレート: `templates/v2/html_assignment/assignment-template.html`（「実践課題」向けにカスタマイズ）
+- ベーステンプレート: `templates/v3/html_assignment/assignment-template.html`（「実践課題」向けにカスタマイズ）
 - 参照ドキュメント:
-  - `templates/v2/snippets/components.html`（カードコンポーネント）
-  - `templates/v2/reference/color-themes.md`（カラー）
-  - `templates/v2/reference/css-styles.md`（Tailwindスタイル）
+  - `templates/v3/snippets/components.html`（カードコンポーネント）
+  - `templates/v3/reference/color-themes.md`（カラー）
+  - `templates/v3/reference/css-styles.md`（Tailwindスタイル）
 
 ### ヘッダーカスタマイズ（実践課題仕様）
 

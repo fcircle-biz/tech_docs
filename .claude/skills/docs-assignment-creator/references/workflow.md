@@ -69,7 +69,7 @@
 ## Phase 2: 土台作成（準備フェーズ・逐次）
 
 `step2-foundation.md` の手順に従い、本体が直接実行する:
-1. 共通部品（`styles.css` `main.js` `drawing-tool.js` `sidebar-content.js`）を `templates/v2/html_assignment/` からコピー。
+1. 共通部品（`styles.css` `main.js` `drawing-tool.js` `sidebar-content.js`）を `templates/v3/html_assignment/` からコピー。
 2. オレンジ系カラー設定（`global-rules.md`「6.」のカラー値）。`{{PRIMARY_*}}` が残っていれば置換。
 3. `sidebar-content.js` の `steps` 配列に全ステップを定義。
 4. Step1 (`[課題名]-assignment-01.html`) を生成。

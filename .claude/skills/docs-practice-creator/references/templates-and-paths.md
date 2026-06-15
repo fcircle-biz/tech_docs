@@ -6,7 +6,7 @@
 
 ## 1. テンプレートファイル一覧
 
-練習問題のテンプレートは `templates/v2/html_practice/` にある。
+練習問題のテンプレートは `templates/v3/html_practice/` にある。
 
 | ファイル | 用途 | 出力先での扱い |
 |----------|------|----------------|
@@ -17,10 +17,10 @@
 | `drawing-tool.js` | 描画ツール機能 | そのままコピー |
 
 参考リファレンス（正本・丸写ししない）:
-- カラーテーマ: `templates/v2/reference/color-themes.md`
-- Tailwind CSSスタイル: `templates/v2/reference/css-styles.md`
-- Mermaidパターン: `templates/v2/reference/mermaid-patterns.md`
-- カードコンポーネント: `templates/v2/snippets/components.html`
+- カラーテーマ: `templates/v3/reference/color-themes.md`
+- Tailwind CSSスタイル: `templates/v3/reference/css-styles.md`
+- Mermaidパターン: `templates/v3/reference/mermaid-patterns.md`
+- カードコンポーネント: `templates/v3/snippets/components.html`
 
 ---
 
@@ -52,15 +52,15 @@
 
 ## 4. 技術別カラー設定（抜粋）
 
-`styles.css` の `{{PRIMARY_*}}` プレースホルダー置換に使う代表値。網羅表は `templates/v2/reference/color-themes.md` を参照（丸写ししない）。
+`styles.css` の `{{PRIMARY_*}}` プレースホルダー置換に使う代表値。網羅表は `templates/v3/reference/color-themes.md` を参照（丸写ししない）。
 
-| 技術 | `{{PRIMARY_400}}` | `{{PRIMARY_500}}` | `{{PRIMARY_700}}` | `{{PRIMARY_RGB}}` |
-|------|-------------------|-------------------|-------------------|-------------------|
-| Python (blue) | `#60a5fa` | `#3b82f6` | `#1d4ed8` | `59, 130, 246` |
-| Java (orange) | `#fb923c` | `#f97316` | `#c2410c` | `249, 115, 22` |
-| SQL (sky) | `#38bdf8` | `#0ea5e9` | `#0369a1` | `14, 165, 233` |
-| JavaScript (yellow) | `#facc15` | `#eab308` | `#a16207` | `234, 179, 8` |
-| その他 | `color-themes.md` 参照 | | | |
+| 技術 | `{{PRIMARY_300}}` | `{{PRIMARY_400}}` | `{{PRIMARY_500}}` | `{{PRIMARY_600}}` | `{{PRIMARY_700}}` | `{{PRIMARY_RGB}}` |
+|------|-------------------|-------------------|-------------------|-------------------|-------------------|-------------------|
+| Python (blue) | `#93c5fd` | `#60a5fa` | `#3b82f6` | `#2563eb` | `#1d4ed8` | `59, 130, 246` |
+| Java (orange) | `#fdba74` | `#fb923c` | `#f97316` | `#ea580c` | `#c2410c` | `249, 115, 22` |
+| SQL (sky) | `#7dd3fc` | `#38bdf8` | `#0ea5e9` | `#0284c7` | `#0369a1` | `14, 165, 233` |
+| JavaScript (yellow) | `#fde047` | `#facc15` | `#eab308` | `#ca8a04` | `#a16207` | `234, 179, 8` |
+| その他 | `color-themes.md` 参照 | | | | | |
 
 ---
 

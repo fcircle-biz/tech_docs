@@ -16,7 +16,7 @@
 
 ## カラーについて
 
-下記スニペットは Blue（Python等）を例にしている。技術のカラーテーマに合わせて `blue` を該当色（`sky`/`orange`/`yellow`/`emerald` 等）に読み替える。内側ボックスは**親と同系色の `-100` 背景＋`-900`/`-800` テキスト**を使う（半透明背景禁止）。カラー対応は `templates-and-paths.md` および `templates/v2/reference/color-themes.md` を参照。
+下記スニペットは Blue（Python等）を例にしている。技術のカラーテーマに合わせて `blue` を該当色（`sky`/`orange`/`yellow`/`emerald` 等）に読み替える。内側ボックスは**親と同系色の `-100` 背景＋`-900`/`-800` テキスト**を使う（半透明背景禁止）。カラー対応は `templates-and-paths.md` および `templates/v3/reference/color-themes.md` を参照。
 
 ---
 

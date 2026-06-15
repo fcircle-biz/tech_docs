@@ -23,7 +23,7 @@
 
 ## 2. 共通ファイルのコピーと設定
 
-`templates/v2/html_practice/` から以下4ファイルを練習問題フォルダ（`docs/practice/[分類パス]/[技術名]/`）へコピーする。
+`templates/v3/html_practice/` から以下4ファイルを練習問題フォルダ（`docs/practice/[分類パス]/[技術名]/`）へコピーする。
 
 - `styles.css` — 共通カスタムスタイル（**コピー後にカラー置換が必要**）
 - `main.js` — 共通機能（そのまま）
@@ -32,9 +32,9 @@
 
 ### styles.css のプレースホルダー置換（必須）
 
-テンプレートの styles.css には `{{PRIMARY_400}}` `{{PRIMARY_500}}` `{{PRIMARY_700}}` `{{PRIMARY_RGB}}` が含まれる。コピー後、**必ず実カラー値へ置換**する（未置換はCSS破損）。
+テンプレートの styles.css には `{{PRIMARY_300}}` `{{PRIMARY_400}}` `{{PRIMARY_500}}` `{{PRIMARY_600}}` `{{PRIMARY_700}}` `{{PRIMARY_RGB}}` が含まれる。コピー後、**必ず実カラー値へ置換**する（未置換はCSS破損）。
 
-技術別カラー値は `templates-and-paths.md`「技術別カラー設定（抜粋）」、網羅表は `templates/v2/reference/color-themes.md` を参照。
+技術別カラー値は `templates-and-paths.md`「技術別カラー設定（抜粋）」、網羅表は `templates/v3/reference/color-themes.md` を参照。
 
 ---
 
@@ -60,7 +60,7 @@ const chapters = [
 
 ## 4. 第1回の練習問題HTML生成
 
-`templates/v2/html_practice/practice-template.html` をベースに第1回を生成する。
+`templates/v3/html_practice/practice-template.html` をベースに第1回を生成する。
 
 ### HTML構成要素
 

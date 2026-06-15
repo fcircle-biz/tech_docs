@@ -1,6 +1,6 @@
 # レビュー手順（並列検証・集約・修正）
 
-docs-reviewer 本体（メイン会話ループ）が実行する詳細手順。検証観点そのものは references/checklist.md を参照。共通ルールの真実源は CLAUDE.md と `templates/v2/reference/`。
+docs-reviewer 本体（メイン会話ループ）が実行する詳細手順。検証観点そのものは references/checklist.md を参照。共通ルールの真実源は CLAUDE.md と `templates/v3/reference/`。
 
 旧 workflow エージェントが Task で並列起動していた挙動を、本体が Agent ツール（`subagent_type: general-purpose`）で再現する。**列挙・集約・報告は本体が逐次実行**し、**検証・修正は並列ファンアウト**で行う。
 
@@ -52,7 +52,7 @@ subagent_type: general-purpose
      対象HTML「{target_html_path}」を検証する。
   3. 第1単位HTML「{first_unit_html_path}」を構造継承（A-6）の基準として比較する。
      共通部品「{styles_css_path}」を A-2/A-5 の確認に使う。
-  4. 値の真実源は CLAUDE.md と templates/v2/reference/（カラー・Tailwind・
+  4. 値の真実源は CLAUDE.md と templates/v3/reference/（カラー・Tailwind・
      Mermaid・コンポーネント）。判断に必要なら参照する。
   5. ファイルは一切変更しない（read-only 検証）。
   6. 所見を「所見スキーマ（JSON）」（下記）で1つだけ返す。違反が無ければ
@@ -114,7 +114,7 @@ subagent_type: general-purpose
   2. 対象ファイル「{file_path}」の以下の所見を修正する（JSON配列を渡す）。
      {該当ファイルの findings}
   3. 各 fix_hint と checklist の正しい書式に従い Edit で最小修正する。
-     - 値の真実源は CLAUDE.md と templates/v2/reference/。
+     - 値の真実源は CLAUDE.md と templates/v3/reference/。
      - 構造（ヘッダー・スクリプト読込順・第1単位継承）を壊さない。
   4. 共通部品（sidebar-content.js / styles.css / main.js / drawing-tool.js）は
      安易に上書きしない。styles.css の {{PRIMARY_*}} 未置換など共通部品自体の

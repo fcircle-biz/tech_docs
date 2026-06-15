@@ -23,7 +23,7 @@ IT・ソフトウェア開発のトピックを扱う、体系化された学習
 - `/docs/assignment/` - プログラミング実践課題（仕様書ベースの実践演習）
 - `/docs/slide/` - HTMLビューアー付きPDFスライド教材
 - `/docs/cheatsheet/` - クイックリファレンス教材
-- `/templates/v2/` - HTML/CSS テンプレート標準（現行）
+- `/templates/v3/` - HTML/CSS テンプレート標準（現行）
 - `/specs/` - チュートリアルプロジェクト用のシステム仕様書
 - `/work_pdf/` - docs-slide-creator スキルが処理するPDFファイル用の一時フォルダ
 - `/.claude/skills/` - コンテンツ自動生成用の Claude スキル定義（スラッシュコマンドで呼び出し）
@@ -131,7 +131,14 @@ IT・ソフトウェア開発のトピックを扱う、体系化された学習
 
 ## テンプレート標準
 
-HTMLコンテンツは `/templates/v2/` の標準に従うこと:
+HTMLコンテンツは `/templates/v3/` の標準に従うこと（旧 `/templates/v2/` はバックアップとして残置）:
+
+### v3 デザイン: "Graphite × Iris" クールデザイン
+- グラファイト（墨）の落ち着いたニュートラル面に、**技術別 primary** とシアン（`--cyan`）の差し色。パステルの塗りは廃し「ニュートラル面＋色ヘアライン＋グラデーションのアイコンチップ」で色を差す。
+- ヘッダーは**全バリアント共通のグラファイトガラス**（暗いすりガラス）＋ primary→cyan のレールで技術識別色を表現（ライト/ダーク両対応）。
+- コードは **JetBrains Mono** ＋ macOS 風ウィンドウ表示。`<head>` にスプラッシュ `<template id="__bundler_thumbnail">` を含む。
+- **技術別カラーは2箇所に同値を設定**する: ① HTML の `tailwind.config` の `primary`（50-900）、② `styles.css` の `:root` の `{{PRIMARY_300/400/500/600/700}}` ＋ `{{PRIMARY_RGB}}`（skill が置換。値は `templates/v3/reference/color-themes.md`）。未置換は CSS 破損。
+- **例外**: assignment は実践課題識別のオレンジを `:root` にハードコード（プレースホルダ無し）、cheatsheet はヘッダー色モディファイア方式（`.header-emerald` 等）で primary を切替。
 
 ### テンプレートファイル (`html/`) - 学習ガイド用
 - **learning-material-template.html** - 学習教材テンプレート
@@ -143,7 +150,7 @@ HTMLコンテンツは `/templates/v2/` の標準に従うこと:
 ### テンプレートファイル (`html_tutorial/`) - チュートリアル用
 - **tutorial-template.html** - チュートリアルテンプレート
 - **sidebar-content.js** - サイドバー生成（チュートリアル用）
-- **styles.css** - 共通カスタムスタイル（緑ヘッダー）
+- **styles.css** - 共通カスタムスタイル（グラファイトガラスヘッダー＋既定エメラルド系アクセント）
 - **main.js** - 共通機能
 - **drawing-tool.js** - 描画ツール機能
 
@@ -168,7 +175,7 @@ HTMLコンテンツは `/templates/v2/` の標準に従うこと:
 ### テンプレートファイル (`html_assignment/`) - プログラミング実践課題用
 - **assignment-template.html** - 実践課題テンプレート（仕様書ベースの実践演習）
 - **sidebar-content.js** - サイドバー生成（実践課題のステップ用）
-- **styles.css** - 共通カスタムスタイル（実践課題用のオレンジヘッダー）
+- **styles.css** - 共通カスタムスタイル（実践課題用のオレンジ系アクセント・固定）
 - **main.js** - 共通機能
 - **drawing-tool.js** - 描画ツール機能
 

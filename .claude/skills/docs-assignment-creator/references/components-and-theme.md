@@ -1,7 +1,7 @@
 # コンポーネント＆オレンジテーマ
 
 実践課題HTMLで使うカードコンポーネントと、オレンジ系（primary）のカラー設定をまとめたもの。
-カラー方針の全体は `templates/v2/reference/color-themes.md`、Tailwindスタイルガイドは `templates/v2/reference/css-styles.md`、HTML部品の現物は `templates/v2/snippets/components.html` を参照（丸写しせず参照する）。
+カラー方針の全体は `templates/v3/reference/color-themes.md`、Tailwindスタイルガイドは `templates/v3/reference/css-styles.md`、HTML部品の現物は `templates/v3/snippets/components.html` を参照（丸写しせず参照する）。
 
 ---
 
@@ -18,7 +18,7 @@
 --primary-rgb: 249, 115, 22;
 ```
 
-> `templates/v2/html_assignment/styles.css` は最初からこのオレンジ値が入っている場合がある。コピー後に `{{PRIMARY_400}}` `{{PRIMARY_500}}` `{{PRIMARY_700}}` `{{PRIMARY_RGB}}` が残っていないか確認し、残っていれば上記へ置換する（未置換は CSS 破損）。
+> `templates/v3/html_assignment/styles.css` は最初からこのオレンジ値が入っている場合がある。コピー後に `{{PRIMARY_300}}` `{{PRIMARY_400}}` `{{PRIMARY_500}}` `{{PRIMARY_600}}` `{{PRIMARY_700}}` `{{PRIMARY_RGB}}` が残っていないか確認し、残っていれば上記へ置換する（未置換は CSS 破損）。
 
 ### Tailwind config（primary スケール全段階）
 
@@ -67,7 +67,7 @@ tailwind.config = {
 
 ## 実践課題で使う主要カードコンポーネント
 
-詳細・全バリエーションは `templates/v2/snippets/components.html` を参照。代表は以下。
+詳細・全バリエーションは `templates/v3/snippets/components.html` を参照。代表は以下。
 
 | コンポーネント | 用途 | スタイル |
 |--------------|------|---------|

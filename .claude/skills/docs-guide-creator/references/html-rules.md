@@ -4,12 +4,12 @@
 
 ## ベーステンプレートと参照ファイル
 
-- ベーステンプレート: `templates/v2/html/learning-material-template.html`（第1章生成時）
+- ベーステンプレート: `templates/v3/html/learning-material-template.html`（第1章生成時）
 - 第2章以降は **第1章HTML** をベーステンプレートとして継承する
-- カードコンポーネント: `templates/v2/snippets/components.html`
-- カラーテーマ: `templates/v2/reference/color-themes.md`
-- CSSスタイル（Tailwind）: `templates/v2/reference/css-styles.md`
-- Mermaid図表パターン: `templates/v2/reference/mermaid-patterns.md`
+- カードコンポーネント: `templates/v3/snippets/components.html`
+- カラーテーマ: `templates/v3/reference/color-themes.md`
+- CSSスタイル（Tailwind）: `templates/v3/reference/css-styles.md`
+- Mermaid図表パターン: `templates/v3/reference/mermaid-patterns.md`
 
 これらの値は丸写しせず、上記ファイルを参照すること（よく使う代表値の抜粋は本ファイル・step2-foundation.md に掲載）。
 
@@ -102,11 +102,11 @@ flowchart TD
     F{AND演算 &&} --> G
 ```
 
-詳細は `templates/v2/reference/mermaid-patterns.md` を参照。
+詳細は `templates/v3/reference/mermaid-patterns.md` を参照。
 
 ## コンポーネント一覧（components.html 参照）
 
-HTMLコンテンツ作成時に使用するカードコンポーネント。正典は `templates/v2/snippets/components.html`。
+HTMLコンテンツ作成時に使用するカードコンポーネント。正典は `templates/v3/snippets/components.html`。
 
 | コンポーネント | 用途 | スタイル |
 |--------------|------|---------|
@@ -164,7 +164,7 @@ JavaScript, TypeScript, Python, Java, C, C++, C#, PHP, Ruby, Go, Rust, Swift, SQ
 
 docs-reviewer スキルの手順、または以下のチェックリストで全生成物を検証する。
 
-- [ ] `styles.css` の `{{PRIMARY_400}}` `{{PRIMARY_500}}` `{{PRIMARY_700}}` `{{PRIMARY_RGB}}` がすべて実カラー値に置換済み（未置換は CSS 破損）。
+- [ ] `styles.css` の `{{PRIMARY_300}}` `{{PRIMARY_400}}` `{{PRIMARY_500}}` `{{PRIMARY_600}}` `{{PRIMARY_700}}` `{{PRIMARY_RGB}}` がすべて実カラー値に置換済み（未置換は CSS 破損）。
 - [ ] スクリプト読込順が `styles.css` → `sidebar-content.js` → `main.js` → `drawing-tool.js`。
 - [ ] ダークモードボタンがHTMLに手書きされていない（`main.js` が動的生成）。ヘッダー構造が変更されていない。
 - [ ] Mermaid図にHTMLエンティティ（`&#40;` 等）が無い。半角括弧は全角化orダブルクォート、`&` は全角`＆`、`<br/>` 使用ノードはダブルクォート、dark テーマ未使用。

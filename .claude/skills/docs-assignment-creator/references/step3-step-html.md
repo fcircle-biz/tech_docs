@@ -205,7 +205,7 @@ HTMLファイル生成完了後、生成ファイルを報告する。
 
 ---
 
-## コンポーネント一覧（`templates/v2/snippets/components.html` 参照）
+## コンポーネント一覧（`templates/v3/snippets/components.html` 参照）
 
 | コンポーネント | 用途 | スタイル |
 |--------------|------|---------|

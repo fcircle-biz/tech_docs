@@ -4,10 +4,10 @@
 
 ## 参照ドキュメント
 
-- カラーテーマ: `templates/v2/reference/color-themes.md`
-- CSSスタイル（Tailwind）: `templates/v2/reference/css-styles.md`
-- Mermaidパターン詳細: `templates/v2/reference/mermaid-patterns.md`
-- カードコンポーネント: `templates/v2/snippets/components.html`
+- カラーテーマ: `templates/v3/reference/color-themes.md`
+- CSSスタイル（Tailwind）: `templates/v3/reference/css-styles.md`
+- Mermaidパターン詳細: `templates/v3/reference/mermaid-patterns.md`
+- カードコンポーネント: `templates/v3/snippets/components.html`
 
 ## コードブロック構造
 
@@ -72,7 +72,7 @@ JavaScript, TypeScript, Python, Java, C, C++, C#, PHP, Ruby, Go, Rust, Swift, SQ
 - ガイド系テンプレートを流用する場合の読込順は `styles.css → sidebar-content.js → main.js → drawing-tool.js`。
 
 ### styles.css プレースホルダー
-- `styles.css` の `{{PRIMARY_400/500/700/RGB}}` 等のプレースホルダーは必ず実カラー値へ置換する（未置換はCSS破損）。
+- `styles.css` の `{{PRIMARY_300/400/500/600/700/RGB}}` 等のプレースホルダーは必ず実カラー値へ置換する（未置換はCSS破損）。
 
 ### Mermaid記法（処理フロー図を入れる場合・CLAUDE.md方式に統一）
 1. **HTMLエンティティを使わない**: `&#40;` `&#41;` `&#38;` `&#124;` 等はMermaidで正しくパースされない。
@@ -88,4 +88,4 @@ flowchart TD
     B -->|Windows| C["Windows環境構築"]
 ```
 
-詳細は `templates/v2/reference/mermaid-patterns.md` を参照。
+詳細は `templates/v3/reference/mermaid-patterns.md` を参照。

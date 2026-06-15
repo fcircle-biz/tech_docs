@@ -43,7 +43,7 @@ SKILL.md・workflow.md・step1-readme.md・step2-foundation.md・step3-step-html
 
 ## 4. Mermaid記法ルール（CLAUDE.md方式に統一）
 
-詳細パターンは `templates/v2/reference/mermaid-patterns.md` を参照。要点:
+詳細パターンは `templates/v3/reference/mermaid-patterns.md` を参照。要点:
 
 1. **HTMLエンティティ禁止**: `&#40;` `&#41;` `&#38;` `&#124;` などは Mermaid が正しく解釈しない。旧stepにエンティティ方式が残っていても**CLAUDE.md方式へ寄せる**。
 2. **括弧の扱い**: 半角括弧 `()` は特殊文字。全角括弧 `（）` を使うか、ノードテキスト全体をダブルクォートで囲む（例: `A["テキスト（括弧入り）"]`）。
@@ -79,8 +79,8 @@ flowchart TD
 - **ダークモードボタンを手書きしない**: `main.js` が動的生成する。HTMLにダークモードボタンを書き足さない。
 - **ヘッダー構造を変えない**: テンプレートのヘッダーのクラス名・構造を維持する。
 - **スクリプト読込順**: `styles.css` → `sidebar-content.js` → `main.js` → `drawing-tool.js` の順。
-- **styles.css のプレースホルダー置換**: `{{PRIMARY_400}}` `{{PRIMARY_500}}` `{{PRIMARY_700}}` `{{PRIMARY_RGB}}` が残っていると CSS が壊れる。必ず実カラー値へ置換する。
-  - **補足（実践課題テンプレートの実情）**: `templates/v2/html_assignment/styles.css` は最初からオレンジ系の実値（`--primary-500: #f97316` 等）が設定済みでプレースホルダーが無い場合がある。コピー後に `{{PRIMARY_*}}` が残っていないか必ず確認し、残っていればオレンジ系（後述）へ置換すること。
+- **styles.css のプレースホルダー置換**: `{{PRIMARY_300}}` `{{PRIMARY_400}}` `{{PRIMARY_500}}` `{{PRIMARY_600}}` `{{PRIMARY_700}}` `{{PRIMARY_RGB}}` が残っていると CSS が壊れる。必ず実カラー値へ置換する。
+  - **補足（実践課題テンプレートの実情）**: `templates/v3/html_assignment/styles.css` は最初からオレンジ系の実値（`--primary-500: #f97316` 等）が設定済みでプレースホルダーが無い場合がある。コピー後に `{{PRIMARY_*}}` が残っていないか必ず確認し、残っていればオレンジ系（後述）へ置換すること。
 - **共通部品の上書き禁止**: 並列生成フェーズで起動するサブエージェントは `sidebar-content.js` `styles.css` `main.js` `drawing-tool.js` を上書きしない。既存のものを使う。
 
 ### オレンジ系カラー値（実践課題の primary）
@@ -117,7 +117,7 @@ tailwind.config = {
 }
 ```
 
-カラー方針の詳細は `templates/v2/reference/color-themes.md` を参照。
+カラー方針の詳細は `templates/v3/reference/color-themes.md` を参照。
 
 ---
 
@@ -153,11 +153,11 @@ tailwind.config = {
 | 内容 | パス |
 |------|------|
 | 9分類体系（タクソノミー） | `tech-knowledge-map.md` |
-| カラーテーマ | `templates/v2/reference/color-themes.md` |
-| Tailwind CSS スタイルガイド | `templates/v2/reference/css-styles.md` |
-| Mermaid 図パターン詳細 | `templates/v2/reference/mermaid-patterns.md` |
-| カードコンポーネント集 | `templates/v2/snippets/components.html` |
-| 実践課題テンプレート一式 | `templates/v2/html_assignment/` |
+| カラーテーマ | `templates/v3/reference/color-themes.md` |
+| Tailwind CSS スタイルガイド | `templates/v3/reference/css-styles.md` |
+| Mermaid 図パターン詳細 | `templates/v3/reference/mermaid-patterns.md` |
+| カードコンポーネント集 | `templates/v3/snippets/components.html` |
+| 実践課題テンプレート一式 | `templates/v3/html_assignment/` |
 | MarkdownのPDF変換スクリプト | `scripts/md-to-pdf.mjs`（`node scripts/md-to-pdf.mjs [mdパス]` で実行） |
 
 これらの値は references に丸写しせず、上記パスを指し示すこと（代表値の抜粋表は可）。

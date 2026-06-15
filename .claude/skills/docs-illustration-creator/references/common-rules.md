@@ -46,7 +46,7 @@ docs-illustration-creator スキルの全フェーズ（suggest / illustrate / r
 3. **アンパサンド**: `&` ではなく全角 `＆` を使う。
 4. **改行**: ノード内で `<br/>` を使う場合はノードテキスト全体をダブルクォートで囲む（例: `A["1行目<br/>2行目"]`）。
 5. **darkテーマ禁止**: Mermaid初期化で dark テーマを指定しない。
-6. 詳細は `templates/v2/reference/mermaid-patterns.md` を参照する（丸写しせず参照する）。
+6. 詳細は `templates/v3/reference/mermaid-patterns.md` を参照する（丸写しせず参照する）。
 
 ## テキスト視認性ルール（CLAUDE.md 準拠）
 
@@ -69,7 +69,7 @@ docs-illustration-creator スキルの全フェーズ（suggest / illustrate / r
 - **ダークモードボタンを手書きしない**: `main.js` が動的生成する。ヘッダー構造を変えない。
 - **共通部品（JS/CSS/sidebar）を上書きしない**: 図解挿入では本文HTMLのみ編集する。`sidebar-content.js` `styles.css` `main.js` `drawing-tool.js` には触れない。
 - **スクリプト読込順**（既存HTMLでは維持）: `styles.css` → `sidebar-content.js` → `main.js` → `drawing-tool.js`。
-- **`styles.css` のプレースホルダー**: `{{PRIMARY_400}}` `{{PRIMARY_500}}` `{{PRIMARY_700}}` `{{PRIMARY_RGB}}` は実カラー値に置換済みであること（既存ガイドでは置換済みのはず。新規コピー時は必ず置換。未置換はCSS破損）。
+- **`styles.css` のプレースホルダー**: `{{PRIMARY_300}}` `{{PRIMARY_400}}` `{{PRIMARY_500}}` `{{PRIMARY_600}}` `{{PRIMARY_700}}` `{{PRIMARY_RGB}}` は実カラー値に置換済みであること（既存ガイドでは置換済みのはず。新規コピー時は必ず置換。未置換はCSS破損）。
 
 ## 依存関係
 
@@ -78,7 +78,7 @@ docs-illustration-creator スキルの全フェーズ（suggest / illustrate / r
 - 必要ライブラリ: Pillow（`pip install Pillow`）。
 - 共有参照ファイル（リポジトリルート相対、丸写しせず参照）:
   - 9分類体系・命名規則: `tech-knowledge-map.md`
-  - カラーテーマ: `templates/v2/reference/color-themes.md`
-  - Tailwind スタイル: `templates/v2/reference/css-styles.md`
-  - Mermaid 詳細: `templates/v2/reference/mermaid-patterns.md`
-  - カードコンポーネント: `templates/v2/snippets/components.html`
+  - カラーテーマ: `templates/v3/reference/color-themes.md`
+  - Tailwind スタイル: `templates/v3/reference/css-styles.md`
+  - Mermaid 詳細: `templates/v3/reference/mermaid-patterns.md`
+  - カードコンポーネント: `templates/v3/snippets/components.html`

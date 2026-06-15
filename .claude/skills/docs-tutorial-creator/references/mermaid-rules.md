@@ -1,6 +1,6 @@
 # Mermaid記法ルール（CLAUDE.md方式に統一）
 
-Mermaid図を書く際は、必ず以下のルールに従う。旧step定義やリポジトリの参照ドキュメント（`templates/v2/reference/mermaid-patterns.md` の「特殊文字のエスケープ」節を含む）にHTMLエンティティ方式（`&#124;` `&#40;` `&amp;` 等）が残っていても、**CLAUDE.md方式を優先**する。詳細パターンは `templates/v2/reference/mermaid-patterns.md` を参照。
+Mermaid図を書く際は、必ず以下のルールに従う。旧step定義やリポジトリの参照ドキュメント（`templates/v3/reference/mermaid-patterns.md` の「特殊文字のエスケープ」節を含む）にHTMLエンティティ方式（`&#124;` `&#40;` `&amp;` 等）が残っていても、**CLAUDE.md方式を優先**する。詳細パターンは `templates/v3/reference/mermaid-patterns.md` を参照。
 
 ## ルール
 

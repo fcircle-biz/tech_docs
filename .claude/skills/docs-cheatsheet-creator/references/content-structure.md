@@ -24,7 +24,7 @@
 
 5. **処理フロー/実行順序**
    - ステップ表示
-   - 視覚的なフロー図（Mermaidを使う場合はCLAUDE.md方式に統一。詳細は `templates/v2/reference/mermaid-patterns.md`、要点は `html-rules.md` の共通HTMLルール参照）
+   - 視覚的なフロー図（Mermaidを使う場合はCLAUDE.md方式に統一。詳細は `templates/v3/reference/mermaid-patterns.md`、要点は `html-rules.md` の共通HTMLルール参照）
 
 6. **危険な操作**（赤系カード）
    - DELETE, DROP等の破壊的操作

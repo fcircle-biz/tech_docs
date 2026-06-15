@@ -42,10 +42,10 @@ mv work_pdf/*.pdf [出力先パス]/pdf/
 ## 5. テンプレートファイルのコピー
 
 ```bash
-cp templates/v2/slide/index.html [出力先パス]/
-cp templates/v2/slide/styles.css [出力先パス]/
-cp templates/v2/slide/main.js [出力先パス]/
-cp templates/v2/slide/slide-content.js [出力先パス]/
+cp templates/v3/slide/index.html [出力先パス]/
+cp templates/v3/slide/styles.css [出力先パス]/
+cp templates/v3/slide/main.js [出力先パス]/
+cp templates/v3/slide/slide-content.js [出力先パス]/
 ```
 
 `main.js` は無編集のままコピーする。
@@ -133,6 +133,6 @@ docs/slide/business-saas/microsoft-office/excel-basics/
 
 ## 参照ファイル
 
-- テンプレート: `templates/v2/slide/`(index.html, styles.css, main.js, slide-content.js)
-- テンプレートREADME: `templates/v2/slide/README.md`
+- テンプレート: `templates/v3/slide/`(index.html, styles.css, main.js, slide-content.js)
+- テンプレートREADME: `templates/v3/slide/README.md`
 - カテゴリマップ: `tech-knowledge-map.md`(9分類体系)

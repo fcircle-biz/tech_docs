@@ -1,6 +1,6 @@
 # コンポーネント・カラー・共通HTMLルール・検証チェックリスト
 
-step2（土台作り）／step3（各ステップ生成）の両方から参照する共通ルール集（DRY化）。カードの実体・網羅的なスタイルは `templates/v2/snippets/components.html` を、カラー値は `templates/v2/reference/color-themes.md` を正とする。本書は代表値の抜粋と運用ルール。
+step2（土台作り）／step3（各ステップ生成）の両方から参照する共通ルール集（DRY化）。カードの実体・網羅的なスタイルは `templates/v3/snippets/components.html` を、カラー値は `templates/v3/reference/color-themes.md` を正とする。本書は代表値の抜粋と運用ルール。
 
 ## コンポーネント一覧（components.html参照）
 
@@ -37,7 +37,7 @@ HTMLコンテンツ作成時に使用する主なカード:
 
 - **スクリプト読み込み順序**: `styles.css` → `sidebar-content.js` → `main.js` → `drawing-tool.js`。
 - **ヘッダー**: ダークモードボタンをHTMLに手書きしない（`main.js` が動的生成）。ヘッダー構造（`header-rich` 等のクラス名・構造）を変えない。
-- **カラープレースホルダー**: `styles.css` の `{{PRIMARY_400/500/700/RGB}}` は必ず実カラー値へ置換する（未置換はCSS破損）。チュートリアルはEmerald推奨（`#34d399` / `#10b981` / `#047857` / `16, 185, 129`）。
+- **カラープレースホルダー**: `styles.css` の `{{PRIMARY_300/400/500/600/700/RGB}}` は必ず実カラー値へ置換する（未置換はCSS破損）。チュートリアルはEmerald推奨（`#34d399` / `#10b981` / `#047857` / `16, 185, 129`）。
 - **コードブロック**: `.code-block-wrapper` でラップし、ファイル名表示＋コピーボタンを付ける。実行可能なサンプル・日本語コメント必須。
 - **Mermaid**: デフォルトテーマ（darkテーマ禁止）。記法はCLAUDE.md方式（`mermaid-rules.md` 参照）。
 - **共通部品の上書き禁止**: 生成フェーズの各サブエージェントは `sidebar-content.js`／`styles.css`／`main.js`／`drawing-tool.js` を上書きしない。

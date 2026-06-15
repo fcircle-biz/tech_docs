@@ -1,6 +1,6 @@
 # プレースホルダーとテーマ（placeholders-and-theme）
 
-`templates/v2/html_cheatsheet/cheatsheet-template.html` のプレースホルダー置換、`tailwind.config` の `primary` カラー設定、ヘッダーカラークラスをまとめる。カラーテーマの正本は `templates/v2/reference/color-themes.md` を参照（代表パレットのみ以下に抜粋）。
+`templates/v3/html_cheatsheet/cheatsheet-template.html` のプレースホルダー置換、`tailwind.config` の `primary` カラー設定、ヘッダーカラークラスをまとめる。カラーテーマの正本は `templates/v3/reference/color-themes.md` を参照（代表パレットのみ以下に抜粋）。
 
 ## プレースホルダー一覧
 
@@ -46,7 +46,7 @@
 
 ## tailwind.config の primary カラーパレット（よく使う代表値）
 
-`tailwind.config` の `theme.extend.colors.primary` を技術に応じて差し替える。詳細・他系統は `templates/v2/reference/color-themes.md` を参照。
+`tailwind.config` の `theme.extend.colors.primary` を技術に応じて差し替える。詳細・他系統は `templates/v3/reference/color-themes.md` を参照。
 
 ```javascript
 // Sky Blue（SQL, Docker等 / テンプレート初期値）
@@ -85,4 +85,4 @@ primary: {
 }
 ```
 
-> ヘッダーカラークラスと `primary` パレットは技術系統を揃える（例: Python → `header-emerald` または Blueパレット）。`styles.css` にカラープレースホルダー（`{{PRIMARY_400/500/700/RGB}}` 等）が残っている場合は必ず実カラー値へ置換すること（未置換はCSS破損）。
+> ヘッダーカラークラスと `primary` パレットは技術系統を揃える（例: Python → `header-emerald` または Blueパレット）。`styles.css` にカラープレースホルダー（`{{PRIMARY_300/400/500/600/700/RGB}}` 等）が残っている場合は必ず実カラー値へ置換すること（未置換はCSS破損）。

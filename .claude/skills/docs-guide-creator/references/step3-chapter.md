@@ -46,8 +46,8 @@ step2 で作成された土台（共通部品＋ `sidebar-content.js` ＋第1章
 - `<footer>` セクションとスクリプト読み込み
 
 参照ドキュメント（必ず参照）:
-- カードコンポーネント: `templates/v2/snippets/components.html`
-- Mermaid図表パターン: `templates/v2/reference/mermaid-patterns.md`
+- カードコンポーネント: `templates/v3/snippets/components.html`
+- Mermaid図表パターン: `templates/v3/reference/mermaid-patterns.md`
 - 共通HTMLルール（Mermaid記法・コンポーネント・視認性・ヘッダー禁止事項・コード方針）: references/html-rules.md
 
 ### 3. 指定章のHTMLを生成【最重要ステップ】

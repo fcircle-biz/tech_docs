@@ -2,7 +2,7 @@
 
 `index.html` のアイコン、`styles.css` のCSS変数、`index.html` の `tailwind.config` の `primary` パレットを技術に合わせて設定する。
 
-カラーの正式な定義・追加の技術別テーマは `templates/v2/reference/color-themes.md` を参照すること(本表は代表値の抜粋)。Tailwindの全パレット値は https://tailwindcss.com/docs/customizing-colors を参照。
+カラーの正式な定義・追加の技術別テーマは `templates/v3/reference/color-themes.md` を参照すること(本表は代表値の抜粋)。Tailwindの全パレット値は https://tailwindcss.com/docs/customizing-colors を参照。
 
 ## 1. Font Awesome アイコン対応表(index.html)
 
@@ -76,4 +76,4 @@ primary: {
 | Java | orange |
 | Docker | sky |
 
-各カラーパレットの50〜900の具体値はTailwind公式(上記URL)または `templates/v2/reference/color-themes.md` を参照する。上記の値はExcel(green)の例。
+各カラーパレットの50〜900の具体値はTailwind公式(上記URL)または `templates/v3/reference/color-themes.md` を参照する。上記の値はExcel(green)の例。

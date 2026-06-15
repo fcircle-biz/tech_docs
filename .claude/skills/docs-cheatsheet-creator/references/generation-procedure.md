@@ -31,7 +31,7 @@ mkdir -p docs/cheatsheet/[カテゴリパス]/[技術名小文字]
 
 ### 2. 共通ファイルのコピー
 
-`templates/v2/html_cheatsheet/` から以下2ファイルを技術フォルダにコピーする。チートシートでは sidebar-content.js / drawing-tool.js は**使用しない**（この2ファイルのみ）。
+`templates/v3/html_cheatsheet/` から以下2ファイルを技術フォルダにコピーする。チートシートでは sidebar-content.js / drawing-tool.js は**使用しない**（この2ファイルのみ）。
 
 - `styles.css` - ダークモード対応スタイル（ヘッダーカラークラス定義を含む）
 - `main.js` - ダークモード切り替え、コードコピー機能
@@ -46,7 +46,7 @@ mkdir -p docs/cheatsheet/[カテゴリパス]/[技術名小文字]
 
 ### 4. index.html の生成
 
-`templates/v2/html_cheatsheet/cheatsheet-template.html` をベースに生成する。
+`templates/v3/html_cheatsheet/cheatsheet-template.html` をベースに生成する。
 
 1. プレースホルダー（`{{TITLE}}` / `{{SUBTITLE}}` / `{{ICON}}` / `{{LANGUAGE}}` / `{{INTRO_ICON}}` / `{{INTRO_TITLE}}` / `{{INTRO_DESCRIPTION}}`）を置換 → `placeholders-and-theme.md`
 2. `tailwind.config` の `primary` カラーを技術に応じて設定 → `placeholders-and-theme.md`

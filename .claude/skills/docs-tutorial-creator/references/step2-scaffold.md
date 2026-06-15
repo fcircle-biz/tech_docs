@@ -20,7 +20,7 @@ README.md を読み込み、以下を抽出する。
 
 ### 2. 共通ファイルのコピーと設定
 
-`templates/v2/html_tutorial/` から以下4ファイルを技術フォルダにコピーする。
+`templates/v3/html_tutorial/` から以下4ファイルを技術フォルダにコピーする。
 
 - `styles.css` — 共通カスタムスタイル（**コピー後に修正が必要**）
 - `main.js` — 共通機能
@@ -33,26 +33,32 @@ README.md を読み込み、以下を抽出する。
 
 ```css
 /* テンプレートのプレースホルダー */
+--primary-300: {{PRIMARY_300}};
 --primary-400: {{PRIMARY_400}};
 --primary-500: {{PRIMARY_500}};
+--primary-600: {{PRIMARY_600}};
 --primary-700: {{PRIMARY_700}};
 --primary-rgb: {{PRIMARY_RGB}};
 
 /* ↓ チュートリアルはEmerald推奨 */
+--primary-300: #6ee7b7;
 --primary-400: #34d399;
 --primary-500: #10b981;
+--primary-600: #059669;
 --primary-700: #047857;
 --primary-rgb: 16, 185, 129;
 ```
 
-**技術別カラー設定一覧**（代表値の抜粋。網羅的な値は `templates/v2/reference/color-themes.md` を参照）:
+技術別カラーは tailwind.config の primary パレット(50-900) と styles.css :root の {{PRIMARY_*}} の **2箇所**に同じ技術カラーを設定する（値は templates/v3/reference/color-themes.md 参照）。テンプレHTMLには JetBrains Mono とスプラッシュ template が含まれ、ヘッダーは全技術共通のグラファイトガラス（識別色は primary→cyan のレールで表現）になる。
 
-| 技術 | {{PRIMARY_400}} | {{PRIMARY_500}} | {{PRIMARY_700}} | {{PRIMARY_RGB}} |
-|------|-----------------|-----------------|-----------------|-----------------|
-| **チュートリアル推奨 (emerald)** | `#34d399` | `#10b981` | `#047857` | `16, 185, 129` |
-| Python/PostgreSQL (blue) | `#60a5fa` | `#3b82f6` | `#1d4ed8` | `59, 130, 246` |
-| Java/AWS (orange) | `#fb923c` | `#f97316` | `#c2410c` | `249, 115, 22` |
-| SQL/Docker (sky) | `#38bdf8` | `#0ea5e9` | `#0369a1` | `14, 165, 233` |
+**技術別カラー設定一覧**（代表値の抜粋。網羅的な値は `templates/v3/reference/color-themes.md` を参照）:
+
+| 技術 | {{PRIMARY_300}} | {{PRIMARY_400}} | {{PRIMARY_500}} | {{PRIMARY_600}} | {{PRIMARY_700}} | {{PRIMARY_RGB}} |
+|------|-----------------|-----------------|-----------------|-----------------|-----------------|-----------------|
+| **チュートリアル推奨 (emerald)** | `#6ee7b7` | `#34d399` | `#10b981` | `#059669` | `#047857` | `16, 185, 129` |
+| Python/PostgreSQL (blue) | `#93c5fd` | `#60a5fa` | `#3b82f6` | `#2563eb` | `#1d4ed8` | `59, 130, 246` |
+| Java/AWS (orange) | `#fdba74` | `#fb923c` | `#f97316` | `#ea580c` | `#c2410c` | `249, 115, 22` |
+| SQL/Docker (sky) | `#7dd3fc` | `#38bdf8` | `#0ea5e9` | `#0284c7` | `#0369a1` | `14, 165, 233` |
 
 ### 3. sidebar-content.jsの編集
 
@@ -76,7 +82,7 @@ const steps = [
 
 ### 4. 第1ステップのHTML生成
 
-`templates/v2/html_tutorial/tutorial-template.html` をベースに第1ステップを生成する。
+`templates/v3/html_tutorial/tutorial-template.html` をベースに第1ステップを生成する。
 
 #### テンプレート編集箇所
 
@@ -112,14 +118,14 @@ HTMLファイルでは以下の順序を守る。
 
 ### テンプレート・参照ファイル
 
-- **ベーステンプレート**: `templates/v2/html_tutorial/tutorial-template.html`
+- **ベーステンプレート**: `templates/v3/html_tutorial/tutorial-template.html`
 
 ### 参照ドキュメント（必ず参照）
 
-- コンポーネント: `templates/v2/snippets/components.html`
-- カラーテーマ: `templates/v2/reference/color-themes.md`
-- CSSスタイル: `templates/v2/reference/css-styles.md`
-- Mermaid図表パターン: `templates/v2/reference/mermaid-patterns.md`
+- コンポーネント: `templates/v3/snippets/components.html`
+- カラーテーマ: `templates/v3/reference/color-themes.md`
+- CSSスタイル: `templates/v3/reference/css-styles.md`
+- Mermaid図表パターン: `templates/v3/reference/mermaid-patterns.md`
 
 ### コンテンツ要素（components.html参照）
 

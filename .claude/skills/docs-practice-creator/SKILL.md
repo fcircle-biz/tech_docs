@@ -11,7 +11,7 @@ description: 技術名から練習問題集（README・共通部品・各回HTML
 
 旧 practice-creator-workflow の挙動を、メイン会話ループが直接オーケストレーションして再現する。準備フェーズ（README→共通部品→第1回HTML）を逐次実行して構造テンプレを確定させた後、第2回以降を Agent ツール（general-purpose）で並列ファンアウト生成する。
 
-- テンプレート: `templates/v2/html_practice/`
+- テンプレート: `templates/v3/html_practice/`
 - 命名規則: `[技術名]-practice-[NN].html`（NN は2桁ゼロ埋め）
 - 出力先: `docs/practice/[分類パス]/[技術名]/`
 - 回数構成: 6〜15回（難易度★カーブ設計）
@@ -34,7 +34,7 @@ description: 技術名から練習問題集（README・共通部品・各回HTML
 ### 準備フェーズ（逐次・本体が直接実行）
 
 1. **README作成**: `references/step1-readme-curriculum.md` に従い、対象技術の分類パス（`tech-knowledge-map.md` 参照）を決定し、6〜15回・難易度★カーブを設計した README.md を作成する。既存ファイルがあれば `references/templates-and-paths.md` のバージョン管理手順で退避してから新規作成する。
-2. **共通部品の土台作成**: `references/step2-foundation.md` に従い、`templates/v2/html_practice/` の4ファイル（styles.css / main.js / drawing-tool.js / sidebar-content.js）を出力先へコピーし、styles.css のカラープレースホルダーを実値へ置換、sidebar-content.js に全回分の定義を設定する。
+2. **共通部品の土台作成**: `references/step2-foundation.md` に従い、`templates/v3/html_practice/` の4ファイル（styles.css / main.js / drawing-tool.js / sidebar-content.js）を出力先へコピーし、styles.css のカラープレースホルダーを実値へ置換、sidebar-content.js に全回分の定義を設定する。
 3. **第1回HTML生成**: `references/step2-foundation.md` と `references/question-components.md` に従い、`practice-template.html` をベースに第1回HTMLを生成する。この第1回HTMLが以降の構造テンプレになる。
 
 ### 生成フェーズ（並列ファンアウト）
@@ -62,10 +62,10 @@ Glob で生成物一覧を確認し、ファイル一覧と GitHub Pages URL を
 - **エージェント実行ルール（CLAUDE.md準拠）**: 処理中に提案・確認・中断をしない。最後まで完遂する。並列指定は必ず並列で実行する。「これから生成します」で終了せず、実ファイル生成まで継続する。
 - **回答形式（最重要）**: 回答は `<details>`/`<summary>` クリック展開式のみ。**textarea入力欄・「実行して確認」ボタンは使用禁止**。
 - **解説**: 「なぜそうなるか」＋よくある間違いを必ず含める。
-- **Mermaid記法**: CLAUDE.md方式に統一（`&#40;` 等のHTMLエンティティ不可／半角括弧は全角化かノードをダブルクォートで囲む／`&` は全角 `＆`／`<br/>` 使用時はノードをダブルクォートで囲む／darkテーマ禁止）。詳細は `templates/v2/reference/mermaid-patterns.md` 参照。
+- **Mermaid記法**: CLAUDE.md方式に統一（`&#40;` 等のHTMLエンティティ不可／半角括弧は全角化かノードをダブルクォートで囲む／`&` は全角 `＆`／`<br/>` 使用時はノードをダブルクォートで囲む／darkテーマ禁止）。詳細は `templates/v3/reference/mermaid-patterns.md` 参照。
 - **テキスト視認性**: 半透明背景（`bg-white/70` 等）禁止。内側ボックスは親と同系色の `-100` 背景＋`-900` テキスト。
 - **ヘッダー**: ダークモードボタンをHTMLに手書きしない（main.js が動的生成）。ヘッダー構造を変更しない。
 - **スクリプト読込順**: styles.css → sidebar-content.js → main.js → drawing-tool.js。
-- **カラープレースホルダー**: styles.css の `{{PRIMARY_400/500/700/RGB}}` は必ず実カラー値へ置換（未置換はCSS破損）。
+- **カラープレースホルダー**: styles.css の `{{PRIMARY_300/400/500/600/700/RGB}}` は必ず実カラー値へ置換（未置換はCSS破損）。
 - **バージョン管理**: 出力先に既存があれば `v1/`/`v2/`/... へ退避してから新規作成。
 - **パス**: 絶対パスのハードコード禁止。リポジトリルート相対で記述する。

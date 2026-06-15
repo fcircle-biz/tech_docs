@@ -61,7 +61,7 @@ description: 既存の学習ガイドHTMLを分析し学習効果を高める図
 - **エージェント実行ルール（CLAUDE.md）**: 処理中の提案／確認／中断をしない（replace のファイル名不一致確認のみ例外）、最後まで完遂、並列指定は必ず並列、「これから生成します」で終了しない（実ファイル生成まで継続）。
 - **モデル割り当て**: CLAUDE.md「エージェント編成（モデル割り当て）」に従う。
 - **画像拡張子は PNG 統一**（旧 `.jpg` は是正）。Glob では `v1/`/`v2/` を除外。
-- **Mermaid 記法は CLAUDE.md 方式**（`&#40;` 等のHTMLエンティティ禁止、半角括弧は全角化かノードをダブルクォートで囲む、`&` は全角 `＆`、`<br/>` 使用時はノードをダブルクォート、dark テーマ禁止）。詳細は `templates/v2/reference/mermaid-patterns.md`。
+- **Mermaid 記法は CLAUDE.md 方式**（`&#40;` 等のHTMLエンティティ禁止、半角括弧は全角化かノードをダブルクォートで囲む、`&` は全角 `＆`、`<br/>` 使用時はノードをダブルクォート、dark テーマ禁止）。詳細は `templates/v3/reference/mermaid-patterns.md`。
 - **テキスト視認性**: 半透明背景（`bg-white/70` 等）禁止、内側ボックスは親と同系色の `-100` 背景＋ `-900` テキスト。
 - **共通部品・ヘッダーを改変しない**: 図解挿入は本文HTMLのみ編集。ダークモードボタンを手書きしない（`main.js` が動的生成）。
 - **絶対パス禁止**: リポジトリルート相対で記述。
@@ -70,10 +70,10 @@ description: 既存の学習ガイドHTMLを分析し学習効果を高める図
 ## 共有参照ファイル（リポジトリルート相対・丸写しせず参照）
 
 - 9分類体系・命名規則: `tech-knowledge-map.md`
-- カラーテーマ: `templates/v2/reference/color-themes.md`
-- Tailwind スタイル: `templates/v2/reference/css-styles.md`
-- Mermaid 詳細: `templates/v2/reference/mermaid-patterns.md`
-- カードコンポーネント: `templates/v2/snippets/components.html`
+- カラーテーマ: `templates/v3/reference/color-themes.md`
+- Tailwind スタイル: `templates/v3/reference/css-styles.md`
+- Mermaid 詳細: `templates/v3/reference/mermaid-patterns.md`
+- カードコンポーネント: `templates/v3/snippets/components.html`
 
 ## references
 
