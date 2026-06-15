@@ -88,6 +88,15 @@ Each of these consolidates the old `workflow + step1/step2/step3` agents into a 
 |-------|---------|------------|
 | `content-reviewer` | Parallel verification of generated material against template standards; `--fix` applies corrections | `/content-reviewer [dir-or-files] [--fix]` |
 | `content-suite-creator` | Generate multiple material types for one topic in parallel, then verify with `content-reviewer` | `/content-suite-creator [tech-name] [types-csv?]` |
+| `content-browser-review` | Render generated HTML in Chrome (via MCP) and QA the result (Mermaid render, dark mode, highlight, sidebar, responsive, console) — complements the static `content-reviewer` | `/content-browser-review [dir-or-files] [scope?]` |
+
+### Git / GitHub workflow skills
+
+| Skill | Purpose | Invocation |
+|-------|---------|------------|
+| `git-commit` | Stage and commit with a unified Japanese Conventional-Commits message | `/git-commit` |
+| `git-pr` | Commit → push → create a Japanese pull request (base: `main`) | `/git-pr` |
+| `git-issue-create` | Draft and file a professional Japanese GitHub issue (content bugs / requests) | `/git-issue-create [report]` |
 
 ### Supporting utility skills
 
