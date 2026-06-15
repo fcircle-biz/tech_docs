@@ -25,7 +25,7 @@ No build/lint/test framework - content is static HTML/Markdown validated through
 - `/docs/cheatsheet/` - Quick reference materials
 - `/templates/v2/` - HTML/CSS template standards (current)
 - `/specs/` - System specifications for tutorial projects
-- `/work_pdf/` - Temporary folder for PDF files to be processed by the slide-creator skill
+- `/work_pdf/` - Temporary folder for PDF files to be processed by the docs-slide-creator skill
 - `/.claude/skills/` - Claude skill definitions for automated content creation (slash-command invoked)
 
 ### 9-Level Taxonomy (from tech-knowledge-map.md)
@@ -68,27 +68,27 @@ Each of these consolidates the old `workflow + step1/step2/step3` agents into a 
 
 | Skill | Purpose | Invocation |
 |-------|---------|------------|
-| `tech-guide-creator` | Learning guide set (README + common files + all chapters) | `/tech-guide-creator [tech-name]` |
-| `tutorial-creator` | Hands-on tutorial from specs (README + step HTML) | `/tutorial-creator [app-type] [env] [db]` |
-| `practice-creator` | Practice exercise set (`<details>`-toggle answers) | `/practice-creator [tech-name]` |
-| `assignment-creator` | Programming assignment from specs (hints only, PDF design docs) | `/assignment-creator [specs-docs-path]` |
-| `illustration-creator` | Add illustrations to existing guides (per-chapter parallel; replace mode is semi-automatic) | `/illustration-creator [dir] [chapter?] [mode?]` |
+| `docs-guide-creator` | Learning guide set (README + common files + all chapters) | `/docs-guide-creator [tech-name]` |
+| `docs-tutorial-creator` | Hands-on tutorial from specs (README + step HTML) | `/docs-tutorial-creator [app-type] [env] [db]` |
+| `docs-practice-creator` | Practice exercise set (`<details>`-toggle answers) | `/docs-practice-creator [tech-name]` |
+| `docs-assignment-creator` | Programming assignment from specs (hints only, PDF design docs) | `/docs-assignment-creator [specs-docs-path]` |
+| `docs-illustration-creator` | Add illustrations to existing guides (per-chapter parallel; replace mode is semi-automatic) | `/docs-illustration-creator [dir] [chapter?] [mode?]` |
 
 ### Single-purpose utility skills
 
 | Skill | Purpose | Invocation |
 |-------|---------|------------|
-| `cheatsheet-creator` | 1-page quick-reference cheatsheet | `/cheatsheet-creator [tech-name] [category-path]` |
-| `slide-creator` | PDF slide viewer from `work_pdf/` | `/slide-creator [title]` |
-| `folder-structure-readme-updater` | Regenerate the root `README.md` from the on-disk structure | `/folder-structure-readme-updater` |
+| `docs-cheatsheet-creator` | 1-page quick-reference cheatsheet | `/docs-cheatsheet-creator [tech-name] [category-path]` |
+| `docs-slide-creator` | PDF slide viewer from `work_pdf/` | `/docs-slide-creator [title]` |
+| `docs-readme-updater` | Regenerate the root `README.md` from the on-disk structure | `/docs-readme-updater` |
 
 ### Multi-agent orchestration skills
 
 | Skill | Purpose | Invocation |
 |-------|---------|------------|
-| `content-reviewer` | Parallel verification of generated material against template standards; `--fix` applies corrections | `/content-reviewer [dir-or-files] [--fix]` |
-| `content-suite-creator` | Generate multiple material types for one topic in parallel, then verify with `content-reviewer` | `/content-suite-creator [tech-name] [types-csv?]` |
-| `content-browser-review` | Render generated HTML in Chrome (via MCP) and QA the result (Mermaid render, dark mode, highlight, sidebar, responsive, console) — complements the static `content-reviewer` | `/content-browser-review [dir-or-files] [scope?]` |
+| `docs-reviewer` | Parallel verification of generated material against template standards; `--fix` applies corrections | `/docs-reviewer [dir-or-files] [--fix]` |
+| `docs-suite-creator` | Generate multiple material types for one topic in parallel, then verify with `docs-reviewer` | `/docs-suite-creator [tech-name] [types-csv?]` |
+| `docs-browser-review` | Render generated HTML in Chrome (via MCP) and QA the result (Mermaid render, dark mode, highlight, sidebar, responsive, console) — complements the static `docs-reviewer` | `/docs-browser-review [dir-or-files] [scope?]` |
 
 ### Git / GitHub workflow skills
 
@@ -107,7 +107,7 @@ Each of these consolidates the old `workflow + step1/step2/step3` agents into a 
 **Mandatory rules when running a content-automation skill (and its subagents):**
 
 1. **No suggestions**: Do not propose optimizations or alternative approaches during processing.
-2. **No interruptions**: Do not stop to ask for user confirmation (sole exception: `content-suite-creator` may confirm missing specs/env/DB info during argument parsing, before generation starts).
+2. **No interruptions**: Do not stop to ask for user confirmation (sole exception: `docs-suite-creator` may confirm missing specs/env/DB info during argument parsing, before generation starts).
 3. **Must complete**: Follow the skill's `SKILL.md` and `references/*.md` and finish to the end — never stop at "I will now generate…" before the files actually exist.
 4. **Parallel execution**: Issue the fan-out `Agent` calls for units `02..N` **in a single message** so they run in parallel — never one unit at a time.
 
