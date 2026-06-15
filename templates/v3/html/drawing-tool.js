@@ -47,7 +47,7 @@ const DrawingTool = (function() {
             return;
         }
 
-        ctx = canvas.getContext('2d');
+        ctx = canvas.getContext('2d', { willReadFrequently: true });
         toolbar = document.getElementById('drawing-toolbar');
         toolbarContent = document.getElementById('toolbar-content');
         toolbarToggle = document.getElementById('toolbar-toggle');
