@@ -199,7 +199,7 @@
                         8.1 CLAUDE.md とは何か
                     </h2>
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        <strong>CLAUDE.md</strong> は、プロジェクトのルートディレクトリ（プロジェクトの一番上のフォルダ）に置くテキストファイルです。Claude Code はセッション起動時にこのファイルを<strong>自動的に読み込み</strong>、プロジェクト固有のコンテキストとして利用します。
+                        <strong>CLAUDE.md</strong> は、プロジェクトのルートディレクトリ（<code class="bg-slate-100 px-1 rounded text-sm font-mono">./CLAUDE.md</code>）または <code class="bg-slate-100 px-1 rounded text-sm font-mono">./.claude/CLAUDE.md</code> に置くテキストファイルです。Claude Code はセッション起動時にこのファイルを<strong>自動的に読み込み</strong>、プロジェクト固有の<strong>コンテキスト（背景情報）</strong>として利用します。
                     </p>
                     <p class="text-slate-600 leading-relaxed mb-4">
                         たとえば「このプロジェクトは Python 3.11 を使っています」「コードの関数名はキャメルケースではなくスネークケースで書いてください」「ビルドは <code class="bg-slate-100 px-1 rounded text-sm font-mono">make build</code> で実行できます」といった情報を書いておくと、毎回指示しなくても Claude Code が最初からその方針に従って動いてくれます。
@@ -235,8 +235,19 @@
                         <div class="flex items-start gap-3">
                             <i class="fas fa-circle-info text-blue-500 mt-1"></i>
                             <div>
-                                <p class="font-semibold text-blue-800 mb-1">CLAUDE.md の読み込みタイミング</p>
-                                <p class="text-blue-900 text-sm">Claude Code は起動時にカレントディレクトリから上位ディレクトリへ順にたどり、見つかった <code class="bg-blue-100 px-1 rounded font-mono">CLAUDE.md</code> を読み込みます。プロジェクトルートに置くのが基本ですが、サブディレクトリに置いてそのフォルダ専用の指示を追加することも可能です。</p>
+                                <p class="font-semibold text-blue-800 mb-1">CLAUDE.md の読み込みタイミングと置き場所</p>
+                                <p class="text-blue-900 text-sm">Claude Code は起動時にカレントディレクトリから上位ディレクトリへ順にたどり、見つかった <code class="bg-blue-100 px-1 rounded font-mono">CLAUDE.md</code> を読み込みます。プロジェクトでは <code class="bg-blue-100 px-1 rounded font-mono">./CLAUDE.md</code> または <code class="bg-blue-100 px-1 rounded font-mono">./.claude/CLAUDE.md</code> が使えます。サブディレクトリに置くとそのフォルダを読むときに専用の指示が追加され、自分専用でコミットしないメモは <code class="bg-blue-100 px-1 rounded font-mono">CLAUDE.local.md</code> に書けます。さらに、ファイル内で <code class="bg-blue-100 px-1 rounded font-mono">@パス</code> と書くと別ファイルを読み込む（import）こともできます。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 注意カード: CLAUDE.md は強制ポリシーではない -->
+                    <div class="bg-amber-50 border-l-4 border-amber-500 rounded-r-lg p-4 my-6">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-triangle-exclamation text-amber-500 mt-1"></i>
+                            <div>
+                                <p class="font-semibold text-amber-800 mb-1">CLAUDE.md は「文脈」であって「強制設定」ではない</p>
+                                <p class="text-amber-900 text-sm">CLAUDE.md に書いた内容は Claude の行動を<strong>強く誘導するコンテキスト</strong>であり、必ず守られることを保証する強制ルールではありません。「絶対に実行させたくない／必ず実行させたい」処理は、CLAUDE.md ではなく <strong>権限設定（settings.json の permissions）</strong>や <strong>フック（PreToolUse など／第12章）</strong>で強制してください。</p>
                             </div>
                         </div>
                     </div>
@@ -301,11 +312,13 @@
 flowchart TD
     A["Claude Code のメモリ"] --> B["プロジェクトメモリ"]
     A --> C["ユーザーメモリ"]
-    B --> D["CLAUDE.md<br/>（プロジェクトルート）"]
+    B --> D["./CLAUDE.md または<br/>./.claude/CLAUDE.md"]
     B --> E["サブディレクトリの CLAUDE.md"]
+    B --> J["CLAUDE.local.md<br/>（自分専用・コミットしない）"]
     C --> F["~/.claude/CLAUDE.md<br/>（ホームディレクトリ）"]
     D --> G["チームで共有・リポジトリにコミット"]
     E --> H["特定フォルダへの追加指示"]
+    J --> K["個人的なメモ・一時的な指示"]
     F --> I["個人の好み・全プロジェクト共通の設定"]
                         </div>
                     </div>
@@ -323,9 +336,15 @@ flowchart TD
                             <tbody class="divide-y divide-slate-200">
                                 <tr class="bg-primary-50">
                                     <td class="px-4 py-3 font-medium">プロジェクトメモリ</td>
-                                    <td class="px-4 py-3 text-slate-600"><code class="bg-slate-100 px-1 rounded text-sm font-mono">プロジェクトルート/CLAUDE.md</code></td>
+                                    <td class="px-4 py-3 text-slate-600"><code class="bg-slate-100 px-1 rounded text-sm font-mono">./CLAUDE.md</code> または <code class="bg-slate-100 px-1 rounded text-sm font-mono">./.claude/CLAUDE.md</code></td>
                                     <td class="px-4 py-3 text-slate-600">チーム全員</td>
                                     <td class="px-4 py-3 text-slate-600">コーディング規約・ビルド手順・プロジェクトの方針</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 font-medium">ローカルメモリ</td>
+                                    <td class="px-4 py-3 text-slate-600"><code class="bg-slate-100 px-1 rounded text-sm font-mono">./CLAUDE.local.md</code></td>
+                                    <td class="px-4 py-3 text-slate-600">自分のみ（コミットしない）</td>
+                                    <td class="px-4 py-3 text-slate-600">このプロジェクト限定の個人的なメモ・一時的な指示</td>
                                 </tr>
                                 <tr>
                                     <td class="px-4 py-3 font-medium">ユーザーメモリ</td>
@@ -628,7 +647,7 @@ flowchart LR
                                             回答を表示
                                         </summary>
                                         <p class="mt-2 pl-4 text-blue-900 bg-blue-100 rounded-lg p-3 break-words">
-                                            プロジェクトのルートディレクトリに置きます。Claude Code はセッション起動時に自動的に読み込むため、毎回指示しなくてもその内容を参照して動作します。
+                                            プロジェクトのルート（<code class="bg-blue-200 px-1 rounded font-mono">./CLAUDE.md</code>）または <code class="bg-blue-200 px-1 rounded font-mono">./.claude/CLAUDE.md</code> に置きます。Claude Code はセッション起動時に自動的に読み込むため、毎回指示しなくてもその内容を参照して動作します。ただしこれは行動を誘導する「コンテキスト」であり、必ず守られる強制ルールではない点に注意します（強制したい場合は権限設定やフックを使う）。
                                         </p>
                                     </details>
                                 </li>
