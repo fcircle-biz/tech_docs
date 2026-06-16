@@ -306,23 +306,26 @@ flowchart LR
                         11.3 MCPサーバーの追加と確認
                     </h2>
                     <p class="text-slate-600 leading-relaxed mb-4">
-                        Claude Code には MCPサーバーを追加するためのコマンドが用意されています。基本的な形は <code class="bg-slate-100 px-1 rounded text-sm">claude mcp add</code> で、サーバーの名前や起動コマンドを指定します。
+                        Claude Code には MCPサーバーを追加するためのコマンド <code class="bg-slate-100 px-1 rounded text-sm">claude mcp add</code> が用意されています。書き方は<strong>接続方式（トランスポート）</strong>によって異なります。リモートのサービスに接続する場合は <strong>HTTP が推奨</strong>、自分の PC でツールを動かす場合は <strong>stdio</strong> を使うのが基本です。
                     </p>
 
                     <div class="code-block-wrapper my-6">
                         <div class="flex items-center justify-between bg-slate-800 px-4 py-2 rounded-t-lg">
-                            <span class="text-slate-400 text-sm">terminal — MCPサーバー追加の概念的な例</span>
+                            <span class="text-slate-400 text-sm">terminal — MCPサーバー追加の例（トランスポート別）</span>
                             <button class="copy-btn text-slate-400 hover:text-white transition-colors"
                                     onclick="copyCode(this)">
                                 <i class="fas fa-copy"></i>
                             </button>
                         </div>
-                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># MCPサーバーを追加するコマンドの基本形
-# （オプションの詳細はサーバーごとに異なる）
-claude mcp add &lt;サーバー名&gt; &lt;起動コマンド&gt;
+                        <pre class="!mt-0 !rounded-t-none"><code class="language-bash"># ① リモートの HTTP サーバーを追加する（リモート接続の推奨方式）
+claude mcp add --transport http &lt;名前&gt; &lt;URL&gt;
+# 例: claude mcp add --transport http notion https://mcp.notion.com/mcp
 
-# 現在接続中の MCPサーバーを確認するには
-# Claude Code 内でスラッシュコマンドを使う
+# ② ローカルの stdio サーバーを追加する（-- の後に起動コマンドを書く）
+claude mcp add &lt;名前&gt; -- &lt;起動コマンド&gt; [引数...]
+# 例: claude mcp add airtable -- npx -y airtable-mcp-server
+
+# 現在接続中の MCPサーバーを確認する（セッション中のスラッシュコマンド）
 /mcp</code></pre>
                     </div>
 
@@ -335,8 +338,15 @@ claude mcp add &lt;サーバー名&gt; &lt;起動コマンド&gt;
                         <div class="flex items-start gap-3">
                             <i class="fas fa-circle-info text-blue-500 mt-1"></i>
                             <div>
-                                <p class="font-semibold text-blue-800 mb-1">コマンドの細部はサーバーごとに異なる</p>
-                                <p class="text-blue-900 text-sm"><code class="bg-blue-100 px-1 rounded">claude mcp add</code> の引数や追加オプションは、接続するMCPサーバーによって違います。利用するサーバーの公式ドキュメントを参照してください。共通しているのは「名前」「起動コマンド」の指定という基本構造です。</p>
+                                <p class="font-semibold text-blue-800 mb-1">トランスポートは4種類。リモートは原則 HTTP</p>
+                                <p class="text-blue-900 text-sm mb-2">MCP の接続方式には <strong>HTTP</strong>・<strong>stdio</strong>・<strong>SSE</strong>・<strong>WebSocket</strong> があります。</p>
+                                <ul class="text-blue-900 text-sm space-y-1">
+                                    <li class="flex items-start gap-2"><i class="fas fa-angle-right text-blue-500 mt-1 flex-shrink-0"></i><span><strong>HTTP</strong>（推奨）: クラウド上のリモートサービス向け。<code class="bg-blue-100 px-1 rounded">--transport http</code></span></li>
+                                    <li class="flex items-start gap-2"><i class="fas fa-angle-right text-blue-500 mt-1 flex-shrink-0"></i><span><strong>stdio</strong>: ローカルで動かすサーバー向け。<code class="bg-blue-100 px-1 rounded">--</code> の後に起動コマンドを書く</span></li>
+                                    <li class="flex items-start gap-2"><i class="fas fa-angle-right text-blue-500 mt-1 flex-shrink-0"></i><span><strong>SSE</strong>: <strong>非推奨（deprecated）</strong>。可能な限り HTTP を使う</span></li>
+                                    <li class="flex items-start gap-2"><i class="fas fa-angle-right text-blue-500 mt-1 flex-shrink-0"></i><span><strong>WebSocket</strong>: <code class="bg-blue-100 px-1 rounded">--transport</code> では指定できず、<code class="bg-blue-100 px-1 rounded">claude mcp add-json</code> で設定する</span></li>
+                                </ul>
+                                <p class="text-blue-900 text-sm mt-2">引数や認証ヘッダーの詳細は、利用するサーバーの公式ドキュメントを参照してください。</p>
                             </div>
                         </div>
                     </div>
@@ -558,7 +568,7 @@ flowchart TD
                                             回答を表示
                                         </summary>
                                         <p class="mt-2 pl-4 text-blue-900 bg-blue-100 rounded-lg p-3 break-words">
-                                            MCPサーバーの追加は <code class="bg-blue-200 px-1 rounded">claude mcp add &lt;サーバー名&gt; &lt;起動コマンド&gt;</code> の形で行います。接続状況の確認は、Claude Code 起動中に <code class="bg-blue-200 px-1 rounded">/mcp</code> と入力することで一覧表示できます。
+                                            MCPサーバーの追加は <code class="bg-blue-200 px-1 rounded">claude mcp add</code> で行い、書き方は接続方式によって変わります。リモートは <code class="bg-blue-200 px-1 rounded">claude mcp add --transport http &lt;名前&gt; &lt;URL&gt;</code>（HTTP 推奨）、ローカルは <code class="bg-blue-200 px-1 rounded">claude mcp add &lt;名前&gt; -- &lt;起動コマンド&gt;</code>（stdio）です。接続状況の確認は、Claude Code 起動中に <code class="bg-blue-200 px-1 rounded">/mcp</code> と入力することで一覧表示できます。
                                         </p>
                                     </details>
                                 </li>
